@@ -2,9 +2,12 @@
  * Google Analytics 4 (GA4) Integration
  *
  * Initializes GA4 for page views and event tracking.
- * Only runs in production when VITE_GA4_MEASUREMENT_ID is configured.
+ * Only runs in production when the brand (src/brand/brand.json) sets
+ * analytics.ga4MeasurementId.
  * Supports cross-domain tracking via linker configuration.
  */
+
+import { BRAND } from '@/brand';
 
 declare global {
   interface Window {
@@ -13,20 +16,13 @@ declare global {
   }
 }
 
-const LINKER_DOMAINS = [
-  'evolution-api.com',
-  'evolution-api.io',
-  'evoapicloud.com',
-  'evoai.app',
-  'evo-ai.co',
-  'evofoundation.com.br',
-];
+const LINKER_DOMAINS = BRAND.analytics.ga4LinkerDomains ?? [];
 
-const GA4_MEASUREMENT_ID = 'G-DKSKFWQWVK';
+const GA4_MEASUREMENT_ID = BRAND.analytics.ga4MeasurementId;
 
 export const initGA4 = (): void => {
-  // Only initialize in production
-  if (import.meta.env.DEV) {
+  // Only initialize in production, and only when the brand configures GA4
+  if (import.meta.env.DEV || !GA4_MEASUREMENT_ID) {
     return;
   }
 

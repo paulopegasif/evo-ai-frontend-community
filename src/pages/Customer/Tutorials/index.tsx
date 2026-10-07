@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { BRAND } from '@/brand';
 
 const Tutorials = () => {
   const { t } = useLanguage('tutorials');
@@ -14,7 +15,7 @@ const Tutorials = () => {
       <div className="flex-1 px-6 pb-6">
         <div className="w-full h-full min-h-[700px] rounded-lg overflow-hidden border border-border">
           <iframe
-            src="https://gateway.evolutionfoundation.com.br/embed/phrP4kOXKKROpUxwCoJJsCn8wVLzRVhuyrufdNS9raghOOmw74XBYzO5NfKbc8UY"
+            src={BRAND.links.tutorialsEmbed}
             width="100%"
             height="100%"
             frameBorder="0"

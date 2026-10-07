@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import tailwindcss from '@tailwindcss/vite';
 import { execSync } from 'node:child_process';
+import brand from './src/brand/brand.json';
 
 // Resolution order: APP_VERSION env (CI/release) → `git describe` → 'dev'.
 // Env wins because the release pipeline knows the canonical tag better than
@@ -18,6 +19,16 @@ function resolveAppVersion(): string {
   }
 }
 
+// White-label: fills %BRAND_NAME% / %BRAND_THEME_COLOR% placeholders in index.html
+// from src/brand/brand.json so the tab title matches the active brand.
+const brandHtmlPlugin = {
+  name: 'brand-html',
+  transformIndexHtml: (html: string) =>
+    html
+      .replaceAll('%BRAND_NAME%', brand.name)
+      .replaceAll('%BRAND_THEME_COLOR%', brand.themeColor),
+};
+
 // https://vite.dev/config/
 export default defineConfig({
   define: {
@@ -26,6 +37,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    brandHtmlPlugin,
   ],
   build: {
     // Reduce chunking to minimize requests via ngrok

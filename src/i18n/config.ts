@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { BRAND } from '@/brand';
 
 import ptBRAuth from './locales/pt-BR/auth.json';
 import ptBRChangePassword from './locales/pt-BR/changePassword.json';
@@ -757,6 +758,11 @@ i18n.use(initReactI18next).init({
   debug: false, // Set to true for debugging
   interpolation: {
     escapeValue: false,
+    // White-label: translations reference {{brand}} / {{copyrightHolder}}
+    defaultVariables: {
+      brand: BRAND.name,
+      copyrightHolder: BRAND.copyrightHolder,
+    },
   },
   react: {
     useSuspense: false,

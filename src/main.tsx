@@ -4,6 +4,7 @@ import "@evoapi/design-system/styles";
 // our theming overrides in globals.css can win the cascade (EVO-1270).
 import '@xyflow/react/dist/style.css';
 import './styles/globals.css';
+import './brand/theme.css'; // White-label palette overrides (must load after globals.css)
 import './i18n/config'; // Importar configuração do i18n
 import App from './App.tsx';
 import { initTheme } from './utils/themeUtils';

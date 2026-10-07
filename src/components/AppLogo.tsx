@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react';
 import { useDarkMode } from '../hooks/useDarkMode';
-import logoDark from '../assets/EVO_CRM.svg';
-import logoLight from '../assets/EVO_CRM_light.svg';
+import { BRAND, BRAND_LOGOS } from '@/brand';
 
 interface AppLogoProps {
   className?: string;
@@ -10,10 +9,10 @@ interface AppLogoProps {
   forceTheme?: 'dark' | 'light';
 }
 
-export function AppLogo({ className, alt = 'EVO CRM', style, forceTheme }: AppLogoProps) {
+export function AppLogo({ className, alt = BRAND.name, style, forceTheme }: AppLogoProps) {
   const { theme } = useDarkMode();
   const effectiveTheme = forceTheme ?? theme;
-  const src = effectiveTheme === 'dark' ? logoDark : logoLight;
+  const src = effectiveTheme === 'dark' ? BRAND_LOGOS.dark : BRAND_LOGOS.light;
 
   return <img src={src} alt={alt} className={className} style={style} />;
 }

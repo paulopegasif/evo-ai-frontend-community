@@ -1,0 +1,23 @@
+/*
+ * Brand palette overrides.
+ *
+ * Imported after globals.css, so any variable redefined here wins over the
+ * @evoapi/design-system defaults. Leave empty to keep the upstream palette.
+ *
+ * Variables most worth overriding (shadcn / Tailwind v4 tokens):
+ *   --primary, --primary-foreground, --ring,
+ *   --sidebar, --sidebar-foreground, --sidebar-primary,
+ *   --sidebar-primary-foreground, --sidebar-accent, --sidebar-border,
+ *   --background, --foreground, --card, --border, --radius
+ *
+ * Example:
+ *
+ * :root {
+ *   --primary: #b07a5a;
+ *   --primary-foreground: #ffffff;
+ * }
+ * .dark {
+ *   --primary: #d4a283;
+ *   --primary-foreground: #1a1a1a;
+ * }
+ */

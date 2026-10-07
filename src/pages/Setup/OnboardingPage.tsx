@@ -69,7 +69,7 @@ function SelectField({ label, id, value, options, onChange, placeholder = 'Selec
             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = '#00ffa7';
+            e.target.style.borderColor = 'var(--primary)';
             e.target.style.boxShadow = '0 0 0 2px rgba(0, 255, 167, 0.35)';
           }}
           onBlur={(e) => {
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
           width: 100%;
           height: 40px;
           background: #09090b;
-          border: 0.5px solid #00ffa7;
+          border: 0.5px solid var(--primary);
           box-shadow: 0 0 0 2px rgba(0, 255, 167, 0.35);
           border-radius: 8px;
           color: #fafafa;
@@ -257,7 +257,7 @@ export default function OnboardingPage() {
         .evo-submit-btn {
           width: 100%;
           height: 40px;
-          background: #00ffa7;
+          background: var(--primary);
           color: #000;
           border: none;
           border-radius: 8px;
@@ -380,7 +380,7 @@ export default function OnboardingPage() {
                       borderRadius: '5px',
                       border: 'none',
                       background: isSelected ? 'rgba(0,255,167,0.08)' : 'transparent',
-                      color: isSelected ? '#00ffa7' : '#a1a1aa',
+                      color: isSelected ? 'var(--primary)' : '#a1a1aa',
                       fontSize: '13px',
                       fontFamily: 'ui-sans-serif, system-ui, sans-serif',
                       cursor: 'pointer',
@@ -403,7 +403,7 @@ export default function OnboardingPage() {
                     <span>{t(lang.labelKey)}</span>
                     {isSelected && (
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M2 6l3 3 5-5" stroke="#00ffa7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2 6l3 3 5-5" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </button>
@@ -456,7 +456,7 @@ export default function OnboardingPage() {
                 data-testid="progress-bar-fill"
                 style={{
                   height: '3px',
-                  background: '#00ffa7',
+                  background: 'var(--primary)',
                   borderRadius: '99px',
                   width: `${progressPct}%`,
                   transition: 'width 0.3s ease',
@@ -531,7 +531,7 @@ export default function OnboardingPage() {
                       transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = '#00ffa7';
+                      e.target.style.borderColor = 'var(--primary)';
                       e.target.style.boxShadow = '0 0 0 2px rgba(0, 255, 167, 0.35)';
                     }}
                     onBlur={(e) => {
