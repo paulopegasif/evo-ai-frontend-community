@@ -1,23 +1,38 @@
 /*
- * Brand palette overrides.
+ * Brand palette overrides — Lumom CRM
  *
- * Imported after globals.css, so any variable redefined here wins over the
- * @evoapi/design-system defaults. Leave empty to keep the upstream palette.
- *
- * Variables most worth overriding (shadcn / Tailwind v4 tokens):
- *   --primary, --primary-foreground, --ring,
- *   --sidebar, --sidebar-foreground, --sidebar-primary,
- *   --sidebar-primary-foreground, --sidebar-accent, --sidebar-border,
- *   --background, --foreground, --card, --border, --radius
- *
- * Example:
- *
- * :root {
- *   --primary: #b07a5a;
- *   --primary-foreground: #ffffff;
- * }
- * .dark {
- *   --primary: #d4a283;
- *   --primary-foreground: #1a1a1a;
- * }
+ * Primary palette:
+ *   - Dark plum:    rgb(42, 21, 47)   / #2a152f
+ *   - Lilac:        rgb(151, 121, 182) / #9779b6
+ *   - White:        rgb(255, 255, 255) / #ffffff
  */
+
+:root {
+  --primary: #7d54a2;
+  --primary-foreground: #ffffff;
+  --ring: #9779b6;
+
+  /* Sidebar */
+  --sidebar: #fbf9fd;
+  --sidebar-foreground: #2a152f;
+  --sidebar-primary: #7d54a2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3ebf8;
+  --sidebar-accent-foreground: #2a152f;
+  --sidebar-border: #e9deef;
+}
+
+.dark {
+  --primary: #9779b6;
+  --primary-foreground: #1f0f23;
+  --ring: #9779b6;
+
+  /* Sidebar */
+  --sidebar: #1f0f23;
+  --sidebar-foreground: #f3ebf8;
+  --sidebar-primary: #9779b6;
+  --sidebar-primary-foreground: #1f0f23;
+  --sidebar-accent: #2e1734;
+  --sidebar-accent-foreground: #f3ebf8;
+  --sidebar-border: #3b1e42;
+}

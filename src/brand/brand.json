@@ -1,21 +1,10 @@
 {
-  "name": "Evo CRM",
-  "copyrightHolder": "Evolution Foundation",
-  "themeColor": "#00ffa7",
-  "links": {
-    "docs": "https://docs.evolutionfoundation.com.br/",
-    "support": "https://api.whatsapp.com/send/?phone=553196219989&text=Ol%C3%A1%21+Preciso+de+suporte.&type=phone_number&app_absent=0",
-    "tutorialsEmbed": "https://gateway.evolutionfoundation.com.br/embed/phrP4kOXKKROpUxwCoJJsCn8wVLzRVhuyrufdNS9raghOOmw74XBYzO5NfKbc8UY"
-  },
+  "name": "Lumom CRM",
+  "copyrightHolder": "ELPH CORP (CNPJ: 36.405.497.0001/75)",
+  "themeColor": "#9779b6",
+  "links": {},
   "analytics": {
-    "ga4MeasurementId": "G-DKSKFWQWVK",
-    "ga4LinkerDomains": [
-      "evolution-api.com",
-      "evolution-api.io",
-      "evoapicloud.com",
-      "evoai.app",
-      "evo-ai.co",
-      "evofoundation.com.br"
-    ]
+    "ga4MeasurementId": null,
+    "ga4LinkerDomains": []
   }
 }
