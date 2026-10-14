@@ -60,7 +60,9 @@ export default function Sidebar({
   );
 
   const mainMenuItems = enrichedMenuItems.filter(item => item.href !== '/tutorials');
-  const tutorialsItem = enrichedMenuItems.find(item => item.href === '/tutorials');
+  const tutorialsItem = BRAND.links.tutorialsEmbed
+    ? enrichedMenuItems.find(item => item.href === '/tutorials')
+    : undefined;
 
   // Dismiss collapsed flyout on Escape (WAI-ARIA requirement for popover-like elements)
   useEffect(() => {
