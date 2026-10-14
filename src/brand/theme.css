@@ -10,7 +10,7 @@
 :root {
   --primary: #7d54a2;
   --primary-foreground: #ffffff;
-  --ring: #9779b6;
+  --ring: #967ab4;
 
   /* Sidebar */
   --sidebar: #fbf9fd;
@@ -23,14 +23,14 @@
 }
 
 .dark {
-  --primary: #9779b6;
+  --primary: #967ab4;
   --primary-foreground: #1f0f23;
-  --ring: #9779b6;
+  --ring: #967ab4;
 
   /* Sidebar */
   --sidebar: #1f0f23;
   --sidebar-foreground: #f3ebf8;
-  --sidebar-primary: #9779b6;
+  --sidebar-primary: #967ab4;
   --sidebar-primary-foreground: #1f0f23;
   --sidebar-accent: #2e1734;
   --sidebar-accent-foreground: #f3ebf8;
