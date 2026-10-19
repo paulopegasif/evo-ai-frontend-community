@@ -28,6 +28,8 @@ import {
   Route,
   ShieldCheck,
   FileText,
+  Calendar,
+  TrendingUp,
 } from 'lucide-react';
 
 export interface MenuItem {
@@ -64,14 +66,26 @@ export interface ProfileMenuItem {
 
 export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
-    // `dashboard.read` is not a catalog resource — it lives in the auth
-    // BASIC_READ_PERMISSIONS (every authenticated user holds it, it is the
-    // landing page). Gating on it made `can()` deny for everyone (a key outside
-    // the catalog is invalid), hiding the Dashboard from all users. No gate:
-    // always visible to authenticated users (EVO-2071 AC7).
     name: t('menu.customer.dashboard'),
     href: '/dashboard',
     icon: PieChart,
+    subItems: [
+      {
+        name: 'Visão Geral',
+        href: '/dashboard',
+        icon: PieChart,
+      },
+      {
+        name: 'Tracking de Leads',
+        href: '/dashboard/leads',
+        icon: TrendingUp,
+      },
+    ],
+  },
+  {
+    name: 'Agenda & Consultas',
+    href: '/calendar',
+    icon: Calendar,
   },
   {
     name: t('menu.customer.conversations'),
