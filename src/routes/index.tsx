@@ -81,6 +81,8 @@ import HubSpotPage from '../pages/Customer/Settings/Integrations/HubSpotPage';
 import ShopifyPage from '../pages/Customer/Settings/Integrations/ShopifyPage';
 import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
+import CalendarPage from '@/pages/Customer/Calendar';
+import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
 // Páginas admin
 import AdminSettingsLayout from '@/pages/Admin/Settings';
@@ -1361,6 +1363,32 @@ const AppRouter = () => {
                         for everyone. Dashboard is the landing page — always visible
                         to authenticated users (EVO-2071 AC7). */}
                     <Dashboard />
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard/leads"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <LeadTrackingPage />
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/calendar"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <CalendarPage />
                   </MainLayout>
                 </CustomerRoute>
               </PrivateRoute>
