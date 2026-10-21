@@ -45,6 +45,7 @@ const INTEGRATION_CATEGORY_MAP: Record<string, string> = {
   google_translate: 'communication',
 
   // Productivity
+  google_calendar: 'productivity',
   linear: 'productivity',
   shopify: 'productivity',
 
@@ -114,7 +115,7 @@ export default function Integrations() {
           // OAuth integrations have specific delete endpoints
           await integrationsService.deleteIntegration(integration.id);
         } else if (
-          ['openai', 'bms', 'leadsquared', 'google_translate', 'dialogflow'].includes(
+          ['openai', 'bms', 'leadsquared', 'google_translate', 'dialogflow', 'google_calendar'].includes(
             integration.id,
           )
         ) {
@@ -163,6 +164,8 @@ export default function Integrations() {
       navigate(`/settings/integrations/dashboard-apps`);
     } else if (integration.id === 'oauth_applications') {
       navigate(`/settings/integrations/oauth-apps`);
+    } else if (integration.id === 'google_calendar') {
+      navigate(`/settings/integrations/google_calendar`);
     } else {
       // Generic integration configuration page
       navigate(`/settings/integrations/${integration.id}`);

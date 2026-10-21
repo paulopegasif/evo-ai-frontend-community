@@ -80,6 +80,7 @@ import LeadSquaredPage from '../pages/Customer/Settings/Integrations/LeadSquared
 import HubSpotPage from '../pages/Customer/Settings/Integrations/HubSpotPage';
 import ShopifyPage from '../pages/Customer/Settings/Integrations/ShopifyPage';
 import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
+import GoogleCalendarPage from '../pages/Customer/Settings/Integrations/GoogleCalendarPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
 import CalendarPage from '@/pages/Customer/Calendar';
 import LeadTrackingPage from '@/pages/Customer/LeadTracking';
@@ -1046,6 +1047,34 @@ const AppRouter = () => {
                   <MainLayout>
                     <PermissionRoute resource="integrations" action="read">
                       <LinearPage />
+                    </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings/integrations/google_calendar"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <PermissionRoute resource="integrations" action="read">
+                      <GoogleCalendarPage />
+                    </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings/integrations/google-calendar"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <PermissionRoute resource="integrations" action="read">
+                      <GoogleCalendarPage />
                     </PermissionRoute>
                   </MainLayout>
                 </CustomerRoute>
