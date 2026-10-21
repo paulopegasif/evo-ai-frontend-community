@@ -69,6 +69,10 @@
     "canva": {
       "name": "Canva",
       "description": "Create and edit designs, presentations and visual materials with Canva"
+    },
+    "google_calendar": {
+      "name": "Google Calendar",
+      "description": "Real-time synchronization of aesthetic appointments and practitioner schedules."
     }
   },
   "messages": {

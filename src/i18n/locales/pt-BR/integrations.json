@@ -69,6 +69,10 @@
     "canva": {
       "name": "Canva",
       "description": "Crie e edite designs, apresentações e materiais visuais com o Canva"
+    },
+    "google_calendar": {
+      "name": "Google Calendar",
+      "description": "Sincronização em tempo real de consultas, procedimentos estéticos e agendas dos profissionais."
     }
   },
   "messages": {
