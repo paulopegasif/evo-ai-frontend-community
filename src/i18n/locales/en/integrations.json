@@ -70,6 +70,10 @@
       "name": "Canva",
       "description": "Create and edit designs, presentations and visual materials with Canva"
     },
+    "meta_ads": {
+      "name": "Meta Ads",
+      "description": "Campaigns, spend and lead performance from your Meta ad account."
+    },
     "google_calendar": {
       "name": "Google Calendar",
       "description": "Real-time synchronization of aesthetic appointments and practitioner schedules."
