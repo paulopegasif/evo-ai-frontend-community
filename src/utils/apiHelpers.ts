@@ -49,6 +49,20 @@ export function extractResponse<T>(response: AxiosResponse): {
 }
 
 /**
+ * Human-readable message from an API error, or `fallback` when the response carries none.
+ * Handles `{ error: { message } }` (standard), `{ error: "..." }`, `{ message }` and `{ detail }`.
+ */
+export function getApiErrorMessage(error: unknown, fallback: string): string {
+  const data = (error as {
+    response?: { data?: { error?: string | { message?: string }; message?: string; detail?: string } };
+  })?.response?.data;
+  if (!data) return fallback;
+  if (typeof data.error === 'object' && data.error?.message) return data.error.message;
+  if (typeof data.error === 'string' && data.error) return data.error;
+  return data.message || data.detail || fallback;
+}
+
+/**
  * Extract error information from an Axios error
  * @param error - Axios error object
  * @returns Structured error information
