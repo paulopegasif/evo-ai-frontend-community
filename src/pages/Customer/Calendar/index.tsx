@@ -7,67 +7,58 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  Users,
   Grid3X3,
   List,
   RefreshCw,
 } from 'lucide-react';
-import { Button } from '@evoapi/design-system';
+import {
+  Button,
+  Card,
+  CardContent,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@evoapi/design-system';
+import BaseHeader from '@/components/base/BaseHeader';
+import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
-import { usersService } from '@/services/users';
-import { contactsService } from '@/services/contacts/contactsService';
-import type {
-  Appointment,
-  AppointmentCategory,
-} from '@/types/appointments';
+import { useAppointmentMetadata } from '@/hooks/useAppointmentMetadata';
+import type { Appointment } from '@/types/appointments';
 import { CalendarMonthView } from './components/CalendarMonthView';
 import { CalendarListView } from './components/CalendarListView';
 import { AppointmentModal } from './components/AppointmentModal';
 import { toast } from 'sonner';
 
+const ALL = '__all__';
+
+const STATUS_FILTERS = [
+  { value: 'scheduled', label: 'Agendados' },
+  { value: 'confirmed', label: 'Confirmados' },
+  { value: 'attended', label: 'Compareceram' },
+  { value: 'no_show', label: 'Faltas' },
+  { value: 'cancelled', label: 'Cancelados' },
+];
+
+const controlClassName = 'h-9 bg-sidebar border-sidebar-border text-sidebar-foreground';
+
 export const CalendarPage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'month' | 'list'>('month');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [categories, setCategories] = useState<AppointmentCategory[]>([]);
-  const [users, setUsers] = useState<{ id: string; name: string }[]>([]);
-  const [contacts, setContacts] = useState<{ id: string; name: string; phone_number?: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const { professionals, patients, categories } = useAppointmentMetadata();
 
   // Filters
-  const [selectedUser, setSelectedUser] = useState<string>('__all__');
-  const [selectedCategory, setSelectedCategory] = useState<string>('__all__');
-  const [selectedStatus, setSelectedStatus] = useState<string>('__all__');
+  const [selectedUser, setSelectedUser] = useState<string>(ALL);
+  const [selectedCategory, setSelectedCategory] = useState<string>(ALL);
+  const [selectedStatus, setSelectedStatus] = useState<string>(ALL);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [modalInitialDate, setModalInitialDate] = useState<Date | undefined>(undefined);
-
-  // Load Initial Metadata (Users & Contacts)
-  useEffect(() => {
-    const fetchMetadata = async () => {
-      try {
-        const [usersRes, contactsRes] = await Promise.allSettled([
-          usersService.getUsers ? usersService.getUsers() : Promise.resolve([]),
-          contactsService.getContacts ? contactsService.getContacts() : Promise.resolve([]),
-        ]);
-
-        if (usersRes.status === 'fulfilled' && Array.isArray(usersRes.value)) {
-          setUsers(usersRes.value.map((u: any) => ({ id: u.id, name: u.name || u.display_name || u.email })));
-        }
-
-        if (contactsRes.status === 'fulfilled' && (contactsRes.value as any)?.payload) {
-          const list = (contactsRes.value as any).payload;
-          setContacts(list.map((c: any) => ({ id: c.id, name: c.name || c.email || 'Lead', phone_number: c.phone_number })));
-        }
-      } catch (e) {
-        console.error('Failed to load metadata', e);
-      }
-    };
-
-    fetchMetadata();
-  }, []);
 
   // Fetch Appointments
   const fetchAppointments = useCallback(async () => {
@@ -84,18 +75,15 @@ export const CalendarPage: React.FC = () => {
         until: endRange,
       };
 
-      if (selectedUser !== '__all__') params.user_id = selectedUser;
-      if (selectedCategory !== '__all__') params.category = selectedCategory;
-      if (selectedStatus !== '__all__') params.status = selectedStatus;
+      if (selectedUser !== ALL) params.user_id = selectedUser;
+      if (selectedCategory !== ALL) params.category = selectedCategory;
+      if (selectedStatus !== ALL) params.status = selectedStatus;
 
       const res = await appointmentsService.getAppointments(params);
       setAppointments(res.payload || []);
-      if (res.categories && res.categories.length > 0) {
-        setCategories(res.categories);
-      }
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao carregar agendamentos da clínica.');
+      toast.error('Erro ao carregar os agendamentos.');
     } finally {
       setLoading(false);
     }
@@ -148,249 +136,153 @@ export const CalendarPage: React.FC = () => {
   }, [appointments]);
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-purple-100 dark:bg-purple-950/60 rounded-xl text-purple-700 dark:text-purple-300">
-              <CalendarIcon className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                Agenda & Consultas
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-                  Lumom Beauty
-                </span>
-              </h1>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                Gestão de agendamentos por profissional, procedimento e sincronização com Google Calendar
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
+      <BaseHeader
+        title="Agenda & Consultas"
+        subtitle="Gestão de agendamentos por profissional, procedimento e status"
+        primaryAction={{
+          label: 'Novo agendamento',
+          icon: <Plus className="h-4 w-4" />,
+          onClick: () => handleCreateAppointment(),
+        }}
+        secondaryActions={[
+          {
+            label: 'Atualizar',
+            icon: <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />,
+            onClick: fetchAppointments,
+            disabled: loading,
+          },
+        ]}
+      />
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            type="button"
-            onClick={fetchAppointments}
-            disabled={loading}
-            className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-all"
-            title="Atualizar agenda"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-purple-600' : ''}`} />
-          </button>
-          <Button
-            type="button"
-            onClick={() => handleCreateAppointment()}
-            className="bg-purple-600 hover:bg-purple-700 text-white gap-2 font-medium shadow-xs"
-          >
-            <Plus className="w-4 h-4" />
-            Novo Agendamento
-          </Button>
-        </div>
+      {/* KPI cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <DashboardMetricCard
+          title="Agendamentos no mês"
+          value={stats.total}
+          icon={Clock}
+          accentClassName="bg-primary/15 text-primary"
+        />
+        <DashboardMetricCard
+          title="Próximos / confirmados"
+          value={stats.scheduled}
+          icon={CalendarIcon}
+          accentClassName="bg-sky-500/15 text-sky-500"
+        />
+        <DashboardMetricCard
+          title="Atendidos"
+          value={stats.attended}
+          icon={CheckCircle2}
+          accentClassName="bg-emerald-500/15 text-emerald-500"
+        />
+        <DashboardMetricCard
+          title="Taxa de comparecimento"
+          value={`${stats.showRate}%`}
+          icon={Sparkles}
+          accentClassName="bg-primary/15 text-primary"
+        />
       </div>
 
-      {/* KPI Mini-Cards Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
-          <div>
-            <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Agendamentos no Mês
-            </p>
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
-              {stats.total}
-            </h3>
-          </div>
-          <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-            <Clock className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
-          <div>
-            <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Próximos / Confirmados
-            </p>
-            <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-0.5">
-              {stats.scheduled}
-            </h3>
-          </div>
-          <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-            <CalendarIcon className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
-          <div>
-            <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Atendidos (Show)
-            </p>
-            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
-              {stats.attended}
-            </h3>
-          </div>
-          <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 flex items-center justify-between shadow-2xs">
-          <div>
-            <p className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Show Rate (Presença)
-            </p>
-            <h3 className="text-xl font-bold text-purple-600 dark:text-purple-400 mt-0.5">
-              {stats.showRate}%
-            </h3>
-          </div>
-          <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
-          </div>
-        </div>
-      </div>
-
-      {/* Controls & Filters Bar */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-xs space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Date Navigation */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-              <button
-                type="button"
-                onClick={handlePrevMonth}
-                className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors"
-                title="Mês Anterior"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleToday}
-                className="px-3 py-1.5 text-xs font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-x border-zinc-200 dark:border-zinc-800 transition-colors"
-              >
+      {/* Controls & filters */}
+      <Card>
+        <CardContent className="p-4 space-y-3">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={handlePrevMonth} aria-label="Mês anterior">
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" className="h-9" onClick={handleToday}>
                 Hoje
-              </button>
-              <button
-                type="button"
-                onClick={handleNextMonth}
-                className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors"
-                title="Próximo Mês"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              </Button>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleNextMonth} aria-label="Próximo mês">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <h2 className="text-lg font-semibold ml-2">{formattedMonthYear}</h2>
             </div>
 
-            <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100 ml-2">
-              {formattedMonthYear}
-            </h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Select value={selectedUser} onValueChange={setSelectedUser}>
+                <SelectTrigger className={`${controlClassName} w-[200px]`} aria-label="Filtrar por profissional">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL}>Todos os profissionais</SelectItem>
+                  {professionals.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className={`${controlClassName} w-[170px]`} aria-label="Filtrar por status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL}>Todos os status</SelectItem>
+                  {STATUS_FILTERS.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex items-center gap-1">
+                <Button
+                  variant={viewMode === 'month' ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-9"
+                  onClick={() => setViewMode('month')}
+                >
+                  <Grid3X3 className="h-4 w-4 mr-2" />
+                  Mês
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-9"
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="h-4 w-4 mr-2" />
+                  Lista
+                </Button>
+              </div>
+            </div>
           </div>
 
-          {/* View switcher & Filters */}
-          <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Professional Filter */}
-            <div className="flex items-center gap-1.5">
-              <Users className="w-4 h-4 text-zinc-400 shrink-0" />
-              <select
-                value={selectedUser}
-                onChange={(e) => setSelectedUser(e.target.value)}
-                className="text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 font-medium focus:ring-2 focus:ring-purple-500/20"
-              >
-                <option value="__all__">Todos os Profissionais</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Status Filter */}
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 font-medium focus:ring-2 focus:ring-purple-500/20"
+          {/* Category filter */}
+          <div className="pt-3 border-t border-border flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <span className="text-sm text-muted-foreground shrink-0 mr-1">Categorias</span>
+            <Button
+              variant={selectedCategory === ALL ? 'default' : 'outline'}
+              size="sm"
+              className="shrink-0 rounded-full"
+              onClick={() => setSelectedCategory(ALL)}
             >
-              <option value="__all__">Todos os Status</option>
-              <option value="scheduled">Agendados</option>
-              <option value="confirmed">Confirmados</option>
-              <option value="attended">Compareceram (Show)</option>
-              <option value="no_show">Faltas (No-show)</option>
-              <option value="cancelled">Cancelados</option>
-            </select>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700">
-              <button
-                type="button"
-                onClick={() => setViewMode('month')}
-                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${
-                  viewMode === 'month'
-                    ? 'bg-white dark:bg-zinc-900 text-purple-600 dark:text-purple-300 shadow-2xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                }`}
-              >
-                <Grid3X3 className="w-3.5 h-3.5" />
-                Mês
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('list')}
-                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${
-                  viewMode === 'list'
-                    ? 'bg-white dark:bg-zinc-900 text-purple-600 dark:text-purple-300 shadow-2xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                }`}
-              >
-                <List className="w-3.5 h-3.5" />
-                Lista
-              </button>
-            </div>
+              Todas ({appointments.length})
+            </Button>
+            {categories.map((cat) => {
+              const count = appointments.filter((a) => a.category === cat.name).length;
+              const isSelected = selectedCategory === cat.name;
+              return (
+                <Button
+                  key={cat.name}
+                  variant={isSelected ? 'default' : 'outline'}
+                  size="sm"
+                  className="shrink-0 rounded-full gap-1.5"
+                  onClick={() => setSelectedCategory(isSelected ? ALL : cat.name)}
+                >
+                  <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                  {cat.name}
+                  <span className="text-xs opacity-70">({count})</span>
+                </Button>
+              );
+            })}
           </div>
-        </div>
-
-        {/* Category Chips Bar */}
-        <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <span className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider shrink-0 mr-1">
-            Categorias:
-          </span>
-          <button
-            type="button"
-            onClick={() => setSelectedCategory('__all__')}
-            className={`text-xs px-2.5 py-1 rounded-full border transition-all shrink-0 ${
-              selectedCategory === '__all__'
-                ? 'bg-purple-600 text-white border-purple-600 font-semibold shadow-2xs'
-                : 'bg-zinc-50 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-purple-300'
-            }`}
-          >
-            Todas ({appointments.length})
-          </button>
-          {categories.map((cat) => {
-            const count = appointments.filter((a) => a.category === cat.name).length;
-            const isSelected = selectedCategory === cat.name;
-            return (
-              <button
-                type="button"
-                key={cat.name}
-                onClick={() => setSelectedCategory(isSelected ? '__all__' : cat.name)}
-                className={`text-xs px-2.5 py-1 rounded-full border transition-all flex items-center gap-1.5 shrink-0 ${
-                  isSelected
-                    ? 'border-purple-600 bg-purple-50 dark:bg-purple-950 text-purple-900 dark:text-purple-200 font-semibold shadow-2xs'
-                    : 'bg-zinc-50 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-purple-300'
-                }`}
-              >
-                <span
-                  className="w-2 h-2 rounded-full inline-block"
-                  style={{ backgroundColor: cat.color }}
-                />
-                <span>{cat.name}</span>
-                <span className="opacity-70 text-[10px]">({count})</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Main View Component */}
       {viewMode === 'month' ? (
@@ -415,8 +307,8 @@ export const CalendarPage: React.FC = () => {
         appointment={selectedAppointment}
         initialDate={modalInitialDate}
         categories={categories}
-        users={users}
-        contacts={contacts}
+        users={professionals}
+        contacts={patients}
         onSave={fetchAppointments}
       />
     </div>

@@ -66,13 +66,13 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
         );
       case 'cancelled':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
             Cancelado
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary ">
             Agendado
           </span>
         );
@@ -83,20 +83,20 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Buscar agendamento por paciente, procedimento ou profissional..."
-          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 shadow-2xs"
+          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs"
         />
       </div>
 
       {/* List */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-xs divide-y divide-zinc-200 dark:divide-zinc-800">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs divide-y divide-border">
         {filteredAppointments.length === 0 ? (
-          <div className="p-8 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+          <div className="p-8 text-center text-muted-foreground text-sm">
             Nenhum agendamento encontrado para os filtros selecionados.
           </div>
         ) : (
@@ -115,15 +115,15 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
             return (
               <div
                 key={apt.id}
-                className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 transition-colors"
+                className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-muted/50 transition-colors"
               >
                 {/* Left: Date badge & Title */}
                 <div className="flex items-start sm:items-center gap-3.5">
-                  <div className="text-center px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200/50 dark:border-purple-900/40 shrink-0">
-                    <span className="block text-xs uppercase font-semibold text-purple-700 dark:text-purple-300">
+                  <div className="text-center px-3 py-2 rounded-lg bg-primary/10 border border-primary/30 shrink-0">
+                    <span className="block text-xs font-semibold text-primary">
                       {dateStr}
                     </span>
-                    <span className="block text-base font-bold text-zinc-900 dark:text-zinc-100">
+                    <span className="block text-base font-bold text-foreground">
                       {timeStr}
                     </span>
                   </div>
@@ -132,16 +132,16 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4
                         onClick={() => onSelectAppointment(apt)}
-                        className="text-sm font-bold text-zinc-900 dark:text-zinc-100 hover:text-purple-600 cursor-pointer transition-colors"
+                        className="text-sm font-bold text-foreground hover:text-primary cursor-pointer transition-colors"
                       >
                         {apt.title}
                       </h4>
                       {getStatusBadge(apt.status)}
                     </div>
 
-                    <div className="mt-1 flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
-                      <span className="flex items-center gap-1 font-medium text-purple-700 dark:text-purple-300">
-                        <span className="w-2 h-2 rounded-full bg-purple-600 inline-block" />
+                    <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                      <span className="flex items-center gap-1 font-medium text-primary">
+                        <span className="w-2 h-2 rounded-full bg-primary inline-block" />
                         {apt.category}
                       </span>
 
@@ -165,7 +165,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                       )}
 
                       {apt.price > 0 && (
-                        <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                        <span className="font-semibold text-foreground">
                           R$ {apt.price.toFixed(2)}
                         </span>
                       )}
@@ -203,7 +203,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                       href={apt.google_calendar_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-all"
+                      className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                       title="Abrir no Google Calendar"
                     >
                       <ExternalLink className="w-4 h-4" />
@@ -213,7 +213,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onSelectAppointment(apt)}
-                    className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-all"
+                    className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                     title="Editar Agendamento"
                   >
                     <Edit2 className="w-4 h-4" />
