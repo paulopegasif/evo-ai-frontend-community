@@ -9,6 +9,8 @@ import {
   Layers,
   Sparkles,
   RefreshCw,
+  Megaphone,
+  Target,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -76,6 +78,11 @@ const plural = (count: number, one: string, other: string) => `${count} ${count 
 
 const percentBadgeClass = 'bg-primary/10 text-primary border-primary/30';
 
+const DASH = '—';
+const currencyOrDash = (value: number | null | undefined) => (value == null ? DASH : formatCurrency(value));
+const roasLabel = (value: number | null | undefined) =>
+  value == null ? DASH : `${value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`;
+
 export const LeadTrackingPage: React.FC = () => {
   const [data, setData] = useState<LeadTrackingDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,6 +148,7 @@ export const LeadTrackingPage: React.FC = () => {
     },
     { key: 'leads', label: 'Leads', align: 'center' },
     { key: 'scheduled', label: 'Agendados', align: 'center' },
+    { key: 'attended', label: 'Compareceram', align: 'center' },
     {
       key: 'conversion_rate',
       label: 'Conversão',
@@ -157,6 +165,10 @@ export const LeadTrackingPage: React.FC = () => {
       align: 'right',
       render: (c) => <span className="font-medium">{formatCurrency(c.revenue)}</span>,
     },
+    { key: 'spend', label: 'Gasto', align: 'right', render: (c) => currencyOrDash(c.spend) },
+    { key: 'cpl', label: 'CPL', align: 'right', render: (c) => currencyOrDash(c.cpl) },
+    { key: 'cac', label: 'CAC', align: 'right', render: (c) => currencyOrDash(c.cac) },
+    { key: 'roas', label: 'ROAS', align: 'right', render: (c) => roasLabel(c.roas) },
   ];
 
   const professionalColumns: TableColumn<ProfessionalPerformance>[] = [
@@ -196,7 +208,7 @@ export const LeadTrackingPage: React.FC = () => {
     <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
       <BaseHeader
         title="Tracking de Leads & Funil"
-        subtitle="Campanhas UTM, conversão do funil, comparecimento e desempenho por procedimento"
+        subtitle="Campanhas, conversão do funil, comparecimento e desempenho por procedimento"
       >
         <div className="flex items-center gap-2 flex-wrap">
           <Select value={selectedUser} onValueChange={setSelectedUser}>
@@ -276,6 +288,25 @@ export const LeadTrackingPage: React.FC = () => {
           accentClassName="bg-amber-500/15 text-amber-500"
         />
       </div>
+
+      {kpis?.has_ad_spend && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <DashboardMetricCard
+            title="Investimento em anúncios"
+            value={formatCurrency(kpis.ad_spend)}
+            subtitle="Gasto na Meta Ads no período"
+            icon={Megaphone}
+            accentClassName="bg-sky-500/15 text-sky-500"
+          />
+          <DashboardMetricCard
+            title="CPL médio"
+            value={currencyOrDash(kpis.avg_cpl)}
+            subtitle={plural(kpis.ad_leads, 'lead de anúncio', 'leads de anúncios')}
+            icon={Target}
+            accentClassName="bg-primary/15 text-primary"
+          />
+        </div>
+      )}
 
       {/* Funnel */}
       <Card>
@@ -368,55 +399,70 @@ export const LeadTrackingPage: React.FC = () => {
             <CardDescription>Distribuição por canal de entrada e campanhas</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[210px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={sources} dataKey="leads" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4}>
-                    {sources.map((_entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_PALETTE[index % CHART_PALETTE.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={TOOLTIP_STYLE} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-1.5 border-t border-border pt-3">
-              {sources.slice(0, 4).map((s, idx) => (
-                <div key={s.name} className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-1.5 text-muted-foreground truncate">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: CHART_PALETTE[idx % CHART_PALETTE.length] }}
-                    />
-                    <span className="truncate">{s.name}</span>
-                  </span>
-                  <span className="font-medium ml-2">
-                    {plural(s.leads, 'lead', 'leads')} ({s.conversion_rate}%)
-                  </span>
+            {sources.length === 0 ? (
+              <div className="h-[260px] flex items-center justify-center text-center text-sm text-muted-foreground px-4">
+                Nenhum lead no período.
+              </div>
+            ) : (
+              <>
+                <div className="h-[210px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={sources} dataKey="leads" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4}>
+                        {sources.map((_entry, index) => (
+                          <Cell key={`cell-${index}`} fill={CHART_PALETTE[index % CHART_PALETTE.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={TOOLTIP_STYLE} />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-              ))}
-            </div>
+
+                <div className="space-y-1.5 border-t border-border pt-3">
+                  {sources.slice(0, 4).map((s, idx) => (
+                    <div key={s.name} className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-1.5 text-muted-foreground truncate">
+                        <span
+                          className="h-2.5 w-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: CHART_PALETTE[idx % CHART_PALETTE.length] }}
+                        />
+                        <span className="truncate">{s.name}</span>
+                      </span>
+                      <span className="font-medium ml-2">
+                        {plural(s.leads, 'lead', 'leads')} ({s.conversion_rate}%)
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Campaigns & categories */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="pb-3 flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Desempenho de campanhas (UTM)</CardTitle>
-            <span className="text-sm text-muted-foreground">{plural(campaigns.length, 'campanha', 'campanhas')}</span>
-          </CardHeader>
-          <CardContent>
-            <BaseTable<CampaignPerformance>
-              data={campaigns}
-              columns={campaignColumns}
-              getRowKey={(c) => `${c.source}-${c.name}`}
-              emptyMessage="Nenhuma campanha encontrada no período."
-            />
-          </CardContent>
-        </Card>
+      {/* Campaigns */}
+      <Card>
+        <CardHeader className="pb-3 flex flex-row items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-base">Desempenho de campanhas</CardTitle>
+            <CardDescription>
+              Leads e receita do CRM pela origem do primeiro contato; gasto importado da Meta Ads
+            </CardDescription>
+          </div>
+          <span className="text-sm text-muted-foreground shrink-0">{plural(campaigns.length, 'campanha', 'campanhas')}</span>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <BaseTable<CampaignPerformance>
+            data={campaigns}
+            columns={campaignColumns}
+            getRowKey={(c) => c.campaign_key}
+            emptyMessage="Nenhuma campanha encontrada no período."
+          />
+        </CardContent>
+      </Card>
+
+      {/* Categories */}
+      <div className="grid grid-cols-1 gap-4">
 
         <Card>
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
