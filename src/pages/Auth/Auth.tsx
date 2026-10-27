@@ -32,6 +32,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Globe } from 'lucide-react';
 
 import { ApiError } from '@/types/auth';
+import { getApiErrorMessage } from '@/utils/apiHelpers';
 import { type Locale } from '@/i18n/config';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 
@@ -245,11 +246,7 @@ export const Auth: React.FC = () => {
       }
     } catch (error) {
       console.error('Erro ao fazer login:', error);
-      const apiError = error as ApiError;
-      const errorMessage =
-        apiError?.response?.data?.message ||
-        apiError?.response?.data?.detail ||
-        t('auth.notifications.loginError');
+      const errorMessage = getApiErrorMessage(error, t('auth.notifications.loginError'));
 
       // Toast de erro para credenciais inválidas
       toast.error(t('auth.login.invalidCredentials'), {
@@ -282,11 +279,7 @@ export const Auth: React.FC = () => {
       setActiveTab('login');
     } catch (error) {
       console.error('Erro ao fazer cadastro:', error);
-      const apiError = error as ApiError;
-      const errorMessage =
-        apiError?.response?.data?.message ||
-        apiError?.response?.data?.detail ||
-        t('auth.notifications.registerError');
+      const errorMessage = getApiErrorMessage(error, t('auth.notifications.registerError'));
 
       // Toast de erro para cadastro
       toast.error(t('auth.notifications.registerError'), {
@@ -332,11 +325,7 @@ export const Auth: React.FC = () => {
         apiError?.response?.status === 503 ||
         apiError?.response?.data?.code === 'email_delivery_failed';
 
-      const errorMessage =
-        apiError?.response?.data?.error ||
-        apiError?.response?.data?.message ||
-        apiError?.response?.data?.detail ||
-        t('auth.notifications.forgotPasswordError');
+      const errorMessage = getApiErrorMessage(error, t('auth.notifications.forgotPasswordError'));
 
       toast.error(
         isServiceError

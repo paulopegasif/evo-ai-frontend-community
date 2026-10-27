@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,13 +7,37 @@ import {
   DialogFooter,
   Button,
   Badge,
+  Input,
+  Label,
+  Textarea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Calendar,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from '@evoapi/design-system';
 import {
   Calendar as CalendarIcon,
+  Check,
+  ChevronsUpDown,
   ExternalLink,
   Trash2,
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { pt } from 'date-fns/locale';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
+import { formatCurrency } from '@/pages/Customer/Dashboard/components/dashboardUtils';
+import type { AppointmentProfessional, AppointmentPatient } from '@/hooks/useAppointmentMetadata';
 import type {
   Appointment,
   AppointmentCategory,
@@ -28,10 +52,45 @@ interface AppointmentModalProps {
   appointment: Appointment | null;
   initialDate?: Date;
   categories: AppointmentCategory[];
-  users: { id: string; name: string }[];
-  contacts: { id: string; name: string; phone_number?: string }[];
+  users: AppointmentProfessional[];
+  contacts: AppointmentPatient[];
   onSave: () => void;
 }
+
+const STATUS_OPTIONS: { value: AppointmentStatus; label: string }[] = [
+  { value: 'scheduled', label: 'Agendado' },
+  { value: 'confirmed', label: 'Confirmado' },
+  { value: 'attended', label: 'Compareceu' },
+  { value: 'no_show', label: 'Não compareceu' },
+  { value: 'cancelled', label: 'Cancelado' },
+  { value: 'rescheduled', label: 'Remarcado' },
+];
+
+const STATUS_BADGE: Record<AppointmentStatus, string> = {
+  attended: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
+  no_show: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30',
+  confirmed: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30',
+  scheduled: 'bg-primary/10 text-primary border-primary/30',
+  cancelled: 'bg-muted text-muted-foreground border-border',
+  rescheduled: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30',
+};
+
+const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
+
+// 15-minute slots across the clinic day.
+const TIME_SLOTS = Array.from({ length: (22 - 6) * 4 + 1 }, (_, i) => {
+  const minutes = 6 * 60 + i * 15;
+  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+});
+
+const formatDuration = (minutes: number) => {
+  if (minutes < 60) return `${minutes} min`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m ? `${h}h ${m}min` : `${h}h`;
+};
+
+const controlClassName = 'bg-sidebar border-sidebar-border text-sidebar-foreground';
 
 export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   open,
@@ -48,44 +107,54 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [category, setCategory] = useState('');
   const [userId, setUserId] = useState('');
   const [contactId, setContactId] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState('09:00');
   const [duration, setDuration] = useState(60);
   const [status, setStatus] = useState<AppointmentStatus>('scheduled');
-  const [location, setLocation] = useState('Consultório 1 - Lumom Beauty');
+  const [location, setLocation] = useState('');
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState('');
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [patientPickerOpen, setPatientPickerOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
+    setSubmitted(false);
     if (appointment) {
       setTitle(appointment.title);
       setCategory(appointment.category);
       setUserId(appointment.user_id);
       setContactId(appointment.contact_id || '');
       const startDate = new Date(appointment.start_time);
-      setDate(startDate.toISOString().split('T')[0]);
-      setTime(startDate.toTimeString().slice(0, 5));
+      setDate(startDate);
+      setTime(format(startDate, 'HH:mm'));
       setDuration(appointment.duration_minutes || 60);
       setStatus(appointment.status);
-      setLocation(appointment.location || 'Consultório 1 - Lumom Beauty');
+      setLocation(appointment.location || '');
       setPrice(appointment.price || 0);
       setDescription(appointment.description || '');
     } else {
-      const targetDate = initialDate || new Date();
-      setDate(targetDate.toISOString().split('T')[0]);
+      setDate(initialDate || new Date());
       setTime('10:00');
-      const defaultCat = categories[0] || { name: 'Avaliação Facial', duration: 45, price: 100 };
-      setCategory(defaultCat.name);
-      setDuration(defaultCat.duration);
-      setPrice(defaultCat.price);
-      setUserId(users[0]?.id || '');
-      setContactId(contacts[0]?.id || '');
+      const defaultCat = categories[0];
+      setCategory(defaultCat?.name || '');
+      setDuration(defaultCat?.duration || 60);
+      setPrice(defaultCat?.price || 0);
+      setUserId('');
+      setContactId('');
       setStatus('scheduled');
-      setLocation('Consultório 1 - Lumom Beauty');
+      setLocation('');
       setDescription('');
-      setTitle(`${defaultCat.name}`);
+      setTitle(defaultCat?.name || '');
     }
-  }, [appointment, initialDate, categories, users, contacts, open]);
+  }, [appointment, initialDate, categories, open]);
+
+  const timeSlots = useMemo(
+    () => (TIME_SLOTS.includes(time) ? TIME_SLOTS : [...TIME_SLOTS, time].sort()),
+    [time],
+  );
+
+  const selectedPatient = contacts.find((c) => c.id === contactId);
 
   const handleCategoryChange = (catName: string) => {
     setCategory(catName);
@@ -93,30 +162,27 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     if (cat) {
       setDuration(cat.duration);
       setPrice(cat.price);
-      const contactObj = contacts.find((c) => c.id === contactId);
-      const contactName = contactObj ? ` - ${contactObj.name}` : '';
-      setTitle(`${cat.name}${contactName}`);
+      setTitle(selectedPatient ? `${cat.name} - ${selectedPatient.name}` : cat.name);
     }
   };
 
   const handleContactChange = (newContactId: string) => {
     setContactId(newContactId);
     const contactObj = contacts.find((c) => c.id === newContactId);
-    if (contactObj) {
-      setTitle(`${category || 'Consulta'} - ${contactObj.name}`);
-    }
+    setTitle(contactObj ? `${category || 'Consulta'} - ${contactObj.name}` : category || title);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
     if (!title || !date || !time || !userId || !category) {
-      toast.error('Preencha os campos obrigatórios (Título, Data, Horário, Profissional e Procedimento).');
+      toast.error('Preencha os campos obrigatórios: procedimento, título, profissional, data e horário.');
       return;
     }
 
     try {
       setLoading(true);
-      const startDateTime = new Date(`${date}T${time}:00`);
+      const startDateTime = new Date(`${format(date, 'yyyy-MM-dd')}T${time}:00`);
       const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
 
       const payload: AppointmentCreateParams = {
@@ -135,10 +201,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
       if (appointment) {
         await appointmentsService.updateAppointment(appointment.id, payload);
-        toast.success('Agendamento atualizado com sucesso!');
+        toast.success('Agendamento atualizado.');
       } else {
         await appointmentsService.createAppointment(payload);
-        toast.success('Agendamento criado com sucesso!');
+        toast.success('Agendamento criado.');
       }
 
       onSave();
@@ -173,70 +239,55 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     if (!appointment) return;
     try {
       const res = await appointmentsService.syncGoogleCalendar(appointment.id);
-      toast.success('Agendamento pronto para o Google Calendar!');
+      toast.success('Agendamento pronto para o Google Calendar.');
       if (res.google_calendar_url) {
         window.open(res.google_calendar_url, '_blank', 'noopener,noreferrer');
       }
       onSave();
     } catch {
-      toast.error('Erro ao sincronizar com Google Calendar.');
+      toast.error('Erro ao sincronizar com o Google Calendar.');
     }
   };
 
+  const requiredError = (missing: boolean) =>
+    submitted && missing ? 'border-red-500' : '';
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
-            <DialogTitle className="text-xl font-bold flex items-center gap-2 text-zinc-900 dark:text-zinc-100">
-              <CalendarIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              {appointment ? 'Editar Agendamento' : 'Novo Agendamento Lumom'}
-            </DialogTitle>
+          <div className="flex items-center justify-between gap-3 pr-6">
+            <DialogTitle>{appointment ? 'Editar agendamento' : 'Novo agendamento'}</DialogTitle>
             {appointment?.status && (
-              <Badge
-                className={
-                  appointment.status === 'attended'
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                    : appointment.status === 'no_show'
-                    ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                    : appointment.status === 'confirmed'
-                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
-                    : 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
-                }
-              >
-                {appointment.status.toUpperCase()}
+              <Badge variant="outline" className={STATUS_BADGE[appointment.status]}>
+                {STATUS_OPTIONS.find((s) => s.value === appointment.status)?.label ?? appointment.status}
               </Badge>
             )}
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          {/* Categoria / Procedimento */}
-          <div>
-            <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-              Procedimento / Categoria
-            </label>
+          {/* Procedimento */}
+          <div className="space-y-2">
+            <Label>Procedimento *</Label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {categories.map((cat) => (
                 <button
                   type="button"
                   key={cat.name}
                   onClick={() => handleCategoryChange(cat.name)}
-                  className={`flex flex-col text-left p-2.5 rounded-lg border text-xs transition-all ${
+                  className={`flex flex-col text-left p-2.5 rounded-md border text-sm transition-colors ${
                     category === cat.name
-                      ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 font-semibold shadow-sm'
-                      : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/40 text-zinc-700 dark:text-zinc-300 hover:border-purple-300'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-sidebar-border bg-sidebar hover:bg-sidebar-accent'
                   }`}
                 >
                   <span className="flex items-center gap-1.5 font-medium">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full inline-block shrink-0"
-                      style={{ backgroundColor: cat.color }}
-                    />
+                    <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                     <span className="truncate">{cat.name}</span>
                   </span>
-                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
-                    {cat.duration} min • R$ {cat.price.toFixed(2)}
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {formatDuration(cat.duration)} • {formatCurrency(cat.price)}
                   </span>
                 </button>
               ))}
@@ -244,203 +295,227 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
           </div>
 
           {/* Título */}
-          <div>
-            <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-              Título do Agendamento *
-            </label>
-            <input
-              type="text"
+          <div className="space-y-2">
+            <Label htmlFor="appointment-title">Título do agendamento *</Label>
+            <Input
+              id="appointment-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              required
-              className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-              placeholder="Ex: Harmonização Facial - Dra. Camila / Paciente"
+              className={`${controlClassName} ${requiredError(!title)}`}
+              placeholder="Ex.: Avaliação facial - Nome do paciente"
             />
           </div>
 
-          {/* Contato & Profissional */}
+          {/* Paciente & Profissional */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Paciente / Contato (Lead)
-              </label>
-              <select
-                value={contactId}
-                onChange={(e) => handleContactChange(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-              >
-                <option value="">Selecione um paciente...</option>
-                {contacts.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} {c.phone_number ? `(${c.phone_number})` : ''}
-                  </option>
-                ))}
-              </select>
+            <div className="space-y-2">
+              <Label>Paciente</Label>
+              <Popover open={patientPickerOpen} onOpenChange={setPatientPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={patientPickerOpen}
+                    className={`w-full justify-between font-normal ${controlClassName} hover:bg-sidebar-accent`}
+                  >
+                    <span className={`truncate ${selectedPatient ? '' : 'text-muted-foreground'}`}>
+                      {selectedPatient ? selectedPatient.name : 'Selecione um paciente'}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Buscar paciente..." />
+                    <CommandList>
+                      <CommandEmpty>Nenhum paciente encontrado.</CommandEmpty>
+                      <CommandGroup>
+                        {contactId && (
+                          <CommandItem
+                            value="__none__ sem paciente"
+                            onSelect={() => {
+                              handleContactChange('');
+                              setPatientPickerOpen(false);
+                            }}
+                          >
+                            <span className="text-muted-foreground">Sem paciente</span>
+                          </CommandItem>
+                        )}
+                        {contacts.map((c) => (
+                          <CommandItem
+                            key={c.id}
+                            value={`${c.name} ${c.phone_number ?? ''} ${c.id}`}
+                            onSelect={() => {
+                              handleContactChange(c.id);
+                              setPatientPickerOpen(false);
+                            }}
+                          >
+                            <Check className={`mr-2 h-4 w-4 ${contactId === c.id ? 'opacity-100' : 'opacity-0'}`} />
+                            <span className="truncate">{c.name}</span>
+                            {c.phone_number && (
+                              <span className="ml-auto pl-2 text-xs text-muted-foreground">{c.phone_number}</span>
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Profissional Responsável *
-              </label>
-              <div className="relative">
-                <select
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-                >
+            <div className="space-y-2">
+              <Label>Profissional responsável *</Label>
+              <Select value={userId} onValueChange={setUserId}>
+                <SelectTrigger className={`${controlClassName} ${requiredError(!userId)}`}>
+                  <SelectValue placeholder="Selecione um profissional" />
+                </SelectTrigger>
+                <SelectContent>
                   {users.map((u) => (
-                    <option key={u.id} value={u.id}>
+                    <SelectItem key={u.id} value={u.id}>
                       {u.name}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-              </div>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           {/* Data, Horário e Duração */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Data *
-              </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-              />
+            <div className="space-y-2">
+              <Label>Data *</Label>
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={`w-full justify-start text-left font-normal ${controlClassName} hover:bg-sidebar-accent ${requiredError(!date)}`}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                    {date ? format(date, 'dd/MM/yyyy', { locale: pt }) : 'Selecione'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-sidebar border-sidebar-border" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d: Date | undefined) => {
+                      setDate(d);
+                      setDatePickerOpen(false);
+                    }}
+                    initialFocus
+                    className="bg-sidebar text-sidebar-foreground"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Horário de Início *
-              </label>
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                required
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-              />
+            <div className="space-y-2">
+              <Label>Horário de início *</Label>
+              <Select value={time} onValueChange={setTime}>
+                <SelectTrigger className={controlClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-64">
+                  {timeSlots.map((slot) => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Duração (Minutos)
-              </label>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-              >
-                <option value={15}>15 minutos</option>
-                <option value={30}>30 minutos</option>
-                <option value={45}>45 minutos</option>
-                <option value={60}>1 hora (60 min)</option>
-                <option value={90}>1h 30min (90 min)</option>
-                <option value={120}>2 horas (120 min)</option>
-              </select>
+            <div className="space-y-2">
+              <Label>Duração</Label>
+              <Select value={String(duration)} onValueChange={(v) => setDuration(Number(v))}>
+                <SelectTrigger className={controlClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(DURATION_OPTIONS.includes(duration) ? DURATION_OPTIONS : [...DURATION_OPTIONS, duration].sort((a, b) => a - b)).map((d) => (
+                    <SelectItem key={d} value={String(d)}>
+                      {formatDuration(d)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          {/* Status, Preço e Local */}
+          {/* Status, Valor e Local */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Status do Atendimento
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as AppointmentStatus)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 font-medium"
-              >
-                <option value="scheduled">Agendado</option>
-                <option value="confirmed">Confirmado</option>
-                <option value="attended">Compareceu (Show)</option>
-                <option value="no_show">Não Compareceu (No-show)</option>
-                <option value="cancelled">Cancelado</option>
-                <option value="rescheduled">Remarcado</option>
-              </select>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={status} onValueChange={(v) => setStatus(v as AppointmentStatus)}>
+                <SelectTrigger className={controlClassName}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Valor do Procedimento (R$)
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="appointment-price">Valor (R$)</Label>
+              <Input
+                id="appointment-price"
                 type="number"
                 step="0.01"
                 min="0"
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
+                className={controlClassName}
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                Local / Sala
-              </label>
-              <input
-                type="text"
+            <div className="space-y-2">
+              <Label htmlFor="appointment-location">Local / sala</Label>
+              <Input
+                id="appointment-location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Ex: Consultório 1, Sala Laser"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
+                placeholder="Ex.: Consultório 1"
+                className={controlClassName}
               />
             </div>
           </div>
 
-          {/* Observações Clínicas */}
-          <div>
-            <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-1">
-              Observações Clínicas & Notas
-            </label>
-            <textarea
+          {/* Observações */}
+          <div className="space-y-2">
+            <Label htmlFor="appointment-notes">Observações</Label>
+            <Textarea
+              id="appointment-notes"
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Queixa principal, histórico ou recomendações..."
-              className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
+              className={controlClassName}
             />
           </div>
 
-          {/* Sincronização Google Calendar */}
+          {/* Google Calendar */}
           {appointment && (
-            <div className="p-3 bg-purple-50/60 dark:bg-purple-950/20 rounded-lg border border-purple-200/60 dark:border-purple-900/40 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-xs">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-                    Google Calendar
-                  </p>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                    Sincronize com a agenda do profissional e envie convite ao paciente
-                  </p>
-                </div>
+            <div className="p-3 rounded-md border border-sidebar-border bg-sidebar flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium">Google Calendar</p>
+                <p className="text-xs text-muted-foreground">
+                  Adicione este agendamento à agenda do profissional
+                </p>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleSyncGoogle}
-                className="gap-1.5 text-xs border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-100/50"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
+              <Button type="button" variant="outline" size="sm" onClick={handleSyncGoogle} className="gap-1.5 shrink-0">
+                <ExternalLink className="h-4 w-4" />
                 Adicionar ao Google
               </Button>
             </div>
           )}
 
-          <DialogFooter className="flex items-center justify-between sm:justify-between pt-3 border-t border-zinc-200 dark:border-zinc-800">
+          <DialogFooter className="flex items-center justify-between sm:justify-between pt-3 border-t border-border">
             {appointment ? (
               <Button
                 type="button"
@@ -450,7 +525,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 disabled={loading}
                 className="gap-1.5"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 Excluir
               </Button>
             ) : <div />}
@@ -459,19 +534,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 onClick={() => onOpenChange(false)}
                 disabled={loading}
               >
                 Cancelar
               </Button>
-              <Button
-                type="submit"
-                size="sm"
-                disabled={loading}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-medium shadow-xs"
-              >
-                {loading ? 'Salvando...' : appointment ? 'Atualizar Agendamento' : 'Criar Agendamento'}
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Salvando...' : appointment ? 'Salvar alterações' : 'Criar agendamento'}
               </Button>
             </div>
           </DialogFooter>

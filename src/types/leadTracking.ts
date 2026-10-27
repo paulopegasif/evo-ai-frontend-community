@@ -13,6 +13,14 @@ export interface LeadTrackingKPIs {
   conversion_rate: number;
   total_revenue: number;
   average_ticket: number;
+  /** Meta Ads spend in the period (account currency). */
+  ad_spend: number;
+  /** Leads whose first touch was an ad. */
+  ad_leads: number;
+  /** null when there are no ad leads. */
+  avg_cpl: number | null;
+  /** Whether spend KPIs should be shown (integration connected or spend in the period). */
+  has_ad_spend: boolean;
 }
 
 export interface FunnelStage {
@@ -33,13 +41,22 @@ export interface LeadSourcePerformance {
 }
 
 export interface CampaignPerformance {
+  /** `meta:<id>`, `ad:<ad id>`, `utm:<utm_campaign>` or `none`. */
+  campaign_key: string;
+  meta_campaign_id: string | null;
   name: string;
   source: string;
   leads: number;
   scheduled: number;
+  attended: number;
   won: number;
   revenue: number;
   conversion_rate: number;
+  /** Ratios are null when the denominator is zero or spend is unknown (rendered as "—"). */
+  spend: number | null;
+  cpl: number | null;
+  cac: number | null;
+  roas: number | null;
 }
 
 export interface ProfessionalPerformance {

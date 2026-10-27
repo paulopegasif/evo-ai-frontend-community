@@ -69,16 +69,16 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
   }, {});
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-xs">
+    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs">
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 text-center py-2.5">
+      <div className="grid grid-cols-7 border-b border-border bg-muted/50 text-center py-2.5">
         {weekdays.map((w, idx) => (
           <div
             key={w}
-            className={`text-xs font-semibold uppercase tracking-wider ${
+            className={`text-xs font-semibold ${
               idx === 0 || idx === 6
-                ? 'text-purple-600/70 dark:text-purple-400/70'
-                : 'text-zinc-500 dark:text-zinc-400'
+                ? 'text-primary'
+                : 'text-muted-foreground'
             }`}
           >
             {w}
@@ -87,7 +87,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
       </div>
 
       {/* Grid of days */}
-      <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-zinc-200 dark:divide-zinc-800 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-border border-b border-border">
         {days.map(({ date, isCurrentMonth }, index) => {
           const dateKey = date.toISOString().split('T')[0];
           const dayApts = appointmentsByDate[dateKey] || [];
@@ -99,18 +99,18 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
               onClick={() => onSelectDate(date)}
               className={`min-h-[110px] p-2 transition-colors group relative cursor-pointer flex flex-col justify-between ${
                 isCurrentMonth
-                  ? 'bg-white dark:bg-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/10'
-                  : 'bg-zinc-50/60 dark:bg-zinc-900/40 text-zinc-400 dark:text-zinc-600'
+                  ? 'bg-card hover:bg-primary/10'
+                  : 'bg-muted/30 text-muted-foreground/70'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span
                   className={`text-xs font-semibold flex items-center justify-center w-6 h-6 rounded-full transition-all ${
                     isCurrentDay
-                      ? 'bg-purple-600 text-white shadow-xs'
+                      ? 'bg-primary text-white shadow-xs'
                       : isCurrentMonth
-                      ? 'text-zinc-800 dark:text-zinc-200 group-hover:text-purple-600'
-                      : 'text-zinc-400 dark:text-zinc-600'
+                      ? 'text-foreground group-hover:text-primary'
+                      : 'text-muted-foreground/70'
                   }`}
                 >
                   {date.getDate()}
@@ -122,7 +122,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                     e.stopPropagation();
                     onSelectDate(date);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-zinc-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950 transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
                   title="Agendar neste dia"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -137,7 +137,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                     attended: 'border-l-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200',
                     no_show: 'border-l-rose-500 bg-rose-50/60 dark:bg-rose-950/30 text-rose-900 dark:text-rose-200',
                     confirmed: 'border-l-blue-500 bg-blue-50/60 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200',
-                    scheduled: 'border-l-purple-500 bg-purple-50/60 dark:bg-purple-950/30 text-purple-900 dark:text-purple-200',
+                    scheduled: 'border-l-primary bg-primary/10 text-primary',
                   };
                   const colorClass = statusColors[apt.status] || statusColors.scheduled;
 
@@ -162,7 +162,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                   );
                 })}
                 {dayApts.length > 3 && (
-                  <div className="text-[10px] text-center font-medium text-purple-600 dark:text-purple-400 py-0.5">
+                  <div className="text-[10px] text-center font-medium text-primary py-0.5">
                     +{dayApts.length - 3} mais
                   </div>
                 )}

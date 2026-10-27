@@ -81,6 +81,7 @@ import HubSpotPage from '../pages/Customer/Settings/Integrations/HubSpotPage';
 import ShopifyPage from '../pages/Customer/Settings/Integrations/ShopifyPage';
 import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
 import GoogleCalendarPage from '../pages/Customer/Settings/Integrations/GoogleCalendarPage';
+import MetaAdsPage from '../pages/Customer/Settings/Integrations/MetaAdsPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
 import CalendarPage from '@/pages/Customer/Calendar';
 import LeadTrackingPage from '@/pages/Customer/LeadTracking';
@@ -1061,6 +1062,34 @@ const AppRouter = () => {
                   <MainLayout>
                     <PermissionRoute resource="integrations" action="read">
                       <GoogleCalendarPage />
+                    </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings/integrations/meta_ads"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <PermissionRoute resource="integrations" action="read">
+                      <MetaAdsPage />
+                    </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings/integrations/meta-ads"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <PermissionRoute resource="integrations" action="read">
+                      <MetaAdsPage />
                     </PermissionRoute>
                   </MainLayout>
                 </CustomerRoute>
