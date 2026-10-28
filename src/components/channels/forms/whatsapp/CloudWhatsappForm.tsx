@@ -8,6 +8,7 @@ import { FormSection } from '../../shared/FormSection';
 import HubConnectButton from '@/components/inbox/HubConnectButton';
 import { FormActionBar } from '@/components/channels/shared/FormActionBar';
 import { PhoneInput } from '@/components/shared/PhoneInput';
+import { FormCheckbox } from '../../shared/FormCheckbox';
 
 // FB in window
 declare global {
@@ -34,6 +35,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
   const [fbSDKReady, setFbSDKReady] = useState(false);
   const [sessionInfo, setSessionInfo] = useState<any>(null);
   const [sdkResponse, setSdkResponse] = useState<any>(null);
+  const [useBusinessApp, setUseBusinessApp] = useState(false);
 
   const getStr = (key: string, fallback = ''): string =>
     typeof form[key] === 'string' ? (form[key] as string) : fallback;
@@ -245,9 +247,12 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
       config_id: config.wpWhatsappConfigId,
       response_type: 'code',
       override_default_response_type: true,
+      // Embedded Signup v4: the login configuration (config_id) selects the
+      // version and products, so extras only carries the optional coexistence
+      // flow for numbers already in use on the WhatsApp Business app.
       extras: {
-        version: 'v3',
-        featureType: 'whatsapp_business_app_onboarding',
+        setup: {},
+        ...(useBusinessApp && { featureType: 'whatsapp_business_app_onboarding' }),
       },
     });
   };
@@ -345,6 +350,12 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
                 <span>{t('cloudWhatsappForm.facebookIntegration.connectButton')}</span>
               )}
             </button>
+            <FormCheckbox
+              className="mt-4"
+              label={t('cloudWhatsappForm.facebookIntegration.useBusinessApp')}
+              checked={useBusinessApp}
+              onChange={setUseBusinessApp}
+            />
             <p className="mt-4 text-sm text-sidebar-foreground/70">
               {t('cloudWhatsappForm.facebookIntegration.description')}
             </p>
