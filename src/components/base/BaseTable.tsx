@@ -238,7 +238,11 @@ export default function BaseTable<T extends Record<string, any>>({
                 className={`${column.width} text-sidebar-foreground bg-sidebar-accent/30 font-medium`}
                 align={column.align}
               >
-                <div className="flex items-center">
+                <div
+                  className={`flex items-center ${
+                    column.align === 'right' ? 'justify-end' : column.align === 'center' ? 'justify-center' : ''
+                  }`}
+                >
                   {column.label}
                   {renderSortIcon(column)}
                 </div>
