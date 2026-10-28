@@ -1,51 +1,39 @@
 /*
- * Brand palette overrides — Lumom CRM
+ * Brand palette overrides — INOVE CRM (INOVE Centro Educacional)
  *
  * Primary palette:
- *   - Dark plum:    rgb(42, 21, 47)   / #2a152f
- *   - Lilac:        rgb(151, 121, 182) / #9779b6
- *   - White:        rgb(255, 255, 255) / #ffffff
+ *   - Navy:    #0b2a66 (wordmark, títulos)
+ *   - Blue:    #1565d8 (destaques)
+ *   - Orange:  #f26b1f (símbolo, CTAs)
+ *   - Sky:     #eaf3fc (fundos claros)
  */
 
 :root {
-  --primary: #7d54a2;
+  --primary: #1565d8;
   --primary-foreground: #ffffff;
-  --ring: #967ab4;
+  --ring: #f26b1f;
 
   /* Sidebar */
-  --sidebar: #fbf9fd;
-  --sidebar-foreground: #2a152f;
-  --sidebar-primary: #7d54a2;
+  --sidebar: #f7fafe;
+  --sidebar-foreground: #0b2a66;
+  --sidebar-primary: #1565d8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f3ebf8;
-  --sidebar-accent-foreground: #2a152f;
-  --sidebar-border: #e9deef;
-
-  /* Charts: categorical order, validated for CVD separation and contrast */
-  --chart-1: #7d54a2;
-  --chart-2: #0f9f74;
-  --chart-3: #b5760a;
-  --chart-4: #2f7fd6;
-  --chart-5: #d6457f;
+  --sidebar-accent: #eaf3fc;
+  --sidebar-accent-foreground: #0b2a66;
+  --sidebar-border: #dce8f7;
 }
 
 .dark {
-  --primary: #967ab4;
-  --primary-foreground: #1f0f23;
-  --ring: #967ab4;
+  --primary: #4d8fea;
+  --primary-foreground: #06173a;
+  --ring: #f26b1f;
 
   /* Sidebar */
-  --sidebar: #1f0f23;
-  --sidebar-foreground: #f3ebf8;
-  --sidebar-primary: #967ab4;
-  --sidebar-primary-foreground: #1f0f23;
-  --sidebar-accent: #2e1734;
-  --sidebar-accent-foreground: #f3ebf8;
-  --sidebar-border: #3b1e42;
-
-  --chart-1: #9d74d6;
-  --chart-2: #1fa577;
-  --chart-3: #c0841c;
-  --chart-4: #4a87e0;
-  --chart-5: #e0538c;
+  --sidebar: #06173a;
+  --sidebar-foreground: #eaf3fc;
+  --sidebar-primary: #4d8fea;
+  --sidebar-primary-foreground: #06173a;
+  --sidebar-accent: #0d2550;
+  --sidebar-accent-foreground: #eaf3fc;
+  --sidebar-border: #163165;
 }
