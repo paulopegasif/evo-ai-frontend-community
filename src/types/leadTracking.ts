@@ -1,33 +1,57 @@
+/**
+ * Lead tracking dashboard. Rates are `null` (rendered as "—") when their denominator is zero.
+ *
+ * Two populations that are never mixed:
+ * - lead cohort: contacts created in the period, followed through all of their appointments;
+ * - period agenda: appointments whose date falls in the period.
+ */
 export interface LeadTrackingKPIs {
+  // Lead cohort (people)
   total_leads: number;
   total_qualified: number;
   total_scheduled: number;
   total_attended: number;
-  total_no_show: number;
-  total_confirmed: number;
-  total_cancelled: number;
   total_won: number;
-  qualification_rate: number;
-  scheduling_rate: number;
-  show_rate: number;
-  conversion_rate: number;
+  qualification_rate: number | null;
+  scheduling_rate: number | null;
+  conversion_rate: number | null;
+  /** Revenue from the attended appointments of the cohort. */
+  cohort_revenue: number;
+
+  // Period agenda (appointments)
+  total_appointments: number;
+  total_confirmed: number;
+  /** scheduled + confirmed + rescheduled */
+  total_pending: number;
+  appointments_attended: number;
+  total_no_show: number;
+  total_cancelled: number;
+  /** attended / (attended + no-show) */
+  show_rate: number | null;
   total_revenue: number;
-  average_ticket: number;
-  /** Meta Ads spend in the period (account currency). */
+  paid_appointments: number;
+  average_ticket: number | null;
+
+  // Meta Ads
   ad_spend: number;
-  /** Leads whose first touch was an ad. */
   ad_leads: number;
-  /** null when there are no ad leads. */
+  ad_won: number;
+  ad_revenue: number;
   avg_cpl: number | null;
+  ad_cac: number | null;
+  roas: number | null;
   /** Whether spend KPIs should be shown (integration connected or spend in the period). */
   has_ad_spend: boolean;
 }
 
 export interface FunnelStage {
+  key: 'leads' | 'qualified' | 'scheduled' | 'attended' | 'won';
   stage: string;
   count: number;
-  percentage: number;
-  color: string;
+  /** Share of the period's leads. */
+  percentage: number | null;
+  /** Share of the previous stage; null for the first stage. */
+  step_rate: number | null;
 }
 
 export interface LeadSourcePerformance {
@@ -37,7 +61,8 @@ export interface LeadSourcePerformance {
   attended: number;
   won: number;
   revenue: number;
-  conversion_rate: number;
+  conversion_rate: number | null;
+  share_percentage: number | null;
 }
 
 export interface CampaignPerformance {
@@ -51,8 +76,8 @@ export interface CampaignPerformance {
   attended: number;
   won: number;
   revenue: number;
-  conversion_rate: number;
-  /** Ratios are null when the denominator is zero or spend is unknown (rendered as "—"). */
+  conversion_rate: number | null;
+  /** Ratios are null when the denominator is zero or spend is unknown. */
   spend: number | null;
   cpl: number | null;
   cac: number | null;
@@ -65,16 +90,20 @@ export interface ProfessionalPerformance {
   total: number;
   attended: number;
   no_show: number;
-  show_rate: number;
+  cancelled: number;
+  pending: number;
+  show_rate: number | null;
   revenue: number;
 }
 
 export interface CategoryPerformance {
   name: string;
-  count: number;
-  revenue: number;
   color: string;
-  share_percentage: number;
+  count: number;
+  attended: number;
+  revenue: number;
+  share_percentage: number | null;
+  revenue_share: number | null;
 }
 
 export interface TimelineDataPoint {
@@ -84,6 +113,7 @@ export interface TimelineDataPoint {
   scheduled: number;
   attended: number;
   revenue: number;
+  spend: number;
 }
 
 export interface LeadTrackingDashboardResponse {
@@ -91,6 +121,7 @@ export interface LeadTrackingDashboardResponse {
     since: number;
     until: number;
     days: number;
+    timezone: string;
   };
   kpis: LeadTrackingKPIs;
   funnel: FunnelStage[];
@@ -106,4 +137,5 @@ export interface LeadTrackingParams {
   pipeline_id?: string;
   since?: number;
   until?: number;
+  timezone?: string;
 }

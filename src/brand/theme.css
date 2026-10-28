@@ -20,6 +20,13 @@
   --sidebar-accent: #f3ebf8;
   --sidebar-accent-foreground: #2a152f;
   --sidebar-border: #e9deef;
+
+  /* Charts: categorical order, validated for CVD separation and contrast */
+  --chart-1: #7d54a2;
+  --chart-2: #0f9f74;
+  --chart-3: #b5760a;
+  --chart-4: #2f7fd6;
+  --chart-5: #d6457f;
 }
 
 .dark {
@@ -35,4 +42,10 @@
   --sidebar-accent: #2e1734;
   --sidebar-accent-foreground: #f3ebf8;
   --sidebar-border: #3b1e42;
+
+  --chart-1: #9d74d6;
+  --chart-2: #1fa577;
+  --chart-3: #c0841c;
+  --chart-4: #4a87e0;
+  --chart-5: #e0538c;
 }
