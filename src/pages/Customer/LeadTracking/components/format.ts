@@ -19,3 +19,9 @@ export const compactCurrency = (value: number) =>
   value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 1 });
 
 export { formatCurrency };
+
+export const formatNumber = (value: number | null | undefined) => (value == null ? DASH : value.toLocaleString('pt-BR'));
+
+/** Compact count for chart axes: 1,2 mil. */
+export const compactNumber = (value: number) =>
+  value.toLocaleString('pt-BR', { notation: 'compact', maximumFractionDigits: 1 });

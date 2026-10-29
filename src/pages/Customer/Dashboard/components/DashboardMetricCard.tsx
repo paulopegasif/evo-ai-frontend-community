@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@evoapi/design-system';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
+import { deltaToneClass, formatDelta, type MetricComparison } from './metricComparison';
 
 type CardTone = 'good' | 'warning' | 'critical' | 'neutral';
 
@@ -21,6 +22,7 @@ interface DashboardMetricCardProps {
     title: string;
     content: string;
   };
+  comparison?: MetricComparison;
 }
 
 const toneClasses: Record<CardTone, string> = {
@@ -39,6 +41,7 @@ const DashboardMetricCard = ({
   importance = 'secondary',
   status,
   tooltip,
+  comparison,
 }: DashboardMetricCardProps) => {
   const valueClassName = importance === 'primary' ? 'text-3xl font-semibold' : 'text-2xl font-semibold';
 
@@ -63,6 +66,12 @@ const DashboardMetricCard = ({
       <CardContent>
         <div className={valueClassName}>{value}</div>
         {subtitle && <p className="text-sm text-muted-foreground mt-2">{subtitle}</p>}
+        {comparison && (
+          <p className="text-xs mt-2 flex items-center gap-1.5 flex-wrap">
+            <span className={`font-medium tabular-nums ${deltaToneClass(comparison.delta, comparison.direction)}`}>{formatDelta(comparison.delta)}</span>
+            <span className="text-muted-foreground">vs. {comparison.value}</span>
+          </p>
+        )}
       </CardContent>
     </Card>
   );

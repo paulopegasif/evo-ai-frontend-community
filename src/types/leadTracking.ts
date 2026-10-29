@@ -5,7 +5,7 @@
  * - lead cohort: contacts created in the period, followed through all of their appointments;
  * - period agenda: appointments whose date falls in the period.
  */
-export interface LeadTrackingKPIs {
+export interface LeadTrackingKPIs extends MediaMetrics {
   // Lead cohort (people)
   total_leads: number;
   total_qualified: number;
@@ -44,6 +44,25 @@ export interface LeadTrackingKPIs {
   has_ad_spend: boolean;
 }
 
+/** Delivery and results measured by Meta; ratios are null when the denominator is zero. */
+export interface MediaMetrics {
+  impressions: number;
+  link_clicks: number;
+  /** link clicks / impressions, in % */
+  ctr: number | null;
+  cpc: number | null;
+  cpm: number | null;
+  /** Messaging conversations started (Meta's 7-day attribution). */
+  conversations: number;
+  cost_per_conversation: number | null;
+  /** Lead form results reported by Meta. */
+  meta_leads: number;
+  cost_per_meta_lead: number | null;
+}
+
+/** Media metrics of a campaign row; null for campaigns that are not Meta campaigns. */
+export type NullableMediaMetrics = { [K in keyof MediaMetrics]: MediaMetrics[K] | null };
+
 export interface FunnelStage {
   key: 'leads' | 'qualified' | 'scheduled' | 'attended' | 'won';
   stage: string;
@@ -65,12 +84,14 @@ export interface LeadSourcePerformance {
   share_percentage: number | null;
 }
 
-export interface CampaignPerformance {
+export interface CampaignPerformance extends NullableMediaMetrics {
   /** `meta:<id>`, `ad:<ad id>`, `utm:<utm_campaign>` or `none`. */
   campaign_key: string;
   meta_campaign_id: string | null;
   name: string;
   source: string;
+  /** Meta effective_status (ACTIVE, PAUSED, ARCHIVED...); null outside Meta. */
+  status: string | null;
   leads: number;
   scheduled: number;
   attended: number;
@@ -106,14 +127,30 @@ export interface CategoryPerformance {
   revenue_share: number | null;
 }
 
+export type TimelineGranularity = 'day' | 'week' | 'month';
+
+/** One bucket (day, week or month) of the period. */
 export interface TimelineDataPoint {
+  /** First day of the bucket inside the period (same as start_date). */
   date: string;
+  start_date: string;
+  end_date: string;
   label: string;
   leads: number;
   scheduled: number;
   attended: number;
   revenue: number;
   spend: number;
+  impressions: number;
+  link_clicks: number;
+  conversations: number;
+  meta_leads: number;
+}
+
+export interface CampaignOption {
+  key: string;
+  name: string;
+  source: string;
 }
 
 export interface LeadTrackingDashboardResponse {
@@ -122,6 +159,13 @@ export interface LeadTrackingDashboardResponse {
     until: number;
     days: number;
     timezone: string;
+    granularity: TimelineGranularity;
+    /** Oldest day with complete Meta Ads history, or null. */
+    ads_history_from: string | null;
+  };
+  filter_options: {
+    sources: string[];
+    campaigns: CampaignOption[];
   };
   kpis: LeadTrackingKPIs;
   funnel: FunnelStage[];
@@ -138,4 +182,9 @@ export interface LeadTrackingParams {
   since?: number;
   until?: number;
   timezone?: string;
+  /** First-touch source label (e.g. "Meta Ads"). */
+  source?: string;
+  /** `meta:<id>`, `ad:<ad id>`, `utm:<utm_campaign>` or `none`. */
+  campaign_key?: string;
+  granularity?: TimelineGranularity;
 }

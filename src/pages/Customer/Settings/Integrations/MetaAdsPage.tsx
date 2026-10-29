@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from '@evoapi/design-system/alert-dialog';
 import { AlertTriangle, ArrowRight, BarChart3, Clock, KeyRound, PlugZap, RefreshCw } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
 import IntegrationBackButton from '@/components/integrations/shared/IntegrationBackButton';
@@ -58,6 +58,15 @@ const STATUS_BADGES: Record<MetaAdsConnectionStatus, { label: string; className:
 
 const formatDateTime = (value?: string | null) =>
   value ? format(new Date(value), "dd/MM/yyyy 'às' HH:mm", { locale: pt }) : null;
+
+// History dates are calendar days (yyyy-MM-dd); parseISO keeps them in local time.
+const historyLabel = (integration: MetaAdsIntegration | null) => {
+  if (!integration?.history_synced_from) return 'Importação do histórico ainda não iniciada';
+  const since = format(parseISO(integration.history_synced_from), 'dd/MM/yyyy');
+  return integration.history_complete
+    ? `Histórico completo desde ${since}`
+    : `Preenchendo histórico (até 24 meses): completo desde ${since}`;
+};
 
 export default function MetaAdsPage() {
   const navigate = useNavigate();
@@ -346,6 +355,12 @@ export default function MetaAdsPage() {
                 <CountTile label="Conjuntos" value={integration?.counts?.adsets ?? 0} />
                 <CountTile label="Anúncios" value={integration?.counts?.ads ?? 0} />
               </div>
+              {configured && (
+                <p className="mt-3 text-xs text-muted-foreground flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  {historyLabel(integration)}
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>

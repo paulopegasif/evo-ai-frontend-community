@@ -11,7 +11,11 @@ export const SERIES = {
   spend: { label: 'Investimento', color: 'var(--chart-3)' },
   scheduled: { label: 'Consultas', color: 'var(--chart-4)' },
   revenue: { label: 'Receita', color: 'var(--chart-5)' },
+  conversations: { label: 'Conversas', color: 'var(--chart-2)' },
 } satisfies ChartConfig;
+
+/** Compared-period series reuse the entity color, drawn dashed or faded. */
+export const COMPARED_OPACITY = 0.45;
 
 /** Ordered categorical colors for nominal groups (sources); a 6th+ group folds into "Outras". */
 export const CATEGORICAL = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
