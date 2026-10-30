@@ -18,46 +18,66 @@ const META_NOTE =
   'Medido pela Meta (atribuição de 7 dias após o clique no anúncio). Não é o mesmo número de leads registrados no CRM.';
 
 /** Delivery and results reported by Meta, then what those ads produced in the CRM. */
-const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => (
-  <div className="space-y-4">
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      <DashboardMetricCard
-        title="Investimento"
-        value={formatCurrency(kpis.ad_spend)}
-        subtitle="Gasto na Meta Ads no período"
-        icon={Megaphone}
-        accentClassName={ACCENT}
-        importance="primary"
-        comparison={compare('ad_spend', currency, 'neutral')}
-      />
-      <DashboardMetricCard
-        title="Conversas iniciadas na Meta"
-        value={formatNumber(kpis.conversations)}
-        subtitle={`${currencyOrDash(kpis.cost_per_conversation)} por conversa`}
-        icon={MessageCircle}
-        accentClassName={ACCENT}
-        importance="primary"
-        tooltip={{ title: 'Conversas iniciadas', content: META_NOTE }}
-        comparison={compare('conversations', count)}
-      />
-      <DashboardMetricCard
-        title="Custo por conversa"
-        value={currencyOrDash(kpis.cost_per_conversation)}
-        subtitle="Investimento ÷ conversas iniciadas"
-        icon={Target}
-        accentClassName={ACCENT}
-        comparison={compare('cost_per_conversation', currency, 'lower_is_better')}
-      />
-      <DashboardMetricCard
-        title="Leads na Meta"
-        value={formatNumber(kpis.meta_leads)}
-        subtitle={`${currencyOrDash(kpis.cost_per_meta_lead)} por lead (formulários)`}
-        icon={UserPlus}
-        accentClassName={ACCENT}
-        tooltip={{ title: 'Leads na Meta', content: `Leads de formulário instantâneo. ${META_NOTE}` }}
-        comparison={compare('meta_leads', count)}
-      />
-    </div>
+const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => {
+  const isClickToWhatsApp = kpis.conversations > 0 && kpis.meta_leads === 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <DashboardMetricCard
+          title="Investimento"
+          value={formatCurrency(kpis.ad_spend)}
+          subtitle="Gasto na Meta Ads no período"
+          icon={Megaphone}
+          accentClassName={ACCENT}
+          importance="primary"
+          comparison={compare('ad_spend', currency, 'neutral')}
+        />
+        <DashboardMetricCard
+          title="Conversas iniciadas na Meta"
+          value={formatNumber(kpis.conversations)}
+          subtitle={`${currencyOrDash(kpis.cost_per_conversation)} por conversa`}
+          icon={MessageCircle}
+          accentClassName={ACCENT}
+          importance="primary"
+          tooltip={{ title: 'Conversas iniciadas', content: META_NOTE }}
+          comparison={compare('conversations', count)}
+        />
+        <DashboardMetricCard
+          title="Custo por conversa"
+          value={currencyOrDash(kpis.cost_per_conversation)}
+          subtitle="Investimento ÷ conversas iniciadas"
+          icon={Target}
+          accentClassName={ACCENT}
+          comparison={compare('cost_per_conversation', currency, 'lower_is_better')}
+        />
+        {isClickToWhatsApp ? (
+          <DashboardMetricCard
+            title="Taxa Conversa → Lead CRM"
+            value={percentOrDash(kpis.lead_capture_rate)}
+            subtitle={`${formatNumber(kpis.ad_leads)} leads de anúncio no CRM`}
+            icon={Percent}
+            accentClassName={ACCENT}
+            importance="primary"
+            tooltip={{
+              title: 'Taxa de Captação no CRM',
+              content:
+                'Percentual de conversas do WhatsApp que geraram cadastro de lead no CRM (leads de anúncio ÷ conversas × 100). Em campanhas Click-to-WhatsApp, os leads chegam diretamente pelo chat em vez de formulários nativos da Meta.',
+            }}
+            comparison={compare('lead_capture_rate', percent)}
+          />
+        ) : (
+          <DashboardMetricCard
+            title="Leads na Meta"
+            value={formatNumber(kpis.meta_leads)}
+            subtitle={`${currencyOrDash(kpis.cost_per_meta_lead)} por lead (formulários)`}
+            icon={UserPlus}
+            accentClassName={ACCENT}
+            tooltip={{ title: 'Leads na Meta', content: `Leads de formulário instantâneo. ${META_NOTE}` }}
+            comparison={compare('meta_leads', count)}
+          />
+        )}
+      </div>
 
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <DashboardMetricCard
@@ -136,6 +156,7 @@ const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => (
       />
     </div>
   </div>
-);
+  );
+};
 
 export default PaidMediaSection;

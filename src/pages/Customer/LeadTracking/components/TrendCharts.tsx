@@ -138,7 +138,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
                 <BarChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }} barGap={2}>
                   <CartesianGrid vertical={false} strokeOpacity={0.4} />
                   <XAxis dataKey="label" {...AXIS_PROPS} minTickGap={16} />
-                  <YAxis {...AXIS_PROPS} width={64} tickFormatter={compactCurrency} />
+                  <YAxis {...AXIS_PROPS} width={80} tickFormatter={compactCurrency} />
                   <ChartTooltip
                     cursor={{ fillOpacity: 0.1 }}
                     content={

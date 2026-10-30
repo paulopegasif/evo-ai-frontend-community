@@ -167,7 +167,7 @@ const YearOverYearCard = ({ filters, adsHistoryFrom }: YearOverYearCardProps) =>
               <BarChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }} barGap={2}>
                 <CartesianGrid vertical={false} strokeOpacity={0.4} />
                 <XAxis dataKey="label" {...AXIS_PROPS} />
-                <YAxis {...AXIS_PROPS} width={64} tickFormatter={selected.money ? compactCurrency : compactNumber} />
+                <YAxis {...AXIS_PROPS} width={80} tickFormatter={selected.money ? compactCurrency : compactNumber} />
                 <ChartTooltip
                   cursor={{ fillOpacity: 0.1 }}
                   content={

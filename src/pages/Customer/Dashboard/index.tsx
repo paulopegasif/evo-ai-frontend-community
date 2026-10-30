@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Badge, Card, CardContent } from '@evoapi/design-system';
 import { BaseHeader } from '@/components/base';
@@ -95,7 +96,29 @@ const CustomerDashboardPage = () => {
   const [draftFilters, setDraftFilters] = useState<DashboardFilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<DashboardFilterState>(defaultFilters);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'operational' | 'leads'>('operational');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<'operational' | 'leads'>(tabFromUrl === 'leads' ? 'leads' : 'operational');
+
+  useEffect(() => {
+    if (tabFromUrl === 'leads' || tabFromUrl === 'operational') {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
+  const handleTabChange = (tab: 'operational' | 'leads') => {
+    setActiveTab(tab);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (tab === 'leads') {
+        next.set('tab', 'leads');
+      } else {
+        next.delete('tab');
+      }
+      return next;
+    }, { replace: true });
+  };
+
   const [pipelines, setPipelines] = useState<DashboardOption[]>([]);
   const [teams, setTeams] = useState<DashboardOption[]>([]);
   const [inboxes, setInboxes] = useState<DashboardOption[]>([]);
@@ -289,7 +312,7 @@ const CustomerDashboardPage = () => {
         <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
           <button
             type="button"
-            onClick={() => setActiveTab('operational')}
+            onClick={() => handleTabChange('operational')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'operational'
                 ? 'bg-purple-600 text-white shadow-2xs'
@@ -301,7 +324,7 @@ const CustomerDashboardPage = () => {
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('leads')}
+            onClick={() => handleTabChange('leads')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'leads'
                 ? 'bg-purple-600 text-white shadow-2xs'
