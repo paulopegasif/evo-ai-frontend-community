@@ -40,6 +40,8 @@ export interface LeadTrackingKPIs extends MediaMetrics {
   avg_cpl: number | null;
   ad_cac: number | null;
   roas: number | null;
+  /** (ad_leads / conversations) * 100 in % */
+  lead_capture_rate: number | null;
   /** Whether spend KPIs should be shown (integration connected or spend in the period). */
   has_ad_spend: boolean;
 }
@@ -81,6 +83,8 @@ export interface LeadSourcePerformance {
   won: number;
   revenue: number;
   conversion_rate: number | null;
+  /** (leads / conversations) * 100 in % */
+  lead_capture_rate?: number | null;
   share_percentage: number | null;
 }
 
@@ -98,6 +102,8 @@ export interface CampaignPerformance extends NullableMediaMetrics {
   won: number;
   revenue: number;
   conversion_rate: number | null;
+  /** (leads / conversations) * 100 in % */
+  lead_capture_rate?: number | null;
   /** Ratios are null when the denominator is zero or spend is unknown. */
   spend: number | null;
   cpl: number | null;
