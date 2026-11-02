@@ -1,28 +1,28 @@
 /*
- * Brand palette overrides — Lumom CRM
+ * Brand palette overrides — Elph CRM (ELPH CORP)
  *
- * Primary palette:
- *   - Dark plum:    rgb(42, 21, 47)   / #2a152f
- *   - Lilac:        rgb(151, 121, 182) / #9779b6
- *   - White:        rgb(255, 255, 255) / #ffffff
+ * Identidade monocromática:
+ *   - Ink:    #0a0a0a (primária no tema claro, logo em fundo claro)
+ *   - Paper:  #ededed (logo original, primária no tema escuro)
+ *   - White:  #ffffff
  */
 
 :root {
-  --primary: #7d54a2;
+  --primary: #0a0a0a;
   --primary-foreground: #ffffff;
-  --ring: #967ab4;
+  --ring: #525252;
 
   /* Sidebar */
-  --sidebar: #fbf9fd;
-  --sidebar-foreground: #2a152f;
-  --sidebar-primary: #7d54a2;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #0a0a0a;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f3ebf8;
-  --sidebar-accent-foreground: #2a152f;
-  --sidebar-border: #e9deef;
+  --sidebar-accent: #f0f0f0;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #e5e5e5;
 
   /* Charts: categorical order, validated for CVD separation and contrast */
-  --chart-1: #7d54a2;
+  --chart-1: #262626;
   --chart-2: #0f9f74;
   --chart-3: #b5760a;
   --chart-4: #2f7fd6;
@@ -30,20 +30,20 @@
 }
 
 .dark {
-  --primary: #967ab4;
-  --primary-foreground: #1f0f23;
-  --ring: #967ab4;
+  --primary: #ededed;
+  --primary-foreground: #0a0a0a;
+  --ring: #a3a3a3;
 
   /* Sidebar */
-  --sidebar: #1f0f23;
-  --sidebar-foreground: #f3ebf8;
-  --sidebar-primary: #967ab4;
-  --sidebar-primary-foreground: #1f0f23;
-  --sidebar-accent: #2e1734;
-  --sidebar-accent-foreground: #f3ebf8;
-  --sidebar-border: #3b1e42;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #ededed;
+  --sidebar-primary: #ededed;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1c1c1c;
+  --sidebar-accent-foreground: #ededed;
+  --sidebar-border: #262626;
 
-  --chart-1: #9d74d6;
+  --chart-1: #d4d4d4;
   --chart-2: #1fa577;
   --chart-3: #c0841c;
   --chart-4: #4a87e0;
