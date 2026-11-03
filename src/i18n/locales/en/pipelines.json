@@ -125,37 +125,57 @@
       "sales": {
         "newLead": {
           "name": "New Lead",
-          "description": "New interested contacts"
+          "description": "Leads captured via paid traffic, B2B outbound or landing page"
         },
         "qualification": {
-          "name": "Qualification",
-          "description": "Interest and fit verification"
+          "name": "Qualification & Fit",
+          "description": "Verification of profession (Expert, Assistant, Lawyer) and volume"
+        },
+        "demo": {
+          "name": "Demo / Trial",
+          "description": "Platform trial, demo video or guided tour"
         },
         "proposal": {
-          "name": "Proposal",
-          "description": "Proposal sent and negotiation"
+          "name": "Proposal & Negotiation",
+          "description": "Plan options (Monthly/Annual), handling objections and checkout"
         },
-        "closing": {
-          "name": "Closing",
-          "description": "Conclusion and onboarding"
+        "won": {
+          "name": "Closed Won (Subscriber)",
+          "description": "Subscription confirmed and access unlocked"
+        },
+        "lost": {
+          "name": "Lost / Unqualified",
+          "description": "Unqualified lead or discarded with reason"
+        },
+        "nurturing": {
+          "name": "Nurturing (Resend)",
+          "description": "Email sequence for future conversion"
         }
       },
       "support": {
         "new": {
-          "name": "New",
-          "description": "New tickets"
+          "name": "New Ticket",
+          "description": "Fresh tickets from WhatsApp, Gmail or in-app Chat"
+        },
+        "triage": {
+          "name": "Triage & Diagnosis",
+          "description": "Categorization: Reports/Methodology, Technical, or Billing"
         },
         "inProgress": {
           "name": "In Progress",
-          "description": "Being attended"
+          "description": "Team or AI agent actively assisting the customer"
         },
         "waiting": {
-          "name": "Waiting",
-          "description": "Waiting for customer response"
+          "name": "Waiting on Customer",
+          "description": "Response sent, waiting for customer verification"
         },
         "resolved": {
           "name": "Resolved",
-          "description": "Ticket resolved"
+          "description": "Issue resolved and confirmed"
+        },
+        "churnRisk": {
+          "name": "Churn Risk / Retention",
+          "description": "Unhappy customer or cancellation request with retention action"
         }
       },
       "marketing": {

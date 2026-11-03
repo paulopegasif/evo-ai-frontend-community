@@ -54,16 +54,34 @@ const getStageTemplates = (t: (key: string) => string): Record<
       position: 2,
     },
     {
-      name: t('createPipeline.templates.sales.proposal.name'),
+      name: t('createPipeline.templates.sales.demo.name'),
       color: '#8B5CF6',
-      description: t('createPipeline.templates.sales.proposal.description'),
+      description: t('createPipeline.templates.sales.demo.description'),
       position: 3,
     },
     {
-      name: t('createPipeline.templates.sales.closing.name'),
+      name: t('createPipeline.templates.sales.proposal.name'),
+      color: '#EC4899',
+      description: t('createPipeline.templates.sales.proposal.description'),
+      position: 4,
+    },
+    {
+      name: t('createPipeline.templates.sales.won.name'),
       color: '#10B981',
-      description: t('createPipeline.templates.sales.closing.description'),
-      position: 4
+      description: t('createPipeline.templates.sales.won.description'),
+      position: 5,
+    },
+    {
+      name: t('createPipeline.templates.sales.lost.name'),
+      color: '#EF4444',
+      description: t('createPipeline.templates.sales.lost.description'),
+      position: 6,
+    },
+    {
+      name: t('createPipeline.templates.sales.nurturing.name'),
+      color: '#64748B',
+      description: t('createPipeline.templates.sales.nurturing.description'),
+      position: 7,
     },
   ],
   support: [
@@ -71,25 +89,37 @@ const getStageTemplates = (t: (key: string) => string): Record<
       name: t('createPipeline.templates.support.new.name'),
       color: '#3B82F6',
       description: t('createPipeline.templates.support.new.description'),
-      position: 1
+      position: 1,
+    },
+    {
+      name: t('createPipeline.templates.support.triage.name'),
+      color: '#F59E0B',
+      description: t('createPipeline.templates.support.triage.description'),
+      position: 2,
     },
     {
       name: t('createPipeline.templates.support.inProgress.name'),
-      color: '#F59E0B',
+      color: '#8B5CF6',
       description: t('createPipeline.templates.support.inProgress.description'),
-      position: 2
+      position: 3,
     },
     {
       name: t('createPipeline.templates.support.waiting.name'),
-      color: '#8B5CF6',
+      color: '#6366F1',
       description: t('createPipeline.templates.support.waiting.description'),
-      position: 3,
+      position: 4,
     },
     {
       name: t('createPipeline.templates.support.resolved.name'),
       color: '#10B981',
       description: t('createPipeline.templates.support.resolved.description'),
-      position: 4
+      position: 5,
+    },
+    {
+      name: t('createPipeline.templates.support.churnRisk.name'),
+      color: '#EF4444',
+      description: t('createPipeline.templates.support.churnRisk.description'),
+      position: 6,
     },
   ],
   marketing: [

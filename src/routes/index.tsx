@@ -83,7 +83,6 @@ import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
 import GoogleCalendarPage from '../pages/Customer/Settings/Integrations/GoogleCalendarPage';
 import MetaAdsPage from '../pages/Customer/Settings/Integrations/MetaAdsPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
-import CalendarPage from '@/pages/Customer/Calendar';
 import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
 // Páginas admin
@@ -1445,9 +1444,7 @@ const AppRouter = () => {
             element={
               <PrivateRoute>
                 <CustomerRoute>
-                  <MainLayout>
-                    <CalendarPage />
-                  </MainLayout>
+                  <Navigate to="/dashboard/leads" replace />
                 </CustomerRoute>
               </PrivateRoute>
             }

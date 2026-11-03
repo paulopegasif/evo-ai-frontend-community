@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Users,
-  CalendarCheck,
   CheckCircle2,
   DollarSign,
   RefreshCw,
   Sparkles,
   Receipt,
   TrendingUp,
-  CalendarDays,
   Info,
 } from 'lucide-react';
 import { Button } from '@evoapi/design-system';
@@ -22,7 +20,6 @@ import FunnelCard from './components/FunnelCard';
 import TrendCharts from './components/TrendCharts';
 import SourcesCard from './components/SourcesCard';
 import CampaignsSection from './components/CampaignsSection';
-import AgendaSection from './components/AgendaSection';
 import PeriodControls from './components/PeriodControls';
 import FiltersBar from './components/FiltersBar';
 import PaidMediaSection from './components/PaidMediaSection';
@@ -168,37 +165,37 @@ export const LeadTrackingPage: React.FC = () => {
           icon={Users}
           accentClassName="bg-primary/15 text-primary"
           importance="primary"
-          tooltip={{ title: 'Novos leads', content: 'Contatos criados no período. Qualificados têm consulta ou item no pipeline.' }}
+          tooltip={{ title: 'Novos leads', content: 'Contatos criados no período a partir de tráfego pago, outbound B2B e campanhas.' }}
           comparison={compare('total_leads', count)}
         />
         <DashboardMetricCard
-          title="Taxa de agendamento"
-          value={percentOrDash(kpis?.scheduling_rate)}
-          subtitle={plural(kpis?.total_scheduled ?? 0, 'lead agendou', 'leads agendaram')}
-          icon={CalendarCheck}
+          title="Leads qualificados"
+          value={kpis?.total_qualified ?? 0}
+          subtitle={`${percentOrDash(kpis?.qualification_rate)} qualificados`}
+          icon={CheckCircle2}
           accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Taxa de agendamento', content: 'Leads do período com ao menos uma consulta não cancelada ÷ novos leads.' }}
-          comparison={compare('scheduling_rate', percent)}
+          tooltip={{ title: 'Leads qualificados', content: 'Leads do período com oportunidade ativa ou que avançaram no pipeline.' }}
+          comparison={compare('total_qualified', count)}
         />
         <DashboardMetricCard
           title="Taxa de conversão"
           value={percentOrDash(kpis?.conversion_rate)}
-          subtitle={plural(kpis?.total_won ?? 0, 'venda', 'vendas')}
+          subtitle={plural(kpis?.total_won ?? 0, 'assinante', 'assinantes')}
           icon={Sparkles}
           accentClassName="bg-primary/15 text-primary"
           tooltip={{
             title: 'Taxa de conversão',
-            content: 'Leads do período que compareceram e pagaram (ou foram fechados no pipeline) ÷ novos leads.',
+            content: 'Leads do período convertidos em clientes assinantes no pipeline ÷ novos leads.',
           }}
           comparison={compare('conversion_rate', percent)}
         />
         <DashboardMetricCard
           title="Receita dos novos leads"
           value={formatCurrency(kpis?.cohort_revenue ?? 0)}
-          subtitle={plural(kpis?.total_attended ?? 0, 'lead compareceu', 'leads compareceram')}
+          subtitle={plural(kpis?.total_won ?? 0, 'venda fechada', 'vendas fechadas')}
           icon={TrendingUp}
           accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Receita dos novos leads', content: 'Soma das consultas realizadas pelos leads que entraram no período.' }}
+          tooltip={{ title: 'Receita dos novos leads', content: 'Receita total gerada pelos novos clientes que entraram no período.' }}
           comparison={compare('cohort_revenue', currency)}
         />
       </div>
@@ -222,49 +219,6 @@ export const LeadTrackingPage: React.FC = () => {
       <CampaignsSection campaigns={data?.campaigns ?? []} />
 
       <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
-
-      <SectionTitle title="Agenda" description="Consultas com data dentro do período, de qualquer lead" />
-      {segmented && <Notice>Os filtros de origem e campanha não se aplicam à agenda, que mostra as consultas de todos os leads.</Notice>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardMetricCard
-          title="Consultas no período"
-          value={kpis?.total_appointments ?? 0}
-          subtitle={`${plural(kpis?.total_confirmed ?? 0, 'confirmada', 'confirmadas')} • ${plural(kpis?.total_cancelled ?? 0, 'cancelada', 'canceladas')}`}
-          icon={CalendarDays}
-          accentClassName="bg-primary/15 text-primary"
-          comparison={compare('total_appointments', count)}
-        />
-        <DashboardMetricCard
-          title="Comparecimento"
-          value={percentOrDash(kpis?.show_rate)}
-          subtitle={`${plural(kpis?.appointments_attended ?? 0, 'realizada', 'realizadas')} • ${plural(kpis?.total_no_show ?? 0, 'falta', 'faltas')}`}
-          icon={CheckCircle2}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{
-            title: 'Comparecimento',
-            content: 'Realizadas ÷ (realizadas + faltas). Consultas futuras ou pendentes não entram na taxa.',
-          }}
-          comparison={compare('show_rate', percent)}
-        />
-        <DashboardMetricCard
-          title="Faturamento"
-          value={formatCurrency(kpis?.total_revenue ?? 0)}
-          subtitle={plural(kpis?.paid_appointments ?? 0, 'consulta paga', 'consultas pagas')}
-          icon={DollarSign}
-          accentClassName="bg-primary/15 text-primary"
-          comparison={compare('total_revenue', currency)}
-        />
-        <DashboardMetricCard
-          title="Ticket médio"
-          value={currencyOrDash(kpis?.average_ticket)}
-          subtitle="Faturamento ÷ consultas pagas"
-          icon={Receipt}
-          accentClassName="bg-primary/15 text-primary"
-          comparison={compare('average_ticket', currency)}
-        />
-      </div>
-
-      <AgendaSection categories={data?.categories ?? []} professionals={data?.professionals ?? []} />
     </div>
   );
 };

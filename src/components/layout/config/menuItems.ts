@@ -28,7 +28,6 @@ import {
   Route,
   ShieldCheck,
   FileText,
-  Calendar,
   TrendingUp,
 } from 'lucide-react';
 
@@ -81,11 +80,6 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
         icon: TrendingUp,
       },
     ],
-  },
-  {
-    name: 'Agenda & Consultas',
-    href: '/calendar',
-    icon: Calendar,
   },
   {
     name: t('menu.customer.conversations'),

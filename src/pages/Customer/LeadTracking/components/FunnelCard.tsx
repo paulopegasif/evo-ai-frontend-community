@@ -19,10 +19,10 @@ const FunnelCard = ({ funnel }: FunnelCardProps) => {
           Funil de aquisição e conversão
           <TooltipInfo
             title="Como o funil é calculado"
-            content="Acompanha as pessoas que viraram lead no período, em todas as consultas delas (inclusive futuras). Cada etapa é um subconjunto da anterior: agendaram = têm consulta não cancelada; compareceram = têm consulta realizada; converteram = compareceram e pagaram ou foram fechadas no pipeline."
+            content="Acompanha os contatos que viraram lead no período ao longo da jornada comercial. Cada etapa é um subconjunto: qualificados = avançaram no pipeline com oportunidade ativa; convertidos = tornaram-se assinantes ou foram fechados com sucesso no pipeline."
           />
         </CardTitle>
-        <CardDescription>Pessoas que entraram no período, da captura à venda</CardDescription>
+        <CardDescription>Contatos que entraram no período, da captura à conversão</CardDescription>
       </CardHeader>
       <CardContent>
         {leads === 0 ? (

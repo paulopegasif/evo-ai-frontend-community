@@ -125,37 +125,57 @@
       "sales": {
         "newLead": {
           "name": "Novo Lead",
-          "description": "Novos contatos interessados"
+          "description": "Leads capturados via tráfego pago, outbound B2B ou landing page"
         },
         "qualification": {
-          "name": "Qualificação",
-          "description": "Verificação de interesse e fit"
+          "name": "Qualificação & Perfil",
+          "description": "Verificação de atuação (Perito, Assistente Técnico ou Advogado) e volume"
+        },
+        "demo": {
+          "name": "Demonstração / Trial",
+          "description": "Degustação do PeriJus, envio de tour ou teste prático"
         },
         "proposal": {
-          "name": "Proposta",
-          "description": "Proposta enviada e negociação"
+          "name": "Proposta & Negociação",
+          "description": "Apresentação de planos (Mensal/Anual), negociação e checkout"
         },
-        "closing": {
-          "name": "Fechamento",
-          "description": "Conclusão e onboarding"
+        "won": {
+          "name": "Fechado Ganho (Assinante)",
+          "description": "Assinatura confirmada e acesso liberado à plataforma"
+        },
+        "lost": {
+          "name": "Perdido / Sem Perfil",
+          "description": "Lead sem fit ou descarte com motivo registrado"
+        },
+        "nurturing": {
+          "name": "Nutrição (Resend)",
+          "description": "Sequência de e-mails para conversão futura"
         }
       },
       "support": {
         "new": {
-          "name": "Novo",
-          "description": "Tickets recém criados"
+          "name": "Novo Chamado",
+          "description": "Tickets recém-chegados por WhatsApp, Gmail ou Chat"
+        },
+        "triage": {
+          "name": "Triagem & Diagnóstico",
+          "description": "Classificação: Laudos/Grafotécnica, Suporte Técnico ou Faturamento"
         },
         "inProgress": {
-          "name": "Em Progresso",
-          "description": "Sendo atendido"
+          "name": "Em Atendimento",
+          "description": "Equipe ou IA atuando diretamente na resolução da dúvida"
         },
         "waiting": {
-          "name": "Aguardando",
-          "description": "Aguardando resposta do cliente"
+          "name": "Aguardando Cliente",
+          "description": "Orientação enviada, aguardando validação do perito"
         },
         "resolved": {
           "name": "Resolvido",
-          "description": "Ticket resolvido"
+          "description": "Demanda sanada e confirmada pelo cliente"
+        },
+        "churnRisk": {
+          "name": "Risco de Churn",
+          "description": "Perito insatisfeito ou cancelamento com ação de retenção"
         }
       },
       "marketing": {
