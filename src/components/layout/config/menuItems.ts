@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+import { BRAND_FEATURES } from '@/brand';
 import {
   User,
   LogOut,
@@ -75,11 +76,15 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
     href: '/tracking',
     icon: TrendingUp,
   },
-  {
-    name: 'Agenda & Consultas',
-    href: '/calendar',
-    icon: Calendar,
-  },
+  ...(BRAND_FEATURES.appointments
+    ? [
+        {
+          name: 'Agenda & Consultas',
+          href: '/calendar',
+          icon: Calendar,
+        },
+      ]
+    : []),
   {
     name: t('menu.customer.conversations'),
     href: '/conversations',

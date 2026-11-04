@@ -13,6 +13,7 @@ import BaseHeader from '@/components/base/BaseHeader';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import { useAppointmentMetadata } from '@/hooks/useAppointmentMetadata';
+import { BRAND_FEATURES } from '@/brand';
 import type { LeadTrackingDashboardResponse, LeadTrackingParams } from '@/types/leadTracking';
 import { toast } from 'sonner';
 import FunnelCard from './components/FunnelCard';
@@ -78,7 +79,8 @@ export const LeadTrackingPage: React.FC = () => {
   const [data, setData] = useState<LeadTrackingDashboardResponse | null>(null);
   const [previous, setPrevious] = useState<LeadTrackingDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const { professionals: users } = useAppointmentMetadata({ contacts: false });
+  const appointments = BRAND_FEATURES.appointments;
+  const { professionals: users } = useAppointmentMetadata({ contacts: false, enabled: appointments });
 
   // Filters shared by the period, the compared period and the year-over-year chart.
   const baseParams = useMemo<LeadTrackingParams>(
@@ -153,7 +155,7 @@ export const LeadTrackingPage: React.FC = () => {
       <FiltersBar
         sources={data?.filter_options.sources ?? []}
         campaigns={data?.filter_options.campaigns ?? []}
-        professionals={users}
+        professionals={appointments ? users : undefined}
         source={filters.source}
         campaign={filters.campaign}
         user={filters.user}
@@ -178,9 +180,11 @@ export const LeadTrackingPage: React.FC = () => {
             </Notice>
           )}
 
-          <ExecutiveSummary kpis={kpis} compare={compare} />
+          <ExecutiveSummary kpis={kpis} compare={compare} appointments={appointments} />
 
-          <VelocityAlertsSection velocity={data?.velocity} alerts={data?.alerts} onOpenLead={setJourneyContact} />
+          {appointments && (
+            <VelocityAlertsSection velocity={data?.velocity} alerts={data?.alerts} onOpenLead={setJourneyContact} />
+          )}
 
           {showAds && kpis && (
             <>
@@ -207,14 +211,17 @@ export const LeadTrackingPage: React.FC = () => {
             previousTimeline={previous?.timeline}
             granularity={data?.period.granularity ?? 'day'}
             showSpend={showAds}
+            showAgenda={appointments}
           />
 
-          <CampaignsSection campaigns={data?.campaigns ?? []} />
+          <CampaignsSection campaigns={data?.campaigns ?? []} showAgenda={appointments} />
 
-          {showAds && (data?.ads?.length ?? 0) > 0 && <AdsRankingCard ads={data?.ads ?? []} />}
+          {showAds && (data?.ads?.length ?? 0) > 0 && <AdsRankingCard ads={data?.ads ?? []} showAgenda={appointments} />}
 
           <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
 
+          {appointments && (
+            <>
           <SectionTitle title="Agenda" description="Consultas com data dentro do período, de qualquer lead" />
           {segmented && <Notice>Os filtros de origem e campanha não se aplicam à agenda, que mostra as consultas de todos os leads.</Notice>}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -257,10 +264,12 @@ export const LeadTrackingPage: React.FC = () => {
           </div>
 
           <AgendaSection categories={data?.categories ?? []} professionals={data?.professionals ?? []} />
+            </>
+          )}
         </TabsContent>
 
         <TabsContent value="leads" className="mt-0">
-          <LeadsTab params={{ ...baseParams, ...toApiRange(range) }} />
+          <LeadsTab params={{ ...baseParams, ...toApiRange(range) }} appointments={appointments} />
         </TabsContent>
 
         <TabsContent value="review" className="mt-0">

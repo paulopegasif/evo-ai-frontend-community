@@ -84,6 +84,7 @@ import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
 import GoogleCalendarPage from '../pages/Customer/Settings/Integrations/GoogleCalendarPage';
 import MetaAdsPage from '../pages/Customer/Settings/Integrations/MetaAdsPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
+import { BRAND_FEATURES } from '@/brand';
 import CalendarPage from '@/pages/Customer/Calendar';
 import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
@@ -1454,9 +1455,13 @@ const AppRouter = () => {
             element={
               <PrivateRoute>
                 <CustomerRoute>
-                  <MainLayout>
-                    <CalendarPage />
-                  </MainLayout>
+                  {BRAND_FEATURES.appointments ? (
+                    <MainLayout>
+                      <CalendarPage />
+                    </MainLayout>
+                  ) : (
+                    <Navigate to="/tracking" replace />
+                  )}
                 </CustomerRoute>
               </PrivateRoute>
             }

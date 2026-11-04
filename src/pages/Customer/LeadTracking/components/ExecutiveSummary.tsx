@@ -19,6 +19,8 @@ import { currencyOrDash, formatCurrency, formatNumber, percentOrDash, plural, ro
 interface Props {
   kpis?: LeadTrackingKPIs;
   compare: KpiComparer;
+  /** Appointments module: scheduled/attended steps; otherwise the funnel goes leads → qualified → sales. */
+  appointments?: boolean;
 }
 
 const ACCENT = 'bg-primary/15 text-primary';
@@ -36,7 +38,7 @@ const Block = ({ title, description, children }: { title: string; description: s
 );
 
 /** Acquisition → conversion → return, the three questions management asks. */
-const ExecutiveSummary = ({ kpis, compare }: Props) => {
+const ExecutiveSummary = ({ kpis, compare, appointments = true }: Props) => {
   const ads = Boolean(kpis?.has_ad_spend);
 
   return (
@@ -72,8 +74,9 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
           importance="primary"
           tooltip={{
             title: 'Novos leads',
-            content:
-              'Pessoas que entraram no período. Recompras não contam. Qualificados: agendaram avaliação ou chegaram a uma etapa marcada como qualificada.',
+            content: appointments
+              ? 'Pessoas que entraram no período. Recompras não contam. Qualificados: agendaram avaliação ou chegaram a uma etapa marcada como qualificada.'
+              : 'Pessoas que entraram no período. Recompras não contam. Qualificados: chegaram a uma etapa marcada como qualificada no pipeline.',
           }}
           comparison={compare('total_leads', count)}
         />
@@ -90,6 +93,18 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
       </Block>
 
       <Block title="Conversão" description="Onde o funil avança e quanto custa cada etapa">
+        {!appointments && (
+          <DashboardMetricCard
+            title="Qualificados"
+            value={kpis?.total_qualified ?? 0}
+            subtitle={`${percentOrDash(kpis?.qualification_rate)} dos leads`}
+            icon={CheckCircle2}
+            accentClassName={ACCENT}
+            tooltip={{ title: 'Qualificados', content: 'Leads do período que chegaram a uma etapa marcada como qualificada.' }}
+            comparison={compare('total_qualified', count)}
+          />
+        )}
+        {appointments && (
         <DashboardMetricCard
           title="Agendaram"
           value={kpis?.total_scheduled ?? 0}
@@ -98,6 +113,8 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
           accentClassName={ACCENT}
           comparison={compare('total_scheduled', count)}
         />
+        )}
+        {appointments && (
         <DashboardMetricCard
           title="Compareceram"
           value={kpis?.total_attended ?? 0}
@@ -106,6 +123,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
           accentClassName={ACCENT}
           comparison={compare('total_attended', count)}
         />
+        )}
         <DashboardMetricCard
           title="Vendas"
           value={kpis?.total_won ?? 0}
@@ -115,6 +133,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
           importance="primary"
           comparison={compare('total_won', count)}
         />
+        {appointments && (
         <DashboardMetricCard
           title="Sem desfecho"
           value={kpis?.total_no_outcome ?? 0}
@@ -126,6 +145,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
             content: 'Agendamentos com data passada que continuam como agendados ou confirmados. Atualize na Agenda.',
           }}
         />
+        )}
       </Block>
 
       <Block title="Retorno" description="Se o investimento volta como receita">
