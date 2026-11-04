@@ -56,8 +56,6 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
 
   const volumeConfig: ChartConfig = {
     leads: SERIES.leads,
-    scheduled: SERIES.scheduled,
-    attended: SERIES.attended,
     ...(comparing ? withPrevious('leads', 'Novos leads (comparação)') : {}),
   };
   const spendConfig: ChartConfig = {
@@ -82,9 +80,9 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-primary" />
-            Leads e agenda por {unit}
+            Novos leads por {unit}
           </CardTitle>
-          <CardDescription>Novos leads, consultas marcadas e comparecimentos</CardDescription>
+          <CardDescription>Contatos captados no período</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={volumeConfig} className="h-[260px] w-full">
@@ -96,7 +94,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
                 content={<ChartTooltipContent indicator="line" className="min-w-[13rem]" labelFormatter={labelWithPrevious} />}
               />
               <ChartLegend content={<ChartLegendContent />} />
-              {(['leads', 'scheduled', 'attended'] as const).map((key) => (
+              {(['leads'] as const).map((key) => (
                 <Line
                   key={key}
                   dataKey={key}

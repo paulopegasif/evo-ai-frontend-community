@@ -25,7 +25,6 @@ const TRIGGER_CLASS = 'h-9 bg-sidebar border-sidebar-border text-sidebar-foregro
 interface FiltersBarProps {
   sources: string[];
   campaigns: CampaignOption[];
-  professionals: { id: string; name: string }[];
   source: string | null;
   campaign: string | null;
   user: string | null;
@@ -91,7 +90,7 @@ const CampaignCombobox = ({
   );
 };
 
-const FiltersBar = ({ sources, campaigns, professionals, source, campaign, user, onChange, onClear }: FiltersBarProps) => {
+const FiltersBar = ({ sources, campaigns, source, campaign, user, onChange, onClear }: FiltersBarProps) => {
   // Keep a selected value listed even if it has no data in the current period.
   const sourceOptions = source && !sources.includes(source) ? [...sources, source] : sources;
   const hasFilters = Boolean(source || campaign || user);
@@ -113,20 +112,6 @@ const FiltersBar = ({ sources, campaigns, professionals, source, campaign, user,
       </Select>
 
       <CampaignCombobox campaigns={campaigns} value={campaign} onChange={(value) => onChange('campaign', value)} />
-
-      <Select value={user ?? ALL} onValueChange={(value) => onChange('user', value === ALL ? null : value)}>
-        <SelectTrigger className={`${TRIGGER_CLASS} w-[200px]`} aria-label="Filtrar por profissional">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL}>Todos os profissionais</SelectItem>
-          {professionals.map((p) => (
-            <SelectItem key={p.id} value={p.id}>
-              {p.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
 
       {hasFilters && (
         <Button variant="ghost" size="sm" className="h-9" onClick={onClear}>

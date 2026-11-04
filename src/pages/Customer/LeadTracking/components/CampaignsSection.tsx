@@ -27,7 +27,6 @@ import {
   formatCurrency,
   formatNumber,
   percentOrDash,
-  plural,
   roasOrDash,
 } from './format';
 
@@ -167,14 +166,9 @@ const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
     { key: 'leads', label: 'Leads', align: 'right', sortable: true },
     {
       key: 'won',
-      label: 'Vendas',
+      label: 'Assinantes',
       align: 'right',
       sortable: true,
-      render: (c) => (
-        <span title={`${plural(c.scheduled, 'agendou', 'agendaram')} • ${plural(c.attended, 'compareceu', 'compareceram')}`}>
-          {c.won}
-        </span>
-      ),
     },
     {
       key: 'conversion_rate',

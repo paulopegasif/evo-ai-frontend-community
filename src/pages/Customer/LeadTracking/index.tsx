@@ -11,7 +11,6 @@ import { Button } from '@evoapi/design-system';
 import BaseHeader from '@/components/base/BaseHeader';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
-import { useAppointmentMetadata } from '@/hooks/useAppointmentMetadata';
 import type { LeadTrackingDashboardResponse, LeadTrackingParams } from '@/types/leadTracking';
 import { toast } from 'sonner';
 import FunnelCard from './components/FunnelCard';
@@ -53,7 +52,6 @@ export const LeadTrackingPage: React.FC = () => {
   const [data, setData] = useState<LeadTrackingDashboardResponse | null>(null);
   const [previous, setPrevious] = useState<LeadTrackingDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const { professionals: users } = useAppointmentMetadata({ contacts: false });
 
   // Filters shared by the period, the compared period and the year-over-year chart.
   const baseParams = useMemo<LeadTrackingParams>(
@@ -106,7 +104,7 @@ export const LeadTrackingPage: React.FC = () => {
     <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
       <BaseHeader
         title="Tracking de Leads & Funil"
-        subtitle="Campanhas, mídia paga, conversão do funil, comparecimento e desempenho por procedimento"
+        subtitle="Campanhas, mídia paga e conversão do funil comercial"
       >
         <div className="flex items-start gap-2 flex-wrap">
           <PeriodControls
@@ -127,7 +125,6 @@ export const LeadTrackingPage: React.FC = () => {
       <FiltersBar
         sources={data?.filter_options.sources ?? []}
         campaigns={data?.filter_options.campaigns ?? []}
-        professionals={users}
         source={filters.source}
         campaign={filters.campaign}
         user={filters.user}
@@ -153,7 +150,7 @@ export const LeadTrackingPage: React.FC = () => {
         </>
       )}
 
-      <SectionTitle title="Aquisição" description="Pessoas que viraram lead no período, acompanhadas até a venda" />
+      <SectionTitle title="Aquisição" description="Contatos que viraram lead no período, acompanhados até a assinatura" />
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <DashboardMetricCard
           title="Novos leads"
