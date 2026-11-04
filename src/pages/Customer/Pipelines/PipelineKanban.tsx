@@ -706,6 +706,7 @@ export default function PipelineKanban() {
     name: string;
     color: string;
     stage_type: string;
+    counts_as_qualified?: boolean;
     automation_rules?: { description?: string };
     custom_fields?: Record<string, unknown>;
   }) => {
@@ -717,6 +718,7 @@ export default function PipelineKanban() {
         name: data.name,
         color: data.color,
         stage_type: data.stage_type,
+        counts_as_qualified: data.counts_as_qualified,
         automation_rules: data.automation_rules,
         custom_fields: data.custom_fields,
       });

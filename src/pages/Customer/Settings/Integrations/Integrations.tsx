@@ -16,6 +16,7 @@ import { Search, Puzzle, Grid3X3 } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import BaseHeader from '@/components/base/BaseHeader';
 import { integrationsService } from '@/services/integrations';
+import { metaAdsService } from '@/services/integrations/metaAdsService';
 import { Integration, IntegrationCategory } from '@/types/integrations';
 import { IntegrationCard } from '@/components/integrations/base';
 import { toast } from 'sonner';
@@ -38,6 +39,7 @@ const INTEGRATION_CATEGORY_MAP: Record<string, string> = {
   bms: 'crm',
   leadsquared: 'crm',
   hubspot: 'crm',
+  meta_ads: 'crm',
 
   // Communication
   slack: 'communication',
@@ -111,7 +113,10 @@ export default function Integrations() {
     try {
       if (integration.enabled) {
         // Special handling for different integration types
-        if (['slack', 'hubspot', 'linear', 'shopify'].includes(integration.id)) {
+        if (integration.id === 'meta_ads') {
+          // Dedicated endpoint: drops the encrypted token, keeps imported campaigns
+          await metaAdsService.disconnect();
+        } else if (['slack', 'hubspot', 'linear', 'shopify'].includes(integration.id)) {
           // OAuth integrations have specific delete endpoints
           await integrationsService.deleteIntegration(integration.id);
         } else if (
@@ -166,6 +171,8 @@ export default function Integrations() {
       navigate(`/settings/integrations/oauth-apps`);
     } else if (integration.id === 'google_calendar') {
       navigate(`/settings/integrations/google_calendar`);
+    } else if (integration.id === 'meta_ads') {
+      navigate(`/settings/integrations/meta_ads`);
     } else {
       // Generic integration configuration page
       navigate(`/settings/integrations/${integration.id}`);
