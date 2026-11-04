@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Badge, Card, CardContent } from '@evoapi/design-system';
 import { BaseHeader } from '@/components/base';
@@ -17,7 +18,6 @@ import DashboardPerformanceSection from './components/DashboardPerformanceSectio
 import type { DashboardFilterState, DashboardOption } from './components/types';
 import { DashboardTour } from '@/tours';
 import { LayoutDashboard, TrendingUp } from 'lucide-react';
-import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
 const ALL_FILTER_VALUE = '__all__';
 
@@ -95,7 +95,20 @@ const CustomerDashboardPage = () => {
   const [draftFilters, setDraftFilters] = useState<DashboardFilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<DashboardFilterState>(defaultFilters);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'operational' | 'leads'>('operational');
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const navigate = useNavigate();
+  const activeTab = 'operational' as 'operational' | 'leads';
+
+  // Lead tracking moved to its own module; keep old `?tab=leads` links working.
+  useEffect(() => {
+    if (tabFromUrl === 'leads') navigate('/tracking', { replace: true });
+  }, [tabFromUrl, navigate]);
+
+  const handleTabChange = (tab: 'operational' | 'leads') => {
+    if (tab === 'leads') navigate('/tracking');
+  };
+
   const [pipelines, setPipelines] = useState<DashboardOption[]>([]);
   const [teams, setTeams] = useState<DashboardOption[]>([]);
   const [inboxes, setInboxes] = useState<DashboardOption[]>([]);
@@ -289,7 +302,7 @@ const CustomerDashboardPage = () => {
         <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
           <button
             type="button"
-            onClick={() => setActiveTab('operational')}
+            onClick={() => handleTabChange('operational')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'operational'
                 ? 'bg-purple-600 text-white shadow-2xs'
@@ -301,7 +314,7 @@ const CustomerDashboardPage = () => {
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('leads')}
+            onClick={() => handleTabChange('leads')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'leads'
                 ? 'bg-purple-600 text-white shadow-2xs'
@@ -314,9 +327,7 @@ const CustomerDashboardPage = () => {
         </div>
       </div>
 
-      {activeTab === 'leads' ? (
-        <LeadTrackingPage />
-      ) : (
+      {activeTab === 'leads' ? null : (
         <>
           <div className="-mt-3 flex justify-end" data-tour="dashboard-period-badge">
             <Badge variant="secondary">

@@ -45,12 +45,19 @@ import type {
   AppointmentCreateParams,
 } from '@/types/appointments';
 import { toast } from 'sonner';
+import { appointmentDayKey, dateFromKey, zonedInstant, zonedTime } from '@/utils/accountTime';
+
+/** Time option for appointments whose date is known but the time is not ("horário a definir"). */
+const TIME_TBD = '__tbd__';
 
 interface AppointmentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   appointment: Appointment | null;
   initialDate?: Date;
+  /** HH:mm preselected when the modal opens from a time-grid slot. */
+  initialTime?: string;
+  initialUserId?: string;
   categories: AppointmentCategory[];
   users: AppointmentProfessional[];
   contacts: AppointmentPatient[];
@@ -97,6 +104,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   onOpenChange,
   appointment,
   initialDate,
+  initialTime,
+  initialUserId,
   categories,
   users,
   contacts,
@@ -125,9 +134,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       setCategory(appointment.category);
       setUserId(appointment.user_id);
       setContactId(appointment.contact_id || '');
-      const startDate = new Date(appointment.start_time);
-      setDate(startDate);
-      setTime(format(startDate, 'HH:mm'));
+      // Day and time in the account zone, whatever the browser zone is.
+      setDate(dateFromKey(appointmentDayKey(appointment)));
+      setTime(appointment.all_day ? TIME_TBD : zonedTime(appointment.start_time));
       setDuration(appointment.duration_minutes || 60);
       setStatus(appointment.status);
       setLocation(appointment.location || '');
@@ -135,22 +144,22 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       setDescription(appointment.description || '');
     } else {
       setDate(initialDate || new Date());
-      setTime('10:00');
+      setTime(initialTime || '10:00');
       const defaultCat = categories[0];
       setCategory(defaultCat?.name || '');
       setDuration(defaultCat?.duration || 60);
       setPrice(defaultCat?.price || 0);
-      setUserId('');
+      setUserId(initialUserId || '');
       setContactId('');
       setStatus('scheduled');
       setLocation('');
       setDescription('');
       setTitle(defaultCat?.name || '');
     }
-  }, [appointment, initialDate, categories, open]);
+  }, [appointment, initialDate, initialTime, initialUserId, categories, open]);
 
   const timeSlots = useMemo(
-    () => (TIME_SLOTS.includes(time) ? TIME_SLOTS : [...TIME_SLOTS, time].sort()),
+    () => (TIME_SLOTS.includes(time) || time === TIME_TBD ? TIME_SLOTS : [...TIME_SLOTS, time].sort()),
     [time],
   );
 
@@ -182,7 +191,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
     try {
       setLoading(true);
-      const startDateTime = new Date(`${format(date, 'yyyy-MM-dd')}T${time}:00`);
+      const allDay = time === TIME_TBD;
+      const startDateTime = zonedInstant(format(date, 'yyyy-MM-dd'), allDay ? '00:00' : time);
       const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
 
       const payload: AppointmentCreateParams = {
@@ -191,8 +201,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         user_id: userId,
         contact_id: contactId || undefined,
         start_time: startDateTime.toISOString(),
-        end_time: endDateTime.toISOString(),
-        duration_minutes: duration,
+        // The API stretches all-day appointments over the whole account-zone day.
+        end_time: allDay ? undefined : endDateTime.toISOString(),
+        duration_minutes: allDay ? undefined : duration,
+        all_day: allDay,
         status,
         location,
         price,
@@ -418,6 +430,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-64">
+                  <SelectItem value={TIME_TBD}>A definir</SelectItem>
                   {timeSlots.map((slot) => (
                     <SelectItem key={slot} value={slot}>
                       {slot}
@@ -428,7 +441,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
             </div>
             <div className="space-y-2">
               <Label>Duração</Label>
-              <Select value={String(duration)} onValueChange={(v) => setDuration(Number(v))}>
+              <Select value={String(duration)} onValueChange={(v) => setDuration(Number(v))} disabled={time === TIME_TBD}>
                 <SelectTrigger className={controlClassName}>
                   <SelectValue />
                 </SelectTrigger>

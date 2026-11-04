@@ -1,12 +1,16 @@
 import React from 'react';
 import type { Appointment } from '@/types/appointments';
 import { Plus } from 'lucide-react';
+import { appointmentDayKey, appointmentTimeLabel, cellDayKey, todayKey } from '@/utils/accountTime';
+import { statusStyle } from './statusStyles';
 
 interface CalendarMonthViewProps {
   currentDate: Date;
   appointments: Appointment[];
   onSelectDate: (date: Date) => void;
   onSelectAppointment: (apt: Appointment) => void;
+  /** Opens the day view (from the "+N mais" link). */
+  onOpenDay?: (date: Date) => void;
 }
 
 export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
@@ -14,6 +18,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
   appointments,
   onSelectDate,
   onSelectAppointment,
+  onOpenDay,
 }) => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -52,17 +57,14 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     }
   }
 
-  const today = new Date();
-  const isToday = (d: Date) =>
-    d.getDate() === today.getDate() &&
-    d.getMonth() === today.getMonth() &&
-    d.getFullYear() === today.getFullYear();
+  const today = todayKey();
+  const isToday = (d: Date) => cellDayKey(d) === today;
 
   const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-  // Map appointments to date string key: YYYY-MM-DD
+  // Group by the account-zone day (never the UTC day of toISOString).
   const appointmentsByDate = appointments.reduce<Record<string, Appointment[]>>((acc, apt) => {
-    const dStr = new Date(apt.start_time).toISOString().split('T')[0];
+    const dStr = appointmentDayKey(apt);
     if (!acc[dStr]) acc[dStr] = [];
     acc[dStr].push(apt);
     return acc;
@@ -89,8 +91,11 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
       {/* Grid of days */}
       <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-border border-b border-border">
         {days.map(({ date, isCurrentMonth }, index) => {
-          const dateKey = date.toISOString().split('T')[0];
-          const dayApts = appointmentsByDate[dateKey] || [];
+          const dateKey = cellDayKey(date);
+          // Timed appointments first, by time; "a definir" at the end of the day.
+          const dayApts = (appointmentsByDate[dateKey] || []).sort(
+            (a, b) => Number(Boolean(a.all_day)) - Number(Boolean(b.all_day)) || a.start_time.localeCompare(b.start_time),
+          );
           const isCurrentDay = isToday(date);
 
           return (
@@ -132,14 +137,8 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
               {/* Appointments List for Day */}
               <div className="mt-1 space-y-1 flex-1 overflow-y-auto max-h-[85px] no-scrollbar">
                 {dayApts.slice(0, 3).map((apt) => {
-                  const startTime = new Date(apt.start_time).toTimeString().slice(0, 5);
-                  const statusColors: Record<string, string> = {
-                    attended: 'border-l-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200',
-                    no_show: 'border-l-rose-500 bg-rose-50/60 dark:bg-rose-950/30 text-rose-900 dark:text-rose-200',
-                    confirmed: 'border-l-blue-500 bg-blue-50/60 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200',
-                    scheduled: 'border-l-primary bg-primary/10 text-primary',
-                  };
-                  const colorClass = statusColors[apt.status] || statusColors.scheduled;
+                  const startTime = appointmentTimeLabel(apt);
+                  const colorClass = statusStyle(apt.status).block;
 
                   return (
                     <div
@@ -162,9 +161,16 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                   );
                 })}
                 {dayApts.length > 3 && (
-                  <div className="text-[10px] text-center font-medium text-primary py-0.5">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      (onOpenDay ?? onSelectDate)(date);
+                    }}
+                    className="w-full text-[10px] text-center font-medium text-primary py-0.5 hover:underline"
+                  >
                     +{dayApts.length - 3} mais
-                  </div>
+                  </button>
                 )}
               </div>
             </div>

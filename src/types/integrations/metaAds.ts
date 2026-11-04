@@ -14,6 +14,10 @@ export interface MetaAdsIntegration {
   last_error: { message: string; code?: number | null; at: string } | null;
   sync_in_progress: boolean;
   counts: { campaigns: number; adsets: number; ads: number };
+  /** Oldest day whose daily metrics are fully imported (ISO date), or null. */
+  history_synced_from: string | null;
+  /** Whether the 24-month history is filled. */
+  history_complete: boolean;
   graph_api_version: string;
 }
 
