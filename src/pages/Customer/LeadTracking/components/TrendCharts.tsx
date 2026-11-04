@@ -23,6 +23,8 @@ interface TrendChartsProps {
   previousTimeline?: TimelineDataPoint[];
   granularity: TimelineGranularity;
   showSpend: boolean;
+  /** Scheduled/attended lines (appointments module). */
+  showAgenda?: boolean;
 }
 
 const UNIT: Record<TimelineGranularity, string> = { day: 'dia', week: 'semana', month: 'mês' };
@@ -39,7 +41,7 @@ const withPrevious = (key: keyof typeof SERIES, label: string): ChartConfig => (
 });
 
 // Two charts instead of a dual axis: counts and money never share a scale.
-const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: TrendChartsProps) => {
+const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend, showAgenda = true }: TrendChartsProps) => {
   const comparing = Boolean(previousTimeline);
   const rows: Row[] = timeline.map((point, index) => {
     const previous = previousTimeline?.[index];
@@ -54,10 +56,10 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
       : point;
   });
 
+  const volumeKeys = showAgenda ? (['leads', 'scheduled', 'attended'] as const) : (['leads'] as const);
   const volumeConfig: ChartConfig = {
     leads: SERIES.leads,
-    scheduled: SERIES.scheduled,
-    attended: SERIES.attended,
+    ...(showAgenda ? { scheduled: SERIES.scheduled, attended: SERIES.attended } : {}),
     ...(comparing ? withPrevious('leads', 'Novos leads (comparação)') : {}),
   };
   const spendConfig: ChartConfig = {
@@ -82,9 +84,11 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-primary" />
-            Leads e agenda por {unit}
+            {showAgenda ? `Leads e agenda por ${unit}` : `Novos leads por ${unit}`}
           </CardTitle>
-          <CardDescription>Novos leads, consultas marcadas e comparecimentos</CardDescription>
+          <CardDescription>
+            {showAgenda ? 'Novos leads, consultas marcadas e comparecimentos' : 'Contatos captados no período'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={volumeConfig} className="h-[260px] w-full">
@@ -96,7 +100,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
                 content={<ChartTooltipContent indicator="line" className="min-w-[13rem]" labelFormatter={labelWithPrevious} />}
               />
               <ChartLegend content={<ChartLegendContent />} />
-              {(['leads', 'scheduled', 'attended'] as const).map((key) => (
+              {volumeKeys.map((key) => (
                 <Line
                   key={key}
                   dataKey={key}

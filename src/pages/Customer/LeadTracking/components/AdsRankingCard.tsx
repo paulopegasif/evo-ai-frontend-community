@@ -7,7 +7,7 @@ import { currencyOrDash, formatCurrency, formatNumber, roasOrDash } from './form
 
 type SortKey = 'leads' | 'scheduled' | 'attended' | 'won' | 'revenue' | 'spend' | 'cpl' | 'cac' | 'roas';
 
-const AdsRankingCard = ({ ads }: { ads: AdPerformance[] }) => {
+const AdsRankingCard = ({ ads, showAgenda = true }: { ads: AdPerformance[]; showAgenda?: boolean }) => {
   const [sortBy, setSortBy] = useState<SortKey>('revenue');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
 
@@ -44,8 +44,12 @@ const AdsRankingCard = ({ ads }: { ads: AdPerformance[] }) => {
     },
     { key: 'spend', label: 'Gasto', sortable: true, align: 'right', render: (ad) => formatCurrency(ad.spend) },
     { key: 'leads', label: 'Leads', sortable: true, align: 'right', render: (ad) => formatNumber(ad.leads) },
-    { key: 'scheduled', label: 'Agendaram', sortable: true, align: 'right' },
-    { key: 'attended', label: 'Compareceram', sortable: true, align: 'right' },
+    ...(showAgenda
+      ? ([
+          { key: 'scheduled', label: 'Agendaram', sortable: true, align: 'right' },
+          { key: 'attended', label: 'Compareceram', sortable: true, align: 'right' },
+        ] as const)
+      : []),
     { key: 'won', label: 'Vendas', sortable: true, align: 'right' },
     { key: 'revenue', label: 'Receita', sortable: true, align: 'right', render: (ad) => formatCurrency(ad.revenue) },
     { key: 'cpl', label: 'CPL', sortable: true, align: 'right', render: (ad) => currencyOrDash(ad.cpl) },

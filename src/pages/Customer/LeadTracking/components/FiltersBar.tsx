@@ -25,7 +25,8 @@ const TRIGGER_CLASS = 'h-9 bg-sidebar border-sidebar-border text-sidebar-foregro
 interface FiltersBarProps {
   sources: string[];
   campaigns: CampaignOption[];
-  professionals: { id: string; name: string }[];
+  /** Omit to hide the professional filter (no appointments module). */
+  professionals?: { id: string; name: string }[];
   source: string | null;
   campaign: string | null;
   user: string | null;
@@ -114,6 +115,7 @@ const FiltersBar = ({ sources, campaigns, professionals, source, campaign, user,
 
       <CampaignCombobox campaigns={campaigns} value={campaign} onChange={(value) => onChange('campaign', value)} />
 
+      {professionals && (
       <Select value={user ?? ALL} onValueChange={(value) => onChange('user', value === ALL ? null : value)}>
         <SelectTrigger className={`${TRIGGER_CLASS} w-[200px]`} aria-label="Filtrar por profissional">
           <SelectValue />
@@ -127,6 +129,7 @@ const FiltersBar = ({ sources, campaigns, professionals, source, campaign, user,
           ))}
         </SelectContent>
       </Select>
+      )}
 
       {hasFilters && (
         <Button variant="ghost" size="sm" className="h-9" onClick={onClear}>

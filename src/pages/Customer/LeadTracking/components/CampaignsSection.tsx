@@ -32,6 +32,8 @@ import {
 } from './format';
 
 interface CampaignsSectionProps {
+  /** Scheduled/attended breakdown in the tooltip (appointments module). */
+  showAgenda?: boolean;
   campaigns: CampaignPerformance[];
 }
 
@@ -95,7 +97,7 @@ const compare = (a: CampaignPerformance, b: CampaignPerformance, key: SortKey, o
 
 const truncate = (value: string, size = 28) => (value.length > size ? `${value.slice(0, size - 1)}…` : value);
 
-const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
+const CampaignsSection = ({ campaigns, showAgenda = true }: CampaignsSectionProps) => {
   const [filter, setFilter] = useState<SourceFilter>('all');
   const [view, setView] = useState<View>('media');
   const [sortBy, setSortBy] = useState<SortKey>('spend');
@@ -171,7 +173,13 @@ const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
       align: 'right',
       sortable: true,
       render: (c) => (
-        <span title={`${plural(c.scheduled, 'agendou', 'agendaram')} • ${plural(c.attended, 'compareceu', 'compareceram')}`}>
+        <span
+          title={
+            showAgenda
+              ? `${plural(c.scheduled, 'agendou', 'agendaram')} • ${plural(c.attended, 'compareceu', 'compareceram')}`
+              : undefined
+          }
+        >
           {c.won}
         </span>
       ),

@@ -22,8 +22,8 @@ const PATIENTS_PAGE_SIZE = 100;
 
 // Shared metadata for the Agenda, Lead Tracking and Google Calendar screens.
 // The users/contacts services return `{ data: [] }` (see extractResponse), not a bare array.
-export function useAppointmentMetadata(options: { contacts?: boolean } = {}) {
-  const { contacts: loadContacts = true } = options;
+export function useAppointmentMetadata(options: { contacts?: boolean; enabled?: boolean } = {}) {
+  const { contacts: loadContacts = true, enabled = true } = options;
   const [professionals, setProfessionals] = useState<AppointmentProfessional[]>([]);
   const [patients, setPatients] = useState<AppointmentPatient[]>([]);
   const [categories, setCategories] = useState<AppointmentCategory[]>([]);
@@ -73,8 +73,9 @@ export function useAppointmentMetadata(options: { contacts?: boolean } = {}) {
   }, [loadContacts]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (enabled) load();
+    else setLoading(false);
+  }, [load, enabled]);
 
   return { professionals, patients, categories, loading, reload: load };
 }

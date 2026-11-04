@@ -12,6 +12,8 @@ import LeadJourneySheet from './LeadJourneySheet';
 
 interface LeadsTabProps {
   params: LeadTrackingParams;
+  /** Appointments module: evaluation column and scheduled/attended steps. */
+  appointments?: boolean;
 }
 
 const SORTABLE: LeadListSort[] = ['entered_at', 'estimated_cost', 'revenue'];
@@ -31,7 +33,8 @@ const outcome = (lead: LeadRow) => {
   return <span className="text-muted-foreground text-xs">{DASH}</span>;
 };
 
-const LeadsTab = ({ params }: LeadsTabProps) => {
+const LeadsTab = ({ params, appointments = true }: LeadsTabProps) => {
+  const steps = appointments ? STEPS : STEPS.filter((s) => s.key === 'all' || s.key === 'won');
   const [data, setData] = useState<LeadListResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -91,7 +94,7 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, query, step, sort, order]);
 
-  const columns: TableColumn<LeadRow>[] = [
+  const allColumns: TableColumn<LeadRow>[] = [
     {
       key: 'name',
       label: 'Lead',
@@ -158,6 +161,7 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
     { key: 'outcome', label: 'Resultado', render: outcome },
     { key: 'revenue', label: 'Receita', sortable: true, align: 'right', render: (lead) => formatCurrency(lead.revenue) },
   ];
+  const columns = appointments ? allColumns : allColumns.filter((c) => c.key !== 'evaluation_at');
 
   return (
     <Card>
@@ -168,7 +172,8 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
             Leads do período
           </CardTitle>
           <CardDescription>
-            Cada lead com origem, custo estimado, etapa, avaliação e receita. Clique no nome para ver a jornada completa.
+            Cada lead com origem, custo estimado, etapa{appointments ? ', avaliação' : ''} e receita. Clique no nome para ver
+            a jornada completa.
           </CardDescription>
         </div>
         <Button variant="outline" size="sm" onClick={exportCsv}>
@@ -189,7 +194,7 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
             />
           </div>
           <div className="flex items-center gap-1 overflow-x-auto" role="tablist" aria-label="Situação no funil">
-            {STEPS.map(({ key, label }) => {
+            {steps.map(({ key, label }) => {
               const count = data?.meta.step_counts?.[key];
               const active = step === key;
               return (

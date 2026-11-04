@@ -27,9 +27,18 @@ export interface BrandConfig {
     ga4MeasurementId?: string | null;
     ga4LinkerDomains?: string[];
   };
+  /** Optional modules; omitted keys default to enabled. */
+  features?: {
+    /** Agenda & appointments (clinics). Off for businesses without appointments, e.g. SaaS sales. */
+    appointments?: boolean;
+  };
 }
 
 export const BRAND = brandJson as unknown as BrandConfig;
+
+export const BRAND_FEATURES = {
+  appointments: BRAND.features?.appointments !== false,
+} as const;
 
 export const BRAND_LOGOS = {
   dark: logoDark,

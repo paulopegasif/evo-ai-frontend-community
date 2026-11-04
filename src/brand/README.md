@@ -40,3 +40,15 @@ Plugin Host (`EXTENSION_POINTS.md`) para não conflitar com o upstream.
 > Ao distribuir uma UI modificada, o `TRADEMARKS.md` exige remover **toda**
 > a marca Evolution (nome, logo, copyright e paleta). Os padrões desta pasta
 > são do upstream e devem ser substituídos em toda branch de cliente.
+
+## Optional modules
+
+`brand.json` may switch modules off for clients that do not use them:
+
+```json
+"features": { "appointments": false }
+```
+
+- `appointments` (default `true`): Agenda & Consultas menu and page (`/calendar` redirects to `/tracking`), plus the
+  appointment parts of Tracking de Leads (professional filter, scheduled/attended steps, funnel velocity and alerts,
+  agenda section, evaluation column in the leads list).
