@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import { toast } from 'sonner';
+import { appointmentTimeLabel, formatZoned } from '@/utils/accountTime';
 
 interface CalendarListViewProps {
   appointments: Appointment[];
@@ -101,16 +102,8 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
           </div>
         ) : (
           filteredAppointments.map((apt) => {
-            const startDate = new Date(apt.start_time);
-            const dateStr = startDate.toLocaleDateString('pt-BR', {
-              weekday: 'short',
-              day: '2-digit',
-              month: 'short',
-            });
-            const timeStr = startDate.toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            });
+            const dateStr = formatZoned(apt.start_time, { weekday: 'short', day: '2-digit', month: 'short' });
+            const timeStr = appointmentTimeLabel(apt);
 
             return (
               <div

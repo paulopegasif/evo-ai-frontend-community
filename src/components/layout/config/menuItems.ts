@@ -69,18 +69,11 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
     name: t('menu.customer.dashboard'),
     href: '/dashboard',
     icon: PieChart,
-    subItems: [
-      {
-        name: 'Visão Geral',
-        href: '/dashboard',
-        icon: PieChart,
-      },
-      {
-        name: 'Tracking de Leads',
-        href: '/dashboard/leads',
-        icon: TrendingUp,
-      },
-    ],
+  },
+  {
+    name: 'Tracking de Leads',
+    href: '/tracking',
+    icon: TrendingUp,
   },
   {
     name: 'Agenda & Consultas',

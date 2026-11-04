@@ -100,7 +100,7 @@ const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => {
       />
       <DashboardMetricCard
         title="CTR"
-        value={percentOrDash(kpis.ctr)}
+        value={percentOrDash(kpis.ctr, 2)}
         subtitle="Cliques no link ÷ impressões"
         icon={Percent}
         accentClassName={ACCENT}

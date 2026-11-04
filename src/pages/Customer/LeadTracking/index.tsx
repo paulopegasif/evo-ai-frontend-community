@@ -1,17 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Users,
-  CalendarCheck,
   CheckCircle2,
   DollarSign,
   RefreshCw,
-  Sparkles,
   Receipt,
-  TrendingUp,
   CalendarDays,
   Info,
 } from 'lucide-react';
-import { Button } from '@evoapi/design-system';
+import { useSearchParams } from 'react-router-dom';
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@evoapi/design-system';
 import BaseHeader from '@/components/base/BaseHeader';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
@@ -28,6 +25,12 @@ import FiltersBar from './components/FiltersBar';
 import PaidMediaSection from './components/PaidMediaSection';
 import HighlightsSection from './components/HighlightsSection';
 import YearOverYearCard from './components/YearOverYearCard';
+import ExecutiveSummary from './components/ExecutiveSummary';
+import VelocityAlertsSection from './components/VelocityAlertsSection';
+import AdsRankingCard from './components/AdsRankingCard';
+import LeadsTab from './components/LeadsTab';
+import ReviewQueueTab from './components/ReviewQueueTab';
+import LeadJourneySheet from './components/LeadJourneySheet';
 import { currencyOrDash, formatCurrency, formatNumber, percentOrDash, plural } from './components/format';
 import { useLeadTrackingFilters } from './hooks/useLeadTrackingFilters';
 import { makeKpiComparer } from './compare';
@@ -53,7 +56,24 @@ const count = (value: number | null) => formatNumber(value);
 const percent = (value: number | null) => percentOrDash(value);
 const currency = (value: number | null) => currencyOrDash(value);
 
+const TABS = ['overview', 'leads', 'review'] as const;
+type TrackingTab = (typeof TABS)[number];
+
 export const LeadTrackingPage: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawTab = searchParams.get('tab');
+  const tab: TrackingTab = TABS.includes(rawTab as TrackingTab) ? (rawTab as TrackingTab) : 'overview';
+  const setTab = (value: string) =>
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        if (value === 'overview') next.delete('tab');
+        else next.set('tab', value);
+        return next;
+      },
+      { replace: true },
+    );
+  const [journeyContact, setJourneyContact] = useState<string | null>(null);
   const { filters, setPreset, setCompare, setFilter, clearFilters } = useLeadTrackingFilters();
   const [data, setData] = useState<LeadTrackingDashboardResponse | null>(null);
   const [previous, setPrevious] = useState<LeadTrackingDashboardResponse | null>(null);
@@ -141,130 +161,114 @@ export const LeadTrackingPage: React.FC = () => {
         onClear={clearFilters}
       />
 
-      {historyIncomplete && (
-        <Notice>
-          O histórico da Meta Ads está completo a partir de {historyStart.toLocaleDateString('pt-BR')}; o investimento
-          {comparison ? ' do período comparado' : ''} antes dessa data pode estar incompleto enquanto a importação avança.
-        </Notice>
-      )}
+      <Tabs value={tab} onValueChange={setTab} className="flex flex-col gap-4">
+        <TabsList className="self-start">
+          <TabsTrigger value="overview">Visão geral</TabsTrigger>
+          <TabsTrigger value="leads">Leads</TabsTrigger>
+          <TabsTrigger value="review">
+            Revisão{(kpis?.unlinked_sales ?? 0) > 0 ? ` (${kpis?.unlinked_sales})` : ''}
+          </TabsTrigger>
+        </TabsList>
 
-      {showAds && kpis && (
-        <>
-          <SectionTitle
-            title="Mídia paga (Meta)"
-            description="Entrega e resultados medidos pela Meta, e o que esses anúncios geraram no CRM"
+        <TabsContent value="overview" className="flex flex-col gap-4 mt-0">
+          {historyIncomplete && (
+            <Notice>
+              O histórico da Meta Ads está completo a partir de {historyStart.toLocaleDateString('pt-BR')}; o investimento
+              {comparison ? ' do período comparado' : ''} antes dessa data pode estar incompleto enquanto a importação avança.
+            </Notice>
+          )}
+
+          <ExecutiveSummary kpis={kpis} compare={compare} />
+
+          <VelocityAlertsSection velocity={data?.velocity} alerts={data?.alerts} onOpenLead={setJourneyContact} />
+
+          {showAds && kpis && (
+            <>
+              <SectionTitle
+                title="Mídia paga (Meta)"
+                description="Entrega e resultados medidos pela Meta, e o que esses anúncios geraram no CRM"
+              />
+              <PaidMediaSection kpis={kpis} compare={compare} />
+              <HighlightsSection campaigns={data?.campaigns ?? []} previousCampaigns={previous?.campaigns} />
+            </>
+          )}
+
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+            <div className="xl:col-span-3">
+              <FunnelCard funnel={data?.funnel ?? []} />
+            </div>
+            <div className="xl:col-span-2">
+              <SourcesCard sources={data?.sources ?? []} />
+            </div>
+          </div>
+
+          <TrendCharts
+            timeline={data?.timeline ?? []}
+            previousTimeline={previous?.timeline}
+            granularity={data?.period.granularity ?? 'day'}
+            showSpend={showAds}
           />
-          <PaidMediaSection kpis={kpis} compare={compare} />
-          <HighlightsSection campaigns={data?.campaigns ?? []} previousCampaigns={previous?.campaigns} />
-        </>
-      )}
 
-      <SectionTitle title="Aquisição" description="Pessoas que viraram lead no período, acompanhadas até a venda" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardMetricCard
-          title="Novos leads"
-          value={kpis?.total_leads ?? 0}
-          subtitle={`${percentOrDash(kpis?.qualification_rate)} qualificados`}
-          icon={Users}
-          accentClassName="bg-primary/15 text-primary"
-          importance="primary"
-          tooltip={{ title: 'Novos leads', content: 'Contatos criados no período. Qualificados têm consulta ou item no pipeline.' }}
-          comparison={compare('total_leads', count)}
-        />
-        <DashboardMetricCard
-          title="Taxa de agendamento"
-          value={percentOrDash(kpis?.scheduling_rate)}
-          subtitle={plural(kpis?.total_scheduled ?? 0, 'lead agendou', 'leads agendaram')}
-          icon={CalendarCheck}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Taxa de agendamento', content: 'Leads do período com ao menos uma consulta não cancelada ÷ novos leads.' }}
-          comparison={compare('scheduling_rate', percent)}
-        />
-        <DashboardMetricCard
-          title="Taxa de conversão"
-          value={percentOrDash(kpis?.conversion_rate)}
-          subtitle={plural(kpis?.total_won ?? 0, 'venda', 'vendas')}
-          icon={Sparkles}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{
-            title: 'Taxa de conversão',
-            content: 'Leads do período que compareceram e pagaram (ou foram fechados no pipeline) ÷ novos leads.',
-          }}
-          comparison={compare('conversion_rate', percent)}
-        />
-        <DashboardMetricCard
-          title="Receita dos novos leads"
-          value={formatCurrency(kpis?.cohort_revenue ?? 0)}
-          subtitle={plural(kpis?.total_attended ?? 0, 'lead compareceu', 'leads compareceram')}
-          icon={TrendingUp}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Receita dos novos leads', content: 'Soma das consultas realizadas pelos leads que entraram no período.' }}
-          comparison={compare('cohort_revenue', currency)}
-        />
-      </div>
+          <CampaignsSection campaigns={data?.campaigns ?? []} />
 
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-        <div className="xl:col-span-3">
-          <FunnelCard funnel={data?.funnel ?? []} />
-        </div>
-        <div className="xl:col-span-2">
-          <SourcesCard sources={data?.sources ?? []} />
-        </div>
-      </div>
+          {showAds && (data?.ads?.length ?? 0) > 0 && <AdsRankingCard ads={data?.ads ?? []} />}
 
-      <TrendCharts
-        timeline={data?.timeline ?? []}
-        previousTimeline={previous?.timeline}
-        granularity={data?.period.granularity ?? 'day'}
-        showSpend={showAds}
-      />
+          <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
 
-      <CampaignsSection campaigns={data?.campaigns ?? []} />
+          <SectionTitle title="Agenda" description="Consultas com data dentro do período, de qualquer lead" />
+          {segmented && <Notice>Os filtros de origem e campanha não se aplicam à agenda, que mostra as consultas de todos os leads.</Notice>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <DashboardMetricCard
+              title="Consultas no período"
+              value={kpis?.total_appointments ?? 0}
+              subtitle={`${plural(kpis?.total_confirmed ?? 0, 'confirmada', 'confirmadas')} • ${plural(kpis?.total_cancelled ?? 0, 'cancelada', 'canceladas')}`}
+              icon={CalendarDays}
+              accentClassName="bg-primary/15 text-primary"
+              comparison={compare('total_appointments', count)}
+            />
+            <DashboardMetricCard
+              title="Comparecimento"
+              value={percentOrDash(kpis?.show_rate)}
+              subtitle={`${plural(kpis?.appointments_attended ?? 0, 'realizada', 'realizadas')} • ${plural(kpis?.total_no_show ?? 0, 'falta', 'faltas')}`}
+              icon={CheckCircle2}
+              accentClassName="bg-primary/15 text-primary"
+              tooltip={{
+                title: 'Comparecimento',
+                content: 'Realizadas ÷ (realizadas + faltas). Consultas futuras ou pendentes não entram na taxa.',
+              }}
+              comparison={compare('show_rate', percent)}
+            />
+            <DashboardMetricCard
+              title="Faturamento"
+              value={formatCurrency(kpis?.total_revenue ?? 0)}
+              subtitle={plural(kpis?.paid_appointments ?? 0, 'consulta paga', 'consultas pagas')}
+              icon={DollarSign}
+              accentClassName="bg-primary/15 text-primary"
+              comparison={compare('total_revenue', currency)}
+            />
+            <DashboardMetricCard
+              title="Ticket médio"
+              value={currencyOrDash(kpis?.average_ticket)}
+              subtitle="Faturamento ÷ consultas pagas"
+              icon={Receipt}
+              accentClassName="bg-primary/15 text-primary"
+              comparison={compare('average_ticket', currency)}
+            />
+          </div>
 
-      <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
+          <AgendaSection categories={data?.categories ?? []} professionals={data?.professionals ?? []} />
+        </TabsContent>
 
-      <SectionTitle title="Agenda" description="Consultas com data dentro do período, de qualquer lead" />
-      {segmented && <Notice>Os filtros de origem e campanha não se aplicam à agenda, que mostra as consultas de todos os leads.</Notice>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardMetricCard
-          title="Consultas no período"
-          value={kpis?.total_appointments ?? 0}
-          subtitle={`${plural(kpis?.total_confirmed ?? 0, 'confirmada', 'confirmadas')} • ${plural(kpis?.total_cancelled ?? 0, 'cancelada', 'canceladas')}`}
-          icon={CalendarDays}
-          accentClassName="bg-primary/15 text-primary"
-          comparison={compare('total_appointments', count)}
-        />
-        <DashboardMetricCard
-          title="Comparecimento"
-          value={percentOrDash(kpis?.show_rate)}
-          subtitle={`${plural(kpis?.appointments_attended ?? 0, 'realizada', 'realizadas')} • ${plural(kpis?.total_no_show ?? 0, 'falta', 'faltas')}`}
-          icon={CheckCircle2}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{
-            title: 'Comparecimento',
-            content: 'Realizadas ÷ (realizadas + faltas). Consultas futuras ou pendentes não entram na taxa.',
-          }}
-          comparison={compare('show_rate', percent)}
-        />
-        <DashboardMetricCard
-          title="Faturamento"
-          value={formatCurrency(kpis?.total_revenue ?? 0)}
-          subtitle={plural(kpis?.paid_appointments ?? 0, 'consulta paga', 'consultas pagas')}
-          icon={DollarSign}
-          accentClassName="bg-primary/15 text-primary"
-          comparison={compare('total_revenue', currency)}
-        />
-        <DashboardMetricCard
-          title="Ticket médio"
-          value={currencyOrDash(kpis?.average_ticket)}
-          subtitle="Faturamento ÷ consultas pagas"
-          icon={Receipt}
-          accentClassName="bg-primary/15 text-primary"
-          comparison={compare('average_ticket', currency)}
-        />
-      </div>
+        <TabsContent value="leads" className="mt-0">
+          <LeadsTab params={{ ...baseParams, ...toApiRange(range) }} />
+        </TabsContent>
 
-      <AgendaSection categories={data?.categories ?? []} professionals={data?.professionals ?? []} />
+        <TabsContent value="review" className="mt-0">
+          <ReviewQueueTab />
+        </TabsContent>
+      </Tabs>
+
+      <LeadJourneySheet contactId={journeyContact} onClose={() => setJourneyContact(null)} />
     </div>
   );
 };
