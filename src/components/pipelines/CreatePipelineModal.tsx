@@ -69,12 +69,14 @@ const getStageTemplates = (t: (key: string) => string): Record<
       name: t('createPipeline.templates.sales.won.name'),
       color: '#10B981',
       description: t('createPipeline.templates.sales.won.description'),
+      stage_type: 'completed',
       position: 5,
     },
     {
       name: t('createPipeline.templates.sales.lost.name'),
       color: '#EF4444',
       description: t('createPipeline.templates.sales.lost.description'),
+      stage_type: 'cancelled',
       position: 6,
     },
     {
@@ -113,6 +115,7 @@ const getStageTemplates = (t: (key: string) => string): Record<
       name: t('createPipeline.templates.support.resolved.name'),
       color: '#10B981',
       description: t('createPipeline.templates.support.resolved.description'),
+      stage_type: 'completed',
       position: 5,
     },
     {

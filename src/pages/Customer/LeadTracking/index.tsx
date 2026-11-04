@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Users,
   CheckCircle2,
-  DollarSign,
   RefreshCw,
   Sparkles,
-  Receipt,
   TrendingUp,
   Info,
 } from 'lucide-react';
@@ -103,7 +101,6 @@ export const LeadTrackingPage: React.FC = () => {
   const historyStart = parseIsoDate(data?.period.ads_history_from ?? null);
   const oldestDay = comparison && comparison.from < range.from ? comparison.from : range.from;
   const historyIncomplete = showAds && historyStart && historyStart > oldestDay;
-  const segmented = Boolean(filters.source || filters.campaign);
 
   return (
     <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
