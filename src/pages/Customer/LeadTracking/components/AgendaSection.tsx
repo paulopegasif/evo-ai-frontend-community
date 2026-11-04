@@ -14,7 +14,7 @@ import {
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { CategoryPerformance, ProfessionalPerformance } from '@/types/leadTracking';
 import { AXIS_PROPS, SERIES } from './chartConfig';
-import { DASH, compactCurrency, formatCurrency, percentOrDash, plural } from './format';
+import { DASH, compactCurrency, currencyOrDash, formatCurrency, percentOrDash, plural } from './format';
 
 interface AgendaSectionProps {
   categories: CategoryPerformance[];
@@ -30,6 +30,19 @@ const professionalColumns: TableColumn<ProfessionalPerformance>[] = [
   { key: 'no_show', label: 'Faltas', align: 'right' },
   { key: 'pending', label: 'A realizar', align: 'right' },
   {
+    key: 'no_outcome',
+    label: 'Sem desfecho',
+    align: 'right',
+    render: (p) =>
+      p.no_outcome > 0 ? (
+        <span className="text-amber-600 font-medium" title="Data já passou e o status não foi atualizado">
+          {p.no_outcome}
+        </span>
+      ) : (
+        0
+      ),
+  },
+  {
     key: 'show_rate',
     label: 'Comparecimento',
     align: 'right',
@@ -44,6 +57,8 @@ const professionalColumns: TableColumn<ProfessionalPerformance>[] = [
         </Badge>
       ),
   },
+  { key: 'won', label: 'Vendas', align: 'right' },
+  { key: 'sale_rate', label: 'Conversão', align: 'right', render: (p) => percentOrDash(p.sale_rate) },
   { key: 'revenue', label: 'Faturamento', align: 'right', render: (p) => <span className="font-medium">{formatCurrency(p.revenue)}</span> },
 ];
 
@@ -51,8 +66,8 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
   const revenueRows = categories.filter((c) => c.revenue > 0);
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-      <Card className="xl:col-span-2">
+    <div className="grid grid-cols-1 gap-4">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Stethoscope className="h-4 w-4 text-primary" />
@@ -60,7 +75,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
           </CardTitle>
           <CardDescription>Faturamento das consultas realizadas e volume agendado no período</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5">
+        <CardContent className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
           {categories.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma consulta no período.</p>
           ) : (
@@ -86,6 +101,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
                     <th className="text-left font-normal pb-1.5">Procedimento</th>
                     <th className="text-right font-normal pb-1.5">Consultas</th>
                     <th className="text-right font-normal pb-1.5">Faturamento</th>
+                    <th className="text-right font-normal pb-1.5">Ticket</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -100,6 +116,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
                       <td className="py-1.5 text-right tabular-nums whitespace-nowrap">
                         {formatCurrency(c.revenue)} <span className="text-muted-foreground">({percentOrDash(c.revenue_share)})</span>
                       </td>
+                      <td className="py-1.5 text-right tabular-nums whitespace-nowrap">{currencyOrDash(c.ticket)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -109,14 +126,14 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
         </CardContent>
       </Card>
 
-      <Card className="xl:col-span-3">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
             Desempenho por profissional
           </CardTitle>
           <CardDescription>
-            Comparecimento = realizadas ÷ (realizadas + faltas); consultas futuras não entram na taxa
+            Comparecimento = realizadas ÷ (realizadas + faltas). “Sem desfecho”: data passou e o status não foi atualizado
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">

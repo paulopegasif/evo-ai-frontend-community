@@ -1,8 +1,8 @@
-import { Eye, Megaphone, MessageCircle, MousePointerClick, Percent, Receipt, Target, UserPlus, Wallet, DollarSign } from 'lucide-react';
+import { Eye, MessageCircle, MousePointerClick, Percent, Receipt, UserPlus } from 'lucide-react';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import type { LeadTrackingKPIs } from '@/types/leadTracking';
 import type { KpiComparer } from '../compare';
-import { currencyOrDash, formatCurrency, formatNumber, percentOrDash, plural, roasOrDash } from './format';
+import { currencyOrDash, formatNumber, percentOrDash } from './format';
 
 interface PaidMediaSectionProps {
   kpis: LeadTrackingKPIs;
@@ -23,16 +23,7 @@ const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardMetricCard
-          title="Investimento"
-          value={formatCurrency(kpis.ad_spend)}
-          subtitle="Gasto na Meta Ads no período"
-          icon={Megaphone}
-          accentClassName={ACCENT}
-          importance="primary"
-          comparison={compare('ad_spend', currency, 'neutral')}
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <DashboardMetricCard
           title="Conversas iniciadas na Meta"
           value={formatNumber(kpis.conversations)}
@@ -42,14 +33,6 @@ const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => {
           importance="primary"
           tooltip={{ title: 'Conversas iniciadas', content: META_NOTE }}
           comparison={compare('conversations', count)}
-        />
-        <DashboardMetricCard
-          title="Custo por conversa"
-          value={currencyOrDash(kpis.cost_per_conversation)}
-          subtitle="Investimento ÷ conversas iniciadas"
-          icon={Target}
-          accentClassName={ACCENT}
-          comparison={compare('cost_per_conversation', currency, 'lower_is_better')}
         />
         {isClickToWhatsApp ? (
           <DashboardMetricCard
@@ -100,7 +83,7 @@ const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => {
       />
       <DashboardMetricCard
         title="CTR"
-        value={percentOrDash(kpis.ctr)}
+        value={percentOrDash(kpis.ctr, 2)}
         subtitle="Cliques no link ÷ impressões"
         icon={Percent}
         accentClassName={ACCENT}
@@ -116,45 +99,6 @@ const PaidMediaSection = ({ kpis, compare }: PaidMediaSectionProps) => {
       />
     </div>
 
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <DashboardMetricCard
-        title="Leads de anúncio no CRM"
-        value={kpis.ad_leads}
-        subtitle={plural(kpis.ad_won, 'venda', 'vendas')}
-        icon={UserPlus}
-        accentClassName={ACCENT}
-        tooltip={{
-          title: 'Leads de anúncio no CRM',
-          content: 'Contatos criados no período cujo primeiro contato veio de um anúncio da Meta.',
-        }}
-        comparison={compare('ad_leads', count)}
-      />
-      <DashboardMetricCard
-        title="CPL no CRM"
-        value={currencyOrDash(kpis.avg_cpl)}
-        subtitle="Investimento ÷ leads de anúncio no CRM"
-        icon={Target}
-        accentClassName={ACCENT}
-        comparison={compare('avg_cpl', currency, 'lower_is_better')}
-      />
-      <DashboardMetricCard
-        title="CAC"
-        value={currencyOrDash(kpis.ad_cac)}
-        subtitle="Investimento ÷ vendas de anúncio"
-        icon={Wallet}
-        accentClassName={ACCENT}
-        comparison={compare('ad_cac', currency, 'lower_is_better')}
-      />
-      <DashboardMetricCard
-        title="ROAS"
-        value={roasOrDash(kpis.roas)}
-        subtitle={`${formatCurrency(kpis.ad_revenue)} em receita`}
-        icon={DollarSign}
-        accentClassName={ACCENT}
-        tooltip={{ title: 'Retorno sobre anúncios', content: 'Receita dos leads de anúncio do período ÷ investimento.' }}
-        comparison={compare('roas', roasOrDash)}
-      />
-    </div>
   </div>
   );
 };

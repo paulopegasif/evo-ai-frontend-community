@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 import CustomerRoute from './CustomerRoute';
@@ -88,6 +89,12 @@ import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
 // Páginas admin
 import AdminSettingsLayout from '@/pages/Admin/Settings';
+
+/** Old dashboard sub-route: keep period and filters from bookmarks and shared links. */
+const LegacyTrackingRedirect = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/tracking${search}`} replace />;
+};
 const RolesList = React.lazy(() => import('@/pages/Admin/Roles/RolesList'));
 const RoleDetail = React.lazy(() => import('@/pages/Admin/Roles/RoleDetail'));
 const SmtpConfig = React.lazy(() => import('@/pages/Admin/Settings/SmtpConfig'));
@@ -1427,8 +1434,10 @@ const AppRouter = () => {
             }
           />
 
+          <Route path="/dashboard/leads" element={<LegacyTrackingRedirect />} />
+
           <Route
-            path="/dashboard/leads"
+            path="/tracking"
             element={
               <PrivateRoute>
                 <CustomerRoute>

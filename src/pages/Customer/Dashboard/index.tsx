@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Badge, Card, CardContent } from '@evoapi/design-system';
 import { BaseHeader } from '@/components/base';
@@ -18,7 +18,6 @@ import DashboardPerformanceSection from './components/DashboardPerformanceSectio
 import type { DashboardFilterState, DashboardOption } from './components/types';
 import { DashboardTour } from '@/tours';
 import { LayoutDashboard, TrendingUp } from 'lucide-react';
-import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
 const ALL_FILTER_VALUE = '__all__';
 
@@ -96,27 +95,18 @@ const CustomerDashboardPage = () => {
   const [draftFilters, setDraftFilters] = useState<DashboardFilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<DashboardFilterState>(defaultFilters);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<'operational' | 'leads'>(tabFromUrl === 'leads' ? 'leads' : 'operational');
+  const navigate = useNavigate();
+  const activeTab = 'operational' as 'operational' | 'leads';
 
+  // Lead tracking moved to its own module; keep old `?tab=leads` links working.
   useEffect(() => {
-    if (tabFromUrl === 'leads' || tabFromUrl === 'operational') {
-      setActiveTab(tabFromUrl);
-    }
-  }, [tabFromUrl]);
+    if (tabFromUrl === 'leads') navigate('/tracking', { replace: true });
+  }, [tabFromUrl, navigate]);
 
   const handleTabChange = (tab: 'operational' | 'leads') => {
-    setActiveTab(tab);
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      if (tab === 'leads') {
-        next.set('tab', 'leads');
-      } else {
-        next.delete('tab');
-      }
-      return next;
-    }, { replace: true });
+    if (tab === 'leads') navigate('/tracking');
   };
 
   const [pipelines, setPipelines] = useState<DashboardOption[]>([]);
@@ -337,9 +327,7 @@ const CustomerDashboardPage = () => {
         </div>
       </div>
 
-      {activeTab === 'leads' ? (
-        <LeadTrackingPage />
-      ) : (
+      {activeTab === 'leads' ? null : (
         <>
           <div className="-mt-3 flex justify-end" data-tour="dashboard-period-badge">
             <Badge variant="secondary">

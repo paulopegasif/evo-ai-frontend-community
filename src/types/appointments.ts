@@ -24,6 +24,16 @@ export interface Appointment {
   start_timestamp: number;
   end_timestamp: number;
   duration_minutes: number;
+  /** Date known, time not yet ("horário a definir"); spans the whole account-zone day. */
+  all_day?: boolean;
+  /** YYYY-MM-DD in the account time zone. */
+  day?: string;
+  /** Where the appointment came from (e.g. "bitrix24"); null when created in the CRM. */
+  source?: string | null;
+  /** Only in GET /appointments/:id */
+  pipeline_stage?: { id: string; name: string; stage_type: number } | null;
+  /** Only in GET /appointments/:id */
+  lead_origin?: import('./leadTracking').LeadOrigin | null;
   status: AppointmentStatus;
   user_id: string;
   user?: {
@@ -60,6 +70,7 @@ export interface AppointmentCreateParams {
   start_time: string;
   end_time?: string;
   duration_minutes?: number;
+  all_day?: boolean;
   status?: AppointmentStatus;
   user_id?: string;
   contact_id?: string;

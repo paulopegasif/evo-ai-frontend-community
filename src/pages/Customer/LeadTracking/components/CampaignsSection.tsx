@@ -150,7 +150,7 @@ const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
     { key: 'spend', label: 'Gasto', align: 'right', sortable: true, render: (c) => currencyOrDash(c.spend) },
     { key: 'impressions', label: 'Impressões', align: 'right', sortable: true, render: (c) => count(c.impressions) },
     { key: 'link_clicks', label: 'Cliques', align: 'right', sortable: true, render: (c) => count(c.link_clicks) },
-    { key: 'ctr', label: 'CTR', align: 'right', sortable: true, render: (c) => percentOrDash(c.ctr) },
+    { key: 'ctr', label: 'CTR', align: 'right', sortable: true, render: (c) => percentOrDash(c.ctr, 2) },
     { key: 'conversations', label: 'Conversas', align: 'right', sortable: true, render: (c) => count(c.conversations) },
     {
       key: 'cost_per_conversation',
