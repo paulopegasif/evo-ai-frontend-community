@@ -415,7 +415,8 @@
       "connectButton": "Conectar com Facebook",
       "description": "Conecte com sua conta do Facebook para preencher automaticamente as informações do WhatsApp Business",
       "connecting": "Conectando...",
-      "loadingSDK": "Carregando SDK do Facebook..."
+      "loadingSDK": "Carregando SDK do Facebook...",
+      "useBusinessApp": "O número já é usado no app WhatsApp Business (manter o app no celular)"
     },
     "autoFilled": {
       "title": "Informações Preenchidas Automaticamente",
