@@ -38,6 +38,11 @@ const Block = ({ title, description, children }: { title: string; description: s
 /** Acquisition → conversion → return, the three questions management asks. */
 const ExecutiveSummary = ({ kpis, compare }: Props) => {
   const ads = Boolean(kpis?.has_ad_spend);
+  // Same base as the funnel: leads of the period who attended ÷ who scheduled. The agenda's
+  // show rate counts appointments of any lead and lives in the Agenda section.
+  const scheduledToAttended = kpis?.total_scheduled
+    ? ((kpis.total_attended ?? 0) / kpis.total_scheduled) * 100
+    : null;
 
   return (
     <div className="space-y-6">
@@ -101,7 +106,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
         <DashboardMetricCard
           title="Compareceram"
           value={kpis?.total_attended ?? 0}
-          subtitle={`${percentOrDash(kpis?.show_rate)} de comparecimento${ads && kpis?.cost_per_attended != null ? ` · ${currencyOrDash(kpis.cost_per_attended)} cada` : ''}`}
+          subtitle={`${percentOrDash(scheduledToAttended)} dos que agendaram${ads && kpis?.cost_per_attended != null ? ` · ${currencyOrDash(kpis.cost_per_attended)} cada` : ''}`}
           icon={CheckCircle2}
           accentClassName={ACCENT}
           comparison={compare('total_attended', count)}
