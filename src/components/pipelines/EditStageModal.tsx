@@ -20,6 +20,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Switch,
 } from '@evoapi/design-system';
 import { PipelineStage } from '@/types/analytics';
 import type { StageAutomationRule } from '@/types/analytics/pipelines';
@@ -60,6 +61,7 @@ interface EditStageModalProps {
     name: string;
     color: string;
     stage_type: string;
+    counts_as_qualified?: boolean;
     automation_rules?: { description?: string; rules?: StageAutomationRule[] };
     custom_fields?: Record<string, unknown> & {
       attributes?: string[];
@@ -83,6 +85,7 @@ export default function EditStageModal({
   const [name, setName] = useState('');
   const [color, setColor] = useState('#3B82F6');
   const [stageType, setStageType] = useState('active');
+  const [countsAsQualified, setCountsAsQualified] = useState(false);
   const [description, setDescription] = useState('');
   const [customAttributes, setCustomAttributes] = useState<Record<string, unknown>>({});
   const [automationRules, setAutomationRules] = useState<StageAutomationRule[]>([]);
@@ -199,6 +202,7 @@ export default function EditStageModal({
       setName(stage.name);
       setColor(stage.color);
       setStageType(stage.stage_type || 'active');
+      setCountsAsQualified(Boolean(stage.counts_as_qualified));
       setDescription(stage.automation_rules?.description || stage.description || '');
       setAutomationRules(stage.automation_rules?.rules || []);
       // Load attributes array from custom_fields.attributes
@@ -261,6 +265,7 @@ export default function EditStageModal({
       name: name.trim(),
       color,
       stage_type: stageType,
+      counts_as_qualified: countsAsQualified,
       automation_rules: Object.keys(automationRulesPayload).length > 0 ? automationRulesPayload : undefined,
       custom_fields: attributeKeys.length > 0
         ? {
@@ -352,6 +357,22 @@ export default function EditStageModal({
                 <SelectItem value="cancelled">{t('editStage.stageTypes.cancelled')}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Lead tracking qualification */}
+          <div className="flex items-start justify-between gap-4 rounded-lg border border-border p-3">
+            <div>
+              <Label htmlFor="stage-counts-as-qualified">Conta como lead qualificado</Label>
+              <p className="text-xs text-muted-foreground">
+                No Tracking de Leads, quem chega a esta etapa entra em “qualificados”, mesmo sem avaliação marcada.
+              </p>
+            </div>
+            <Switch
+              id="stage-counts-as-qualified"
+              checked={countsAsQualified}
+              onCheckedChange={setCountsAsQualified}
+              disabled={stageType === 'cancelled'}
+            />
           </div>
 
           {/* Description */}

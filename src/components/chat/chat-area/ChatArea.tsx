@@ -247,11 +247,18 @@ const ChatArea = ({
   // Determinar se deve mostrar restrições
   const hasMessagingWindowRestriction =
     isWhatsAppChannel || isInstagramChannel || isMessengerChannel;
+  // Bitrix24 mirror: a read-only copy of the history; replies go through Bitrix until WhatsApp is connected here.
+  const inboxRecord = inbox as { read_only_mirror?: boolean; additional_attributes?: Record<string, unknown> } | null;
+  const isReadOnlyMirror =
+    inboxRecord?.read_only_mirror === true || inboxRecord?.additional_attributes?.read_only_mirror === true;
   const shouldShowRestrictionBanner =
-    (!canReply && hasMessagingWindowRestriction && !isWhatsAppFreeTextChannel) || isDisconnected;
+    (!canReply && hasMessagingWindowRestriction && !isWhatsAppFreeTextChannel) || isDisconnected || isReadOnlyMirror;
 
   // Mensagem do banner quando não pode responder
   const getBannerMessage = () => {
+    if (isReadOnlyMirror) {
+      return 'Cópia das conversas do Bitrix24, somente leitura. Responda pelo Bitrix24 até o WhatsApp ser conectado aqui.';
+    }
     if (isDisconnected) {
       const errorMessage = providerConnection?.error || '';
       return (
@@ -274,7 +281,7 @@ const ChatArea = ({
   const getBannerLinkText = () => {
     // Não mostrar texto do link quando Z-API/Evolution está desconectado ou é canal free text
     // Esses providers não têm restrições de janela de 24 horas, apenas precisam estar conectados
-    if (isDisconnected || isZapiChannel || isEvolutionChannel) {
+    if (isReadOnlyMirror || isDisconnected || isZapiChannel || isEvolutionChannel) {
       return undefined;
     }
     return t('chatArea.banner.linkText');
@@ -285,7 +292,7 @@ const ChatArea = ({
   const getBannerLink = () => {
     // Se Z-API/Evolution está desconectado, não mostrar link de restrições de 24 horas
     // Esses providers não têm restrições de janela de 24 horas, apenas precisam estar conectados
-    if (isDisconnected || isZapiChannel || isEvolutionChannel) {
+    if (isReadOnlyMirror || isDisconnected || isZapiChannel || isEvolutionChannel) {
       return undefined;
     }
     if (isWhatsAppChannel && !isWhatsAppFreeTextChannel) {

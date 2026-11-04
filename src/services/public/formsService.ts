@@ -36,6 +36,18 @@ export interface FormSubmissionResult {
  * Endpoints: GET /public/api/v1/forms/:slug e POST .../submissions.
  * Não requer autenticação — o slug resolve o formulário/tenant.
  */
+const TRACKING_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+
+/** UTM/fbclid da URL da página pública, usados na atribuição de origem do lead. */
+const trackingFromLocation = (): Record<string, string> => {
+  const search = new URLSearchParams(window.location.search);
+  return TRACKING_PARAMS.reduce<Record<string, string>>((acc, key) => {
+    const value = search.get(key);
+    if (value) acc[key] = value;
+    return acc;
+  }, {});
+};
+
 class FormsService {
   private baseURL = '/forms';
 
@@ -47,7 +59,7 @@ class FormsService {
   async submit(slug: string, values: Record<string, unknown>): Promise<FormSubmissionResult> {
     const { data } = await apiPublic.post<FormSubmissionResult>(
       `${this.baseURL}/${slug}/submissions`,
-      { submission: values },
+      { submission: values, tracking: trackingFromLocation() },
     );
     return data;
   }
