@@ -144,7 +144,9 @@ export const CalendarPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const rawView = searchParams.get('view');
   const storedView = typeof window !== 'undefined' ? window.localStorage.getItem(VIEW_KEY) : null;
-  const view: ViewMode = isView(rawView) ? rawView : isView(storedView) ? storedView : 'week';
+  // Phones open on the list by default: seven columns do not fit.
+  const defaultView: ViewMode = typeof window !== 'undefined' && window.innerWidth < 768 ? 'list' : 'week';
+  const view: ViewMode = isView(rawView) ? rawView : isView(storedView) ? storedView : defaultView;
   const rawDate = searchParams.get('date');
   const anchor = isDayKey(rawDate) ? rawDate : todayKey();
 
@@ -491,7 +493,12 @@ export const CalendarPage: React.FC = () => {
         />
       )}
       {view === 'list' && (
-        <CalendarListView appointments={visible} onSelectAppointment={setPanelAppointment} onRefresh={fetchAppointments} />
+        <CalendarListView
+          appointments={visible}
+          categories={categories}
+          onSelectAppointment={setPanelAppointment}
+          onRefresh={fetchAppointments}
+        />
       )}
 
       <AppointmentSidePanel

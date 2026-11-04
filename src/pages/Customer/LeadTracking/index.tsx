@@ -73,7 +73,7 @@ export const LeadTrackingPage: React.FC = () => {
       },
       { replace: true },
     );
-  const [journeyContact, setJourneyContact] = useState<string | null>(null);
+  const [journeyContact, setJourneyContact] = useState<string | null>(() => searchParams.get('lead'));
   const { filters, setPreset, setCompare, setFilter, clearFilters } = useLeadTrackingFilters();
   const [data, setData] = useState<LeadTrackingDashboardResponse | null>(null);
   const [previous, setPrevious] = useState<LeadTrackingDashboardResponse | null>(null);
@@ -268,7 +268,17 @@ export const LeadTrackingPage: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      <LeadJourneySheet contactId={journeyContact} onClose={() => setJourneyContact(null)} />
+      <LeadJourneySheet
+        contactId={journeyContact}
+        onClose={() => {
+          setJourneyContact(null);
+          if (searchParams.has('lead')) {
+            const next = new URLSearchParams(searchParams);
+            next.delete('lead');
+            setSearchParams(next, { replace: true });
+          }
+        }}
+      />
     </div>
   );
 };

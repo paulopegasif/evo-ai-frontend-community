@@ -297,8 +297,18 @@ export interface LeadRow {
 
 export interface LeadListResponse {
   leads: LeadRow[];
-  meta: { page: number; per_page: number; total_count: number; total_pages: number };
+  meta: {
+    page: number;
+    per_page: number;
+    total_count: number;
+    total_pages: number;
+    /** Leads per funnel step after the search term, before the step filter. */
+    step_counts?: Record<LeadStep | 'all', number>;
+  };
 }
+
+/** Furthest funnel step a lead reached. */
+export type LeadStep = 'not_scheduled' | 'scheduled' | 'attended' | 'won';
 
 export type LeadListSort = 'entered_at' | 'estimated_cost' | 'revenue';
 

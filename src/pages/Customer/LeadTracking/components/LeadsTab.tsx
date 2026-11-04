@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Download, Users } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Download, Search, Users } from 'lucide-react';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@evoapi/design-system';
 import { toast } from 'sonner';
 import { BaseTable, type TableColumn } from '@/components/base';
 import BasePagination from '@/components/base/BasePagination';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
-import type { LeadListResponse, LeadListSort, LeadRow, LeadTrackingParams } from '@/types/leadTracking';
+import type { LeadListResponse, LeadListSort, LeadRow, LeadStep, LeadTrackingParams } from '@/types/leadTracking';
 import { DASH, currencyOrDash, formatCurrency } from './format';
 import { COST_BASIS_LABELS, formatDate, statusLabel } from './labels';
 import LeadJourneySheet from './LeadJourneySheet';
@@ -15,6 +15,14 @@ interface LeadsTabProps {
 }
 
 const SORTABLE: LeadListSort[] = ['entered_at', 'estimated_cost', 'revenue'];
+
+const STEPS: { key: LeadStep | 'all'; label: string }[] = [
+  { key: 'all', label: 'Todos' },
+  { key: 'not_scheduled', label: 'Sem agendamento' },
+  { key: 'scheduled', label: 'Agendaram' },
+  { key: 'attended', label: 'Compareceram' },
+  { key: 'won', label: 'Compraram' },
+];
 
 const outcome = (lead: LeadRow) => {
   if (lead.won) return <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30" variant="outline">Venda</Badge>;
@@ -31,15 +39,24 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
   const [sort, setSort] = useState<LeadListSort>('entered_at');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
   const [selected, setSelected] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [query, setQuery] = useState('');
+  const [step, setStep] = useState<LeadStep | 'all'>('all');
   const paramsKey = JSON.stringify(params);
+  const filters = { q: query || undefined, step: step === 'all' ? undefined : step };
 
-  useEffect(() => setPage(1), [paramsKey]);
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(searchInput.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => setPage(1), [paramsKey, query, step]);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     leadTrackingService
-      .getLeadList({ ...params, page, per_page: perPage, sort, order })
+      .getLeadList({ ...params, ...filters, page, per_page: perPage, sort, order })
       .then((response) => !cancelled && setData(response))
       .catch(() => !cancelled && toast.error('Erro ao carregar a lista de leads.'))
       .finally(() => !cancelled && setLoading(false));
@@ -48,7 +65,7 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
     };
     // paramsKey stands for `params`, a new object on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramsKey, page, perPage, sort, order]);
+  }, [paramsKey, query, step, page, perPage, sort, order]);
 
   const onSort = (column: string) => {
     if (!SORTABLE.includes(column as LeadListSort)) return;
@@ -61,7 +78,7 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
 
   const exportCsv = useCallback(async () => {
     try {
-      const blob = await leadTrackingService.downloadLeadListCsv({ ...params, sort, order });
+      const blob = await leadTrackingService.downloadLeadListCsv({ ...params, ...filters, sort, order });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -71,7 +88,8 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
     } catch {
       toast.error('Erro ao exportar os leads.');
     }
-  }, [params, sort, order]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, query, step, sort, order]);
 
   const columns: TableColumn<LeadRow>[] = [
     {
@@ -159,6 +177,41 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
         </Button>
       </CardHeader>
       <CardContent className="space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center gap-2">
+          <div className="relative md:w-80 shrink-0">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Buscar por nome, telefone ou campanha"
+              className="pl-8 h-9"
+              aria-label="Buscar leads"
+            />
+          </div>
+          <div className="flex items-center gap-1 overflow-x-auto" role="tablist" aria-label="Situação no funil">
+            {STEPS.map(({ key, label }) => {
+              const count = data?.meta.step_counts?.[key];
+              const active = step === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setStep(key)}
+                  className={`shrink-0 inline-flex items-center gap-1.5 rounded-md px-2.5 h-8 text-xs font-medium border transition-colors ${
+                    active
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {label}
+                  {count != null && <span className={active ? 'opacity-80' : 'opacity-60'}>{count}</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <BaseTable
           data={data?.leads ?? []}
           columns={columns}
@@ -167,8 +220,8 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
           sortOrder={order}
           onSort={onSort}
           getRowKey={(lead) => lead.id}
-          emptyTitle="Nenhum lead no período"
-          emptyDescription="Ajuste o período ou os filtros."
+          emptyTitle={query || step !== 'all' ? 'Nenhum lead encontrado' : 'Nenhum lead no período'}
+          emptyDescription={query || step !== 'all' ? 'Tente outro termo ou situação.' : 'Ajuste o período ou os filtros.'}
         />
         {data && data.meta.total_count > 0 && (
           <BasePagination

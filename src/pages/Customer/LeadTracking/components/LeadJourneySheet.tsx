@@ -140,13 +140,16 @@ const LeadJourneySheet = ({ contactId, onClose }: LeadJourneySheetProps) => {
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Canal" value={origin.source} />
                 <Field label="Campanha" value={origin.campaign_name} />
-                <Field label="Conjunto" value={origin.adset_name} />
-                <Field
-                  label="Anúncio"
-                  value={origin.ad_unavailable ? `${origin.ad_id} (removido ou de outra conta)` : origin.ad_name ?? origin.ad_id}
-                />
-                <Field label="Texto do anúncio" value={origin.ad_headline} />
-                <Field label="ID de clique (CTWA)" value={origin.ctwa_clid} />
+                {/* Ad fields only when the lead came from an ad. */}
+                {origin.adset_name && <Field label="Conjunto" value={origin.adset_name} />}
+                {origin.ad_id && (
+                  <Field
+                    label="Anúncio"
+                    value={origin.ad_unavailable ? `${origin.ad_id} (removido ou de outra conta)` : origin.ad_name ?? origin.ad_id}
+                  />
+                )}
+                {origin.ad_headline && <Field label="Texto do anúncio" value={origin.ad_headline} />}
+                {origin.ctwa_clid && <Field label="ID de clique (CTWA)" value={origin.ctwa_clid} />}
               </div>
               {origin.cost_basis && (
                 <p className="text-xs text-muted-foreground">Custo estimado pelo {COST_BASIS_LABELS[origin.cost_basis]}.</p>

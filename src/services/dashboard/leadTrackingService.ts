@@ -4,6 +4,7 @@ import type {
   LeadJourney,
   LeadListResponse,
   LeadListSort,
+  LeadStep,
   LeadTrackingDashboardResponse,
   LeadTrackingParams,
   UnlinkedSale,
@@ -14,6 +15,9 @@ export interface LeadListParams extends LeadTrackingParams {
   per_page?: number;
   sort?: LeadListSort;
   order?: 'asc' | 'desc';
+  /** Name, phone or campaign. */
+  q?: string;
+  step?: LeadStep;
 }
 
 class LeadTrackingService {

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import type { Appointment } from '@/types/appointments';
 import { appointmentDayKey, dateFromKey, todayKey, zonedMinutes, zonedTime } from '@/utils/accountTime';
@@ -65,8 +65,20 @@ const layout = (items: Appointment[]): Placed[] => {
   return placed;
 };
 
+/** Minutes since midnight in the account zone, refreshed every minute. */
+const useNowMinutes = () => {
+  const [now, setNow] = useState(() => zonedMinutes(new Date()));
+  useEffect(() => {
+    const timer = setInterval(() => setNow(zonedMinutes(new Date())), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  return now;
+};
+
 const CalendarTimeGrid: React.FC<Props> = ({ columns, appointments, onSelectAppointment, onSelectSlot }) => {
   const today = todayKey();
+  const nowMinutes = useNowMinutes();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const { timed, allDay, startHour, endHour } = useMemo(() => {
     const timedApts = appointments.filter((a) => !a.all_day);
@@ -89,11 +101,26 @@ const CalendarTimeGrid: React.FC<Props> = ({ columns, appointments, onSelectAppo
     appointmentDayKey(apt) === column.day && (!column.userId || apt.user_id === column.userId);
 
   const hours = Array.from({ length: endHour - startHour }, (_, i) => startHour + i);
+  const showsToday = columns.some((c) => c.day === today);
+  const columnsKey = columns.map((c) => c.key).join('|');
+
+  // Open on the first appointment (or the current hour today) instead of the top of the day.
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const visibleDays = new Set(columns.map((c) => c.day));
+    const starts = timed.filter((a) => visibleDays.has(appointmentDayKey(a))).map((a) => zonedMinutes(a.start_time));
+    const target = showsToday ? nowMinutes : starts.length ? Math.min(...starts) : DEFAULT_START * 60 + 60;
+    const offset = ((Math.max(target, startHour * 60) - startHour * 60) / 60 - 1) * HOUR_HEIGHT;
+    container.scrollTop = Math.max(0, offset);
+    // Only when the visible range changes, not on every minute tick or refetch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnsKey, timed.length > 0]);
   const gridTemplate = `56px repeat(${columns.length}, minmax(140px, 1fr))`;
   const hasAllDay = allDay.length > 0;
 
   return (
-    <div className="bg-card border border-border rounded-xl overflow-auto shadow-xs max-h-[calc(100vh-260px)]">
+    <div ref={scrollRef} className="bg-card border border-border rounded-xl overflow-auto shadow-xs max-h-[calc(100vh-260px)]">
       <div className="min-w-fit">
         {/* Column headers */}
         <div className="grid sticky top-0 z-20 bg-card border-b border-border" style={{ gridTemplateColumns: gridTemplate }}>
@@ -162,6 +189,18 @@ const CalendarTimeGrid: React.FC<Props> = ({ columns, appointments, onSelectAppo
                     ))}
                   </div>
                 ))}
+
+                {isToday && nowMinutes >= startHour * 60 && nowMinutes < endHour * 60 && (
+                  <div
+                    className="absolute left-0 right-0 z-30 pointer-events-none"
+                    style={{ top: ((nowMinutes - startHour * 60) / 60) * HOUR_HEIGHT }}
+                    aria-hidden
+                  >
+                    <div className="relative h-px bg-rose-500">
+                      <span className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-rose-500" />
+                    </div>
+                  </div>
+                )}
 
                 {placed.map(({ apt, start, end, lane, lanes }) => {
                   const top = ((start - startHour * 60) / 60) * HOUR_HEIGHT;

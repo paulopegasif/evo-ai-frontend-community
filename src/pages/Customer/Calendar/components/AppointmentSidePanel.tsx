@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarClock, Edit2, Info, Megaphone, MessageSquare, Phone, Stethoscope, User } from 'lucide-react';
+import { CalendarClock, Edit2, Info, Megaphone, MessageCircle, MessageSquare, Phone, Route, Stethoscope, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge, Button, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@evoapi/design-system';
 import { toast } from 'sonner';
@@ -26,6 +26,13 @@ const Row = ({ icon: Icon, children }: { icon: React.ElementType; children: Reac
 );
 
 const SOURCE_LABELS: Record<string, string> = { bitrix24: 'Bitrix24' };
+
+/** wa.me link for a phone number; Brazilian numbers without country code get 55. */
+const whatsappUrl = (phone: string) => {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 10) return null;
+  return `https://wa.me/${digits.length <= 11 ? `55${digits}` : digits}`;
+};
 
 /** Quick view of an appointment: who, when, where the lead came from, and one-click status. */
 const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, onChanged }) => {
@@ -168,6 +175,22 @@ const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, o
                 {apt.conversation_id && (
                   <Button size="sm" variant="outline" onClick={() => navigate(`/conversations/${apt.conversation_id}`)}>
                     <MessageSquare className="h-4 w-4 mr-1.5" /> Conversa
+                  </Button>
+                )}
+                {apt.contact?.phone_number && whatsappUrl(apt.contact.phone_number) && (
+                  <Button size="sm" variant="outline" asChild>
+                    <a href={whatsappUrl(apt.contact.phone_number) ?? undefined} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="h-4 w-4 mr-1.5" /> WhatsApp
+                    </a>
+                  </Button>
+                )}
+                {(apt.contact_id ?? apt.contact?.id) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/tracking?tab=leads&lead=${apt.contact_id ?? apt.contact?.id}`)}
+                  >
+                    <Route className="h-4 w-4 mr-1.5" /> Jornada do lead
                   </Button>
                 )}
               </div>
