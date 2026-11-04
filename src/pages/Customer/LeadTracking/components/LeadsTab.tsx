@@ -84,13 +84,20 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
         </button>
       ),
     },
-    { key: 'entered_at', label: 'Entrada', sortable: true, render: (lead) => formatDate(lead.entered_at, true) },
+    {
+      key: 'entered_at',
+      label: 'Entrada',
+      sortable: true,
+      render: (lead) => <span className="whitespace-nowrap">{formatDate(lead.entered_at)}</span>,
+    },
     {
       key: 'campaign_name',
       label: 'Origem',
       render: (lead) => (
-        <div className="max-w-[240px]">
-          <span className="text-sm">{lead.campaign_name ?? lead.source}</span>
+        <div className="max-w-[220px]">
+          <span className="block text-sm truncate" title={lead.campaign_name ?? lead.source}>
+            {lead.campaign_name ?? lead.source}
+          </span>
           <span className="block text-xs text-muted-foreground truncate">
             {[lead.source !== lead.campaign_name ? lead.source : null, lead.adset_name, lead.ad_name].filter(Boolean).join(' · ')}
           </span>
@@ -108,7 +115,15 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
         </span>
       ),
     },
-    { key: 'stage_name', label: 'Etapa', render: (lead) => lead.stage_name ?? DASH },
+    {
+      key: 'stage_name',
+      label: 'Etapa',
+      render: (lead) => (
+        <span className="block max-w-[150px] truncate" title={lead.stage_name ?? undefined}>
+          {lead.stage_name ?? DASH}
+        </span>
+      ),
+    },
     {
       key: 'evaluation_at',
       label: 'Avaliação',

@@ -84,7 +84,7 @@ const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, o
               </SheetDescription>
             </SheetHeader>
 
-            <div className="space-y-5 mt-4 px-1">
+            <div className="space-y-5 mt-2 px-4 pb-6">
               <div className="space-y-2.5">
                 <Row icon={CalendarClock}>
                   {formatZoned(apt.start_time, { weekday: 'long', day: '2-digit', month: 'long' })} ·{' '}

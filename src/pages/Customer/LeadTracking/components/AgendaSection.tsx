@@ -66,8 +66,8 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
   const revenueRows = categories.filter((c) => c.revenue > 0);
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-      <Card className="xl:col-span-2">
+    <div className="grid grid-cols-1 gap-4">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Stethoscope className="h-4 w-4 text-primary" />
@@ -75,7 +75,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
           </CardTitle>
           <CardDescription>Faturamento das consultas realizadas e volume agendado no período</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5">
+        <CardContent className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
           {categories.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma consulta no período.</p>
           ) : (
@@ -126,7 +126,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
         </CardContent>
       </Card>
 
-      <Card className="xl:col-span-3">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />

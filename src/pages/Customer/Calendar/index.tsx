@@ -98,7 +98,7 @@ const shiftAnchor = (view: ViewMode, anchor: string, direction: 1 | -1) => {
 const rangeTitle = (view: ViewMode, anchor: string, [from, to]: [string, string]) => {
   const date = dateFromKey(anchor);
   if (view === 'day') {
-    return capitalize(date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
+    return capitalize(date.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }));
   }
   if (view === 'week') {
     const a = dateFromKey(from);
@@ -130,15 +130,13 @@ const Counter = ({
     type="button"
     onClick={onClick}
     disabled={!onClick}
-    className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-left enabled:hover:bg-muted/40 transition-colors"
+    className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 text-left enabled:hover:bg-muted/40 transition-colors min-w-0"
   >
-    <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${className}`}>
-      <Icon className="h-4 w-4" />
+    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${className}`}>
+      <Icon className="h-3.5 w-3.5" />
     </span>
-    <span>
-      <span className="block text-lg font-semibold leading-none">{value}</span>
-      <span className="text-xs text-muted-foreground">{label}</span>
-    </span>
+    <span className="text-lg font-semibold leading-none">{value}</span>
+    <span className="text-xs text-muted-foreground leading-tight truncate" title={label}>{label}</span>
   </button>
 );
 
@@ -301,19 +299,11 @@ export const CalendarPage: React.FC = () => {
           icon: <Plus className="h-4 w-4" />,
           onClick: () => openCreate(),
         }}
-        secondaryActions={[
-          {
-            label: 'Atualizar',
-            icon: <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />,
-            onClick: fetchAppointments,
-            disabled: loading,
-          },
-        ]}
       />
 
       {/* Counters of the visible period */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-        <Counter label={`agendamentos ${periodLabel}`} value={stats.total} icon={CalendarDays} className="bg-primary/15 text-primary" />
+        <Counter label={`total ${periodLabel}`} value={stats.total} icon={CalendarDays} className="bg-primary/15 text-primary" />
         <Counter
           label="a confirmar"
           value={stats.scheduled}
@@ -353,8 +343,8 @@ export const CalendarPage: React.FC = () => {
 
       {/* Controls & filters */}
       <Card>
-        <CardContent className="p-4 space-y-3">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <CardContent className="p-3 space-y-3">
+          <div className="flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -377,7 +367,18 @@ export const CalendarPage: React.FC = () => {
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <h2 className="text-lg font-semibold ml-2">{rangeTitle(view, anchor, range)}</h2>
+              <h2 className="text-lg font-semibold ml-2 whitespace-nowrap">{rangeTitle(view, anchor, range)}</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-muted-foreground"
+                onClick={fetchAppointments}
+                disabled={loading}
+                aria-label="Atualizar"
+                title="Atualizar"
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              </Button>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
@@ -409,6 +410,27 @@ export const CalendarPage: React.FC = () => {
                 </SelectContent>
               </Select>
 
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className={`${controlClassName} w-[220px]`} aria-label="Filtrar por procedimento">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-80">
+                  <SelectItem value={ALL}>Todos os procedimentos</SelectItem>
+                  {categories.map((cat) => {
+                    const count = visible.filter((a) => a.category === cat.name).length;
+                    return (
+                      <SelectItem key={cat.name} value={cat.name}>
+                        <span className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                          <span className="truncate">{cat.name}</span>
+                          <span className="text-xs text-muted-foreground">{count}</span>
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+
               <div className="flex items-center rounded-lg border border-border p-0.5" role="tablist" aria-label="Visão">
                 {VIEWS.map(({ value, label, icon: Icon }) => (
                   <Button
@@ -428,55 +450,24 @@ export const CalendarPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Category filter, legend and cancelled toggle */}
-          <div className="pt-3 border-t border-border flex flex-col xl:flex-row xl:items-center gap-3 justify-between">
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-              <span className="text-sm text-muted-foreground shrink-0 mr-1">Procedimentos</span>
-              <Button
-                variant={selectedCategory === ALL ? 'default' : 'outline'}
-                size="sm"
-                className="shrink-0 rounded-full"
-                onClick={() => setSelectedCategory(ALL)}
-              >
-                Todos ({visible.length})
-              </Button>
-              {categories.map((cat) => {
-                const count = visible.filter((a) => a.category === cat.name).length;
-                const isSelected = selectedCategory === cat.name;
-                return (
-                  <Button
-                    key={cat.name}
-                    variant={isSelected ? 'default' : 'outline'}
-                    size="sm"
-                    className="shrink-0 rounded-full gap-1.5"
-                    onClick={() => setSelectedCategory(isSelected ? ALL : cat.name)}
-                  >
-                    <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                    {cat.name}
-                    <span className="text-xs opacity-70">({count})</span>
-                  </Button>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center gap-4 flex-wrap shrink-0">
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                {(['scheduled', 'confirmed', 'attended', 'no_show'] as const).map((status) => (
-                  <span key={status} className="flex items-center gap-1">
-                    <span className={`h-2 w-2 rounded-full ${STATUS_STYLES[status].dot}`} />
-                    {STATUS_STYLES[status].label}
-                  </span>
-                ))}
-                <span className="flex items-center gap-1">
-                  <CalendarClock className="h-3 w-3 text-amber-500" /> sem desfecho
+          {/* Legend and cancelled toggle */}
+          <div className="pt-3 border-t border-border flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
+              {(['scheduled', 'confirmed', 'attended', 'no_show'] as const).map((status) => (
+                <span key={status} className="flex items-center gap-1">
+                  <span className={`h-2 w-2 rounded-full ${STATUS_STYLES[status].dot}`} />
+                  {STATUS_STYLES[status].label}
                 </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="hide-cancelled" checked={hideCancelled} onCheckedChange={toggleHideCancelled} />
-                <Label htmlFor="hide-cancelled" className="text-xs text-muted-foreground cursor-pointer">
-                  Ocultar cancelados
-                </Label>
-              </div>
+              ))}
+              <span className="flex items-center gap-1">
+                <CalendarClock className="h-3 w-3 text-amber-500" /> sem desfecho
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch id="hide-cancelled" checked={hideCancelled} onCheckedChange={toggleHideCancelled} />
+              <Label htmlFor="hide-cancelled" className="text-xs text-muted-foreground cursor-pointer">
+                Ocultar cancelados
+              </Label>
             </div>
           </div>
         </CardContent>

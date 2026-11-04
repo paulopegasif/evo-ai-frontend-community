@@ -93,7 +93,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
         <DashboardMetricCard
           title="Agendaram"
           value={kpis?.total_scheduled ?? 0}
-          subtitle={`${percentOrDash(kpis?.scheduling_rate)} dos leads${ads ? ` · ${currencyOrDash(kpis?.cost_per_scheduled)} por agendamento` : ''}`}
+          subtitle={`${percentOrDash(kpis?.scheduling_rate)} dos leads${ads && kpis?.cost_per_scheduled != null ? ` · ${currencyOrDash(kpis.cost_per_scheduled)} por agendamento` : ''}`}
           icon={CalendarCheck}
           accentClassName={ACCENT}
           comparison={compare('total_scheduled', count)}
@@ -101,7 +101,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
         <DashboardMetricCard
           title="Compareceram"
           value={kpis?.total_attended ?? 0}
-          subtitle={`${percentOrDash(kpis?.show_rate)} de comparecimento${ads ? ` · ${currencyOrDash(kpis?.cost_per_attended)} cada` : ''}`}
+          subtitle={`${percentOrDash(kpis?.show_rate)} de comparecimento${ads && kpis?.cost_per_attended != null ? ` · ${currencyOrDash(kpis.cost_per_attended)} cada` : ''}`}
           icon={CheckCircle2}
           accentClassName={ACCENT}
           comparison={compare('total_attended', count)}

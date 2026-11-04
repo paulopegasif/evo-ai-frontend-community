@@ -106,16 +106,16 @@ const LeadJourneySheet = ({ contactId, onClose }: LeadJourneySheetProps) => {
           </SheetDescription>
         </SheetHeader>
 
-        {error && <p className="text-sm text-destructive mt-4">Não foi possível carregar a jornada deste lead.</p>}
+        {error && <p className="text-sm text-destructive mt-4 px-4">Não foi possível carregar a jornada deste lead.</p>}
         {!journey && !error && (
-          <div className="space-y-3 mt-4">
+          <div className="space-y-3 mt-4 px-4">
             <Skeleton className="h-24 w-full" />
             <Skeleton className="h-40 w-full" />
           </div>
         )}
 
         {journey && origin && (
-          <div className="space-y-5 mt-4 px-1">
+          <div className="space-y-5 mt-2 px-4 pb-6">
             <div className="grid grid-cols-3 gap-3 rounded-lg border border-border p-3">
               <Field
                 label="Custo estimado"
