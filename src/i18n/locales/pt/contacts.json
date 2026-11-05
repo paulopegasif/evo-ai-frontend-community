@@ -308,6 +308,7 @@
     "deleteError": "Erro ao deletar contato",
     "bulkDeleteSuccess": "{{count}} contato(s) deletado(s) com sucesso",
     "bulkDeleteError": "Erro ao deletar contatos",
+    "bulkDeletePartial": "{{deleted}} contato(s) deletado(s), {{failed}} não puderam ser deletados",
     "mergeSuccess": "Contatos mesclados com sucesso",
     "mergeError": "Erro ao mesclar contatos",
     "importSuccess": "Contatos importados com sucesso",
