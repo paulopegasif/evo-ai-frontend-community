@@ -300,6 +300,7 @@
     "deleteError": "Errore durante l'eliminazione del contatto",
     "bulkDeleteSuccess": "{{count}} contatto/i eliminato/i con successo",
     "bulkDeleteError": "Errore durante l'eliminazione dei contatti",
+    "bulkDeletePartial": "{{deleted}} contatto/i eliminato/i, {{failed}} non è stato possibile eliminarli",
     "importSuccess": "Contatti importati con successo",
     "importQueued": "Importazione avviata. Riceverai un'email quando l'elaborazione sarà completata.",
     "importError": "Errore durante l'importazione dei contatti",

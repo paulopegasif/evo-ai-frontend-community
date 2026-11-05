@@ -300,6 +300,7 @@
     "deleteError": "Erreur lors de la suppression du contact",
     "bulkDeleteSuccess": "{{count}} contact(s) supprimé(s) avec succès",
     "bulkDeleteError": "Erreur lors de la suppression des contacts",
+    "bulkDeletePartial": "{{deleted}} contact(s) supprimé(s), {{failed}} n'ont pas pu être supprimés",
     "mergeSuccess": "Contacts fusionnés avec succès",
     "mergeError": "Erreur lors de la fusion des contacts",
     "importSuccess": "Contacts importés avec succès",
