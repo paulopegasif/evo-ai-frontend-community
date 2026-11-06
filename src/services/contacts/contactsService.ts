@@ -301,7 +301,7 @@ class ContactsService {
   }
 
   // Bulk Actions
-  async bulkDelete(contactIds: string[]): Promise<{ message: string; affected_count?: number }> {
+  async bulkDelete(contactIds: string[]): Promise<{ success_ids?: string[]; failed_ids?: string[] }> {
     const response = await api.post(`/bulk_actions`, {
       type: 'Contact',
       ids: contactIds,
@@ -309,7 +309,7 @@ class ContactsService {
         action: 'delete',
       },
     });
-    return extractData<{ message: string; affected_count?: number }>(response);
+    return extractData<{ success_ids?: string[]; failed_ids?: string[] }>(response);
   }
 
   async bulkUpdateLabels(
