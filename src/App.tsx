@@ -10,6 +10,8 @@ import { PermissionsProvider } from './contexts/PermissionsContext';
 import { UISettingsApplier } from './components/UISettingsApplier';
 import { unlockAudioContext } from '@/utils/audioNotificationUtils';
 import { PluginHostProvider, PluginSlot } from '@/plugin-host';
+import ErrorBoundary from './components/ErrorBoundary';
+import RootErrorFallback from './components/RootErrorFallback';
 
 import { Toaster } from '@evoapi/design-system';
 
@@ -59,6 +61,8 @@ function App() {
   }, []);
 
   return (
+    // Root boundary: a render error must not leave the user on a blank page.
+    <ErrorBoundary fallback={RootErrorFallback}>
     <PluginHostProvider>
       <AuthProvider>
         <DarkModeProvider>
@@ -78,6 +82,7 @@ function App() {
         </DarkModeProvider>
       </AuthProvider>
     </PluginHostProvider>
+    </ErrorBoundary>
   );
 }
 
