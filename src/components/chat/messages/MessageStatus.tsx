@@ -23,7 +23,12 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
   // isFromBot ali só ficam true junto de isOwn (ver MessageList.tsx). Notas privadas mantêm
   // fundo claro mesmo com isOwn, então ficam com o texto neutro.
   const isOnColoredBubble = isOwn && !message.private;
-  const timeTextClass = isOnColoredBubble ? 'text-white/70' : 'text-muted-foreground';
+  // On the colored bubble, inherit the bubble's foreground (white on a dark
+  // primary, black on a light one) instead of a fixed white that vanished on
+  // light brand palettes in dark mode.
+  const timeTextClass = isOnColoredBubble ? 'opacity-70' : 'text-muted-foreground';
+  const tickClass = isOnColoredBubble ? 'opacity-70' : 'text-muted-foreground';
+  const readTickClass = isOnColoredBubble ? 'text-sky-500' : 'text-primary';
 
   const getStatusIcon = () => {
     if (!isOwn) return null;
@@ -73,11 +78,11 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
       case 'sent':
         // Para mensagens privadas, 'sent' é o status final correto
         // Para mensagens públicas, 'sent' indica que foi enviada para o canal
-        return <Check className="h-3 w-3 text-muted-foreground" />;
+        return <Check className={`h-3 w-3 ${tickClass}`} />;
       case 'delivered':
-        return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
+        return <CheckCheck className={`h-3 w-3 ${tickClass}`} />;
       case 'read':
-        return <CheckCheck className="h-3 w-3 text-primary" />;
+        return <CheckCheck className={`h-3 w-3 ${readTickClass}`} />;
       case 'progress':
         return <Loader2 className="h-3 w-3 text-blue-500 animate-spin" />;
       case 'failed':
@@ -122,7 +127,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
     <div
       className={`flex items-center gap-1 mt-1.5 text-xs ${isOwn ? 'justify-end' : 'justify-start'}`}
     >
-      <span className="text-muted-foreground">{formatMessageTime(message.created_at)}</span>
+      <span className={timeTextClass}>{formatMessageTime(message.created_at)}</span>
       {getStatusIcon()}
     </div>
   );
