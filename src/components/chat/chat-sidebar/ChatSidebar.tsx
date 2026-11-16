@@ -41,6 +41,7 @@ import {
   ArrowLeft,
   Check,
   User as UserIcon,
+  Inbox as InboxIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useChatContext } from '@/contexts/chat/ChatContext';
@@ -59,6 +60,7 @@ import { ConversationSkeleton } from '../loading-states';
 import { NoConversations } from '../empty-states';
 import ContactAvatar from '../contact/ContactAvatar';
 import ConversationBadges from '../conversation/ConversationBadges';
+import ConversationStatusIcon from '../conversation/ConversationStatusIcon';
 import ConversationsFilterPopover from '../filters/ConversationsFilterPopover';
 import ConversationSegments from './ConversationSegments';
 import GlobalSearchPanel from '../search/GlobalSearchPanel';
@@ -951,22 +953,25 @@ const ChatSidebar = ({
               const phoneDisplay = isPhoneBearingChannel(channelType)
                 ? formatContactPhone(conversation.contact?.phone_number)
                 : null;
+              const inboxName = conversation.inbox?.name || conversation.inbox_name;
+              const assigneeName = conversation.assignee?.name;
+              const contactName = conversation.contact?.name;
+              const unreadCount = conversations.getUnreadCount(conversation.id) || 0;
+              const hasUnread = unreadCount > 0;
 
               return renderConversationContextMenu(
                 conversation,
                 <div
                   key={conversation.id}
-                  // Moldura (border/margin/radius) é a MESMA em todo estado — só a cor muda
-                  // (border transparente quando não selecionado). Border/margin ocupam espaço
-                  // no box model; existir só nos estados selecionados fazia o card "pular"
-                  // de posição ao (des)selecionar (o vizinho de baixo era empurrado pelo
-                  // mb-2.5 que só um dos 3 ramos tinha).
-                  className={`p-4 mx-0.5 mb-2.5 rounded-[14px] border cursor-pointer transition-colors ${
+                  data-testid="conversation-row"
+                  // Moldura (border-b + barra esquerda de 2px) é a MESMA em todo estado —
+                  // só a cor muda — para a row não "pular" ao (des)selecionar.
+                  className={`flex items-start gap-2.5 px-3 py-2.5 border-b border-border/60 border-l-2 cursor-pointer transition-colors ${
                     isBulkSelected
-                      ? 'bg-primary/5 border-primary/20'
+                      ? 'bg-muted border-l-primary/40'
                       : isSelected
-                        ? 'bg-primary/10 border-primary/30 shadow-[0_1px_3px_rgba(20,50,35,0.05)]'
-                        : 'border-transparent hover:bg-accent'
+                        ? 'bg-accent border-l-primary'
+                        : 'border-l-transparent hover:bg-muted/50'
                   }`}
                   onClick={() =>
                     selectionMode
@@ -974,100 +979,106 @@ const ChatSidebar = ({
                       : onConversationSelect(conversation)
                   }
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3 min-w-0 flex-1">
-                      {selectionMode && (
-                        <div
-                          className="mt-1 flex-shrink-0"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <Checkbox
-                            checked={selectedConversationIds.has(String(conversation.display_id))}
-                            onCheckedChange={(checked: boolean | 'indeterminate') => {
-                              const isSelected = selectedConversationIds.has(String(conversation.display_id));
-                              if ((checked === true && !isSelected) || (checked === false && isSelected)) {
-                                onToggleSelect(String(conversation.display_id));
-                              }
-                            }}
-                            aria-label={t('chatSidebar.selectConversation')}
-                            className="border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                          />
-                        </div>
-                      )}
-                      <ContactAvatar
-                        contact={conversation.contact}
-                        channelType={channelType}
-                        channelProvider={channelProvider}
-                        size="mdlg"
-                        showRing
+                  {selectionMode && (
+                    <div className="mt-2.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedConversationIds.has(String(conversation.display_id))}
+                        onCheckedChange={(checked: boolean | 'indeterminate') => {
+                          const isSelected = selectedConversationIds.has(String(conversation.display_id));
+                          if ((checked === true && !isSelected) || (checked === false && isSelected)) {
+                            onToggleSelect(String(conversation.display_id));
+                          }
+                        }}
+                        aria-label={t('chatSidebar.selectConversation')}
+                        className="border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                       />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 min-w-0 mb-1">
-                          <p className="font-medium truncate">
-                            {conversation.contact?.name || t('chatSidebar.contactNoName')}
-                          </p>
-                          {Boolean(conversation.custom_attributes?.pinned) && (
-                            <Pin className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                          )}
-                          {conversation.additional_attributes?.conversation_type === 'post' && (
-                            <Badge
-                              variant="outline"
-                              className="h-4 px-1.5 text-[10px] bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700 flex-shrink-0"
-                              title="Facebook Post"
-                            >
-                              <FileText className="h-2.5 w-2.5 mr-0.5" />
-                              Post
-                            </Badge>
-                          )}
-                        </div>
-
-                        {phoneDisplay && (
-                          <p
-                            className="text-xs text-muted-foreground truncate"
-                            title={t('chatSidebar.phoneNumber')}
-                            aria-label={`${t('chatSidebar.phoneNumber')}: ${phoneDisplay}`}
-                          >
-                            {phoneDisplay}
-                          </p>
+                    </div>
+                  )}
+                  <div className="mt-0.5 flex-shrink-0">
+                    <ContactAvatar
+                      contact={conversation.contact}
+                      channelType={channelType}
+                      channelProvider={channelProvider}
+                      size="md"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    {/* Linha 1: caixa de entrada (esq.) · responsável + status (dir.) */}
+                    <div className="flex items-center justify-between gap-2 text-[11px] leading-4 text-muted-foreground">
+                      <span className="flex items-center gap-1 min-w-0" title={inboxName}>
+                        {inboxName && (
+                          <>
+                            <InboxIcon className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{inboxName}</span>
+                          </>
                         )}
+                      </span>
+                      <span className="flex items-center gap-1.5 min-w-0 flex-shrink-0 max-w-[55%]">
+                        {assigneeName && (
+                          <span className="flex items-center gap-1 min-w-0" title={assigneeName}>
+                            <UserIcon className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{assigneeName}</span>
+                          </span>
+                        )}
+                        <ConversationStatusIcon status={conversation.status} size="xs" />
+                      </span>
+                    </div>
 
-                        <p className="text-sm text-muted-foreground truncate">
-                          {getLastMessage(conversation)}
+                    {/* Linha 2: nome do contato (esq.) · horário (dir.) */}
+                    <div className="flex items-center justify-between gap-2 mt-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <p
+                          className="text-sm font-semibold text-foreground truncate"
+                          title={
+                            phoneDisplay
+                              ? `${contactName ? `${contactName} · ` : ''}${t('chatSidebar.phoneNumber')}: ${phoneDisplay}`
+                              : contactName || undefined
+                          }
+                        >
+                          {contactName || phoneDisplay || t('chatSidebar.contactNoName')}
                         </p>
-
-                        {/* Badges da conversa */}
-                        <ConversationBadges conversation={conversation} maxLabels={2} />
-
-                        {/* Assignee indicator badge */}
-                        {conversation?.assignee && (
-                          <div className="flex items-center gap-1.5 mt-1">
-                            <div className="flex items-center space-x-1.5 px-2 py-1 rounded-md text-xs font-medium bg-primary/10 dark:bg-primary/20">
-                              <UserIcon className="h-3 w-3 flex-shrink-0 text-primary dark:text-primary" />
-                              <span
-                                className="truncate max-w-32 text-primary dark:text-primary/90"
-                                title={conversation.assignee?.name}
-                              >
-                                {conversation.assignee?.name}
-                              </span>
-                            </div>
-                          </div>
+                        {Boolean(conversation.custom_attributes?.pinned) && (
+                          <Pin className="h-3 w-3 text-primary flex-shrink-0" />
+                        )}
+                        {conversation.additional_attributes?.conversation_type === 'post' && (
+                          <Badge
+                            variant="outline"
+                            className="h-4 px-1.5 text-[10px] bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700 flex-shrink-0"
+                            title="Facebook Post"
+                          >
+                            <FileText className="h-2.5 w-2.5 mr-0.5" />
+                            Post
+                          </Badge>
                         )}
                       </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
                       <span
-                        className="text-xs text-muted-foreground leading-none"
+                        className={`text-[11px] leading-4 flex-shrink-0 ${
+                          hasUnread ? 'text-foreground font-medium' : 'text-muted-foreground'
+                        }`}
                         title={formatDetailedTime(conversation.timestamp)}
                       >
                         {formatConversationTime(conversation.timestamp)}
                       </span>
+                    </div>
+
+                    {/* Linha 3: prévia da última mensagem (esq.) · não lidas (dir.) */}
+                    <div className="flex items-center justify-between gap-2 mt-0.5 min-h-5">
+                      <p
+                        className={`text-[13px] leading-5 truncate min-w-0 ${
+                          hasUnread ? 'text-foreground font-medium' : 'text-muted-foreground'
+                        }`}
+                      >
+                        {getLastMessage(conversation)}
+                      </p>
                       <UnreadBadge
-                        count={conversations.getUnreadCount(conversation.id) || 0}
-                        ariaLabel={t('unreadBadge.ariaLabel', {
-                          count: conversations.getUnreadCount(conversation.id) || 0,
-                        })}
+                        count={unreadCount}
+                        ariaLabel={t('unreadBadge.ariaLabel', { count: unreadCount })}
+                        className="flex-shrink-0 min-w-[18px] h-[18px] px-1 text-[10.5px]"
                       />
                     </div>
+
+                    {/* Linha 4 (só quando há algo): prioridade, pipeline/etapa e etiquetas */}
+                    <ConversationBadges conversation={conversation} maxLabels={2} showStatus={false} />
                   </div>
                 </div>,
               );
