@@ -122,11 +122,17 @@ const MessageText: React.FC<MessageTextProps> = ({
 
   // Render HTML for outgoing email template messages (content is HTML from react-email-editor)
   // Check if content is HTML (starts with <!DOCTYPE, <html, or contains HTML tags)
-  const isHtmlContent = safeContent.trim().startsWith('<!DOCTYPE') ||
-                        safeContent.trim().startsWith('<!doctype') ||
-                        safeContent.trim().startsWith('<html') ||
-                        safeContent.trim().startsWith('<HTML') ||
-                        (safeContent.includes('<') && safeContent.includes('</') && safeContent.length > 50);
+  // Only real email documents (full HTML, or table/style-based layouts from the
+  // email editor) take this path: it pins colors to black for theme-independent
+  // templates. Composer messages are plain rich text (<p>, <strong>, <ul>…) and
+  // must use the rich-content path below, which inherits the bubble color —
+  // they used to be caught by a "> 50 chars of HTML" rule and rendered black on
+  // the dark agent bubble.
+  const trimmedContent = safeContent.trim();
+  const isHtmlContent = /^<!doctype/i.test(trimmedContent) ||
+                        /^<html/i.test(trimmedContent) ||
+                        /<(table|body|head|style|center)\b/i.test(safeContent) ||
+                        /<[a-z][^>]*\sstyle\s*=/i.test(safeContent);
 
   if (isHtmlContent && !isPrivateNote) {
     const sanitizedHTML = sanitizeEmailHTML(safeContent);
