@@ -25,6 +25,7 @@ import { Team } from '@/types/users';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLanguage } from '@/hooks/useLanguage';
+import { parseApiDate } from '@/utils/apiDate';
 
 interface TeamDetailsProps {
   open: boolean;
@@ -161,7 +162,7 @@ export default function TeamDetails({
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t('details.overview.created')}</span>
                       <span className="font-mono">
-                        {formatDistanceToNow(new Date(team.created_at), {
+                        {formatDistanceToNow(parseApiDate(team.created_at) ?? new Date(), {
                           addSuffix: true,
                           locale: ptBR,
                         })}

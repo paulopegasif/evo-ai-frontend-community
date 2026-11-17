@@ -6,7 +6,7 @@ import { getStatusConfig } from '@/utils/chat/conversationStatus';
 
 interface ConversationStatusIconProps {
   status: string;
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
 }
 
 const STATUS_ICONS: Record<string, typeof MessageCircle> = {
@@ -22,8 +22,8 @@ const ConversationStatusIcon: React.FC<ConversationStatusIconProps> = ({ status,
   const config = getStatusConfig(status, t);
   const Icon = STATUS_ICONS[status] || MessageCircle;
 
-  const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
-  const containerSize = size === 'sm' ? 'w-5 h-5' : 'w-6 h-6';
+  const iconSize = size === 'xs' ? 'w-2.5 h-2.5' : size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
+  const containerSize = size === 'xs' ? 'w-4 h-4' : size === 'sm' ? 'w-5 h-5' : 'w-6 h-6';
 
   return (
     <TooltipProvider>
@@ -31,7 +31,7 @@ const ConversationStatusIcon: React.FC<ConversationStatusIconProps> = ({ status,
         <TooltipTrigger asChild>
           <div
             className={`
-              ${containerSize} rounded-full ${config.bgColor}
+              ${containerSize} flex-shrink-0 rounded-full ${config.bgColor}
               flex items-center justify-center cursor-help
               hover:scale-110 transition-transform duration-200
             `}

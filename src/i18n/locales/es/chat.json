@@ -9,7 +9,11 @@
       "downloadStarted": "Descarga iniciada",
       "audioFallback": "Audio",
       "playbackError": "Error al reproducir audio",
-      "playbackErrorDescription": "No se pudo reproducir este archivo de audio"
+      "playbackErrorDescription": "No se pudo reproducir este archivo de audio",
+      "play": "Reproducir audio",
+      "pause": "Pausar audio",
+      "download": "Descargar audio",
+      "seek": "Posición del audio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -303,7 +307,8 @@
     "statusButton": {
       "open": "Abrir",
       "complete": "Completar",
-      "reopen": "Reabrir"
+      "reopen": "Reabrir",
+      "more": "Más opciones de estado"
     },
     "statusPill": {
       "open": "Atención en Curso",
@@ -367,7 +372,15 @@
       "noContent": "Mensaje sin contenido"
     },
     "contactNoName": "Contacto sin nombre",
-    "phoneNumber": "Número de teléfono"
+    "phoneNumber": "Número de teléfono",
+    "assigneeTabs": {
+      "label": "Filtrar por responsable",
+      "mine": "Mías",
+      "unassigned": "Sin asignar",
+      "all": "Todas",
+      "chipCleared": "No leídas/Grupos no se combinan con esta pestaña y se quitaron"
+    },
+    "draftPrefix": "Borrador:"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -577,7 +590,9 @@
       },
       "settings": "Configuración",
       "close": "Cerrar"
-    }
+    },
+    "title": "Detalles del contacto",
+    "close": "Cerrar"
   },
   "replyModeToggle": {
     "reply": "Respuesta",
@@ -1006,5 +1021,16 @@
     "ariaLabel_other": "{{count}} mensajes no leídos",
     "menuAriaLabel_one": "{{count}} conversación no leída",
     "menuAriaLabel_other": "{{count}} conversaciones no leídas"
+  },
+  "a11y": {
+    "copy": "Copiar",
+    "scrollToBottom": "Ir al último mensaje",
+    "cancelReply": "Cancelar respuesta",
+    "emoji": "Insertar emoji",
+    "signature": "Firma",
+    "send": "Enviar",
+    "recordAudio": "Grabar audio",
+    "moreActions": "Más acciones",
+    "back": "Volver"
   }
 }

@@ -88,10 +88,10 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
         </CardHeader>
         <CardContent>
           <ChartContainer config={volumeConfig} className="h-[260px] w-full">
-            <LineChart data={rows} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+            <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid vertical={false} strokeOpacity={0.4} />
               <XAxis dataKey="label" {...AXIS_PROPS} minTickGap={16} />
-              <YAxis {...AXIS_PROPS} allowDecimals={false} width={40} />
+              <YAxis {...AXIS_PROPS} allowDecimals={false} width={44} tickFormatter={compactNumber} />
               <ChartTooltip
                 content={<ChartTooltipContent indicator="line" className="min-w-[13rem]" labelFormatter={labelWithPrevious} />}
               />
@@ -179,7 +179,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
             </CardHeader>
             <CardContent>
               <ChartContainer config={conversationsConfig} className="h-[260px] w-full">
-                <LineChart data={rows} margin={{ top: 8, right: 12, left: -8, bottom: 0 }}>
+                <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                   <CartesianGrid vertical={false} strokeOpacity={0.4} />
                   <XAxis dataKey="label" {...AXIS_PROPS} minTickGap={16} />
                   <YAxis {...AXIS_PROPS} allowDecimals={false} width={48} tickFormatter={compactNumber} />

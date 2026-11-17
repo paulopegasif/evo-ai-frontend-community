@@ -680,8 +680,18 @@ export default function Contacts() {
     setState(prev => ({ ...prev, loading: { ...prev.loading, bulk: true } }));
 
     try {
-      await contactsService.bulkDelete(state.selectedContactIds);
-      toast.success(t('messages.bulkDeleteSuccess', { count: state.selectedContactIds.length }));
+      const result = await contactsService.bulkDelete(state.selectedContactIds);
+      const failed = result?.failed_ids?.length ?? 0;
+      if (failed > 0) {
+        toast.error(
+          t('messages.bulkDeletePartial', {
+            deleted: state.selectedContactIds.length - failed,
+            failed,
+          }),
+        );
+      } else {
+        toast.success(t('messages.bulkDeleteSuccess', { count: state.selectedContactIds.length }));
+      }
 
       // Clear selection and refresh
       setState(prev => ({ ...prev, selectedContactIds: [] }));

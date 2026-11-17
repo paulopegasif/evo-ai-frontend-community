@@ -86,34 +86,51 @@ export const useAudioRecorder = (options?: UseAudioRecorderOptions): UseAudioRec
     return 'webm';
   };
 
-  // Monitorar nível de áudio
+  // Monitorar nível de áudio. Roda por refs (não pelo estado isRecording, que
+  // nesta closure ainda era false — o loop parava no 1º frame e a onda ficava
+  // parada). Usa RMS do sinal no tempo (acompanha a voz melhor que a média do
+  // espectro) e publica uma amostra a cada ~90 ms, no ritmo da onda do WhatsApp.
   const monitorAudioLevel = useCallback(() => {
-    if (!analyserRef.current) return;
-
     const analyser = analyserRef.current;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    if (!analyser) return;
 
-    const checkLevel = () => {
-      analyser.getByteFrequencyData(dataArray);
+    const samples = new Uint8Array(analyser.fftSize);
+    const SAMPLE_INTERVAL_MS = 90;
+    let windowPeak = 0;
+    let lastEmit = performance.now();
 
-      // Calcular nível médio
-      let sum = 0;
-      for (let i = 0; i < bufferLength; i++) {
-        sum += dataArray[i];
+    const tick = () => {
+      const recorder = mediaRecorderRef.current;
+      if (!analyserRef.current || !recorder || recorder.state === 'inactive') {
+        animationFrameRef.current = null;
+        return;
       }
-      const average = sum / bufferLength;
-      const normalizedLevel = average / 255; // Normalizar para 0-1
 
-      setAudioLevel(normalizedLevel);
+      if (!isPausedRef.current) {
+        analyser.getByteTimeDomainData(samples);
+        let sumSquares = 0;
+        for (let i = 0; i < samples.length; i++) {
+          const v = (samples[i] - 128) / 128;
+          sumSquares += v * v;
+        }
+        const rms = Math.sqrt(sumSquares / samples.length);
+        windowPeak = Math.max(windowPeak, rms);
 
-      if (isRecording && !isPaused) {
-        animationFrameRef.current = requestAnimationFrame(checkLevel);
+        const now = performance.now();
+        if (now - lastEmit >= SAMPLE_INTERVAL_MS) {
+          // Fala normal fica em ~0.02–0.3 de RMS: curva p/ preencher a altura.
+          setAudioLevel(Math.min(1, Math.sqrt(windowPeak * 3)));
+          windowPeak = 0;
+          lastEmit = now;
+        }
       }
+
+      animationFrameRef.current = requestAnimationFrame(tick);
     };
 
-    checkLevel();
-  }, [isRecording, isPaused]);
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    animationFrameRef.current = requestAnimationFrame(tick);
+  }, []);
 
   // Iniciar gravação
   const startRecording = useCallback(async () => {

@@ -50,16 +50,17 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   // empurra as barras mais antigas pra esquerda, como o waveform real do
   // WhatsApp desenhando enquanto grava.
   const [levels, setLevels] = useState<number[]>(() => new Array(WAVEFORM_BARS).fill(0.15));
-  const levelsRef = useRef(levels);
-  levelsRef.current = levels;
 
+  // Avança a onda num ritmo fixo (também no silêncio), lendo o nível atual.
+  const audioLevelRef = useRef(audioLevel);
+  audioLevelRef.current = audioLevel;
   useEffect(() => {
     if (!isRecording) return;
-    setLevels(prev => {
-      const next = [...prev.slice(1), Math.max(0.12, Math.min(1, audioLevel * 1.8))];
-      return next;
-    });
-  }, [audioLevel, isRecording]);
+    const id = setInterval(() => {
+      setLevels(prev => [...prev.slice(1), Math.max(0.12, Math.min(1, audioLevelRef.current))]);
+    }, 90);
+    return () => clearInterval(id);
+  }, [isRecording]);
 
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -112,6 +113,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
         disabled={disabled}
         className="flex-shrink-0 text-muted-foreground hover:text-destructive disabled:opacity-50 transition-colors"
         title={t('audioRecorder.cancel', 'Cancelar')}
+        aria-label={t('audioRecorder.cancel', 'Cancelar')}
       >
         <Trash2 className="h-5 w-5" />
       </button>
@@ -124,11 +126,11 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
       {/* Waveform reativo — largura fixa (não flex-1: tudo fica agrupado à
           direita, colado nos outros controles, como o WhatsApp) */}
-      <div className="flex-shrink-0 flex items-center gap-[3px] h-8 w-40">
+      <div aria-hidden className="flex-shrink-0 flex items-center gap-[3px] h-8 w-40">
         {levels.map((level, i) => (
           <div
             key={i}
-            className="flex-shrink-0 w-[2px] rounded-full bg-primary/70 transition-[height] duration-75"
+            className="flex-shrink-0 w-[2px] rounded-full bg-primary/70"
             style={{ height: `${Math.max(12, level * 100)}%` }}
           />
         ))}
@@ -140,6 +142,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
         onClick={stopRecording}
         disabled={disabled}
         title={t('audioRecorder.send', 'Enviar')}
+        aria-label={t('audioRecorder.send', 'Enviar')}
         className="flex-shrink-0 w-9 h-9 rounded-full bg-primary hover:bg-primary/85 text-primary-foreground flex items-center justify-center disabled:opacity-50 transition-colors"
       >
         <Send className="h-4 w-4" />

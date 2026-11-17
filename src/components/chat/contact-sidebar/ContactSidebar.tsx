@@ -58,7 +58,7 @@ const CollapsibleHeader = ({
         {description && <p className="text-xs text-muted-foreground truncate">{description}</p>}
       </div>
     </div>
-    <Button variant="ghost" size="sm" onClick={onToggle} className="h-6 w-6 p-0 flex-shrink-0">
+    <Button variant="ghost" size="sm" onClick={onToggle} aria-expanded={isOpen} aria-label={title} className="h-6 w-6 p-0 flex-shrink-0">
       <div className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
         <ChevronDown className="h-3 w-3" />
       </div>
@@ -157,6 +157,16 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
 
   // No mobile, esconder completamente quando fechado
   // No desktop, manter no DOM para animação
+  // Dialog semantics: Esc closes the panel.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen && isMobile) return null;
 
   return (
@@ -171,6 +181,9 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
 
       {/* Sidebar */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('contactSidebar.title', 'Detalhes do contato')}
         className={`
         border-l bg-background flex flex-col h-full
         fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-96 z-40
@@ -190,6 +203,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
             variant="ghost"
             size="sm"
             onClick={onClose}
+            aria-label={t('contactSidebar.close', 'Fechar')}
             className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-muted"
           >
             <X className="h-4 w-4" />

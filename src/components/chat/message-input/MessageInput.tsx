@@ -37,6 +37,7 @@ import AudioRecorder from '../audio';
 import { AIAssistanceButton } from '../ai-assistance';
 import { CannedResponsesList } from '../canned-responses';
 import { buildCannedResponseMessage } from './buildCannedResponseMessage';
+import { clearConversationDraft, getConversationDraft, saveConversationDraft } from './conversationDrafts';
 import { RichTextEditor, RichTextEditorRef } from '../rich-text-editor';
 
 import { Message } from '@/types/chat/api';
@@ -114,6 +115,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const composerRootRef = useRef<HTMLDivElement>(null);
 
+  // 🎯 DRAFTS: unsent text is kept per conversation (WhatsApp-style).
+  const draftUserId = user?.id;
+  const conversationKey = conversationId != null ? String(conversationId) : null;
+  const conversationKeyRef = useRef(conversationKey);
+  const persistDraft = useCallback(
+    (content: string) => {
+      const key = conversationKeyRef.current;
+      if (key) saveConversationDraft(draftUserId, key, content);
+    },
+    [draftUserId],
+  );
+
   // 🎯 EMOJI PICKER: Estado
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
@@ -172,6 +185,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
       richEditorRef.current?.setContent(newMessage);
       setCurrentEditorMessage(newMessage);
+      persistDraft(newMessage);
 
       // A canned response with media owns the attachment slot (channels send a single
       // attachment); drop any manually-added files so both are never sent together.
@@ -193,7 +207,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         richEditorRef.current?.focus();
       }, 0);
     },
-    [selectedFiles, t],
+    [selectedFiles, t, persistDraft],
   );
 
   // 🎯 CANNED RESPONSES: Filtrar respostas com base na query
@@ -210,13 +224,27 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
   }, [replyToMessage]);
 
+  // Switching conversations: swap the composer text for the new conversation's
+  // draft (or empty it). The previous conversation's text was already saved on
+  // every change, so nothing is lost.
   useEffect(() => {
-    if (conversationId) {
+    conversationKeyRef.current = conversationKey;
+    const draft = conversationKey ? getConversationDraft(draftUserId, conversationKey) : '';
+    if (draft) {
+      richEditorRef.current?.setContent(draft);
+    } else {
+      richEditorRef.current?.setContent('');
+    }
+    setCurrentEditorMessage(draft);
+    setShowCannedResponses(false);
+    setCannedResponseQuery('');
+
+    if (conversationKey) {
       setTimeout(() => {
         richEditorRef.current?.focus();
       }, 200);
     }
-  }, [conversationId]);
+  }, [conversationKey, draftUserId]);
 
   // Gerenciar indicador de digitação
   const handleTypingStart = useCallback(() => {
@@ -393,6 +421,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
 
     setIsSending(true);
+    const sentConversationKey = conversationKeyRef.current;
 
     try {
       // Uploaded audio files are sent as-is. For WhatsApp, Baileys/EvoGo will mark
@@ -412,8 +441,13 @@ const MessageInput: React.FC<MessageInputProps> = ({
         isRecordedAudio: recordedAudioFilenames.length > 0 ? recordedAudioFilenames : undefined,
       });
 
-      richEditorRef.current?.clear();
-      setCurrentEditorMessage('');
+      // The agent may have switched conversations while the message was in
+      // flight: only wipe the composer if it still shows the sent conversation.
+      if (sentConversationKey) clearConversationDraft(draftUserId, sentConversationKey);
+      if (conversationKeyRef.current === sentConversationKey) {
+        richEditorRef.current?.clear();
+        setCurrentEditorMessage('');
+      }
       setSelectedFiles([]);
       setUploadProgress({});
 
@@ -600,7 +634,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             })}
           </span>
         </div>
-        <Button
+        <Button aria-label={t('a11y.cancelReply', 'Cancelar resposta')} title={t('a11y.cancelReply', 'Cancelar resposta')}
           variant="ghost"
           size="icon"
           className="h-6 w-6 ml-auto hover:bg-destructive/20 hover:text-destructive"
@@ -730,7 +764,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
             {/* Emoji */}
             <div className="relative flex-shrink-0">
-              <Button
+              <Button aria-label={t('a11y.emoji', 'Inserir emoji')} title={t('a11y.emoji', 'Inserir emoji')}
                 variant="ghost"
                 size="icon"
                 disabled={isDisabled || isSending || isPendingConversation}
@@ -757,7 +791,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             {/* Message Signature (extra do CRM, sem equivalente no protótipo — mantido) */}
             {hasSignature && !isPendingConversation && (
               <div className="relative group flex-shrink-0">
-                <Button
+                <Button aria-label={t('a11y.signature', 'Assinatura')} title={t('a11y.signature', 'Assinatura')}
                   variant="ghost"
                   size="icon"
                   disabled={isDisabled || isSending}
@@ -783,6 +817,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 placeholder={t('messageInput.placeholders.default')}
                 onChange={content => {
                   setCurrentEditorMessage(content);
+                  persistDraft(content);
                   detectCannedResponseTrigger(content);
                   if (content.trim()) {
                     handleTypingStart();
@@ -861,6 +896,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               onApplyText={text => {
                 richEditorRef.current?.setContent(text);
                 setCurrentEditorMessage(text);
+                persistDraft(text);
               }}
               disabled={isDisabled || isSending || isPendingConversation}
               conversationId={conversationId?.toString()}
@@ -871,7 +907,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   {showSendIcon ? (
-                    <Button
+                    <Button aria-label={t('a11y.send', 'Enviar')} title={t('a11y.send', 'Enviar')}
                       variant="ghost"
                       size="icon"
                       onClick={handleSend}
@@ -885,7 +921,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
                       )}
                     </Button>
                   ) : (
-                    <Button
+                    <Button aria-label={t('a11y.recordAudio', 'Gravar áudio')} title={t('a11y.recordAudio', 'Gravar áudio')}
                       variant="ghost"
                       size="icon"
                       disabled={isDisabled || isSending}

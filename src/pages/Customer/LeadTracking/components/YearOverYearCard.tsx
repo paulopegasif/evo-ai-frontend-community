@@ -98,6 +98,7 @@ const YearOverYearCard = ({ filters, adsHistoryFrom }: YearOverYearCardProps) =>
     return point ? point[metric] : 0;
   };
   const rows = MONTHS.map((label, month) => ({ label, a: valueFor(yearA, month), b: valueFor(yearB, month) }));
+  const hasData = rows.some((r) => (r.a ?? 0) > 0 || (r.b ?? 0) > 0);
   const config = {
     a: { label: String(yearA), color: 'var(--chart-3)' },
     b: { label: String(yearB), color: 'var(--chart-1)' },
@@ -162,6 +163,11 @@ const YearOverYearCard = ({ filters, adsHistoryFrom }: YearOverYearCardProps) =>
           )}
           {loading && !Object.keys(timelines).length ? (
             <Skeleton className="h-[280px] w-full" />
+          ) : !hasData ? (
+            <div className="h-[200px] flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-center">
+              <p className="text-sm font-medium">Sem dados de “{selected.label}” em {yearA} e {yearB}</p>
+              <p className="text-xs text-muted-foreground">Escolha outra métrica ou outros anos.</p>
+            </div>
           ) : (
             <ChartContainer config={config} className="h-[280px] w-full">
               <BarChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }} barGap={2}>
