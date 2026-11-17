@@ -71,7 +71,8 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
     icon: PieChart,
   },
   {
-    name: 'Tracking de Leads',
+    id: 'customer-lead-tracking',
+    name: t('menu.customer.leadTracking'),
     href: '/tracking',
     icon: TrendingUp,
   },

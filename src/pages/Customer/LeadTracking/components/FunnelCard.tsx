@@ -12,7 +12,7 @@ const FunnelCard = ({ funnel }: FunnelCardProps) => {
   const leads = funnel[0]?.count || 0;
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Layers className="h-4 w-4 text-primary" />
@@ -30,15 +30,15 @@ const FunnelCard = ({ funnel }: FunnelCardProps) => {
         ) : (
           <ol className="space-y-2.5">
             {funnel.map((stage, idx) => (
-              <li key={stage.key} className="grid grid-cols-[minmax(110px,160px)_1fr_auto] items-center gap-3">
-                <span className="text-sm text-muted-foreground truncate">{stage.stage}</span>
+              <li key={stage.key} className="grid grid-cols-[minmax(96px,170px)_minmax(0,1fr)_auto] items-center gap-3">
+                <span className="text-sm leading-tight text-muted-foreground break-words">{stage.stage}</span>
                 <div className="h-7 w-full rounded-md bg-muted overflow-hidden">
                   <div
                     className="h-full rounded-md bg-[var(--chart-1)] transition-all duration-500"
                     style={{ width: `${Math.max(((stage.count || 0) / leads) * 100, 1)}%`, opacity: 1 - idx * 0.12 }}
                   />
                 </div>
-                <div className="flex items-center gap-2 text-sm tabular-nums justify-end min-w-[150px]">
+                <div className="flex items-center gap-2 text-sm tabular-nums justify-end">
                   <span className="font-semibold">{stage.count}</span>
                   <span className="text-muted-foreground w-12 text-right">{percentOrDash(stage.percentage)}</span>
                   <span

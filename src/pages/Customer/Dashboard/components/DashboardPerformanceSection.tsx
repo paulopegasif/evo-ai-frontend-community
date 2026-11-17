@@ -2,7 +2,7 @@ import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from
 import { Bot, Layers, TrendingUp, Users } from 'lucide-react';
 import { OperationHeatmapCard } from '@/components/charts';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
-import { formatCurrency, formatSeconds } from './dashboardUtils';
+import { formatCurrency, formatSeconds, formatInteger } from './dashboardUtils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
@@ -18,9 +18,6 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
     return value === key ? fallback : value;
   };
 
-  const pipelineConversionRate = data.stats.total_conversations > 0
-    ? ((data.pipeline.total / data.stats.total_conversations) * 100)
-    : 0;
   const avgTicketValue = data.pipeline.total > 0 ? (data.pipeline.total_value / data.pipeline.total) : 0;
   const topValueChannels = [...data.channels].sort((a, b) => b.value - a.value).slice(0, 3);
 
@@ -107,14 +104,14 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               <div className="space-y-6">
                 {data.pipeline.stages.map((stage, index) => {
                   const percentage = data.pipeline.total > 0 ? (stage.count / data.pipeline.total) * 100 : 0;
-                  const colors = ['bg-blue-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-violet-500', 'bg-purple-500'];
-                  const color = colors[index % colors.length];
+                  // One brand color fading by stage (same language as the lead funnel).
+                  const opacity = Math.max(1 - index * 0.14, 0.35);
 
                   return (
                     <div key={stage.id || stage.name} className="group">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className={`h-3 w-3 rounded-full ${color}`} />
+                          <div className="h-3 w-3 rounded-full bg-[var(--chart-1)]" style={{ opacity }} />
                           <span className="font-semibold text-base">{stage.name}</span>
                           <Badge variant="outline" className="text-xs">
                             {stage.count} {t('dashboard.pipeline.opportunities')}
@@ -123,7 +120,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                         <span className="text-lg font-semibold">{formatCurrency(stage.value)}</span>
                       </div>
                       <div className="relative w-full bg-secondary/50 rounded-full h-3 overflow-hidden">
-                        <div className={`${color} h-3 rounded-full transition-all duration-500`} style={{ width: `${percentage}%` }} />
+                        <div className="h-3 rounded-full bg-[var(--chart-1)] transition-all duration-500" style={{ width: `${percentage}%`, opacity }} />
                       </div>
                     </div>
                   );
@@ -144,8 +141,8 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="rounded-md border p-3 bg-muted/10">
-              <div className="text-sm text-muted-foreground">{tx('dashboard.pipeline.conversionRate', 'Conversas no funil')}</div>
-              <div className="text-xl font-semibold">{pipelineConversionRate.toFixed(2)}%</div>
+              <div className="text-sm text-muted-foreground">{tx('dashboard.pipeline.openOpportunities', 'Oportunidades no funil')}</div>
+              <div className="text-xl font-semibold">{formatInteger(data.pipeline.total)}</div>
             </div>
             <div className="rounded-md border p-3 bg-muted/10">
               <div className="text-sm text-muted-foreground">{tx('dashboard.pipeline.avgTicket', 'Ticket médio no funil')}</div>

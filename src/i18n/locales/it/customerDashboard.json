@@ -61,7 +61,8 @@
       "insights": "Riepilogo pipeline",
       "conversionRate": "Conversazioni in pipeline",
       "avgTicket": "Ticket medio pipeline",
-      "totalValue": "Valore totale pipeline"
+      "totalValue": "Valore totale pipeline",
+      "openOpportunities": "Opportunità nel funnel"
     },
     "responseTime": {
       "title": "Velocità di Risposta",
