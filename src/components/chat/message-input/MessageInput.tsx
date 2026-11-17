@@ -764,7 +764,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
             {/* Emoji */}
             <div className="relative flex-shrink-0">
-              <Button aria-label={t('a11y.emoji', 'Emojis')} title={t('a11y.emoji', 'Emojis')}
+              <Button aria-label={t('a11y.emoji', 'Inserir emoji')} title={t('a11y.emoji', 'Inserir emoji')}
                 variant="ghost"
                 size="icon"
                 disabled={isDisabled || isSending || isPendingConversation}
