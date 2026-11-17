@@ -46,7 +46,7 @@ const DashboardMetricCard = ({
   const valueClassName = importance === 'primary' ? 'text-3xl font-semibold' : 'text-2xl font-semibold';
 
   return (
-    <Card className={importance === 'primary' ? 'border-primary/30 bg-primary/[0.03] h-full' : 'h-full'}>
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-start justify-between pb-2 gap-3">
         <div className="min-w-0">
           <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1">

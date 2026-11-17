@@ -61,7 +61,8 @@
       "insights": "Pipeline summary",
       "conversionRate": "Conversations in pipeline",
       "avgTicket": "Average pipeline ticket",
-      "totalValue": "Total pipeline value"
+      "totalValue": "Total pipeline value",
+      "openOpportunities": "Open opportunities"
     },
     "responseTime": {
       "title": "Response Speed",
