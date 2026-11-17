@@ -76,6 +76,10 @@ vi.mock('../conversation/ConversationBadges', () => ({
   default: () => <div data-testid="conversation-badges" />,
 }));
 
+vi.mock('../conversation/ConversationStatusIcon', () => ({
+  default: () => <div data-testid="conversation-status-icon" />,
+}));
+
 vi.mock('../conversation/ConversationsFilter', () => ({
   default: () => <div data-testid="conversations-filter" />,
 }));
@@ -182,7 +186,7 @@ const openContextMenuPipelineStage = async (
   pipelineName: string,
   stageName: string,
 ) => {
-  const row = screen.getByText('Test Contact').closest('div[class*="p-4"]') as HTMLElement;
+  const row = screen.getByText('Test Contact').closest('[data-testid="conversation-row"]') as HTMLElement;
   fireEvent.contextMenu(row);
 
   const addToTrigger = await screen.findByText('pipeline.addTo', {}, { timeout: 2000 });
@@ -208,7 +212,7 @@ const openContextMenuRemoveFromPipeline = async (
   user: ReturnType<typeof userEvent.setup>,
   pipelineName: string,
 ) => {
-  const row = screen.getByText('Test Contact').closest('div[class*="p-4"]') as HTMLElement;
+  const row = screen.getByText('Test Contact').closest('[data-testid="conversation-row"]') as HTMLElement;
   fireEvent.contextMenu(row);
 
   const addToTrigger = await screen.findByText('pipeline.addTo', {}, { timeout: 2000 });
@@ -251,7 +255,7 @@ describe('ChatSidebar pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalled());
 
     const user = userEvent.setup();
-    const row = screen.getByText('Test Contact').closest('div[class*="p-4"]') as HTMLElement;
+    const row = screen.getByText('Test Contact').closest('[data-testid="conversation-row"]') as HTMLElement;
     fireEvent.contextMenu(row);
 
     await waitFor(() =>

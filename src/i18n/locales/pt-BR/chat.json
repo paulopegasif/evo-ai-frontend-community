@@ -10,7 +10,11 @@
       "audioFallback": "Áudio",
       "playbackError": "Erro ao reproduzir áudio",
       "playbackErrorDescription": "Não foi possível reproduzir este arquivo de áudio",
-      "transcription": "Transcrição"
+      "transcription": "Transcrição",
+      "play": "Reproduzir áudio",
+      "pause": "Pausar áudio",
+      "download": "Baixar áudio",
+      "seek": "Posição do áudio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -308,7 +312,8 @@
     "statusButton": {
       "open": "Abrir",
       "complete": "Concluir",
-      "reopen": "Reabrir"
+      "reopen": "Reabrir",
+      "more": "Mais opções de status"
     },
     "statusPill": {
       "open": "Atendimento em Aberto",
@@ -372,7 +377,15 @@
       "noContent": "Mensagem sem conteúdo"
     },
     "contactNoName": "Contato sem nome",
-    "phoneNumber": "Número de telefone"
+    "phoneNumber": "Número de telefone",
+    "assigneeTabs": {
+      "label": "Filtrar por responsável",
+      "mine": "Minhas",
+      "unassigned": "Não atribuídas",
+      "all": "Todas",
+      "chipCleared": "Não lidas/Grupos não combinam com esta aba e foram removidos"
+    },
+    "draftPrefix": "Rascunho:"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -487,9 +500,9 @@
         "error": "Erro ao alterar atribuição"
       },
       "labels": {
-        "title": "Labels",
-        "noneApplied": "Nenhuma label aplicada",
-        "manage": "Gerenciar labels"
+        "title": "Etiquetas",
+        "noneApplied": "Nenhuma etiqueta aplicada",
+        "manage": "Gerenciar etiquetas"
       },
       "priority": {
         "title": "Prioridade",
@@ -592,7 +605,9 @@
       },
       "settings": "Configurações",
       "close": "Fechar"
-    }
+    },
+    "title": "Detalhes do contato",
+    "close": "Fechar"
   },
   "replyModeToggle": {
     "reply": "Resposta",
@@ -823,7 +838,7 @@
       "inbox_id": "Canal",
       "channel_type": "Tipo de Canal",
       "team_id": "Equipe",
-      "labels": "Labels",
+      "labels": "Etiquetas",
       "created_at": "Data de Criação",
       "last_activity_at": "Última Atividade",
       "priority": "Prioridade",
@@ -1062,5 +1077,16 @@
     "ariaLabel_other": "{{count}} mensagens não lidas",
     "menuAriaLabel_one": "{{count}} conversa não lida",
     "menuAriaLabel_other": "{{count}} conversas não lidas"
+  },
+  "a11y": {
+    "copy": "Copiar",
+    "scrollToBottom": "Ir para a última mensagem",
+    "cancelReply": "Cancelar resposta",
+    "emoji": "Inserir emoji",
+    "signature": "Assinatura",
+    "send": "Enviar",
+    "recordAudio": "Gravar áudio",
+    "moreActions": "Mais ações",
+    "back": "Voltar"
   }
 }

@@ -53,9 +53,14 @@ export function useMenuState(
 
   // Check if a menu with subitems should be active
   const isMenuWithSubItemsActive = useCallback((item: MenuItem): boolean => {
-    // If item has subitems, never highlight the parent - only highlight subitems
+    // A parent with subitems is active while any of its subpages is open, so
+    // the sidebar shows where you are (Contatos, Configurações...). It used to
+    // never highlight, leaving no active item at all on those routes.
     if (item.subItems && item.subItems.length > 0) {
-      return false; // Never highlight parent when it has subitems
+      return (
+        (item.href !== '#' && isMenuItemActive(item.href)) ||
+        item.subItems.some(subItem => isMenuItemActive(subItem.href))
+      );
     }
 
     // For items without subitems, use the normal matching logic

@@ -31,6 +31,8 @@ import EditableContactCustomAttributes from './EditableContactCustomAttributes';
 import { Contact } from '@/types/chat/api';
 import { Contact as FullContact, ContactFormData } from '@/types/contacts';
 
+const isTechnicalIdentifier = (identifier: string) => /@(lid|s\.whatsapp\.net|g\.us|c\.us)$/i.test(identifier.trim());
+
 interface ContactDetailsProps {
   contact: Contact | null;
   onContactAttributeUpdate?: () => void;
@@ -145,7 +147,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = ({ contact, onContactAttri
               isMasked={shouldMask}
             />
           )}
-          {contact?.identifier && (
+          {/* WhatsApp internal ids (…@lid, …@s.whatsapp.net) are technical routing
+              keys, not something an agent can use — show only real identifiers. */}
+          {contact?.identifier && !isTechnicalIdentifier(contact.identifier) && (
             <InfoField
               label={t('contactSidebar.contactDetails.fields.identifier')}
               value={maskIdentifier(contact.identifier)}
@@ -279,7 +283,7 @@ const InfoField: React.FC<InfoFieldProps> = ({
         </span>
 
         {copyable && value && (
-          <Button variant="ghost" size="sm" onClick={handleCopy} className="h-6 w-6 p-0">
+          <Button aria-label={t('a11y.copy', 'Copiar')} title={t('a11y.copy', 'Copiar')} variant="ghost" size="sm" onClick={handleCopy} className="h-6 w-6 p-0">
             <Copy className="h-3 w-3" />
           </Button>
         )}

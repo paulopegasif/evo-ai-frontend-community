@@ -775,4 +775,13 @@ i18n.use(initReactI18next).init({
   nsSeparator: ':',
 });
 
+// Keep <html lang> in sync with the UI language. index.html ships lang="en", so
+// the browser/OS treated Portuguese typing as English and macOS/Chrome text
+// correction "fixed" valid words (e.g. "Perfeito" → "Festa").
+const syncDocumentLang = (lng?: string) => {
+  if (typeof document !== 'undefined' && lng) document.documentElement.lang = lng;
+};
+syncDocumentLang(i18n.language || initialLanguage);
+i18n.on('languageChanged', syncDocumentLang);
+
 export default i18n;
