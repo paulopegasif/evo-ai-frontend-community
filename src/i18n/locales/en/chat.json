@@ -596,7 +596,9 @@
       },
       "settings": "Settings",
       "close": "Close"
-    }
+    },
+    "title": "Contact details",
+    "close": "Close"
   },
   "replyModeToggle": {
     "reply": "Reply",
