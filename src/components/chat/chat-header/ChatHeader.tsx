@@ -435,29 +435,31 @@ const ChatHeader = ({
 
   return (
     <div className="relative z-20 flex-shrink-0 p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           {/* Back button for mobile */}
           <Button variant="ghost" size="sm" className="md:hidden" onClick={onBackClick}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div
-            className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all rounded-full"
+            className="shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all rounded-full"
             onClick={onContactSidebarOpen}
           >
             <ContactAvatar contact={conversation.contact} />
           </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
+          {/* min-w-0 + truncate keep the header to two lines at ~1024px instead
+              of wrapping the name, the status pill and the inbox name. */}
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-baseline gap-2">
               <h3
-                className="font-semibold cursor-pointer hover:text-primary transition-colors"
+                className="truncate font-semibold cursor-pointer hover:text-primary transition-colors"
                 onClick={onContactSidebarOpen}
               >
                 {conversation.contact?.name || t('chatHeader.contactNoName')}
               </h3>
               {phoneDisplay && (
                 <span
-                  className="text-sm text-muted-foreground"
+                  className="hidden shrink-0 whitespace-nowrap text-sm text-muted-foreground xl:inline"
                   title={t('chatHeader.phoneNumber')}
                   aria-label={`${t('chatHeader.phoneNumber')}: ${phoneDisplay}`}
                 >
@@ -465,7 +467,7 @@ const ChatHeader = ({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
               {inboxName && <span className="min-w-0 truncate">{inboxName}</span>}
               {(() => {
                 const dotColor = (STATUS_META[conversation.status] || STATUS_META.snoozed).color;
@@ -490,7 +492,7 @@ const ChatHeader = ({
           </div>
         </div>
         {/* Ações do chat */}
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Botão de status: cor + próxima ação mudam conforme o status atual */}
           <ConversationStatusButton
             status={currentStatus}
