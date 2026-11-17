@@ -13,7 +13,8 @@
       "transcription": "Transcrição",
       "play": "Reproduzir áudio",
       "pause": "Pausar áudio",
-      "download": "Baixar áudio"
+      "download": "Baixar áudio",
+      "seek": "Posição do áudio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -376,7 +377,15 @@
       "noContent": "Mensagem sem conteúdo"
     },
     "contactNoName": "Contato sem nome",
-    "phoneNumber": "Número de telefone"
+    "phoneNumber": "Número de telefone",
+    "assigneeTabs": {
+      "label": "Filtrar por responsável",
+      "mine": "Minhas",
+      "unassigned": "Não atribuídas",
+      "all": "Todas",
+      "chipCleared": "Não lidas/Grupos não combinam com esta aba e foram removidos"
+    },
+    "draftPrefix": "Rascunho:"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -1068,5 +1077,16 @@
     "ariaLabel_other": "{{count}} mensagens não lidas",
     "menuAriaLabel_one": "{{count}} conversa não lida",
     "menuAriaLabel_other": "{{count}} conversas não lidas"
+  },
+  "a11y": {
+    "copy": "Copiar",
+    "scrollToBottom": "Ir para a última mensagem",
+    "cancelReply": "Cancelar resposta",
+    "emoji": "Emojis",
+    "signature": "Assinatura",
+    "send": "Enviar",
+    "recordAudio": "Gravar áudio",
+    "moreActions": "Mais ações",
+    "back": "Voltar"
   }
 }

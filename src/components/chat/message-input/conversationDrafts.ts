@@ -15,6 +15,46 @@ type DraftMap = Record<string, DraftEntry>;
 
 const storageKey = (userId?: string | number | null) => `${STORAGE_PREFIX}:${userId ?? 'anonymous'}`;
 
+// Change notification so the conversation list can show "Rascunho:" live.
+const listeners = new Set<() => void>();
+const notify = () => listeners.forEach(fn => fn());
+
+export const subscribeConversationDrafts = (fn: () => void): (() => void) => {
+  listeners.add(fn);
+  const onStorage = (e: StorageEvent) => {
+    if (e.key?.startsWith(STORAGE_PREFIX)) fn();
+  };
+  window.addEventListener('storage', onStorage); // other tabs
+  return () => {
+    listeners.delete(fn);
+    window.removeEventListener('storage', onStorage);
+  };
+};
+
+/** Raw localStorage value: a cheap, stable snapshot for useSyncExternalStore. */
+export const getConversationDraftsRaw = (userId?: string | number | null): string | null => {
+  try {
+    return localStorage.getItem(storageKey(userId));
+  } catch {
+    return null;
+  }
+};
+
+/** conversationId -> draft text, parsed from a raw snapshot. */
+export const parseConversationDrafts = (raw: string | null): Record<string, string> => {
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw) as DraftMap;
+    return Object.fromEntries(
+      Object.entries(parsed ?? {})
+        .filter(([, d]) => d && typeof d.content === 'string' && d.content.trim())
+        .map(([id, d]) => [id, d.content]),
+    );
+  } catch {
+    return {};
+  }
+};
+
 const read = (userId?: string | number | null): DraftMap => {
   try {
     const raw = localStorage.getItem(storageKey(userId));
@@ -40,6 +80,7 @@ const write = (userId: string | number | null | undefined, drafts: DraftMap) => 
   } catch {
     // Storage full or unavailable: drafts are best-effort.
   }
+  notify();
 };
 
 export const getConversationDraft = (userId: string | number | null | undefined, conversationId: string): string =>

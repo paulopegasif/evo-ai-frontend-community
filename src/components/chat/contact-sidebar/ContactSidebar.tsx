@@ -58,7 +58,7 @@ const CollapsibleHeader = ({
         {description && <p className="text-xs text-muted-foreground truncate">{description}</p>}
       </div>
     </div>
-    <Button variant="ghost" size="sm" onClick={onToggle} className="h-6 w-6 p-0 flex-shrink-0">
+    <Button variant="ghost" size="sm" onClick={onToggle} aria-expanded={isOpen} aria-label={title} className="h-6 w-6 p-0 flex-shrink-0">
       <div className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
         <ChevronDown className="h-3 w-3" />
       </div>

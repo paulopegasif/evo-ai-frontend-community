@@ -634,7 +634,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             })}
           </span>
         </div>
-        <Button
+        <Button aria-label={t('a11y.cancelReply', 'Cancelar resposta')} title={t('a11y.cancelReply', 'Cancelar resposta')}
           variant="ghost"
           size="icon"
           className="h-6 w-6 ml-auto hover:bg-destructive/20 hover:text-destructive"
@@ -764,7 +764,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
             {/* Emoji */}
             <div className="relative flex-shrink-0">
-              <Button
+              <Button aria-label={t('a11y.emoji', 'Emojis')} title={t('a11y.emoji', 'Emojis')}
                 variant="ghost"
                 size="icon"
                 disabled={isDisabled || isSending || isPendingConversation}
@@ -791,7 +791,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             {/* Message Signature (extra do CRM, sem equivalente no protótipo — mantido) */}
             {hasSignature && !isPendingConversation && (
               <div className="relative group flex-shrink-0">
-                <Button
+                <Button aria-label={t('a11y.signature', 'Assinatura')} title={t('a11y.signature', 'Assinatura')}
                   variant="ghost"
                   size="icon"
                   disabled={isDisabled || isSending}
@@ -907,7 +907,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   {showSendIcon ? (
-                    <Button
+                    <Button aria-label={t('a11y.send', 'Enviar')} title={t('a11y.send', 'Enviar')}
                       variant="ghost"
                       size="icon"
                       onClick={handleSend}
@@ -921,7 +921,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
                       )}
                     </Button>
                   ) : (
-                    <Button
+                    <Button aria-label={t('a11y.recordAudio', 'Gravar áudio')} title={t('a11y.recordAudio', 'Gravar áudio')}
                       variant="ghost"
                       size="icon"
                       disabled={isDisabled || isSending}

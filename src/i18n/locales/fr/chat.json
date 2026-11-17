@@ -12,7 +12,8 @@
       "playbackErrorDescription": "Impossible de lire ce fichier audio",
       "play": "Lire l'audio",
       "pause": "Mettre l'audio en pause",
-      "download": "Télécharger l'audio"
+      "download": "Télécharger l'audio",
+      "seek": "Position de l’audio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -371,7 +372,15 @@
       "noContent": "Message sans contenu"
     },
     "contactNoName": "Contact sans nom",
-    "phoneNumber": "Numéro de téléphone"
+    "phoneNumber": "Numéro de téléphone",
+    "assigneeTabs": {
+      "label": "Filtrer par responsable",
+      "mine": "Les miennes",
+      "unassigned": "Non attribuées",
+      "all": "Toutes",
+      "chipCleared": "Non lues/Groupes ne se combinent pas avec cet onglet et ont été retirés"
+    },
+    "draftPrefix": "Brouillon :"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -1012,5 +1021,16 @@
     "ariaLabel_other": "{{count}} messages non lus",
     "menuAriaLabel_one": "{{count}} conversation non lue",
     "menuAriaLabel_other": "{{count}} conversations non lues"
+  },
+  "a11y": {
+    "copy": "Copier",
+    "scrollToBottom": "Aller au dernier message",
+    "cancelReply": "Annuler la réponse",
+    "emoji": "Émojis",
+    "signature": "Signature",
+    "send": "Envoyer",
+    "recordAudio": "Enregistrer un audio",
+    "moreActions": "Plus d’actions",
+    "back": "Retour"
   }
 }
