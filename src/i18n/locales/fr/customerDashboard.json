@@ -61,7 +61,8 @@
       "insights": "Résumé de l’entonnoir",
       "conversionRate": "Conversations dans l’entonnoir",
       "avgTicket": "Ticket moyen de l’entonnoir",
-      "totalValue": "Valeur totale de l’entonnoir"
+      "totalValue": "Valeur totale de l’entonnoir",
+      "openOpportunities": "Opportunités dans le pipeline"
     },
     "responseTime": {
       "title": "Vitesse de Réponse",

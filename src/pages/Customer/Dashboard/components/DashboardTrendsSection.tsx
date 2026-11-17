@@ -2,7 +2,7 @@ import { BarChart3, Layers, TrendingUp } from 'lucide-react';
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@evoapi/design-system';
 import { AreaChartCard, BarChartCard, DonutChartCard } from '@/components/charts';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
-import { formatCurrency } from './dashboardUtils';
+import { formatCurrency, formatInteger, formatPercent } from './dashboardUtils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
@@ -44,10 +44,10 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
             description={t('dashboard.charts.visitorsDescription') || 'Tendência diária de conversas no período'}
             data={data.trends.conversations_daily}
             icon={TrendingUp}
-            color="#22c55e"
-            gradientFrom="#22c55e"
-            gradientTo="#10b981"
-            valueFormatter={value => value.toFixed(0)}
+            color="var(--chart-1)"
+            gradientFrom="var(--chart-1)"
+            gradientTo="var(--chart-1)"
+            valueFormatter={value => formatInteger(value)}
             tooltip={{ title: tTours('dashboard.step9.title'), content: tTours('dashboard.step9.content') }}
           />
         </div>
@@ -58,9 +58,9 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
             description={responseTimeCardDescription}
             data={data.trends.response_time_daily}
             icon={BarChart3}
-            color="#3b82f6"
-            gradientFrom="#3b82f6"
-            gradientTo="#8b5cf6"
+            color="var(--chart-1)"
+            gradientFrom="var(--chart-1)"
+            gradientTo="var(--chart-1)"
             valueFormatter={value => `${Math.round(value)}s`}
             highlightMax
             tooltip={{ title: tTours('dashboard.step10.title'), content: tTours('dashboard.step10.content') }}
@@ -75,10 +75,10 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
             description={t('dashboard.charts.channelShareDescription') || 'Distribuição percentual de conversas por canal'}
             data={channelShareData}
             icon={Layers}
-            gradientFrom="#ec4899"
-            gradientTo="#8b5cf6"
-            centerLabel={tx('dashboard.charts.channelsLabel', 'Canais')}
-            centerValue={tx('dashboard.charts.shareLabel', 'Participação')}
+            gradientFrom="var(--chart-1)"
+            gradientTo="var(--chart-1)"
+            centerLabel={topChannel?.name || tx('dashboard.charts.channelsLabel', 'Canais')}
+            centerValue={topChannel ? formatPercent(topChannel.percentage) : '—'}
             tooltip={{ title: tTours('dashboard.step11.title'), content: tTours('dashboard.step11.content') }}
           />
         </div>
@@ -96,13 +96,13 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
                 <div className="text-sm text-muted-foreground">{tx('dashboard.channels.topChannel', 'Canal líder')}</div>
                 <div className="font-semibold">{topChannel?.name || '-'}</div>
               </div>
-              <Badge variant="secondary">{topChannel?.percentage?.toFixed(2) || '0.00'}%</Badge>
+              <Badge variant="secondary">{formatPercent(topChannel?.percentage ?? 0)}</Badge>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="rounded-md border p-3 bg-muted/10">
                 <div className="text-sm text-muted-foreground">{tx('dashboard.channels.concentration', 'Concentração Top 3')}</div>
-                <div className="text-xl font-semibold">{top3Share.toFixed(2)}%</div>
+                <div className="text-xl font-semibold">{formatPercent(top3Share)}</div>
               </div>
               <div className="rounded-md border p-3 bg-muted/10">
                 <div className="text-sm text-muted-foreground">{tx('dashboard.channels.activeCount', 'Canais ativos')}</div>

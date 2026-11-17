@@ -87,8 +87,11 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
             Nenhum lead no período.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 items-center">
-            <ChartContainer config={config} className="mx-auto aspect-square h-[180px]">
+          <div className="@container">
+            {/* Container query: the card is narrow in the 5-column grid (and at
+                1024–1280px), so the donut stacks above the table instead of squeezing it. */}
+          <div className="grid grid-cols-1 @md:grid-cols-[160px_minmax(0,1fr)] gap-4 items-center">
+            <ChartContainer config={config} className="mx-auto aspect-square h-[160px]">
               <PieChart>
                 <ChartTooltip content={<ChartTooltipContent nameKey="key" hideLabel />} />
                 <Pie
@@ -111,8 +114,8 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
               <thead>
                 <tr className="text-xs text-muted-foreground">
                   <th className="text-left font-normal pb-1.5">Origem</th>
-                  <th className="text-right font-normal pb-1.5">Leads</th>
-                  <th className="text-right font-normal pb-1.5">Conversão</th>
+                  <th className="text-right font-normal pb-1.5 pl-3">Leads</th>
+                  <th className="text-right font-normal pb-1.5 pl-3">Conversão</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,16 +127,17 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
                         <span className="truncate">{s.name}</span>
                       </span>
                     </td>
-                    <td className="py-1.5 text-right tabular-nums whitespace-nowrap">
+                    <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap">
                       {s.leads} <span className="text-muted-foreground">({percentOrDash(s.share)})</span>
                     </td>
-                    <td className="py-1.5 text-right tabular-nums" title={plural(s.won, 'venda', 'vendas')}>
+                    <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap" title={plural(s.won, 'venda', 'vendas')}>
                       {percentOrDash(s.conversion)}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
           </div>
         )}
       </CardContent>
