@@ -63,6 +63,9 @@ import ConversationBadges from '../conversation/ConversationBadges';
 import ConversationStatusIcon from '../conversation/ConversationStatusIcon';
 import ConversationsFilterPopover from '../filters/ConversationsFilterPopover';
 import ConversationSegments from './ConversationSegments';
+import { useAuthStore } from '@/store/authStore';
+import { useConversationDrafts } from '../message-input/useConversationDrafts';
+import { ASSIGNEE_TABS, buildAssigneeTabFilters, getActiveAssigneeTab, type AssigneeTab } from './assigneeTabs';
 import GlobalSearchPanel from '../search/GlobalSearchPanel';
 import { BaseFilter } from '@/types/core';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -343,9 +346,27 @@ const ChatSidebar = ({
   // Os eixos de chip (status / unread / is_group) são navegação, não filtro
   // avançado — não contam no badge. Só filtros de verdade (prioridade, data,
   // label, inbox, canal…) acendem. (Estende a exclusão do EVO-1939.)
+  // assignee_type "me"/"unassigned" vem das abas Minhas/Não atribuídas — é
+  // navegação, não conta no badge de filtros.
   const appliedFilterCount = filters.state.activeFilters.filter(
-    f => !CHIP_NAV_KEYS.includes(f.attribute_key),
+    f =>
+      !CHIP_NAV_KEYS.includes(f.attribute_key) &&
+      !(f.attribute_key === 'assignee_type' && ['me', 'unassigned'].includes(String(f.values?.[0]))),
   ).length;
+
+  // Rascunhos não enviados (WhatsApp-style "Rascunho: …" na prévia).
+  const currentUserId = useAuthStore(state => state.currentUser?.id);
+  const drafts = useConversationDrafts(currentUserId);
+
+  const activeAssigneeTab = getActiveAssigneeTab(filters.state.activeFilters);
+  const handleAssigneeTab = (tab: AssigneeTab) => {
+    if (tab === activeAssigneeTab) return;
+    const { filters: next, droppedChipOnly } = buildAssigneeTabFilters(filters.state.activeFilters, tab);
+    if (droppedChipOnly) toast.info(t('chatSidebar.assigneeTabs.chipCleared', 'Não lidas/Grupos não combinam com esta aba e foram removidos'));
+    setConversationFilters(next.filter(f => !CHIP_ONLY_FILTER_KEYS.includes(f.attributeKey)));
+    if (next.length === 0) onFilterClear();
+    else onFilterApply(next);
+  };
 
   const handleSidebarScroll = useCallback(async () => {
     const now = Date.now();
@@ -724,6 +745,36 @@ const ChatSidebar = ({
           </div>
         )}
 
+        {/* Abas por responsável (Minhas / Não atribuídas / Todas) */}
+        {!showArchived && !selectionMode && (
+          <div
+            role="tablist"
+            aria-label={t('chatSidebar.assigneeTabs.label', 'Filtrar por responsável')}
+            className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1"
+          >
+            {ASSIGNEE_TABS.map(tab => {
+              const selected = activeAssigneeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  disabled={filters.state.isApplyingFilters}
+                  onClick={() => handleAssigneeTab(tab.id)}
+                  className={`truncate rounded-md px-2 py-1 text-xs font-medium transition-colors cursor-pointer disabled:cursor-wait ${
+                    selected
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t(tab.labelKey, tab.fallback)}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Contagem + Filtros — sem botão "Selecionar" (entra em modo seleção
             via clique-direito → "Selecionar Conversa", ver context menu). */}
         {!selectionMode && (
@@ -1063,13 +1114,28 @@ const ChatSidebar = ({
 
                     {/* Linha 3: prévia da última mensagem (esq.) · não lidas (dir.) */}
                     <div className="flex items-center justify-between gap-2 mt-0.5 min-h-5">
-                      <p
-                        className={`text-[13px] leading-5 truncate min-w-0 ${
-                          hasUnread ? 'text-foreground font-medium' : 'text-muted-foreground'
-                        }`}
-                      >
-                        {getLastMessage(conversation)}
-                      </p>
+                      {(() => {
+                        const draft = !isSelected ? drafts[String(conversation.id)] : undefined;
+                        if (draft) {
+                          return (
+                            <p className="text-[13px] leading-5 truncate min-w-0 text-muted-foreground">
+                              <span className="font-semibold text-primary">
+                                {t('chatSidebar.draftPrefix', 'Rascunho:')}
+                              </span>{' '}
+                              {draft.replace(/[*_~`>#]/g, '').replace(/\s+/g, ' ').trim()}
+                            </p>
+                          );
+                        }
+                        return (
+                          <p
+                            className={`text-[13px] leading-5 truncate min-w-0 ${
+                              hasUnread ? 'text-foreground font-medium' : 'text-muted-foreground'
+                            }`}
+                          >
+                            {getLastMessage(conversation)}
+                          </p>
+                        );
+                      })()}
                       <UnreadBadge
                         count={unreadCount}
                         ariaLabel={t('unreadBadge.ariaLabel', { count: unreadCount })}
