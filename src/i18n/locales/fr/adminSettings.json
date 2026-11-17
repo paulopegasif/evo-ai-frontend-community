@@ -585,5 +585,15 @@
     },
     "save": "Enregistrer la Configuration",
     "saving": "Enregistrement..."
+  },
+  "clearConfig": {
+    "button": "Effacer la Configuration",
+    "dialogTitle": "Effacer la Configuration",
+    "dialogDescription": "Êtes-vous sûr ? Cela supprimera toutes les identifiants de ce fournisseur. Le fournisseur cessera de fonctionner jusqu'à ce que vous le reconfiguriez.",
+    "cancel": "Annuler",
+    "confirm": "Effacer",
+    "clearing": "Effacement...",
+    "success": "Configuration effacée avec succès",
+    "error": "Échec de l'effacement de la configuration"
   }
 }

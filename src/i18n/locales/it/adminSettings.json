@@ -585,5 +585,15 @@
     },
     "save": "Salva Configurazione",
     "saving": "Salvataggio..."
+  },
+  "clearConfig": {
+    "button": "Cancella Configurazione",
+    "dialogTitle": "Cancella Configurazione",
+    "dialogDescription": "Sei sicuro? Questo rimuoverà tutte le credenziali per questo provider. Il provider smetterà di funzionare fino a quando non lo riconfigurerai.",
+    "cancel": "Annulla",
+    "confirm": "Cancella",
+    "clearing": "Cancellazione...",
+    "success": "Configurazione cancellata con successo",
+    "error": "Impossibile cancellare la configurazione"
   }
 }

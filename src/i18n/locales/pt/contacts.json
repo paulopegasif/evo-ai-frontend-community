@@ -446,9 +446,9 @@
     "next": "Próximo"
   },
   "labels": {
-    "add": "Adicionar Label",
-    "search": "Buscar labels...",
-    "empty": "Nenhuma label encontrada."
+    "add": "Adicionar Etiqueta",
+    "search": "Buscar etiquetas...",
+    "empty": "Nenhuma etiqueta encontrada."
   },
   "modal": {
     "title": {

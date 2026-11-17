@@ -9,7 +9,10 @@
       "downloadStarted": "Descarga iniciada",
       "audioFallback": "Audio",
       "playbackError": "Error al reproducir audio",
-      "playbackErrorDescription": "No se pudo reproducir este archivo de audio"
+      "playbackErrorDescription": "No se pudo reproducir este archivo de audio",
+      "play": "Reproducir audio",
+      "pause": "Pausar audio",
+      "download": "Descargar audio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -303,7 +306,8 @@
     "statusButton": {
       "open": "Abrir",
       "complete": "Completar",
-      "reopen": "Reabrir"
+      "reopen": "Reabrir",
+      "more": "Más opciones de estado"
     },
     "statusPill": {
       "open": "Atención en Curso",

@@ -67,19 +67,52 @@
     "combineWith": "Combinar com",
     "selectNode": "Selecione um nó no canvas para editar, ou arraste uma nova condição do painel.",
     "categories": {
-      "identity": { "label": "Identidade", "description": "Quem é o contato" },
-      "behavior": { "label": "Comportamento", "description": "O que o contato fez" },
-      "messages": { "label": "Mensagens", "description": "Interações por canal" }
+      "identity": {
+        "label": "Identidade",
+        "description": "Quem é o contato"
+      },
+      "behavior": {
+        "label": "Comportamento",
+        "description": "O que o contato fez"
+      },
+      "messages": {
+        "label": "Mensagens",
+        "description": "Interações por canal"
+      }
     },
     "nodes": {
-      "Everyone": { "label": "Todos", "description": "Todos os contatos da conta" },
-      "UserProperty": { "label": "Propriedade do usuário", "description": "Filtrar por uma propriedade do contato" },
-      "CustomAttribute": { "label": "Atributo personalizado", "description": "Filtrar por um atributo personalizado" },
-      "Label": { "label": "Etiqueta", "description": "Possui / não possui uma etiqueta" },
-      "Performed": { "label": "Evento realizado", "description": "Realizou um evento rastreado" },
-      "RandomBucket": { "label": "Amostra aleatória", "description": "Uma % aleatória de contatos" },
-      "Email": { "label": "E-mail", "description": "Interação por e-mail" },
-      "WhatsApp": { "label": "Canal", "description": "Alcançado em um canal (WhatsApp/Web/SMS)" }
+      "Everyone": {
+        "label": "Todos",
+        "description": "Todos os contatos da conta"
+      },
+      "UserProperty": {
+        "label": "Propriedade do usuário",
+        "description": "Filtrar por uma propriedade do contato"
+      },
+      "CustomAttribute": {
+        "label": "Atributo personalizado",
+        "description": "Filtrar por um atributo personalizado"
+      },
+      "Label": {
+        "label": "Etiqueta",
+        "description": "Possui / não possui uma etiqueta"
+      },
+      "Performed": {
+        "label": "Evento realizado",
+        "description": "Realizou um evento rastreado"
+      },
+      "RandomBucket": {
+        "label": "Amostra aleatória",
+        "description": "Uma % aleatória de contatos"
+      },
+      "Email": {
+        "label": "E-mail",
+        "description": "Interação por e-mail"
+      },
+      "WhatsApp": {
+        "label": "Canal",
+        "description": "Alcançado em um canal (WhatsApp/Web/SMS)"
+      }
     }
   },
   "messages": {
@@ -240,7 +273,7 @@
   "customAttributeEditor": {
     "attribute": "Atributo",
     "selectAttribute": "Selecione um atributo",
-    "operator": "Operador", 
+    "operator": "Operador",
     "value": "Valor",
     "valuePlaceholder": "Digite um valor",
     "loading": "Carregando atributos...",
@@ -263,9 +296,9 @@
     "valuePlaceholder": "Valor",
     "loading": "Carregando...",
     "selectAttribute": "Selecione um atributo",
-    "selectLabel": "Selecione uma label",
+    "selectLabel": "Selecione uma etiqueta",
     "noAttributesFound": "Nenhum atributo personalizado cadastrado",
-    "noLabelsFound": "Nenhuma label cadastrada",
+    "noLabelsFound": "Nenhuma etiqueta cadastrada",
     "timesOperators": {
       "greaterThanOrEqual": "Pelo menos",
       "lessThan": "Menos que",
@@ -294,8 +327,8 @@
     "eventTemplates": {
       "contactCreated": "Contato Criado",
       "contactUpdated": "Contato Atualizado",
-      "labelAdded": "Label Adicionada",
-      "labelRemoved": "Label Removida",
+      "labelAdded": "Etiqueta Adicionada",
+      "labelRemoved": "Etiqueta Removida",
       "customAttributeChanged": "Atributo Personalizado",
       "conversationCreated": "Conversa Criada",
       "conversationUpdated": "Conversa Atualizada",
