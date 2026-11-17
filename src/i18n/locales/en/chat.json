@@ -10,7 +10,11 @@
       "audioFallback": "Audio",
       "playbackError": "Error playing audio",
       "playbackErrorDescription": "Could not play this audio file",
-      "transcription": "Transcription"
+      "transcription": "Transcription",
+      "play": "Play audio",
+      "pause": "Pause audio",
+      "download": "Download audio",
+      "seek": "Audio position"
     },
     "messageBubble": {
       "contextMenu": {
@@ -308,7 +312,8 @@
     "statusButton": {
       "open": "Open",
       "complete": "Complete",
-      "reopen": "Reopen"
+      "reopen": "Reopen",
+      "more": "More status options"
     },
     "statusPill": {
       "open": "Open Conversation",
@@ -372,7 +377,15 @@
       "noContent": "Message without content"
     },
     "contactNoName": "Contact without name",
-    "phoneNumber": "Phone number"
+    "phoneNumber": "Phone number",
+    "assigneeTabs": {
+      "label": "Filter by assignee",
+      "mine": "Mine",
+      "unassigned": "Unassigned",
+      "all": "All",
+      "chipCleared": "Unread/Groups can’t be combined with this tab and were removed"
+    },
+    "draftPrefix": "Draft:"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -592,7 +605,9 @@
       },
       "settings": "Settings",
       "close": "Close"
-    }
+    },
+    "title": "Contact details",
+    "close": "Close"
   },
   "replyModeToggle": {
     "reply": "Reply",
@@ -1059,5 +1074,16 @@
     "ariaLabel_other": "{{count}} unread messages",
     "menuAriaLabel_one": "{{count}} unread conversation",
     "menuAriaLabel_other": "{{count}} unread conversations"
+  },
+  "a11y": {
+    "copy": "Copy",
+    "scrollToBottom": "Jump to latest message",
+    "cancelReply": "Cancel reply",
+    "emoji": "Insert emoji",
+    "signature": "Signature",
+    "send": "Send",
+    "recordAudio": "Record audio",
+    "moreActions": "More actions",
+    "back": "Back"
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, GitBranch, Tag as TagIcon, ArrowUp, Minus, ArrowDown } from 'lucide-react';
+import { AlertTriangle, ArrowUp, Minus, ArrowDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system/tooltip';
 import { Conversation } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -13,6 +13,17 @@ interface ConversationBadgesProps {
   showStatus?: boolean; // Nova prop para exibir status da conversa
 }
 
+const PRIORITY_CONFIG: Record<string, { Icon: typeof AlertTriangle; bg: string; fg: string }> = {
+  urgent: { Icon: AlertTriangle, bg: 'bg-red-100', fg: 'text-red-600' },
+  high: { Icon: ArrowUp, bg: 'bg-orange-100', fg: 'text-orange-600' },
+  medium: { Icon: Minus, bg: 'bg-blue-100', fg: 'text-blue-600' },
+  low: { Icon: ArrowDown, bg: 'bg-gray-100', fg: 'text-gray-600' },
+};
+
+// Chip de contorno compacto — tokens semânticos (funciona em tema claro e escuro).
+const CHIP_CLASS =
+  'inline-flex items-center gap-1 h-[18px] px-1.5 rounded border border-border bg-background text-[11px] leading-none font-medium text-muted-foreground whitespace-nowrap';
+
 const ConversationBadges: React.FC<ConversationBadgesProps> = ({
   conversation,
   maxLabels = 2,
@@ -21,98 +32,38 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
 }) => {
   const { t } = useLanguage('chat');
 
-  // Função para obter badge de prioridade compacto (apenas ícone)
+  // Badge de prioridade compacto (apenas ícone, detalhes no tooltip)
   const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'urgent':
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-100 cursor-help hover:scale-110 transition-transform duration-200">
-                  <AlertTriangle className="w-3 h-3 text-red-600" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
-              >
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-foreground">{t('conversationBadges.priority.urgent.label')}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{t('conversationBadges.priority.urgent.description')}</div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      case 'high':
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-orange-100 cursor-help hover:scale-110 transition-transform duration-200">
-                  <ArrowUp className="w-3 h-3 text-orange-600" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
-              >
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-foreground">{t('conversationBadges.priority.high.label')}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {t('conversationBadges.priority.high.description')}
-                  </div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      case 'medium':
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 cursor-help hover:scale-110 transition-transform duration-200">
-                  <Minus className="w-3 h-3 text-blue-600" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
-              >
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-foreground">{t('conversationBadges.priority.medium.label')}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{t('conversationBadges.priority.medium.description')}</div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      case 'low':
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 cursor-help hover:scale-110 transition-transform duration-200">
-                  <ArrowDown className="w-3 h-3 text-gray-600" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
-              >
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-foreground">{t('conversationBadges.priority.low.label')}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{t('conversationBadges.priority.low.description')}</div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      default:
-        return null;
-    }
+    const config = PRIORITY_CONFIG[priority];
+    if (!config) return null;
+    const { Icon } = config;
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className={`inline-flex items-center justify-center w-4 h-4 flex-shrink-0 rounded-full cursor-help ${config.bg}`}
+            >
+              <Icon className={`w-2.5 h-2.5 ${config.fg}`} />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent
+            side="top"
+            className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
+          >
+            <div className="text-center">
+              <div className="text-sm font-semibold text-foreground">
+                {t(`conversationBadges.priority.${priority}.label`)}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {t(`conversationBadges.priority.${priority}.description`)}
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
   };
 
   // Buscar informações do pipeline
@@ -202,102 +153,47 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
     return pipeline?.stages[0]?.color || 'var(--primary)';
   };
 
-  // Se tem pipeline, mostrar pipeline + labels/prioridade em duas linhas
-  if (pipeline && !showOnlyPipeline) {
-    return (
-      <div className="mt-1.5 space-y-1">
-        {/* Primeira linha: Pipeline + tempo */}
-        
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full text-primary-foreground" style={{ backgroundColor: getPipelineStageColor() }}>
-            <GitBranch className="w-2.5 h-2.5" />
-            <span>{getPipelineNameText()}</span>
-          </div>
-          <span className="text-xs text-muted-foreground"> {getDaysInCurrentStageText()}</span>
-        </div>
+  const showPipeline = Boolean(pipeline) && !showOnlyPipeline;
+  const pipelineFullText = getPipelineNameText();
+  const pipelineChipText = pipeline?.stages[0]?.name || pipeline?.name;
+  const daysInStageText = getDaysInCurrentStageText();
 
-        {/* Segunda linha: Status, Labels e prioridade */}
-        <div className="flex items-center gap-1 flex-wrap">
-          {/* Status Icon - First position */}
-          {showStatus && <ConversationStatusIcon status={conversation.status} size="sm" />}
+  const hasContent =
+    showStatus || Boolean(priorityIcon) || showPipeline || allConversationLabels.length > 0;
+  if (!hasContent) return null;
 
-          {/* Priority Icon */}
-          {priorityIcon}
-
-          {/* Labels Badges */}
-          {conversationLabels.map(label => (
-            <div
-              key={label.id}
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full text-white"
-              style={{
-                backgroundColor: label.color,
-              }}
-              title={label.title}
-            >
-              <TagIcon className="w-2.5 h-2.5" />
-              <span className="truncate max-w-12">{label.title}</span>
-            </div>
-          ))}
-
-          {/* Indicador de mais labels com tooltip */}
-          {hiddenLabels.length > 0 && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-400 text-white cursor-help">
-                    +{hiddenLabels.length}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="top"
-                  className="max-w-xs p-3 bg-popover border border-border shadow-lg rounded-lg"
-                >
-                  <div className="space-y-2">
-                    <div className="text-xs font-semibold text-foreground">{t('conversationBadges.otherLabels')}</div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {hiddenLabels.map(label => (
-                        <div
-                          key={label.id}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md text-white shadow-sm"
-                          style={{ backgroundColor: label.color }}
-                        >
-                          <TagIcon className="w-3 h-3" />
-                          <span>{label.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // Se não tem pipeline, mostrar status, labels e prioridade (uma linha)
+  // Uma única linha compacta: status, prioridade, pipeline/etapa e etiquetas como
+  // chips de contorno (ponto colorido + texto truncado; nome completo no tooltip).
   return (
-    <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-      {/* Status Icon - First position */}
-      {showStatus && <ConversationStatusIcon status={conversation.status} size="sm" />}
+    <div className="flex items-center gap-1 mt-1 min-w-0 overflow-hidden">
+      {showStatus && <ConversationStatusIcon status={conversation.status} size="xs" />}
 
-      {/* Priority Icon */}
       {priorityIcon}
 
-      {/* Labels Badges */}
-      {conversationLabels.map(label => (
-        <div
-          key={label.id}
-          className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full text-white"
-          style={{
-            backgroundColor: label.color,
-          }}
-          title={label.title}
+      {showPipeline && (
+        <span
+          className={`${CHIP_CLASS} min-w-0 shrink`}
+          title={daysInStageText ? `${pipelineFullText} · ${daysInStageText}` : pipelineFullText}
         >
-          <TagIcon className="w-2.5 h-2.5" />
-          <span className="truncate max-w-12">{label.title}</span>
-        </div>
+          <span
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: getPipelineStageColor() }}
+          />
+          <span className="truncate text-foreground/80">{pipelineChipText}</span>
+          {daysInStageText && (
+            <span className="flex-shrink-0 text-muted-foreground/80">· {daysInStageText}</span>
+          )}
+        </span>
+      )}
+
+      {conversationLabels.map(label => (
+        <span key={label.id} className={`${CHIP_CLASS} min-w-0 shrink max-w-24`} title={label.title}>
+          <span
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: label.color }}
+          />
+          <span className="truncate">{label.title}</span>
+        </span>
       ))}
 
       {/* Indicador de mais labels com tooltip */}
@@ -305,26 +201,25 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-gray-400 text-white cursor-help">
-                +{hiddenLabels.length}
-              </div>
+              <span className={`${CHIP_CLASS} flex-shrink-0 cursor-help`}>+{hiddenLabels.length}</span>
             </TooltipTrigger>
             <TooltipContent
               side="top"
               className="max-w-xs p-3 bg-popover border border-border shadow-lg rounded-lg"
             >
               <div className="space-y-2">
-                <div className="text-xs font-semibold text-foreground">{t('conversationBadges.otherLabels')}</div>
+                <div className="text-xs font-semibold text-foreground">
+                  {t('conversationBadges.otherLabels')}
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {hiddenLabels.map(label => (
-                    <div
-                      key={label.id}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md text-white shadow-sm"
-                      style={{ backgroundColor: label.color }}
-                    >
-                      <TagIcon className="w-3 h-3" />
+                    <span key={label.id} className={CHIP_CLASS}>
+                      <span
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: label.color }}
+                      />
                       <span>{label.title}</span>
-                    </div>
+                    </span>
                   ))}
                 </div>
               </div>

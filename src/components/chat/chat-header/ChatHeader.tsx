@@ -30,7 +30,7 @@ import type { Pipeline, PipelineStage } from '@/types/analytics';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';
 import { getStatusLabel } from '@/utils/chat/conversationStatus';
 import ConversationStatusButton from './ConversationStatusButton';
-import { STATUS_META, STATUS_META_LIGHT } from './statusMeta';
+import { STATUS_META } from './statusMeta';
 import { isPhoneBearingChannel } from '@/utils/channelUtils';
 import { formatContactPhone } from '@/utils/contact/formatContactPhone';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -341,7 +341,7 @@ const ChatHeader = ({
     return (
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button aria-label={t('a11y.moreActions', 'Mais ações')} title={t('a11y.moreActions', 'Mais ações')} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <MoreVertical className="h-4 w-4 fill-current text-primary" />
           </Button>
         </DropdownMenuTrigger>
@@ -435,29 +435,31 @@ const ChatHeader = ({
 
   return (
     <div className="relative z-20 flex-shrink-0 p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           {/* Back button for mobile */}
-          <Button variant="ghost" size="sm" className="md:hidden" onClick={onBackClick}>
+          <Button aria-label={t('a11y.back', 'Voltar')} title={t('a11y.back', 'Voltar')} variant="ghost" size="sm" className="md:hidden" onClick={onBackClick}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div
-            className="cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all rounded-full"
+            className="shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all rounded-full"
             onClick={onContactSidebarOpen}
           >
             <ContactAvatar contact={conversation.contact} />
           </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
+          {/* min-w-0 + truncate keep the header to two lines at ~1024px instead
+              of wrapping the name, the status pill and the inbox name. */}
+          <div className="min-w-0 overflow-hidden">
+            <div className="flex min-w-0 items-baseline gap-2">
               <h3
-                className="font-semibold cursor-pointer hover:text-primary transition-colors"
+                className="truncate font-semibold cursor-pointer hover:text-primary transition-colors"
                 onClick={onContactSidebarOpen}
               >
                 {conversation.contact?.name || t('chatHeader.contactNoName')}
               </h3>
               {phoneDisplay && (
                 <span
-                  className="text-sm text-muted-foreground"
+                  className="hidden shrink-0 whitespace-nowrap text-sm text-muted-foreground xl:inline"
                   title={t('chatHeader.phoneNumber')}
                   aria-label={`${t('chatHeader.phoneNumber')}: ${phoneDisplay}`}
                 >
@@ -465,10 +467,10 @@ const ChatHeader = ({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {inboxName && <span>{inboxName}</span>}
+            <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+              {inboxName && <span className="min-w-0 shrink truncate">{inboxName}</span>}
               {(() => {
-                const meta = STATUS_META_LIGHT[conversation.status] || STATUS_META_LIGHT.snoozed;
+                const dotColor = (STATUS_META[conversation.status] || STATUS_META.snoozed).color;
                 // Rótulo LONGO do protótipo ("Atendimento em Aberto" etc.), distinto do
                 // rótulo curto de getStatusLabel ("Aberta") usado em badges compactos —
                 // chave própria (chatHeader.statusPill.*) para não regressar os outros
@@ -477,20 +479,15 @@ const ChatHeader = ({
                   `chatHeader.statusPill.${conversation.status}`,
                   STATUS_META[conversation.status]?.label || getStatusLabel(conversation.status, t),
                 );
+                // Neutral pill (theme tokens) with the status color only in the dot:
+                // the pastel inline palette stayed light-blue on the dark theme.
                 return (
                   <span
-                    style={{
-                      background: meta.bg,
-                      border: `1px solid ${meta.border}`,
-                      color: meta.text,
-                      borderRadius: 9,
-                      padding: '7px 14px',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      lineHeight: 1,
-                    }}
+                    title={pillLabel}
+                    className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-semibold leading-none text-foreground"
                   >
-                    • {pillLabel}
+                    <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: dotColor }} />
+                    <span className="truncate">{pillLabel}</span>
                   </span>
                 );
               })()}
@@ -498,7 +495,7 @@ const ChatHeader = ({
           </div>
         </div>
         {/* Ações do chat */}
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Botão de status: cor + próxima ação mudam conforme o status atual */}
           <ConversationStatusButton
             status={currentStatus}

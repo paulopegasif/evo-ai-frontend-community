@@ -129,7 +129,7 @@ export const LeadTrackingPage: React.FC = () => {
   const segmented = Boolean(filters.source || filters.campaign);
 
   return (
-    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
+    <div className="h-full min-w-0 flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
       <BaseHeader
         title="Tracking de Leads & Funil"
         subtitle="Campanhas, mídia paga, conversão do funil, comparecimento e desempenho por procedimento"

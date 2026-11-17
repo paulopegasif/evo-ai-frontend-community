@@ -35,6 +35,12 @@
   color: hsl(var(--muted-foreground));
   position: absolute;
   pointer-events: none;
+  /* One line with ellipsis: on narrow composers (~1024px) the long
+     placeholder wrapped onto a second line and spilled out of the pill. */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .prosemirror-editor:focus:empty:before,

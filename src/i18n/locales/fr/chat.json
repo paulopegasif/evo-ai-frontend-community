@@ -9,7 +9,11 @@
       "downloadStarted": "Téléchargement démarré",
       "audioFallback": "Audio",
       "playbackError": "Erreur lors de la lecture audio",
-      "playbackErrorDescription": "Impossible de lire ce fichier audio"
+      "playbackErrorDescription": "Impossible de lire ce fichier audio",
+      "play": "Lire l'audio",
+      "pause": "Mettre l'audio en pause",
+      "download": "Télécharger l'audio",
+      "seek": "Position de l’audio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -303,7 +307,8 @@
     "statusButton": {
       "open": "Ouvrir",
       "complete": "Terminer",
-      "reopen": "Rouvrir"
+      "reopen": "Rouvrir",
+      "more": "Plus d'options de statut"
     },
     "statusPill": {
       "open": "Prise en Charge en Cours",
@@ -367,7 +372,15 @@
       "noContent": "Message sans contenu"
     },
     "contactNoName": "Contact sans nom",
-    "phoneNumber": "Numéro de téléphone"
+    "phoneNumber": "Numéro de téléphone",
+    "assigneeTabs": {
+      "label": "Filtrer par responsable",
+      "mine": "Les miennes",
+      "unassigned": "Non attribuées",
+      "all": "Toutes",
+      "chipCleared": "Non lues/Groupes ne se combinent pas avec cet onglet et ont été retirés"
+    },
+    "draftPrefix": "Brouillon :"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -577,7 +590,9 @@
       },
       "settings": "Paramètres",
       "close": "Fermer"
-    }
+    },
+    "title": "Détails du contact",
+    "close": "Fermer"
   },
   "replyModeToggle": {
     "reply": "Réponse",
@@ -1006,5 +1021,16 @@
     "ariaLabel_other": "{{count}} messages non lus",
     "menuAriaLabel_one": "{{count}} conversation non lue",
     "menuAriaLabel_other": "{{count}} conversations non lues"
+  },
+  "a11y": {
+    "copy": "Copier",
+    "scrollToBottom": "Aller au dernier message",
+    "cancelReply": "Annuler la réponse",
+    "emoji": "Insérer un émoji",
+    "signature": "Signature",
+    "send": "Envoyer",
+    "recordAudio": "Enregistrer un audio",
+    "moreActions": "Plus d’actions",
+    "back": "Retour"
   }
 }

@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { Attachment } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
+import AudioWaveform from './AudioWaveform';
 
 // Ícones preenchidos customizados
 const PlayFilled = ({ className }: { className?: string }) => (
@@ -334,6 +335,59 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
   //   }
   // };
 
+  const currentPlayingRef = useRef<string | null>(null);
+  currentPlayingRef.current = currentPlaying;
+
+  // Progresso suave enquanto toca (timeupdate só dispara ~4x/s).
+  useEffect(() => {
+    if (!isPlaying) return;
+    let frame = 0;
+    const step = () => {
+      const audio = audioRef.current;
+      if (audio) setCurrentTime(audio.currentTime);
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [isPlaying]);
+
+  // Clique/arraste na onda: pula para a posição (e começa a tocar se era outro áudio).
+  const seekTo = (attachment: Attachment, fraction: number) => {
+    const url = attachment.data_url;
+    const audio = audioRef.current;
+    if (!url || !audio) return;
+    const total =
+      durations[url] ||
+      (currentPlayingRef.current === url && Number.isFinite(audio.duration) ? audio.duration : 0);
+    if (!total) {
+      if (currentPlayingRef.current !== url) togglePlayback(attachment);
+      return;
+    }
+    const target = Math.max(0, Math.min(total - 0.05, fraction * total));
+
+    if (currentPlayingRef.current === url) {
+      audio.currentTime = target;
+      setCurrentTime(target);
+      return;
+    }
+
+    audio.src = url;
+    currentPlayingRef.current = url;
+    setCurrentPlaying(url);
+    setCurrentTime(target);
+    audio.addEventListener(
+      'loadedmetadata',
+      () => {
+        audio.currentTime = target;
+      },
+      { once: true },
+    );
+    audio.play().then(
+      () => setIsPlaying(true),
+      () => setIsPlaying(false),
+    );
+  };
+
   const togglePlayback = (attachment: Attachment) => {
     if (!attachment.data_url) return;
 
@@ -432,8 +486,11 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
           })
           .map((attachment, index) => {
             const isCurrentlyPlaying = currentPlaying === attachment.data_url && isPlaying;
+            const totalDuration = durations[attachment.data_url!] || duration;
             const progressValue =
-              currentPlaying === attachment.data_url ? (currentTime / duration) * 100 : 0;
+              currentPlaying === attachment.data_url && totalDuration > 0
+                ? (currentTime / totalDuration) * 100
+                : 0;
 
             const transcribedText =
               attachment.transcribed_text || attachment.meta?.transcribed_text;
@@ -442,7 +499,7 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
               <div key={attachment.id || index} className="space-y-2">
                 {/* Audio Player */}
                 <div
-                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors"
+                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-current/[0.06] hover:bg-current/10 transition-colors"
                   style={{
                     minWidth: '200px',
                     maxWidth: 'min(280px, calc(100vw - 100px))',
@@ -450,10 +507,11 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
                 >
                   {/* Botão Play/Pause estilo WhatsApp */}
                   <Button
-                    variant="default"
+                    variant="ghost"
                     size="icon"
                     onClick={() => togglePlayback(attachment)}
-                    className="h-9 w-9 rounded-full bg-primary hover:bg-primary/85 text-primary-foreground flex-shrink-0 border-0 shadow-sm"
+                    aria-label={isCurrentlyPlaying ? t('messages.messageAudio.pause') : t('messages.messageAudio.play')}
+                    className="h-9 w-9 rounded-full bg-current/15 hover:bg-current/25 text-current hover:text-current flex-shrink-0 border-0"
                   >
                     {isCurrentlyPlaying ? (
                       <PauseFilled className="h-4 w-4" />
@@ -464,35 +522,23 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
 
                   {/* Waveform visual e tempo */}
                   <div className="flex-1 min-w-0 flex flex-col gap-1">
-                    {/* Barras de onda estilo WhatsApp */}
-                    <div className="flex items-center gap-0.5 h-5">
-                      {Array.from({ length: 25 }).map((_, i) => {
-                        const barHeight = Math.max(3, Math.random() * 16 + 3);
-                        const isActive = i < (progressValue / 100) * 25;
-                        return (
-                          <div
-                            key={i}
-                            className={`w-0.5 rounded-full transition-all duration-150 ${
-                              isActive
-                                ? 'bg-primary'
-                                : 'bg-muted-foreground/30 dark:bg-muted-foreground/20'
-                            }`}
-                            style={{
-                              height: `${barHeight}px`,
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
+                    {/* Onda real do áudio (WhatsApp-style): preenche com o progresso, clique/arraste para pular */}
+                    <AudioWaveform
+                      url={attachment.data_url!}
+                      progress={progressValue / 100}
+                      onSeek={fraction => seekTo(attachment, fraction)}
+                      ariaLabel={t('messages.messageAudio.seek', 'Posição do áudio')}
+                      valueText={`${formatDuration(currentPlaying === attachment.data_url ? currentTime : 0)} / ${formatDuration(durations[attachment.data_url!] || 0)}`}
+                    />
 
                     {/* Tempo */}
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground font-mono">
+                      <span className="text-current/70 font-mono tabular-nums">
                         {currentPlaying === attachment.data_url
                           ? formatDuration(currentTime)
                           : '0:00'}
                       </span>
-                      <span className="text-muted-foreground font-mono">
+                      <span className="text-current/70 font-mono tabular-nums">
                         {(() => {
                           const url = attachment.data_url;
                           const duration = url ? durations[url] : null;
@@ -507,7 +553,8 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
                     size="sm"
                     variant="ghost"
                     onClick={() => downloadFile(attachment)}
-                    className="h-7 w-7 rounded-full hover:bg-muted-foreground/20 text-muted-foreground flex-shrink-0 p-0"
+                    aria-label={t('messages.messageAudio.download')}
+                    className="h-7 w-7 rounded-full hover:bg-current/15 text-current/70 hover:text-current flex-shrink-0 p-0"
                   >
                     <Download className="h-3.5 w-3.5" />
                   </Button>
