@@ -13,7 +13,8 @@
       "transcription": "Transcription",
       "play": "Play audio",
       "pause": "Pause audio",
-      "download": "Download audio"
+      "download": "Download audio",
+      "seek": "Audio position"
     },
     "messageBubble": {
       "contextMenu": {
@@ -376,7 +377,15 @@
       "noContent": "Message without content"
     },
     "contactNoName": "Contact without name",
-    "phoneNumber": "Phone number"
+    "phoneNumber": "Phone number",
+    "assigneeTabs": {
+      "label": "Filter by assignee",
+      "mine": "Mine",
+      "unassigned": "Unassigned",
+      "all": "All",
+      "chipCleared": "Unread/Groups can’t be combined with this tab and were removed"
+    },
+    "draftPrefix": "Draft:"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -1065,5 +1074,16 @@
     "ariaLabel_other": "{{count}} unread messages",
     "menuAriaLabel_one": "{{count}} unread conversation",
     "menuAriaLabel_other": "{{count}} unread conversations"
+  },
+  "a11y": {
+    "copy": "Copy",
+    "scrollToBottom": "Jump to latest message",
+    "cancelReply": "Cancel reply",
+    "emoji": "Emojis",
+    "signature": "Signature",
+    "send": "Send",
+    "recordAudio": "Record audio",
+    "moreActions": "More actions",
+    "back": "Back"
   }
 }
