@@ -1,10 +1,9 @@
 import React from 'react';
-import { Phone, Mail, MapPin, Hash, Lock } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Contact } from '@/types/chat/api';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';
 import { isPresenceCapableChannel } from '@/utils/channelUtils';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
 
 interface ContactHeaderProps {
   contact: Contact | null;
@@ -22,16 +21,12 @@ const AVAILABILITY_DOT_CLASS: Record<AvailabilityStatus, string> = {
 
 const ContactHeader: React.FC<ContactHeaderProps> = ({ contact, channelType }) => {
   const { t } = useLanguage('chat');
-  const { shouldMask, maskPhone, maskEmail, maskIdentifier } = useContactPiiMasking();
 
   const availability = contact?.availability_status;
   const showPresence = isPresenceCapableChannel(channelType) && !!availability;
-  const protectedTitle = shouldMask
-    ? t('contactSidebar.contactDetails.dataProtectedTooltip')
-    : undefined;
 
   return (
-    <div className="p-4 md:p-6 flex-shrink-0">
+    <div className="p-4 pr-12 md:p-6 md:pr-14 flex-shrink-0">
       <div className="flex items-center gap-4">
         {/* Avatar Grande */}
         <ContactAvatar contact={contact} size="lg" />
@@ -55,39 +50,8 @@ const ContactHeader: React.FC<ContactHeaderProps> = ({ contact, channelType }) =
 
           {/* Info Secundária */}
           <div className="mt-3 space-y-1">
-            {contact?.phone_number && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Phone className="h-3 w-3 flex-shrink-0" />
-                {shouldMask && (
-                  <Lock className="h-3 w-3 flex-shrink-0" aria-label={protectedTitle} />
-                )}
-                <span className="truncate" title={protectedTitle}>
-                  {maskPhone(contact.phone_number)}
-                </span>
-              </div>
-            )}
-            {contact?.identifier && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Hash className="h-3 w-3 flex-shrink-0" />
-                {shouldMask && (
-                  <Lock className="h-3 w-3 flex-shrink-0" aria-label={protectedTitle} />
-                )}
-                <span className="truncate" title={protectedTitle}>
-                  {maskIdentifier(contact.identifier)}
-                </span>
-              </div>
-            )}
-            {contact?.email && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="h-3 w-3 flex-shrink-0" />
-                {shouldMask && (
-                  <Lock className="h-3 w-3 flex-shrink-0" aria-label={protectedTitle} />
-                )}
-                <span className="truncate" title={protectedTitle}>
-                  {maskEmail(contact.email)}
-                </span>
-              </div>
-            )}
+            {/* Phone, identifier and e-mail live in the details card below (with
+                copy buttons); repeating them here doubled every field. */}
             {contact?.location && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-3 w-3 flex-shrink-0" />

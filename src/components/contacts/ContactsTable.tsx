@@ -108,6 +108,9 @@ export default function ContactsTable({
       key: 'type',
       label: t('table.columns.type'),
       sortable: false,
+      // Secondary columns drop on narrower screens so name/e-mail/phone and the
+      // row actions fit without horizontal scrolling.
+      className: 'hidden 2xl:table-cell',
       render: contact => (
         <ContactTypeBadge type={contact.type || 'person'} className="justify-center" />
       ),
@@ -116,12 +119,14 @@ export default function ContactsTable({
       key: 'labels',
       label: t('table.columns.labels'),
       sortable: false,
-      render: contact => <ContactTagsList labels={contact.labels} maxVisible={3} size="sm" />,
+      className: 'hidden lg:table-cell',
+      render: contact => <ContactTagsList labels={contact.labels} maxVisible={2} size="sm" />,
     },
     {
       key: 'pipelines',
       label: t('table.columns.pipelines'),
       sortable: false,
+      className: 'hidden xl:table-cell',
       render: contact =>
         contact.pipelines && contact.pipelines.length > 0 ? (
           <ContactPipelinesBadge contact={contact} maxPipelines={2} compact={true} />
@@ -131,6 +136,7 @@ export default function ContactsTable({
       key: 'status',
       label: t('table.columns.status'),
       sortable: false,
+      className: 'hidden xl:table-cell',
       render: contact => <ContactStatusBadge blocked={contact.blocked} />,
     },
     {
@@ -200,6 +206,7 @@ export default function ContactsTable({
           : undefined
       }
       getRowKey={contact => String(contact.id)}
+      getRowLabel={contact => contact.name || contact.email || contact.phone_number || String(contact.id)}
       className="border-0 shadow-none"
     />
   );
