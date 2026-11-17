@@ -442,7 +442,7 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
               <div key={attachment.id || index} className="space-y-2">
                 {/* Audio Player */}
                 <div
-                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors"
+                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg bg-current/[0.06] hover:bg-current/10 transition-colors"
                   style={{
                     minWidth: '200px',
                     maxWidth: 'min(280px, calc(100vw - 100px))',
@@ -450,10 +450,11 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
                 >
                   {/* Botão Play/Pause estilo WhatsApp */}
                   <Button
-                    variant="default"
+                    variant="ghost"
                     size="icon"
                     onClick={() => togglePlayback(attachment)}
-                    className="h-9 w-9 rounded-full bg-primary hover:bg-primary/85 text-primary-foreground flex-shrink-0 border-0 shadow-sm"
+                    aria-label={isCurrentlyPlaying ? t('messages.messageAudio.pause') : t('messages.messageAudio.play')}
+                    className="h-9 w-9 rounded-full bg-current/15 hover:bg-current/25 text-current hover:text-current flex-shrink-0 border-0"
                   >
                     {isCurrentlyPlaying ? (
                       <PauseFilled className="h-4 w-4" />
@@ -474,8 +475,8 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
                             key={i}
                             className={`w-0.5 rounded-full transition-all duration-150 ${
                               isActive
-                                ? 'bg-primary'
-                                : 'bg-muted-foreground/30 dark:bg-muted-foreground/20'
+                                ? 'bg-current'
+                                : 'bg-current/30'
                             }`}
                             style={{
                               height: `${barHeight}px`,
@@ -487,12 +488,12 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
 
                     {/* Tempo */}
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground font-mono">
+                      <span className="text-current/70 font-mono tabular-nums">
                         {currentPlaying === attachment.data_url
                           ? formatDuration(currentTime)
                           : '0:00'}
                       </span>
-                      <span className="text-muted-foreground font-mono">
+                      <span className="text-current/70 font-mono tabular-nums">
                         {(() => {
                           const url = attachment.data_url;
                           const duration = url ? durations[url] : null;
@@ -507,7 +508,8 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
                     size="sm"
                     variant="ghost"
                     onClick={() => downloadFile(attachment)}
-                    className="h-7 w-7 rounded-full hover:bg-muted-foreground/20 text-muted-foreground flex-shrink-0 p-0"
+                    aria-label={t('messages.messageAudio.download')}
+                    className="h-7 w-7 rounded-full hover:bg-current/15 text-current/70 hover:text-current flex-shrink-0 p-0"
                   >
                     <Download className="h-3.5 w-3.5" />
                   </Button>

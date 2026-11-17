@@ -10,6 +10,8 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS } from '@/constants/pagination';
+import { getVisiblePageNumbers } from './paginationRange';
+
 
 export interface BasePaginationProps {
   currentPage: number;
@@ -71,36 +73,6 @@ export default function BasePagination({
         onPageChange(1);
       }
     }
-  };
-
-  const getVisiblePageNumbers = (): number[] => {
-    const delta = 2;
-    const range = [];
-    const rangeWithDots = [];
-
-    for (
-      let i = Math.max(2, currentPage - delta);
-      i <= Math.min(totalPages - 1, currentPage + delta);
-      i++
-    ) {
-      range.push(i);
-    }
-
-    if (currentPage - delta > 2) {
-      rangeWithDots.push(1, -1);
-    } else {
-      rangeWithDots.push(1);
-    }
-
-    rangeWithDots.push(...range);
-
-    if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push(-2, totalPages);
-    } else {
-      rangeWithDots.push(totalPages);
-    }
-
-    return rangeWithDots.filter((v, i, a) => a.indexOf(v) === i && v > 0);
   };
 
   const renderPageButton = (page: number, isActive = false) => (
@@ -196,25 +168,10 @@ export default function BasePagination({
         ) : showPageNumbers ? (
           // Show smart pagination with dots
           <>
-            {currentPage > 2 && (
-              <>
-                {renderPageButton(1)}
-                {currentPage > 3 && renderDots('start-dots')}
-              </>
-            )}
-
-            {getVisiblePageNumbers().map(page => {
-              if (page === -1 || page === -2) {
-                return renderDots(`dots-${page}`);
-              }
-              return renderPageButton(page, page === currentPage);
-            })}
-
-            {currentPage < totalPages - 1 && (
-              <>
-                {currentPage < totalPages - 2 && renderDots('end-dots')}
-                {renderPageButton(totalPages)}
-              </>
+            {getVisiblePageNumbers(currentPage, totalPages).map(page =>
+              page < 0
+                ? renderDots(`dots-${page}`)
+                : renderPageButton(page, page === currentPage),
             )}
           </>
         ) : (

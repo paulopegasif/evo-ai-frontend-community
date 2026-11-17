@@ -9,7 +9,10 @@
       "downloadStarted": "Téléchargement démarré",
       "audioFallback": "Audio",
       "playbackError": "Erreur lors de la lecture audio",
-      "playbackErrorDescription": "Impossible de lire ce fichier audio"
+      "playbackErrorDescription": "Impossible de lire ce fichier audio",
+      "play": "Lire l'audio",
+      "pause": "Mettre l'audio en pause",
+      "download": "Télécharger l'audio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -303,7 +306,8 @@
     "statusButton": {
       "open": "Ouvrir",
       "complete": "Terminer",
-      "reopen": "Rouvrir"
+      "reopen": "Rouvrir",
+      "more": "Plus d'options de statut"
     },
     "statusPill": {
       "open": "Prise en Charge en Cours",

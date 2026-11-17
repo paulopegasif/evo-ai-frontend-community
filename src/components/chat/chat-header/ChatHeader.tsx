@@ -30,7 +30,7 @@ import type { Pipeline, PipelineStage } from '@/types/analytics';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';
 import { getStatusLabel } from '@/utils/chat/conversationStatus';
 import ConversationStatusButton from './ConversationStatusButton';
-import { STATUS_META, STATUS_META_LIGHT } from './statusMeta';
+import { STATUS_META } from './statusMeta';
 import { isPhoneBearingChannel } from '@/utils/channelUtils';
 import { formatContactPhone } from '@/utils/contact/formatContactPhone';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -466,9 +466,9 @@ const ChatHeader = ({
               )}
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {inboxName && <span>{inboxName}</span>}
+              {inboxName && <span className="min-w-0 truncate">{inboxName}</span>}
               {(() => {
-                const meta = STATUS_META_LIGHT[conversation.status] || STATUS_META_LIGHT.snoozed;
+                const dotColor = (STATUS_META[conversation.status] || STATUS_META.snoozed).color;
                 // Rótulo LONGO do protótipo ("Atendimento em Aberto" etc.), distinto do
                 // rótulo curto de getStatusLabel ("Aberta") usado em badges compactos —
                 // chave própria (chatHeader.statusPill.*) para não regressar os outros
@@ -477,20 +477,12 @@ const ChatHeader = ({
                   `chatHeader.statusPill.${conversation.status}`,
                   STATUS_META[conversation.status]?.label || getStatusLabel(conversation.status, t),
                 );
+                // Neutral pill (theme tokens) with the status color only in the dot:
+                // the pastel inline palette stayed light-blue on the dark theme.
                 return (
-                  <span
-                    style={{
-                      background: meta.bg,
-                      border: `1px solid ${meta.border}`,
-                      color: meta.text,
-                      borderRadius: 9,
-                      padding: '7px 14px',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      lineHeight: 1,
-                    }}
-                  >
-                    • {pillLabel}
+                  <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-semibold leading-none text-foreground">
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: dotColor }} />
+                    {pillLabel}
                   </span>
                 );
               })()}

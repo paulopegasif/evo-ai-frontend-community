@@ -627,5 +627,15 @@
       "testError": "Connection test failed",
       "testUnknown": "Unknown response from Hub"
     }
+  },
+  "clearConfig": {
+    "button": "Clear Configuration",
+    "dialogTitle": "Clear Configuration",
+    "dialogDescription": "Are you sure? This will remove all credentials for this provider. The provider will stop working until you reconfigure it.",
+    "cancel": "Cancel",
+    "confirm": "Clear",
+    "clearing": "Clearing...",
+    "success": "Configuration cleared successfully",
+    "error": "Failed to clear configuration"
   }
 }
