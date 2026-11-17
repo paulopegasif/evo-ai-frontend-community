@@ -157,6 +157,16 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
 
   // No mobile, esconder completamente quando fechado
   // No desktop, manter no DOM para animação
+  // Dialog semantics: Esc closes the panel.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen && isMobile) return null;
 
   return (

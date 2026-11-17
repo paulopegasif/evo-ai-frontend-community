@@ -219,7 +219,16 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
             'focus:outline-none resize-none text-sm leading-relaxed text-foreground',
           ].join(' '),
           'data-placeholder': placeholder,
+          // No browser/OS/extension rewriting of what the agent types: spell
+          // check, autocorrect (Safari/iOS/Chrome), auto-capitalization, inline
+          // writing suggestions (macOS/Chrome) and Grammarly.
           spellcheck: 'false',
+          autocorrect: 'off',
+          autocapitalize: 'off',
+          writingsuggestions: 'false',
+          'data-gramm': 'false',
+          'data-gramm_editor': 'false',
+          'data-enable-grammarly': 'false',
         },
       });
 

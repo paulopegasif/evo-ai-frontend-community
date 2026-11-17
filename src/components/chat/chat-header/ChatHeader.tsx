@@ -449,7 +449,7 @@ const ChatHeader = ({
           </div>
           {/* min-w-0 + truncate keep the header to two lines at ~1024px instead
               of wrapping the name, the status pill and the inbox name. */}
-          <div className="min-w-0">
+          <div className="min-w-0 overflow-hidden">
             <div className="flex min-w-0 items-baseline gap-2">
               <h3
                 className="truncate font-semibold cursor-pointer hover:text-primary transition-colors"
@@ -468,7 +468,7 @@ const ChatHeader = ({
               )}
             </div>
             <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
-              {inboxName && <span className="min-w-0 truncate">{inboxName}</span>}
+              {inboxName && <span className="min-w-0 shrink truncate">{inboxName}</span>}
               {(() => {
                 const dotColor = (STATUS_META[conversation.status] || STATUS_META.snoozed).color;
                 // Rótulo LONGO do protótipo ("Atendimento em Aberto" etc.), distinto do
@@ -482,9 +482,12 @@ const ChatHeader = ({
                 // Neutral pill (theme tokens) with the status color only in the dot:
                 // the pastel inline palette stayed light-blue on the dark theme.
                 return (
-                  <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-semibold leading-none text-foreground">
-                    <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: dotColor }} />
-                    {pillLabel}
+                  <span
+                    title={pillLabel}
+                    className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-semibold leading-none text-foreground"
+                  >
+                    <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: dotColor }} />
+                    <span className="truncate">{pillLabel}</span>
                   </span>
                 );
               })()}
