@@ -17,12 +17,21 @@ import {
 import { MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown, LucideIcon } from 'lucide-react';
 import EmptyState from './EmptyState';
 
+// The row actions column stays pinned to the right edge, so wide tables that
+// scroll horizontally (e.g. contacts at 1440px) never hide the actions menu.
+// Opaque backgrounds (color-mix of the row tints over the sidebar color) keep
+// scrolled cells from showing through.
+const STICKY_ACTIONS = 'sticky right-0 z-10 shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.18)]';
+
 export interface TableColumn<T> {
   key: string;
   label: string;
   sortable?: boolean;
   width?: string;
   align?: 'left' | 'center' | 'right';
+  /** Extra classes for the header and body cells, e.g. `hidden xl:table-cell`
+   *  to drop secondary columns on narrower screens. */
+  className?: string;
   render?: (item: T, index: number) => ReactNode;
 }
 
@@ -57,6 +66,8 @@ export interface BaseTableProps<T> {
     tooltip?: string;
   };
   getRowKey: (item: T) => string | number;
+  /** Human-readable row name for the selection checkbox label (defaults to the row key). */
+  getRowLabel?: (item: T) => string;
   className?: string;
 }
 
@@ -77,6 +88,7 @@ export default function BaseTable<T extends Record<string, any>>({
   emptyDescription,
   emptyAction,
   getRowKey,
+  getRowLabel,
   className = '',
 }: BaseTableProps<T>) {
   const { t } = useLanguage('common');
@@ -235,7 +247,7 @@ export default function BaseTable<T extends Record<string, any>>({
             {columns.map(column => (
               <TableHead
                 key={column.key}
-                className={`${column.width} text-sidebar-foreground bg-sidebar-accent/30 font-medium`}
+                className={`${column.width ?? ''} ${column.className ?? ''} text-sidebar-foreground bg-sidebar-accent/30 font-medium`}
                 align={column.align}
               >
                 <div
@@ -249,7 +261,7 @@ export default function BaseTable<T extends Record<string, any>>({
               </TableHead>
             ))}
             {actions && actions.length > 0 && (
-              <TableHead className="w-12 text-sidebar-foreground bg-sidebar-accent/30">
+              <TableHead className={`w-12 text-sidebar-foreground ${STICKY_ACTIONS} bg-[color-mix(in_srgb,var(--color-sidebar-accent)_30%,var(--color-sidebar))]`}>
                 {t('base.table.actions')}
               </TableHead>
             )}
@@ -263,7 +275,7 @@ export default function BaseTable<T extends Record<string, any>>({
             return (
               <TableRow
                 key={key}
-                className={`border-sidebar-border hover:bg-sidebar-accent/30 ${
+                className={`group border-sidebar-border hover:bg-sidebar-accent/30 ${
                   isSelected ? 'bg-sidebar-accent/40' : ''
                 }`}
               >
@@ -272,7 +284,7 @@ export default function BaseTable<T extends Record<string, any>>({
                     <Checkbox
                       checked={isSelected}
                       onCheckedChange={() => handleSelectItem(item)}
-                      aria-label={t('base.table.selectItem', { key })}
+                      aria-label={t('base.table.selectItem', { key: getRowLabel?.(item) ?? key })}
                       className="border-sidebar-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                   </TableCell>
@@ -281,12 +293,22 @@ export default function BaseTable<T extends Record<string, any>>({
                   <TableCell
                     key={column.key}
                     align={column.align}
-                    className="text-sidebar-foreground"
+                    className={`text-sidebar-foreground ${column.className ?? ''}`}
                   >
                     {renderCellContent(item, column, index)}
                   </TableCell>
                 ))}
-                {actions && actions.length > 0 && <TableCell>{renderActions(item)}</TableCell>}
+                {actions && actions.length > 0 && (
+                  <TableCell
+                    className={`${STICKY_ACTIONS} ${
+                      isSelected
+                        ? 'bg-[color-mix(in_srgb,var(--color-sidebar-accent)_40%,var(--color-sidebar))]'
+                        : 'bg-sidebar group-hover:bg-[color-mix(in_srgb,var(--color-sidebar-accent)_30%,var(--color-sidebar))]'
+                    }`}
+                  >
+                    {renderActions(item)}
+                  </TableCell>
+                )}
               </TableRow>
             );
           })}

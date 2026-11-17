@@ -581,7 +581,9 @@
       },
       "settings": "Impostazioni",
       "close": "Chiudi"
-    }
+    },
+    "title": "Dettagli contatto",
+    "close": "Chiudi"
   },
   "replyModeToggle": {
     "reply": "Risposta",

@@ -665,7 +665,7 @@
       "addStageDescription": "Clique para criar uma nova etapa neste pipeline",
       "editStage": "Editar Etapa",
       "deleteStage": "Deletar Etapa",
-      "noConversations": "Nenhuma conversa nesta etapa",
+      "noConversations": "Nenhum item nesta etapa",
       "noStages": "Nenhuma etapa encontrada para este pipeline",
       "totalValue": "R$ {{value}}"
     },

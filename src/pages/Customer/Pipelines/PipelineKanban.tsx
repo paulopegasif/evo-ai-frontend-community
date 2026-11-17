@@ -1190,7 +1190,7 @@ export default function PipelineKanban() {
           <div className="h-full overflow-x-auto overflow-y-hidden px-4 sm:px-6 lg:px-8 py-6">
             {/* Kanban Content */}
             <div
-              className="flex gap-6 h-full pb-6"
+              className="flex gap-4 h-full pb-6"
               style={{ width: 'fit-content', minWidth: '100%' }}
             >
               {/* Stage Columns */}
@@ -1198,7 +1198,7 @@ export default function PipelineKanban() {
                 const stageItems = filteredItemsByStage.get(stage.id) || [];
                 const stageSum = calculateStageTotal(stage.items);
                 return (
-                <div key={stage.id} className="flex-shrink-0" style={{ flex: '0 0 340px' }}>
+                <div key={stage.id} className="flex-shrink-0" style={{ flex: '0 0 288px' }}>
                   <div className="bg-background rounded-xl border border-border h-full flex flex-col overflow-hidden">
                     {/* Stage Header — clean: color only on the top border + dot */}
                     <div
