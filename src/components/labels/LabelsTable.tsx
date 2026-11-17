@@ -3,6 +3,7 @@ import { Edit, Trash2 } from 'lucide-react';
 import BaseTable from '@/components/base/BaseTable';
 import { Label } from '@/types/settings';
 import { usePermissions } from '@/contexts/PermissionsContext';
+import { formatApiDate } from '@/utils/apiDate';
 
 interface LabelsTableProps {
   labels: Label[];
@@ -90,7 +91,7 @@ export default function LabelsTable({
       sortable: true,
       render: (label: Label) => (
         <div className="text-sm text-muted-foreground">
-          {new Date(label.created_at).toLocaleDateString('pt-BR')}
+          {formatApiDate(label.created_at)}
         </div>
       ),
     },

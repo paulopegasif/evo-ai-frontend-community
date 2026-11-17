@@ -10,7 +10,10 @@
       "audioFallback": "Áudio",
       "playbackError": "Erro ao reproduzir áudio",
       "playbackErrorDescription": "Não foi possível reproduzir este arquivo de áudio",
-      "transcription": "Transcrição"
+      "transcription": "Transcrição",
+      "play": "Reproduzir áudio",
+      "pause": "Pausar áudio",
+      "download": "Baixar áudio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -308,7 +311,8 @@
     "statusButton": {
       "open": "Abrir",
       "complete": "Concluir",
-      "reopen": "Reabrir"
+      "reopen": "Reabrir",
+      "more": "Mais opções de status"
     },
     "statusPill": {
       "open": "Atendimento em Aberto",
@@ -487,9 +491,9 @@
         "error": "Erro ao alterar atribuição"
       },
       "labels": {
-        "title": "Labels",
-        "noneApplied": "Nenhuma label aplicada",
-        "manage": "Gerenciar labels"
+        "title": "Etiquetas",
+        "noneApplied": "Nenhuma etiqueta aplicada",
+        "manage": "Gerenciar etiquetas"
       },
       "priority": {
         "title": "Prioridade",
@@ -823,7 +827,7 @@
       "inbox_id": "Canal",
       "channel_type": "Tipo de Canal",
       "team_id": "Equipe",
-      "labels": "Labels",
+      "labels": "Etiquetas",
       "created_at": "Data de Criação",
       "last_activity_at": "Última Atividade",
       "priority": "Prioridade",

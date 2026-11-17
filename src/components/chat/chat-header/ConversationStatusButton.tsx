@@ -50,7 +50,6 @@ const ConversationStatusButton = ({
     };
   }, [menuOpen]);
 
-  const meta = STATUS_META[status] || STATUS_META.snoozed;
   const mainLabel =
     status === 'open'
       ? t('chatHeader.statusButton.complete', 'Concluir')
@@ -66,94 +65,58 @@ const ConversationStatusButton = ({
 
   return (
     <div ref={rootRef} className="relative">
-      <div
-        style={{
-          display: 'inline-flex',
-          alignItems: 'stretch',
-          borderRadius: 9,
-          overflow: 'hidden',
-          userSelect: 'none',
-          boxShadow: '0 1px 3px rgba(20,30,45,.18)',
-        }}
-      >
-        <span
+      {/* Primary action uses the brand tokens (white-label safe, correct in both
+          themes); the per-status color lives only in the dots of the menu and of
+          the header pill. */}
+      <div className="inline-flex items-stretch overflow-hidden rounded-lg shadow-sm select-none">
+        <button
+          type="button"
           onClick={mainAction}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '9px 18px',
-            color: '#FFFFFF',
-            fontSize: 14,
-            fontWeight: 600,
-            backgroundColor: meta.color,
-            cursor: 'pointer',
-          }}
+          className="inline-flex items-center whitespace-nowrap bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         >
           {mainLabel}
-        </span>
-        <span
+        </button>
+        <button
+          type="button"
           onClick={() => setMenuOpen(prev => !prev)}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '0 9px',
-            color: '#FFFFFF',
-            backgroundColor: meta.dark,
-            cursor: 'pointer',
-          }}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          aria-label={t('chatHeader.statusButton.more', 'Mais opções de status')}
+          className="inline-flex items-center border-l border-primary-foreground/20 bg-primary px-2 text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         >
           <ChevronDown className="h-4 w-4" />
-        </span>
+        </button>
       </div>
 
       {menuOpen && (
         <div
-          style={{
-            position: 'absolute',
-            top: 46,
-            right: 0,
-            width: 206,
-            background: '#FFFFFF',
-            border: '1px solid #eceef2',
-            borderRadius: 12,
-            boxShadow: '0 12px 32px rgba(20,30,45,.16)',
-            padding: 7,
-            zIndex: 100,
-          }}
+          role="menu"
+          className="absolute right-0 top-full z-[100] mt-1.5 w-52 rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-lg"
         >
           {options.map(o => {
             const optMeta = STATUS_META[o.key];
             const selected = o.key === status;
             return (
-              <div
+              <button
+                type="button"
+                role="menuitemradio"
+                aria-checked={selected}
                 key={o.key}
                 onClick={() => {
                   setMenuOpen(false);
                   o.onClick();
                 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '9px 11px',
-                  borderRadius: 9,
-                  cursor: 'pointer',
-                  marginBottom: 2,
-                  background: selected ? `${optMeta.color}14` : 'transparent',
-                  border: selected ? `1px solid ${optMeta.color}` : '1px solid transparent',
-                }}
+                className={`mb-0.5 flex w-full items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm font-medium transition-colors last:mb-0 hover:bg-accent hover:text-accent-foreground ${
+                  selected ? 'border-border bg-accent text-accent-foreground' : 'border-transparent'
+                }`}
               >
                 <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: optMeta.color,
-                    flex: '0 0 8px',
-                  }}
+                  aria-hidden
+                  className="h-2 w-2 flex-none rounded-full"
+                  style={{ background: optMeta.color }}
                 />
-                <span style={{ fontSize: 14, color: '#2b3240', fontWeight: 600 }}>{o.label}</span>
-              </div>
+                {o.label}
+              </button>
             );
           })}
         </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
+import { formatWhatsAppText } from './whatsappFormat';
 
 const URL_REGEX = /https?:\/\/[^\s<>"')\]]+/gi;
 
@@ -199,7 +200,7 @@ const MessageText: React.FC<MessageTextProps> = ({
         const start = match.index;
 
         if (start > lastIndex) {
-          parts.push(line.slice(lastIndex, start));
+          parts.push(...formatWhatsAppText(line.slice(lastIndex, start), `t-${lineIdx}-${lastIndex}`));
         }
 
         if (!detectedUrls.includes(url)) {
@@ -222,7 +223,7 @@ const MessageText: React.FC<MessageTextProps> = ({
       }
 
       if (lastIndex < line.length) {
-        parts.push(line.slice(lastIndex));
+        parts.push(...formatWhatsAppText(line.slice(lastIndex), `t-${lineIdx}-${lastIndex}`));
       }
 
       return (
