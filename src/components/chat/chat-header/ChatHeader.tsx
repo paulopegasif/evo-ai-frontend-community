@@ -341,7 +341,7 @@ const ChatHeader = ({
     return (
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button aria-label={t('a11y.moreActions', 'Mais ações')} title={t('a11y.moreActions', 'Mais ações')} variant="ghost" size="sm" className="h-8 w-8 p-0">
             <MoreVertical className="h-4 w-4 fill-current text-primary" />
           </Button>
         </DropdownMenuTrigger>
@@ -438,7 +438,7 @@ const ChatHeader = ({
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {/* Back button for mobile */}
-          <Button variant="ghost" size="sm" className="md:hidden" onClick={onBackClick}>
+          <Button aria-label={t('a11y.back', 'Voltar')} title={t('a11y.back', 'Voltar')} variant="ghost" size="sm" className="md:hidden" onClick={onBackClick}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div

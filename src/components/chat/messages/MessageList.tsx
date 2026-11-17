@@ -612,7 +612,7 @@ const MessageList: React.FC<MessageListProps> = ({
       {/* Botão voltar ao final */}
       {!isNearBottom && (
         <div className="absolute bottom-4 right-4 z-10">
-          <Button
+          <Button aria-label={t('a11y.scrollToBottom', 'Ir para a última mensagem')} title={t('a11y.scrollToBottom', 'Ir para a última mensagem')}
             size="icon"
             variant="secondary"
             className="rounded-full shadow-lg border bg-background/95 backdrop-blur-sm hover:bg-accent"
