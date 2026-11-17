@@ -29,7 +29,7 @@
       "improvement": "melhoria",
       "recoveredValue": "Valor Recuperado",
       "incomingMessages": "Mensagens recebidas",
-      "realData": "Dados reais",
+      "realData": "1ª resposta, média do período",
       "leads": "leads",
       "activeConversations": "Conversas ativas agora",
       "unassignedConversations": "Conversas sem responsável"
@@ -61,7 +61,8 @@
       "insights": "Resumo do funil",
       "conversionRate": "Conversas no funil",
       "avgTicket": "Ticket médio no funil",
-      "totalValue": "Valor total do funil"
+      "totalValue": "Valor total do funil",
+      "openOpportunities": "Oportunidades no funil"
     },
     "responseTime": {
       "title": "Velocidade de Resposta",
@@ -111,7 +112,7 @@
       "channelShare": "Participação por canal",
       "channelShareDescription": "Distribuição percentual de conversas por canal",
       "sessionDuration": "Tempo de 1ª resposta por dia",
-      "sessionDescription": "Média diária de first response time (segundos)",
+      "sessionDescription": "Média diária do tempo de 1ª resposta (segundos)",
       "heatmapTitle": "Mapa de calor da operação",
       "heatmapDescription": "Volume de conversas por data e hora",
       "heatmapPeakSlot": "Pico semanal",

@@ -101,7 +101,7 @@ export const LeadTrackingPage: React.FC = () => {
   const historyIncomplete = showAds && historyStart && historyStart > oldestDay;
 
   return (
-    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
+    <div className="h-full min-w-0 flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
       <BaseHeader
         title="Tracking de Leads & Funil"
         subtitle="Campanhas, mídia paga e conversão do funil comercial"
@@ -158,7 +158,6 @@ export const LeadTrackingPage: React.FC = () => {
           subtitle={`${percentOrDash(kpis?.qualification_rate)} qualificados`}
           icon={Users}
           accentClassName="bg-primary/15 text-primary"
-          importance="primary"
           tooltip={{ title: 'Novos leads', content: 'Contatos criados no período a partir de tráfego pago, outbound B2B e campanhas.' }}
           comparison={compare('total_leads', count)}
         />

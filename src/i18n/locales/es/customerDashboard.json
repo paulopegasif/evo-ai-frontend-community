@@ -61,7 +61,8 @@
       "insights": "Resumen del embudo",
       "conversionRate": "Conversaciones en el embudo",
       "avgTicket": "Ticket medio del embudo",
-      "totalValue": "Valor total del embudo"
+      "totalValue": "Valor total del embudo",
+      "openOpportunities": "Oportunidades en el embudo"
     },
     "responseTime": {
       "title": "Velocidad de Respuesta",

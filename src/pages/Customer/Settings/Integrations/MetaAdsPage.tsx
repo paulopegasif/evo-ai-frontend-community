@@ -190,7 +190,7 @@ export default function MetaAdsPage() {
       <div className="flex items-center justify-between gap-3">
         <IntegrationBackButton onBack={() => navigate('/settings/integrations')} />
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate('/dashboard/leads')} className="gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/tracking')} className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Ver tracking de leads
             <ArrowRight className="h-4 w-4 text-muted-foreground" />

@@ -2,7 +2,7 @@ import { Clock, MessageSquare, Bot, CheckCircle2, AlertTriangle, UserX, Users } 
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@evoapi/design-system';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
 import DashboardMetricCard from './DashboardMetricCard';
-import { formatSeconds } from './dashboardUtils';
+import { formatSeconds, formatDecimal } from './dashboardUtils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
@@ -61,7 +61,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
             value={data.stats.incoming_messages_count}
             subtitle={`${data.stats.outgoing_messages_count} ${t('dashboard.stats.sent')}`}
             icon={MessageSquare}
-            accentClassName="bg-fuchsia-500/20 text-fuchsia-400"
+            accentClassName="bg-primary/10 text-primary"
             importance="primary"
             status={{
               label: tx('dashboard.status.volume', 'Volume no período'),
@@ -77,7 +77,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
             value={formatSeconds(data.stats.avg_first_response_time_seconds)}
             subtitle={t('dashboard.stats.realData') || 'Dados reais'}
             icon={Clock}
-            accentClassName="bg-emerald-500/20 text-emerald-400"
+            accentClassName="bg-primary/10 text-primary"
             importance="primary"
             status={responseStatus}
             tooltip={{ title: tTours('dashboard.step3.title'), content: tTours('dashboard.step3.content') }}
@@ -87,10 +87,10 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
         <div data-tour="dashboard-csat-card" className="h-full">
           <DashboardMetricCard
             title={t('dashboard.csat.avg') || 'CSAT médio'}
-            value={`${data.csat.avg_rating.toFixed(2)} / 5`}
+            value={`${formatDecimal(data.csat.avg_rating)} / 5`}
             subtitle={`${data.csat.total_responses} ${t('dashboard.csat.responses') || 'avaliações'}`}
             icon={CheckCircle2}
-            accentClassName="bg-violet-500/20 text-violet-400"
+            accentClassName="bg-primary/10 text-primary"
             importance="primary"
             status={csatStatus}
             tooltip={{ title: tTours('dashboard.step4.title'), content: tTours('dashboard.step4.content') }}
@@ -103,7 +103,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
             value={data.follow_ups.pending}
             subtitle={`${data.follow_ups.overdue} ${tx('dashboard.status.overdue', 'em atraso')}`}
             icon={AlertTriangle}
-            accentClassName="bg-amber-500/20 text-amber-400"
+            accentClassName="bg-primary/10 text-primary"
             importance="primary"
             status={followUpStatus}
             tooltip={{ title: tTours('dashboard.step5.title'), content: tTours('dashboard.step5.content') }}
@@ -134,7 +134,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
                   <span className="font-semibold">{data.ai_vs_human.ai_messages_share}%</span>
                 </div>
                 <div className="h-2 rounded bg-muted overflow-hidden">
-                  <div className="h-2 bg-indigo-500" style={{ width: `${data.ai_vs_human.ai_messages_share}%` }} />
+                  <div className="h-2 bg-[var(--chart-1)]" style={{ width: `${data.ai_vs_human.ai_messages_share}%` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {data.ai_vs_human.ai_messages_count} {tx('dashboard.aiVsHuman.responses', 'respostas IA')}
@@ -147,7 +147,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
                   <span className="font-semibold">{data.ai_vs_human.human_messages_share}%</span>
                 </div>
                 <div className="h-2 rounded bg-muted overflow-hidden">
-                  <div className="h-2 bg-sky-500" style={{ width: `${data.ai_vs_human.human_messages_share}%` }} />
+                  <div className="h-2 bg-[var(--chart-1)] opacity-50" style={{ width: `${data.ai_vs_human.human_messages_share}%` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {data.ai_vs_human.human_messages_count} {tx('dashboard.aiVsHuman.responsesHuman', 'respostas humanas')}

@@ -1426,8 +1426,10 @@ const AppRouter = () => {
             }
           />
 
+          <Route path="/dashboard/leads" element={<Navigate to="/tracking" replace />} />
+
           <Route
-            path="/dashboard/leads"
+            path="/tracking"
             element={
               <PrivateRoute>
                 <CustomerRoute>

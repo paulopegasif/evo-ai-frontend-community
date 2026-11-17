@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Badge, Card, CardContent } from '@evoapi/design-system';
 import { BaseHeader } from '@/components/base';
@@ -17,8 +17,7 @@ import DashboardTrendsSection from './components/DashboardTrendsSection';
 import DashboardPerformanceSection from './components/DashboardPerformanceSection';
 import type { DashboardFilterState, DashboardOption } from './components/types';
 import { DashboardTour } from '@/tours';
-import { LayoutDashboard, TrendingUp } from 'lucide-react';
-import LeadTrackingPage from '@/pages/Customer/LeadTracking';
+import { CHART_COLORS } from './components/dashboardUtils';
 
 const ALL_FILTER_VALUE = '__all__';
 
@@ -96,28 +95,13 @@ const CustomerDashboardPage = () => {
   const [draftFilters, setDraftFilters] = useState<DashboardFilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<DashboardFilterState>(defaultFilters);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const tabFromUrl = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<'operational' | 'leads'>(tabFromUrl === 'leads' ? 'leads' : 'operational');
-
+  // Lead tracking moved to its own sidebar entry (/tracking); keep old
+  // /dashboard?tab=leads links working.
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   useEffect(() => {
-    if (tabFromUrl === 'leads' || tabFromUrl === 'operational') {
-      setActiveTab(tabFromUrl);
-    }
-  }, [tabFromUrl]);
-
-  const handleTabChange = (tab: 'operational' | 'leads') => {
-    setActiveTab(tab);
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      if (tab === 'leads') {
-        next.set('tab', 'leads');
-      } else {
-        next.delete('tab');
-      }
-      return next;
-    }, { replace: true });
-  };
+    if (searchParams.get('tab') === 'leads') navigate('/tracking', { replace: true });
+  }, [searchParams, navigate]);
 
   const [pipelines, setPipelines] = useState<DashboardOption[]>([]);
   const [teams, setTeams] = useState<DashboardOption[]>([]);
@@ -267,7 +251,7 @@ const CustomerDashboardPage = () => {
   const channelShareData = useMemo(() => {
     if (!data) return [];
 
-    const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+    const colors = CHART_COLORS;
 
     return data.channels.map((channel, index) => ({
       name: channel.name,
@@ -304,60 +288,27 @@ const CustomerDashboardPage = () => {
           subtitle={t('dashboard.subtitle')}
           filters={appliedHeaderFilters}
           onFilterClick={handleOpenFilter}
-          showFilters={activeTab === 'operational'}
+          showFilters
           filterButtonDataTour="dashboard-filter-button"
         />
 
-        {/* Tab Switcher */}
-        <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
-          <button
-            type="button"
-            onClick={() => handleTabChange('operational')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'operational'
-                ? 'bg-purple-600 text-white shadow-2xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <LayoutDashboard className="w-4 h-4" />
-            Visão Geral Operacional
-          </button>
-          <button
-            type="button"
-            onClick={() => handleTabChange('leads')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'leads'
-                ? 'bg-purple-600 text-white shadow-2xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <TrendingUp className="w-4 h-4" />
-            Tracking de Leads & Funil
-          </button>
-        </div>
       </div>
 
-      {activeTab === 'leads' ? (
-        <LeadTrackingPage />
-      ) : (
-        <>
-          <div className="-mt-3 flex justify-end" data-tour="dashboard-period-badge">
-            <Badge variant="secondary">
-              {currentPeriodLabel} ({data.period.days} dias)
-            </Badge>
-          </div>
+      <div className="-mt-3 flex justify-end" data-tour="dashboard-period-badge">
+        <Badge variant="secondary">
+          {currentPeriodLabel} ({data.period.days} dias)
+        </Badge>
+      </div>
 
-          <div data-tour="dashboard-metrics">
-            <DashboardMetricsSection data={data} t={t} />
-          </div>
-          <div data-tour="dashboard-trends">
-            <DashboardTrendsSection data={data} t={t} channelShareData={channelShareData} />
-          </div>
-          <div data-tour="dashboard-performance">
-            <DashboardPerformanceSection data={data} t={t} />
-          </div>
-        </>
-      )}
+      <div data-tour="dashboard-metrics">
+        <DashboardMetricsSection data={data} t={t} />
+      </div>
+      <div data-tour="dashboard-trends">
+        <DashboardTrendsSection data={data} t={t} channelShareData={channelShareData} />
+      </div>
+      <div data-tour="dashboard-performance">
+        <DashboardPerformanceSection data={data} t={t} />
+      </div>
 
       <DashboardFiltersDialog
         open={filterModalOpen}
