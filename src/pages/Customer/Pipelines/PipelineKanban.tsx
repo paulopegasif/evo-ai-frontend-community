@@ -1198,7 +1198,7 @@ export default function PipelineKanban() {
                 const stageItems = filteredItemsByStage.get(stage.id) || [];
                 const stageSum = calculateStageTotal(stage.items);
                 return (
-                <div key={stage.id} className="flex-shrink-0" style={{ flex: '0 0 288px' }}>
+                <div key={stage.id} className="flex-shrink-0 min-w-0" style={{ flex: '0 0 288px' }}>
                   <div className="bg-background rounded-xl border border-border h-full flex flex-col overflow-hidden">
                     {/* Stage Header — clean: color only on the top border + dot */}
                     <div
@@ -1397,7 +1397,7 @@ export default function PipelineKanban() {
                                 </span>
                               </div>
                               <p
-                                className="text-[12.5px] text-muted-foreground line-clamp-2 leading-relaxed [&_p]:inline [&_br]:hidden"
+                                className="text-[12.5px] text-muted-foreground line-clamp-2 leading-relaxed break-words [&_p]:inline [&_br]:hidden"
                                 dangerouslySetInnerHTML={{
                                   __html:
                                     item.conversation.last_non_activity_message.processed_message_content ||
