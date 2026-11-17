@@ -10,7 +10,10 @@
       "audioFallback": "Audio",
       "playbackError": "Error playing audio",
       "playbackErrorDescription": "Could not play this audio file",
-      "transcription": "Transcription"
+      "transcription": "Transcription",
+      "play": "Play audio",
+      "pause": "Pause audio",
+      "download": "Download audio"
     },
     "messageBubble": {
       "contextMenu": {
@@ -308,7 +311,8 @@
     "statusButton": {
       "open": "Open",
       "complete": "Complete",
-      "reopen": "Reopen"
+      "reopen": "Reopen",
+      "more": "More status options"
     },
     "statusPill": {
       "open": "Open Conversation",

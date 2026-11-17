@@ -26,6 +26,7 @@ import { User } from '@/types/users';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLanguage } from '@/hooks/useLanguage';
+import { parseApiDate } from '@/utils/apiDate';
 
 interface UserDetailsProps {
   open: boolean;
@@ -220,7 +221,7 @@ export default function UserDetails({
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t('details.timestamps.created')}</span>
                       <span className="font-mono">
-                        {formatDistanceToNow(new Date(user.created_at), {
+                        {formatDistanceToNow(parseApiDate(user.created_at) ?? new Date(), {
                           addSuffix: true,
                           locale: ptBR,
                         })}

@@ -1,5 +1,5 @@
 {
-  "title": "Configuracoes do Admin",
+  "title": "Configurações do Admin",
   "navigation": {
     "email": "E-mail",
     "storage": "Armazenamento",
@@ -9,7 +9,7 @@
     "evolutionHub": "Evo Hub"
   },
   "email": {
-    "title": "Configuracao de E-mail",
+    "title": "Configuração de E-mail",
     "description": "Configure o provedor de e-mail e as credenciais usadas para envio de e-mails transacionais.",
     "provider": {
       "label": "Provedor de E-mail",
@@ -18,14 +18,14 @@
       "resend": "Resend"
     },
     "fields": {
-      "host": "Endereco do Servidor",
+      "host": "Endereço do Servidor",
       "port": "Porta",
-      "username": "Usuario",
+      "username": "Usuário",
       "password": "Senha",
-      "authentication": "Tipo de Autenticacao",
-      "domain": "Dominio",
+      "authentication": "Tipo de Autenticação",
+      "domain": "Domínio",
       "starttls": "Habilitar STARTTLS",
-      "sslVerifyMode": "Modo de Verificacao SSL",
+      "sslVerifyMode": "Modo de Verificação SSL",
       "senderEmail": "E-mail do Remetente",
       "apiKey": "Chave da API",
       "ipPool": "Pool de IP"
@@ -41,32 +41,32 @@
       "ipPool": "default"
     },
     "validation": {
-      "hostRequired": "Endereco do servidor e obrigatorio",
-      "portMin": "A porta deve ser no minimo 1",
-      "portMax": "A porta deve ser no maximo 65535",
-      "emailRequired": "Um e-mail de remetente valido e obrigatorio"
+      "hostRequired": "Endereço do servidor é obrigatório",
+      "portMin": "A porta deve ser no mínimo 1",
+      "portMax": "A porta deve ser no máximo 65535",
+      "emailRequired": "Um e-mail de remetente válido é obrigatório"
     },
     "secretConfigured": "Configurado",
-    "secretNotConfigured": "Nao configurado",
+    "secretNotConfigured": "Não configurado",
     "clearSecret": "Limpar valor salvo",
     "messages": {
-      "saveSuccess": "Configuracao de e-mail salva com sucesso",
-      "saveError": "Falha ao salvar configuracao de e-mail",
-      "loadError": "Falha ao carregar configuracao de e-mail"
+      "saveSuccess": "Configuração de e-mail salva com sucesso",
+      "saveError": "Falha ao salvar configuração de e-mail",
+      "loadError": "Falha ao carregar configuração de e-mail"
     },
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando...",
-    "testConnection": "Testar Conexao",
+    "testConnection": "Testar Conexão",
     "testing": "Testando...",
-    "testFailed": "Teste de conexao falhou",
-    "testError": "Falha ao executar teste de conexao",
+    "testFailed": "Teste de conexão falhou",
+    "testError": "Falha ao executar teste de conexão",
     "envWarning": {
       "title": "Atenção:",
       "body": "Salvar aqui persiste os valores, mas o serviço de email ainda lê as credenciais SMTP das variáveis de ambiente no boot. Até a EVO-1049 ser entregue, configure SMTP via env vars para fazer efeito."
     }
   },
   "storage": {
-    "title": "Configuracao de Armazenamento",
+    "title": "Configuração de Armazenamento",
     "description": "Configure o provedor de armazenamento de arquivos usado para anexos e uploads.",
     "provider": {
       "label": "Provedor de Armazenamento",
@@ -74,13 +74,13 @@
       "amazon": "Amazon S3",
       "amazonHelp": "AWS S3 — usa a Região e suas credenciais AWS. Não precisa de endpoint personalizado.",
       "s3CompatibleHelp": "Qualquer provedor compatível com S3 que não seja AWS (MinIO, Cloudflare R2, DigitalOcean Spaces…). Requer um Endpoint personalizado.",
-      "s3Compatible": "Compativel com S3 (MinIO, Cloudflare R2, DigitalOcean Spaces…)"
+      "s3Compatible": "Compatível com S3 (MinIO, Cloudflare R2, DigitalOcean Spaces…)"
     },
     "fields": {
       "bucketName": "Nome do Bucket",
       "accessKeyId": "ID da Chave de Acesso",
       "accessSecret": "Chave de Acesso Secreta",
-      "region": "Regiao",
+      "region": "Região",
       "endpointHelp": "URL do endpoint do seu provedor compatível com S3. Apenas para Compatível com S3 — deixe vazio para AWS.",
       "endpoint": "Endpoint"
     },
@@ -92,28 +92,28 @@
       "endpoint": "https://s3.exemplo.com"
     },
     "validation": {
-      "bucketRequired": "Nome do bucket e obrigatorio",
-      "accessKeyRequired": "ID da chave de acesso e obrigatorio",
-      "regionRequired": "Regiao e obrigatoria",
-      "endpointRequired": "Endpoint e obrigatorio para provedores compativeis com S3"
+      "bucketRequired": "Nome do bucket é obrigatório",
+      "accessKeyRequired": "ID da chave de acesso é obrigatório",
+      "regionRequired": "Região é obrigatória",
+      "endpointRequired": "Endpoint é obrigatório para provedores compatíveis com S3"
     },
     "secretConfigured": "Configurado",
-    "secretNotConfigured": "Nao configurado",
+    "secretNotConfigured": "Não configurado",
     "clearSecret": "Limpar valor salvo",
     "messages": {
-      "saveSuccess": "Configuracao de armazenamento salva com sucesso",
-      "saveError": "Falha ao salvar configuracao de armazenamento",
-      "loadError": "Falha ao carregar configuracao de armazenamento"
+      "saveSuccess": "Configuração de armazenamento salva com sucesso",
+      "saveError": "Falha ao salvar configuração de armazenamento",
+      "loadError": "Falha ao carregar configuração de armazenamento"
     },
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando...",
-    "testConnection": "Testar Conexao",
+    "testConnection": "Testar Conexão",
     "testing": "Testando...",
-    "testFailed": "Teste de conexao falhou",
-    "testError": "Falha ao executar teste de conexao",
+    "testFailed": "Teste de conexão falhou",
+    "testError": "Falha ao executar teste de conexão",
     "cloudWarning": {
       "title": "Importante:",
-      "body": "As credenciais S3 (chave de acesso, segredo, regiao e endpoint) sao incorporadas na configuracao do servico na inicializacao — altera-las aqui exige reiniciar os servicos auth e CRM e seus workers Sidekiq para que os novos valores entrem em vigor. Alteracoes no provider podem levar ate 60 segundos para propagar entre todos os servicos. Arquivos existentes permanecem no provider de armazenamento anterior; apenas novos uploads usarao a configuracao atualizada."
+      "body": "As credenciais S3 (chave de acesso, segredo, região e endpoint) são incorporadas na configuração do serviço na inicialização — altera-las aqui exige reiniciar os servicos auth e CRM e seus workers Sidekiq para que os novos valores entrem em vigor. Alterações no provider podem levar até 60 segundos para propagar entre todos os servicos. Arquivos existentes permanecem no provider de armazenamento anterior; apenas novos uploads usarão a configuração atualizada."
     }
   },
   "socialLogin": {
@@ -138,36 +138,36 @@
         "callbackUrl": "https://seu-dominio.com/auth/google/callback"
       },
       "secretConfigured": "Configurado",
-      "secretNotConfigured": "Nao configurado",
+      "secretNotConfigured": "Não configurado",
       "clearSecret": "Limpar valor salvo",
-      "saveSuccess": "Configuracao do Google OAuth salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Google OAuth"
+      "saveSuccess": "Configuração do Google OAuth salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Google OAuth"
     },
     "microsoft": {
       "cardTitle": "Microsoft / Azure",
       "fields": {
-        "appId": "ID da Aplicacao",
-        "appSecret": "Segredo da Aplicacao"
+        "appId": "ID da Aplicação",
+        "appSecret": "Segredo da Aplicação"
       },
       "placeholders": {
         "appId": "seu-azure-application-id",
-        "appSecret": "Digite o novo segredo da aplicacao"
+        "appSecret": "Digite o novo segredo da aplicação"
       },
       "secretConfigured": "Configurado",
-      "secretNotConfigured": "Nao configurado",
+      "secretNotConfigured": "Não configurado",
       "clearSecret": "Limpar valor salvo",
-      "saveSuccess": "Configuracao da Microsoft salva com sucesso",
-      "saveError": "Falha ao salvar configuracao da Microsoft"
+      "saveSuccess": "Configuração da Microsoft salva com sucesso",
+      "saveError": "Falha ao salvar configuração da Microsoft"
     },
     "validation": {
-      "clientIdRequired": "ID do cliente e obrigatorio",
-      "callbackUrlInvalid": "URL de callback deve ser uma URL valida",
-      "appIdRequired": "ID da aplicacao e obrigatorio"
+      "clientIdRequired": "ID do cliente é obrigatório",
+      "callbackUrlInvalid": "URL de callback deve ser uma URL válida",
+      "appIdRequired": "ID da aplicação é obrigatório"
     },
     "messages": {
-      "loadError": "Falha ao carregar configuracao de login social"
+      "loadError": "Falha ao carregar configuração de login social"
     },
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando..."
   },
   "channels": {
@@ -175,68 +175,68 @@
       "tabTitle": "E-mail"
     },
     "title": "Integrações de Canais",
-    "description": "Configure as credenciais para os canais de mensagens e integracoes.",
+    "description": "Configure as credenciais para os canais de mensagens e integrações.",
     "secretConfigured": "Configurado",
-    "secretNotConfigured": "Nao configurado",
+    "secretNotConfigured": "Não configurado",
     "clearSecret": "Limpar valor salvo",
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando...",
     "dismissError": "Fechar erro",
     "facebook": {
       "tabTitle": "Facebook",
       "fields": {
         "appId": "ID do App",
-        "verifyToken": "Token de Verificacao",
+        "verifyToken": "Token de Verificação",
         "appSecret": "Segredo do App",
-        "apiVersion": "Versao da API",
+        "apiVersion": "Versão da API",
         "humanAgent": "Habilitar Agente Humano",
         "feedComments": "Habilitar Comentarios do Feed"
       },
       "placeholders": {
         "appId": "Seu Facebook App ID",
-        "verifyToken": "Digite o token de verificacao",
+        "verifyToken": "Digite o token de verificação",
         "appSecret": "Digite o novo segredo do app",
         "apiVersion": "v18.0"
       },
-      "saveSuccess": "Configuracao do Facebook salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Facebook"
+      "saveSuccess": "Configuração do Facebook salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Facebook"
     },
     "whatsapp": {
       "tabTitle": "WhatsApp",
       "fields": {
         "appId": "ID do App",
-        "verifyToken": "Token de Verificacao",
+        "verifyToken": "Token de Verificação",
         "appSecret": "Segredo do App",
-        "configId": "ID de Configuracao do WhatsApp",
-        "apiVersion": "Versao da API"
+        "configId": "ID de Configuração do WhatsApp",
+        "apiVersion": "Versão da API"
       },
       "placeholders": {
         "appId": "Seu WhatsApp App ID",
-        "verifyToken": "Digite o token de verificacao",
+        "verifyToken": "Digite o token de verificação",
         "appSecret": "Digite o novo segredo do app",
         "configId": "Seu WhatsApp Config ID",
         "apiVersion": "v18.0"
       },
-      "saveSuccess": "Configuracao do WhatsApp salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do WhatsApp"
+      "saveSuccess": "Configuração do WhatsApp salva com sucesso",
+      "saveError": "Falha ao salvar configuração do WhatsApp"
     },
     "instagram": {
       "tabTitle": "Instagram",
       "fields": {
         "appId": "ID do App",
         "appSecret": "Segredo do App",
-        "verifyToken": "Token de Verificacao",
-        "apiVersion": "Versao da API",
+        "verifyToken": "Token de Verificação",
+        "apiVersion": "Versão da API",
         "humanAgent": "Habilitar Agente Humano"
       },
       "placeholders": {
         "appId": "Seu Instagram App ID",
         "appSecret": "Digite o novo segredo do app",
-        "verifyToken": "Digite o token de verificacao",
+        "verifyToken": "Digite o token de verificação",
         "apiVersion": "v18.0"
       },
-      "saveSuccess": "Configuracao do Instagram salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Instagram"
+      "saveSuccess": "Configuração do Instagram salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Instagram"
     },
     "evolution": {
       "tabTitle": "Evolution",
@@ -248,8 +248,8 @@
         "apiUrl": "https://evolution-api.exemplo.com",
         "adminSecret": "Digite o novo token admin"
       },
-      "saveSuccess": "Configuracao do Evolution salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Evolution"
+      "saveSuccess": "Configuração do Evolution salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Evolution"
     },
     "evolutionGo": {
       "tabTitle": "Evolution Go",
@@ -261,8 +261,8 @@
         "apiUrl": "https://evolution-go.exemplo.com",
         "adminSecret": "Digite o novo token admin"
       },
-      "saveSuccess": "Configuracao do Evolution Go salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Evolution Go"
+      "saveSuccess": "Configuração do Evolution Go salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Evolution Go"
     },
     "twitter": {
       "tabTitle": "Twitter",
@@ -278,8 +278,8 @@
         "consumerSecret": "Digite o novo segredo do consumidor",
         "environment": "production"
       },
-      "saveSuccess": "Configuracao do Twitter salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Twitter"
+      "saveSuccess": "Configuração do Twitter salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Twitter"
     },
     "clearConfig": {
       "button": "Limpar Configuração",
@@ -292,19 +292,19 @@
       "error": "Falha ao limpar configuração"
     },
     "messages": {
-      "loadError": "Falha ao carregar configuracao dos canais"
+      "loadError": "Falha ao carregar configuração dos canais"
     }
   },
   "openai": {
-    "title": "Configuracao do OpenAI",
-    "description": "Configure a conexao com a API do OpenAI e os modelos de prompt de IA usados para sugestoes de resposta, resumos e transformacoes de texto.",
+    "title": "Configuração do OpenAI",
+    "description": "Configure a conexão com a API do OpenAI e os modelos de prompt de IA usados para sugestões de resposta, resumos e transformações de texto.",
     "connection": {
-      "cardTitle": "Configuracoes de Conexao",
+      "cardTitle": "Configurações de Conexão",
       "fields": {
         "apiUrl": "URL da API",
         "apiSecret": "Chave de API",
         "model": "Modelo",
-        "audioTranscription": "Habilitar Transcricao de Audio"
+        "audioTranscription": "Habilitar Transcrição de Audio"
       },
       "placeholders": {
         "apiUrl": "https://api.openai.com/v1",
@@ -315,37 +315,37 @@
     "prompts": {
       "cardTitle": "Modelos de Prompt de IA",
       "fields": {
-        "OPENAI_PROMPT_REPLY": "Sugestao de Resposta",
+        "OPENAI_PROMPT_REPLY": "Sugestão de Resposta",
         "OPENAI_PROMPT_SUMMARY": "Resumo da Conversa",
         "OPENAI_PROMPT_REPHRASE": "Reformular Mensagem",
-        "OPENAI_PROMPT_FIX_GRAMMAR": "Corrigir Gramatica",
+        "OPENAI_PROMPT_FIX_GRAMMAR": "Corrigir Gramática",
         "OPENAI_PROMPT_SHORTEN": "Encurtar Texto",
         "OPENAI_PROMPT_EXPAND": "Expandir Texto",
-        "OPENAI_PROMPT_FRIENDLY": "Tom Amigavel",
+        "OPENAI_PROMPT_FRIENDLY": "Tom Amigável",
         "OPENAI_PROMPT_FORMAL": "Tom Formal",
         "OPENAI_PROMPT_SIMPLIFY": "Simplificar Texto"
       },
       "placeholders": {
-        "OPENAI_PROMPT_REPLY": "Insira o prompt para sugestoes de resposta...",
+        "OPENAI_PROMPT_REPLY": "Insira o prompt para sugestões de resposta...",
         "OPENAI_PROMPT_SUMMARY": "Insira o prompt para resumos de conversa...",
         "OPENAI_PROMPT_REPHRASE": "Insira o prompt para reformular mensagens...",
-        "OPENAI_PROMPT_FIX_GRAMMAR": "Insira o prompt para correcoes gramaticais...",
+        "OPENAI_PROMPT_FIX_GRAMMAR": "Insira o prompt para correções gramaticais...",
         "OPENAI_PROMPT_SHORTEN": "Insira o prompt para encurtar texto...",
         "OPENAI_PROMPT_EXPAND": "Insira o prompt para expandir texto...",
-        "OPENAI_PROMPT_FRIENDLY": "Insira o prompt para tom amigavel...",
+        "OPENAI_PROMPT_FRIENDLY": "Insira o prompt para tom amigável...",
         "OPENAI_PROMPT_FORMAL": "Insira o prompt para tom formal...",
         "OPENAI_PROMPT_SIMPLIFY": "Insira o prompt para simplificar texto..."
       }
     },
     "secretConfigured": "Configurado",
-    "secretNotConfigured": "Nao configurado",
+    "secretNotConfigured": "Não configurado",
     "clearSecret": "Limpar valor salvo",
     "messages": {
-      "saveSuccess": "Configuracao do OpenAI salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do OpenAI",
-      "loadError": "Falha ao carregar configuracao do OpenAI"
+      "saveSuccess": "Configuração do OpenAI salva com sucesso",
+      "saveError": "Falha ao salvar configuração do OpenAI",
+      "loadError": "Falha ao carregar configuração do OpenAI"
     },
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando..."
   },
   "integrations": {
@@ -356,11 +356,11 @@
       "copied": "URL de callback copiada"
     },
     "title": "Configuração de Integrações",
-    "description": "Configure credenciais OAuth para integracoes de terceiros como Linear, GitHub, Notion e outras.",
+    "description": "Configure credenciais OAuth para integrações de terceiros como Linear, GitHub, Notion e outras.",
     "secretConfigured": "Configurado",
-    "secretNotConfigured": "Nao configurado",
+    "secretNotConfigured": "Não configurado",
     "clearSecret": "Limpar valor salvo",
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando...",
     "linear": {
       "cardTitle": "Linear",
@@ -372,8 +372,8 @@
         "clientId": "Seu Linear Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Linear salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Linear"
+      "saveSuccess": "Configuração do Linear salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Linear"
     },
     "hubspot": {
       "cardTitle": "HubSpot",
@@ -385,8 +385,8 @@
         "clientId": "Seu HubSpot Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do HubSpot salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do HubSpot"
+      "saveSuccess": "Configuração do HubSpot salva com sucesso",
+      "saveError": "Falha ao salvar configuração do HubSpot"
     },
     "shopify": {
       "cardTitle": "Shopify",
@@ -398,8 +398,8 @@
         "clientId": "Seu Shopify Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Shopify salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Shopify"
+      "saveSuccess": "Configuração do Shopify salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Shopify"
     },
     "slack": {
       "cardTitle": "Slack",
@@ -411,8 +411,8 @@
         "clientId": "Seu Slack Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Slack salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Slack"
+      "saveSuccess": "Configuração do Slack salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Slack"
     },
     "github": {
       "cardTitle": "GitHub",
@@ -424,8 +424,8 @@
         "clientId": "Seu GitHub Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do GitHub salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do GitHub"
+      "saveSuccess": "Configuração do GitHub salva com sucesso",
+      "saveError": "Falha ao salvar configuração do GitHub"
     },
     "notion": {
       "cardTitle": "Notion",
@@ -437,8 +437,8 @@
         "clientId": "Seu Notion Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Notion salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Notion"
+      "saveSuccess": "Configuração do Notion salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Notion"
     },
     "asana": {
       "cardTitle": "Asana",
@@ -450,8 +450,8 @@
         "clientId": "Seu Asana Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Asana salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Asana"
+      "saveSuccess": "Configuração do Asana salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Asana"
     },
     "canva": {
       "cardTitle": "Canva",
@@ -463,8 +463,8 @@
         "clientId": "Seu Canva Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Canva salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Canva"
+      "saveSuccess": "Configuração do Canva salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Canva"
     },
     "google_calendar": {
       "cardTitle": "Google Calendar",
@@ -476,8 +476,8 @@
         "clientId": "Seu Google Calendar Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Google Calendar salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Google Calendar"
+      "saveSuccess": "Configuração do Google Calendar salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Google Calendar"
     },
     "google_sheets": {
       "cardTitle": "Google Sheets",
@@ -489,8 +489,8 @@
         "clientId": "Seu Google Sheets Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Google Sheets salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Google Sheets"
+      "saveSuccess": "Configuração do Google Sheets salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Google Sheets"
     },
     "monday": {
       "cardTitle": "Monday.com",
@@ -502,8 +502,8 @@
         "clientId": "Seu Monday.com Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Monday.com salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Monday.com"
+      "saveSuccess": "Configuração do Monday.com salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Monday.com"
     },
     "paypal": {
       "cardTitle": "PayPal",
@@ -515,8 +515,8 @@
         "clientId": "Seu PayPal Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do PayPal salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do PayPal"
+      "saveSuccess": "Configuração do PayPal salva com sucesso",
+      "saveError": "Falha ao salvar configuração do PayPal"
     },
     "atlassian": {
       "cardTitle": "Atlassian",
@@ -528,11 +528,11 @@
         "clientId": "Seu Atlassian Client ID",
         "clientSecret": "Digite o novo segredo do cliente"
       },
-      "saveSuccess": "Configuracao do Atlassian salva com sucesso",
-      "saveError": "Falha ao salvar configuracao do Atlassian"
+      "saveSuccess": "Configuração do Atlassian salva com sucesso",
+      "saveError": "Falha ao salvar configuração do Atlassian"
     },
     "messages": {
-      "loadError": "Falha ao carregar configuracao das integracoes"
+      "loadError": "Falha ao carregar configuração das integrações"
     },
     "statusConfigured": "Configurado",
     "statusNotConfigured": "Não configurado",
@@ -547,7 +547,7 @@
     "title": "E-mail de entrada (receber como conversas)",
     "description": "Permite que o CRM receba e-mails como conversas. Requer um serviço externo de recebimento (relay, Mailgun ou Mandrill) configurado para o seu domínio.",
     "provider": {
-      "label": "Servico de E-mail de Entrada",
+      "label": "Serviço de E-mail de Entrada",
       "relay": "Relay (Exim / Postfix / Qmail)",
       "mailgun": "Mailgun",
       "mandrill": "Mandrill",
@@ -555,7 +555,7 @@
     },
     "fields": {
       "password": "Senha de Ingresso",
-      "domain": "Dominio de E-mail de Entrada",
+      "domain": "Domínio de E-mail de Entrada",
       "mailgunSigningKey": "Chave de Assinatura Mailgun",
       "mandrillApiKey": "Chave de API Mandrill"
     },
@@ -566,17 +566,17 @@
       "mandrillApiKey": "Digite a nova chave de API Mandrill"
     },
     "validation": {
-      "domainRequired": "Dominio de e-mail de entrada e obrigatorio"
+      "domainRequired": "Domínio de e-mail de entrada é obrigatório"
     },
     "secretConfigured": "Configurado",
-    "secretNotConfigured": "Nao configurado",
+    "secretNotConfigured": "Não configurado",
     "clearSecret": "Limpar valor salvo",
     "messages": {
-      "saveSuccess": "Configuracao de e-mail de entrada salva com sucesso",
-      "saveError": "Falha ao salvar configuracao de e-mail de entrada",
-      "loadError": "Falha ao carregar configuracao de e-mail de entrada"
+      "saveSuccess": "Configuração de e-mail de entrada salva com sucesso",
+      "saveError": "Falha ao salvar configuração de e-mail de entrada",
+      "loadError": "Falha ao carregar configuração de e-mail de entrada"
     },
-    "save": "Salvar Configuracao",
+    "save": "Salvar Configuração",
     "saving": "Salvando..."
   },
   "frontendRuntime": {
@@ -627,5 +627,15 @@
       "testError": "Falha no teste de conexão",
       "testUnknown": "Resposta desconhecida do Hub"
     }
+  },
+  "clearConfig": {
+    "button": "Limpar Configuração",
+    "dialogTitle": "Limpar Configuração",
+    "dialogDescription": "Tem certeza? Isso removerá todas as credenciais deste provedor. O provedor deixará de funcionar até que você o reconfigure.",
+    "cancel": "Cancelar",
+    "confirm": "Limpar",
+    "clearing": "Limpando...",
+    "success": "Configuração limpa com sucesso",
+    "error": "Falha ao limpar configuração"
   }
 }
