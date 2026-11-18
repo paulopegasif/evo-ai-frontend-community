@@ -20,7 +20,8 @@
       "contextMenu": {
         "reply": "Reply",
         "copy": "Copy message",
-        "delete": "Delete message"
+        "delete": "Delete message",
+        "edit": "Edit message"
       },
       "userFallback": "User",
       "agent": {
@@ -41,13 +42,20 @@
       },
       "deleteDialog": {
         "title": "Delete message",
-        "description": "Are you sure you want to delete this message? This action cannot be undone and the message will be permanently removed from the conversation.",
+        "description": "Are you sure you want to delete this message? It will also be deleted for everyone on WhatsApp when still possible. This action cannot be undone.",
         "cancel": "Cancel",
         "confirm": "Delete message"
       },
       "deletedPlaceholder": "This message was deleted",
       "revokedByContact": "Deleted by the contact",
-      "revokeCrmOnly": "removed only in the CRM"
+      "revokeCrmOnly": "removed only in the CRM",
+      "editDialog": {
+        "title": "Edit message",
+        "description": "The edit also shows up in the contact's WhatsApp. WhatsApp only allows editing within 15 minutes of sending.",
+        "descriptionPrivate": "Private notes are edited in the CRM only.",
+        "cancel": "Cancel",
+        "save": "Save"
+      }
     },
     "moderation": {
       "banner": {
@@ -91,15 +99,12 @@
       "openInMaps": "Open in Google Maps"
     },
     "messageStatus": {
-      "statusUnavailable": "Message status unavailable",
-      "statusUnavailableDescription": "The message was sent, but we could not confirm the delivery status.",
-      "checkChannelConfig": "Check channel configuration",
-      "webhookIssue": "The webhook may be outdated or inactive.",
-      "deliveryStatusUnavailable": "Delivery status unavailable - Click for more details",
-      "statusUnavailableText": "Status unavailable",
-      "retryInDevelopment": "Retry functionality in development",
       "sendFailed": "Send failed - Click to try again",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "sendFailedTitle": "Message not sent",
+      "sendFailedNoReason": "WhatsApp rejected the message without giving a reason.",
+      "failedText": "Failed",
+      "edited": "edited"
     },
     "replyPreview": {
       "imageAttachment": "📷 Image",
@@ -110,6 +115,15 @@
       "noContent": "Message with no content",
       "userFallback": "User",
       "previousMessage": "Previous message"
+    },
+    "sendErrors": {
+      "notOnWhatsapp": "WhatsApp couldn't find this recipient. Check the contact's number or ask them to message you first.",
+      "disconnected": "The channel's WhatsApp is disconnected. Reconnect the channel and try again."
+    },
+    "editErrors": {
+      "window": "WhatsApp only allows editing messages within 15 minutes of sending.",
+      "notDelivered": "This message never reached WhatsApp, so it can't be edited.",
+      "unsupported": "This channel doesn't support editing messages."
     }
   },
   "assignment": {
@@ -687,11 +701,13 @@
         "sendMessage": "Error sending message",
         "sendMessageWithAttachments": "Error sending message with attachments",
         "deleteMessage": "Error deleting message",
-        "replyToPrivateNote": "Cannot reply to private notes"
+        "replyToPrivateNote": "Cannot reply to private notes",
+        "editMessage": "Couldn't edit the message"
       },
       "success": {
         "messageCopied": "Message copied to clipboard!",
-        "messageDeleted": "Message deleted successfully"
+        "messageDeleted": "Message deleted successfully",
+        "messageEdited": "Message edited"
       },
       "tryAgain": "Try again"
     },
