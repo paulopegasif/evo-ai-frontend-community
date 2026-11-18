@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Message } from '@/types/chat/api';
 import { formatMessageTime } from '@/utils/time/timeHelpers';
 import { useLanguage } from '@/hooks/useLanguage';
-import { explainSendError } from './messageErrors';
+import { explainSendError, htmlToPlainText } from './messageErrors';
 
 interface MessageStatusProps {
   message: Message;
@@ -86,7 +86,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
 
   const isEdited = message.content_attributes?.is_edited === true && !message.content_attributes?.deleted;
   const editedLabel = isEdited ? (
-    <span className={`italic ${timeTextClass}`} title={message.content_attributes?.previous_content || undefined}>
+    <span className={`italic ${timeTextClass}`} title={htmlToPlainText(message.content_attributes?.previous_content || '') || undefined}>
       {t('messages.messageStatus.edited')}
     </span>
   ) : null;
