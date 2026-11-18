@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Message } from '@/types/chat/api';
 import { formatMessageTime } from '@/utils/time/timeHelpers';
 import { useLanguage } from '@/hooks/useLanguage';
+import { explainSendError, htmlToPlainText } from './messageErrors';
 
 interface MessageStatusProps {
   message: Message;
@@ -39,41 +40,6 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
       return <Check className="h-3 w-3 text-muted-foreground" />;
     }
 
-    // CORREÇÃO: Em ambiente de desenvolvimento, canais podem não estar configurados
-    // Se for uma mensagem pública com status 'failed', pode ser problema de configuração
-    if (message.status === 'failed' && !message.private) {
-      return (
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-auto p-0 text-orange-500 hover:text-orange-600"
-          onClick={e => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Mostrar toast explicativo sobre o problema do webhook
-            toast.warning(t('messages.messageStatus.statusUnavailable'), {
-              description: t('messages.messageStatus.statusUnavailableDescription'),
-            });
-            toast.info(t('messages.messageStatus.checkChannelConfig'), {
-              description: t('messages.messageStatus.webhookIssue'),
-            });
-
-            // Se existe função onRetry, também executar (para tentar reenviar)
-            if (onRetry) {
-              setTimeout(() => {
-                onRetry();
-              }, 1000); // Delay para que o usuário veja o toast primeiro
-            }
-          }}
-          title={t('messages.messageStatus.deliveryStatusUnavailable')}
-        >
-          <AlertCircle className="h-3 w-3" />
-          <span className="ml-1 text-xs">{t('messages.messageStatus.statusUnavailableText')}</span>
-        </Button>
-      );
-    }
-
     switch (message.status) {
       case 'sent':
         // Para mensagens privadas, 'sent' é o status final correto
@@ -85,29 +51,45 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
         return <CheckCheck className={`h-3 w-3 ${readTickClass}`} />;
       case 'progress':
         return <Loader2 className="h-3 w-3 text-blue-500 animate-spin" />;
-      case 'failed':
+      case 'failed': {
+        // Explain the real provider error (e.g. recipient not on WhatsApp) and
+        // offer a retry, instead of the old generic "check the webhook" notice.
+        const explained = explainSendError(message.content_attributes?.external_error);
+        const reason = explained.key ? t(explained.key) : explained.raw;
         return (
           <Button
             size="sm"
             variant="ghost"
             className="h-auto p-0 text-destructive hover:text-destructive/80"
-            onClick={() => {
-              if (onRetry) {
-                onRetry();
-              } else {
-                toast.error(t('messages.messageStatus.retryInDevelopment'));
-              }
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              toast.error(t('messages.messageStatus.sendFailedTitle'), {
+                description: reason || t('messages.messageStatus.sendFailedNoReason'),
+                ...(onRetry
+                  ? { action: { label: t('messages.messageStatus.tryAgain'), onClick: () => onRetry() } }
+                  : {}),
+              });
             }}
-            title={t('messages.messageStatus.sendFailed')}
+            title={reason || t('messages.messageStatus.sendFailed')}
+            aria-label={t('messages.messageStatus.sendFailed')}
           >
             <AlertCircle className="h-3 w-3" />
-            <span className="ml-1 text-xs">{t('messages.messageStatus.tryAgain')}</span>
+            <span className="ml-1 text-xs">{t('messages.messageStatus.failedText')}</span>
           </Button>
         );
+      }
       default:
         return <Clock className="h-3 w-3 text-muted-foreground animate-pulse" />;
     }
   };
+
+  const isEdited = message.content_attributes?.is_edited === true && !message.content_attributes?.deleted;
+  const editedLabel = isEdited ? (
+    <span className={`italic ${timeTextClass}`} title={htmlToPlainText(message.content_attributes?.previous_content || '') || undefined}>
+      {t('messages.messageStatus.edited')}
+    </span>
+  ) : null;
 
   // 'tuck' fica em fluxo normal (float, sem position:absolute) — precisa ser renderizado
   // como o último nó dentro do MESMO bloco de texto para "grudar" na última linha, à
@@ -117,6 +99,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
       <span
         className={`float-right inline-flex items-center gap-1 mt-1.5 ml-3.5 text-[11px] leading-none ${timeTextClass}`}
       >
+        {editedLabel}
         <span>{formatMessageTime(message.created_at)}</span>
         {getStatusIcon()}
       </span>
@@ -127,6 +110,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
     <div
       className={`flex items-center gap-1 mt-1.5 text-xs ${isOwn ? 'justify-end' : 'justify-start'}`}
     >
+      {editedLabel}
       <span className={timeTextClass}>{formatMessageTime(message.created_at)}</span>
       {getStatusIcon()}
     </div>

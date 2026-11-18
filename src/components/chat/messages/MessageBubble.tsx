@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@evoapi/design-system/alert-dialog';
-import { LockIcon, Reply, Copy, Trash2, AlertTriangle, Shield, Ban } from 'lucide-react';
+import { LockIcon, Reply, Copy, Trash2, AlertTriangle, Shield, Ban, Pencil } from 'lucide-react';
 import { Message, MESSAGE_TYPE } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import MessageText from '@/components/chat/messages/MessageText';
@@ -31,6 +31,8 @@ import MessageCarousel from '@/components/chat/messages/MessageCarousel';
 import MessageStatus from '@/components/chat/messages/MessageStatus';
 import SystemMessage from '@/components/chat/messages/SystemMessage';
 import ReplyPreview from '@/components/chat/messages/ReplyPreview';
+import EditMessageDialog from '@/components/chat/messages/EditMessageDialog';
+import { WHATSAPP_EDIT_WINDOW_MS, messageTimestampMs } from '@/components/chat/messages/messageErrors';
 import { FacebookCommentModeration } from '@/types/channels/inbox';
 
 interface MessageBubbleProps {
@@ -51,6 +53,10 @@ interface MessageBubbleProps {
   onReply?: (message: Message) => void;
   onCopy?: (message: Message) => void;
   onDelete?: (message: Message) => void;
+  // Saves an edit; resolves true on success. Omitted → no "Edit" action.
+  onEdit?: (message: Message, content: string) => Promise<boolean>;
+  // The conversation's channel can mirror edits (WhatsApp via Evolution Go).
+  canEditOnChannel?: boolean;
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -71,6 +77,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   onReply,
   onCopy,
   onDelete,
+  onEdit,
+  canEditOnChannel = false,
 }) => {
   const { t } = useLanguage('chat');
   const isTemplate = message.message_type === MESSAGE_TYPE.TEMPLATE;
@@ -87,6 +95,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isPendingResponse = moderation?.moderation_action === 'response_approval' && hasPendingModeration;
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   const replyToMessageId = message.content_attributes?.in_reply_to;
   const replyToExternalId = message.content_attributes?.in_reply_to_external_id;
@@ -125,6 +134,22 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     await onDelete?.(message);
   };
 
+  // Mirrors Messages::EditService: text only; private notes any time; sent
+  // WhatsApp messages only within WhatsApp's 15-minute edit window.
+  const isEditableText =
+    !message.attachments?.length && (!message.content_type || message.content_type === 'text');
+  const canEdit =
+    Boolean(onEdit) &&
+    isOwn &&
+    !isDeleted &&
+    isEditableText &&
+    Boolean(message.content) &&
+    (isPrivate ||
+      (canEditOnChannel &&
+        message.status !== 'failed' &&
+        Boolean(message.source_id) &&
+        Date.now() - messageTimestampMs(message.created_at) < WHATSAPP_EDIT_WINDOW_MS));
+
   const renderContextMenu = (children: React.ReactNode) => {
     // Template, Activity messages e mensagens deletadas não têm context menu
     if (isTemplate || isActivity || isDeleted) {
@@ -148,6 +173,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
             <Copy className="h-4 w-4" />
             {t('messages.messageBubble.contextMenu.copy')}
           </ContextMenuItem>
+          {canEdit && (
+            <ContextMenuItem onClick={() => setShowEditDialog(true)} className="flex items-center gap-2">
+              <Pencil className="h-4 w-4" />
+              {t('messages.messageBubble.contextMenu.edit')}
+            </ContextMenuItem>
+          )}
           <ContextMenuSeparator />
           <ContextMenuItem
             onClick={handleDeleteMessage}
@@ -393,6 +424,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </div>
 
+        {canEdit && onEdit && (
+          <EditMessageDialog
+            message={message}
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            onSave={content => onEdit(message, content)}
+          />
+        )}
+
         {/* Alert Dialog para confirmação de exclusão */}
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent className="max-w-md">
@@ -553,6 +593,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           </div>,
         )}
       </div>
+
+      {canEdit && onEdit && (
+        <EditMessageDialog
+          message={message}
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          onSave={content => onEdit(message, content)}
+        />
+      )}
 
       {/* Alert Dialog para confirmação de exclusão */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
