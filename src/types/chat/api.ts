@@ -201,6 +201,11 @@ export interface MessageContentAttributes extends Record<string, unknown> {
   is_unsupported?: boolean;
   deleted?: boolean;
   external_created_at?: number;
+  external_error?: string;
+  is_edited?: boolean;
+  previous_content?: string;
+  revoke_propagated?: boolean;
+  revoked_by_contact?: boolean;
 }
 
 // ===== MESSAGE =====
