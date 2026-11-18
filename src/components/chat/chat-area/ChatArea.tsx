@@ -161,6 +161,19 @@ const ChatArea = ({
     [selectedConversationId, messages],
   );
 
+  const handleEditMessage = useCallback(
+    async (message: Message, content: string): Promise<boolean> => {
+      if (!selectedConversationId) return false;
+      return messages.onEditMessage(selectedConversationId, message, content);
+    },
+    [selectedConversationId, messages],
+  );
+
+  // Only WhatsApp (Evolution Go) mirrors edits; private notes are editable anywhere.
+  const canEditOnChannel =
+    selectedConversation?.inbox?.channel_type === 'Channel::Whatsapp' &&
+    selectedConversation?.inbox?.provider === 'evolution_go';
+
   const handleCancelReply = useCallback(() => {
     messages.onCancelReply();
   }, [messages]);
@@ -401,6 +414,8 @@ const ChatArea = ({
             onReplyToMessage={handleReplyToMessage}
             onCopyMessage={handleCopyMessage}
             onDeleteMessage={handleDeleteMessage}
+            onEditMessage={handleEditMessage}
+            canEditOnChannel={canEditOnChannel}
           />
         </>
       )}

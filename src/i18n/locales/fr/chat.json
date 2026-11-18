@@ -19,7 +19,8 @@
       "contextMenu": {
         "reply": "Répondre",
         "copy": "Copier le message",
-        "delete": "Supprimer le message"
+        "delete": "Supprimer le message",
+        "edit": "Modifier le message"
       },
       "userFallback": "Utilisateur",
       "agent": {
@@ -40,13 +41,20 @@
       },
       "deleteDialog": {
         "title": "Supprimer le message",
-        "description": "Êtes-vous sûr de vouloir supprimer ce message ? Cette action ne peut pas être annulée et le message sera définitivement supprimé de la conversation.",
+        "description": "Voulez-vous vraiment supprimer ce message ? Il sera aussi supprimé pour tous sur WhatsApp lorsque c’est encore possible. Cette action est irréversible.",
         "cancel": "Annuler",
         "confirm": "Supprimer le message"
       },
       "deletedPlaceholder": "Ce message a été supprimé",
       "revokedByContact": "Supprimé par le contact",
-      "revokeCrmOnly": "supprimée uniquement dans le CRM"
+      "revokeCrmOnly": "supprimée uniquement dans le CRM",
+      "editDialog": {
+        "title": "Modifier le message",
+        "description": "La modification apparaît aussi dans le WhatsApp du contact. WhatsApp n'autorise la modification que dans les 15 minutes suivant l'envoi.",
+        "descriptionPrivate": "Les notes privées sont modifiées uniquement dans le CRM.",
+        "cancel": "Annuler",
+        "save": "Enregistrer"
+      }
     },
     "moderation": {
       "banner": {
@@ -90,15 +98,12 @@
       "openInMaps": "Ouvrir dans Google Maps"
     },
     "messageStatus": {
-      "statusUnavailable": "Statut du message indisponible",
-      "statusUnavailableDescription": "Le message a été envoyé, mais nous n'avons pas pu confirmer le statut de livraison.",
-      "checkChannelConfig": "Vérifiez la configuration du canal",
-      "webhookIssue": "Le webhook peut être obsolète ou inactif.",
-      "deliveryStatusUnavailable": "Statut de livraison indisponible - Cliquez pour plus de détails",
-      "statusUnavailableText": "Statut indisponible",
-      "retryInDevelopment": "Fonctionnalité de nouvelle tentative en développement",
       "sendFailed": "Échec de l'envoi - Cliquez pour réessayer",
-      "tryAgain": "Réessayer"
+      "tryAgain": "Réessayer",
+      "sendFailedTitle": "Échec de l'envoi",
+      "sendFailedNoReason": "WhatsApp a refusé le message sans en indiquer la raison.",
+      "failedText": "Échec",
+      "edited": "modifié"
     },
     "replyPreview": {
       "imageAttachment": "📷 Image",
@@ -109,6 +114,15 @@
       "noContent": "Message sans contenu",
       "userFallback": "Utilisateur",
       "previousMessage": "Message précédent"
+    },
+    "sendErrors": {
+      "notOnWhatsapp": "WhatsApp n'a pas trouvé ce destinataire. Vérifiez le numéro du contact ou demandez-lui de vous écrire d'abord.",
+      "disconnected": "Le WhatsApp du canal est déconnecté. Reconnectez le canal et réessayez."
+    },
+    "editErrors": {
+      "window": "WhatsApp n'autorise la modification des messages que dans les 15 minutes suivant l'envoi.",
+      "notDelivered": "Ce message n'est jamais arrivé sur WhatsApp, il ne peut donc pas être modifié.",
+      "unsupported": "Ce canal ne permet pas de modifier les messages."
     }
   },
   "assignment": {
@@ -662,11 +676,13 @@
         "sendMessage": "Erreur lors de l'envoi du message",
         "sendMessageWithAttachments": "Erreur lors de l'envoi du message avec pièces jointes",
         "deleteMessage": "Erreur lors de la suppression du message",
-        "replyToPrivateNote": "Impossible de répondre aux notes privées"
+        "replyToPrivateNote": "Impossible de répondre aux notes privées",
+        "editMessage": "Impossible de modifier le message"
       },
       "success": {
         "messageCopied": "Message copié dans le presse-papiers !",
-        "messageDeleted": "Message supprimé avec succès"
+        "messageDeleted": "Message supprimé avec succès",
+        "messageEdited": "Message modifié"
       },
       "tryAgain": "Réessayer"
     },
