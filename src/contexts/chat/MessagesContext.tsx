@@ -5,6 +5,8 @@ import { chatService } from '@/services/chat/chatService';
 import { extractMessagesData } from '@/utils/chat/responseHelpers';
 import { Attachment, Message, MessageSender, MessageTypeValue } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
+import { extractError } from '@/utils/apiHelpers';
+import { explainEditError } from '@/components/chat/messages/messageErrors';
 
 interface MessagesState {
   // Messages per conversation
@@ -402,6 +404,7 @@ interface MessagesContextValue {
   onCancelReply: () => void;
   onCopyMessage: (message: Message) => void;
   onDeleteMessage: (conversationId: string, message: Message) => Promise<void>;
+  onEditMessage: (conversationId: string, message: Message, content: string) => Promise<boolean>;
 
   // Direct state manipulation (for WebSocket integration)
   setMessages: (conversationId: string, messages: Message[]) => void;
@@ -828,6 +831,25 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     [t],
   );
 
+  const onEditMessage = useCallback(
+    async (conversationId: string, message: Message, content: string): Promise<boolean> => {
+      try {
+        const edited = await chatService.editMessage(conversationId, message.id, content);
+        dispatch({ type: 'UPDATE_MESSAGE', payload: { conversationId, message: edited } });
+        toast.success(t('contexts.messages.success.messageEdited'));
+        return true;
+      } catch (error) {
+        const { details, message: apiMessage } = extractError(error);
+        const explained = explainEditError(typeof details === 'string' ? details : apiMessage);
+        toast.error(t('contexts.messages.errors.editMessage'), {
+          description: explained.key ? t(explained.key) : explained.raw || undefined,
+        });
+        return false;
+      }
+    },
+    [t],
+  );
+
   // Direct state manipulation (for WebSocket integration)
   const setMessages = useCallback((conversationId: string, messages: Message[]) => {
     dispatch({
@@ -940,6 +962,7 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     onCancelReply,
     onCopyMessage,
     onDeleteMessage,
+    onEditMessage,
     setMessages,
     addMessage,
     updateMessage,

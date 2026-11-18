@@ -94,6 +94,7 @@ export const useChatActions = () => {
     onCancelReply: messages.onCancelReply,
     onCopyMessage: messages.onCopyMessage,
     onDeleteMessage: messages.onDeleteMessage,
+    onEditMessage: messages.onEditMessage,
 
     // Filter actions
     applyFilters: applyFiltersAndReload,
