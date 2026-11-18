@@ -19,7 +19,8 @@
       "contextMenu": {
         "reply": "Responder",
         "copy": "Copiar mensagem",
-        "delete": "Excluir mensagem"
+        "delete": "Excluir mensagem",
+        "edit": "Editar mensagem"
       },
       "userFallback": "Usuário",
       "agent": {
@@ -40,13 +41,20 @@
       },
       "deleteDialog": {
         "title": "Excluir mensagem",
-        "description": "Tem certeza de que deseja excluir esta mensagem? Esta ação não pode ser desfeita e a mensagem será permanentemente removida da conversa.",
+        "description": "Tem a certeza de que pretende eliminar esta mensagem? Também será apagada para todos no WhatsApp, quando ainda for possível. Esta ação não pode ser desfeita.",
         "cancel": "Cancelar",
         "confirm": "Excluir mensagem"
       },
       "deletedPlaceholder": "Esta mensagem foi eliminada",
       "revokedByContact": "Apagada pelo contacto",
-      "revokeCrmOnly": "removida só no CRM"
+      "revokeCrmOnly": "removida só no CRM",
+      "editDialog": {
+        "title": "Editar mensagem",
+        "description": "A edição também aparece no WhatsApp do contacto. O WhatsApp só permite editar até 15 minutos após o envio.",
+        "descriptionPrivate": "As notas privadas são editadas apenas no CRM.",
+        "cancel": "Cancelar",
+        "save": "Guardar"
+      }
     },
     "moderation": {
       "banner": {
@@ -90,15 +98,12 @@
       "openInMaps": "Abrir no Google Maps"
     },
     "messageStatus": {
-      "statusUnavailable": "Status da mensagem indisponível",
-      "statusUnavailableDescription": "A mensagem foi enviada, mas não conseguimos confirmar o status de entrega.",
-      "checkChannelConfig": "Verifique a configuração do canal",
-      "webhookIssue": "O webhook pode estar desatualizado ou inativo.",
-      "deliveryStatusUnavailable": "Status de entrega indisponível - Clique para mais detalhes",
-      "statusUnavailableText": "Status indisponível",
-      "retryInDevelopment": "Funcionalidade de reenvio em desenvolvimento",
       "sendFailed": "Falha no envio - Clique para tentar novamente",
-      "tryAgain": "Tentar novamente"
+      "tryAgain": "Tentar novamente",
+      "sendFailedTitle": "Falha no envio",
+      "sendFailedNoReason": "O WhatsApp recusou a mensagem, sem indicar o motivo.",
+      "failedText": "Falhou",
+      "edited": "editada"
     },
     "replyPreview": {
       "imageAttachment": "📷 Imagem",
@@ -109,6 +114,15 @@
       "noContent": "Mensagem sem conteúdo",
       "userFallback": "Usuário",
       "previousMessage": "Mensagem anterior"
+    },
+    "sendErrors": {
+      "notOnWhatsapp": "O WhatsApp não encontrou este destinatário. Confirme o número do contacto ou peça-lhe que envie uma mensagem primeiro.",
+      "disconnected": "O WhatsApp do canal está desligado. Volte a ligar o canal e tente novamente."
+    },
+    "editErrors": {
+      "window": "O WhatsApp só permite editar mensagens até 15 minutos após o envio.",
+      "notDelivered": "Esta mensagem não chegou ao WhatsApp, por isso não pode ser editada.",
+      "unsupported": "Este canal não permite editar mensagens."
     }
   },
   "assignment": {
@@ -662,11 +676,13 @@
         "sendMessage": "Erro ao enviar mensagem",
         "sendMessageWithAttachments": "Erro ao enviar mensagem com anexos",
         "deleteMessage": "Erro ao excluir mensagem",
-        "replyToPrivateNote": "Não é possível responder notas privadas"
+        "replyToPrivateNote": "Não é possível responder notas privadas",
+        "editMessage": "Não foi possível editar a mensagem"
       },
       "success": {
         "messageCopied": "Mensagem copiada para a área de transferência!",
-        "messageDeleted": "Mensagem excluída com sucesso"
+        "messageDeleted": "Mensagem excluída com sucesso",
+        "messageEdited": "Mensagem editada"
       },
       "tryAgain": "Tentar novamente"
     },

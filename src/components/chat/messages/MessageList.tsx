@@ -65,6 +65,8 @@ interface MessageListProps {
   onReplyToMessage: (message: Message) => void;
   onCopyMessage: (message: Message) => void;
   onDeleteMessage: (message: Message) => Promise<void>;
+  onEditMessage?: (message: Message, content: string) => Promise<boolean>;
+  canEditOnChannel?: boolean;
 }
 
 // Helper function para normalizar timestamp de mensagens (mesma lógica do MessagesContext)
@@ -122,6 +124,8 @@ const MessageList: React.FC<MessageListProps> = ({
   onReplyToMessage,
   onCopyMessage,
   onDeleteMessage,
+  onEditMessage,
+  canEditOnChannel = false,
 }) => {
   const { t } = useLanguage('chat');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -464,6 +468,8 @@ const MessageList: React.FC<MessageListProps> = ({
                           onReply={onReplyToMessage}
                           onCopy={onCopyMessage}
                           onDelete={onDeleteMessage}
+                          onEdit={onEditMessage}
+                          canEditOnChannel={canEditOnChannel}
                         />
 
                         {/* Renderizar respostas aninhadas recursivamente */}
@@ -547,6 +553,8 @@ const MessageList: React.FC<MessageListProps> = ({
                           onReply={onReplyToMessage}
                           onCopy={onCopyMessage}
                           onDelete={onDeleteMessage}
+                          onEdit={onEditMessage}
+                          canEditOnChannel={canEditOnChannel}
                         />
                       </div>
                     </div>
@@ -601,6 +609,8 @@ const MessageList: React.FC<MessageListProps> = ({
                     onReply={onReplyToMessage}
                     onCopy={onCopyMessage}
                     onDelete={onDeleteMessage}
+                    onEdit={onEditMessage}
+                    canEditOnChannel={canEditOnChannel}
                   />
                 </div>
               );

@@ -215,6 +215,13 @@ class ChatService {
     });
   }
 
+  async editMessage(conversationId: string, messageId: string, content: string): Promise<Message> {
+    const response = await api.patch(`/conversations/${conversationId}/messages/${messageId}/edit`, {
+      content,
+    });
+    return extractData<Message>(response);
+  }
+
   async deleteMessage(conversationId: string, messageId: string): Promise<Message> {
     const response = await api.delete(`/conversations/${conversationId}/messages/${messageId}`);
     return extractData<Message>(response);
