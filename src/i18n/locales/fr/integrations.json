@@ -1267,5 +1267,10 @@
   "email": {
     "name": "E-mail",
     "description": "Support par e-mail intégré"
+  },
+  "confirmDisconnect": {
+    "title": "Déconnecter {{name}} ?",
+    "description": "L'intégration cesse de fonctionner jusqu'à sa reconnexion. Les données enregistrées sont conservées.",
+    "cancel": "Annuler"
   }
 }

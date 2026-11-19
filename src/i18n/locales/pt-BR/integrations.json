@@ -1353,5 +1353,10 @@
   "email": {
     "name": "Email",
     "description": "Suporte via email integrado"
+  },
+  "confirmDisconnect": {
+    "title": "Desconectar {{name}}?",
+    "description": "A integração para de funcionar até ser conectada de novo. Os dados salvos são mantidos.",
+    "cancel": "Cancelar"
   }
 }
