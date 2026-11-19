@@ -70,6 +70,10 @@
       "name": "Canva",
       "description": "Create and edit designs, presentations and visual materials with Canva"
     },
+    "meta_conversions": {
+      "name": "Meta Conversions",
+      "description": "Send leads, qualified leads and sales back to Meta to optimize Click-to-WhatsApp ads."
+    },
     "meta_ads": {
       "name": "Meta Ads",
       "description": "Campaigns, spend and lead performance from your Meta ad account."

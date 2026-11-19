@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTab } from '@/components/ui/tabs';
 import BaseHeader from '@/components/base/BaseHeader';
 import { integrationsService } from '@/services/integrations';
 import { metaAdsService } from '@/services/integrations/metaAdsService';
+import { metaConversionsService } from '@/services/integrations/metaConversionsService';
 import { Integration, IntegrationCategory } from '@/types/integrations';
 import { IntegrationCard } from '@/components/integrations/base';
 import { toast } from 'sonner';
@@ -35,6 +36,7 @@ const INTEGRATION_CATEGORY_MAP: Record<string, string> = {
   leadsquared: 'crm',
   hubspot: 'crm',
   meta_ads: 'crm',
+  meta_conversions: 'crm',
 
   // Communication
   slack: 'communication',
@@ -111,6 +113,8 @@ export default function Integrations() {
         if (integration.id === 'meta_ads') {
           // Dedicated endpoint: drops the encrypted token, keeps imported campaigns
           await metaAdsService.disconnect();
+        } else if (integration.id === 'meta_conversions') {
+          await metaConversionsService.disconnect();
         } else if (['slack', 'hubspot', 'linear', 'shopify'].includes(integration.id)) {
           // OAuth integrations have specific delete endpoints
           await integrationsService.deleteIntegration(integration.id);
@@ -168,6 +172,8 @@ export default function Integrations() {
       navigate(`/settings/integrations/google_calendar`);
     } else if (integration.id === 'meta_ads') {
       navigate(`/settings/integrations/meta_ads`);
+    } else if (integration.id === 'meta_conversions') {
+      navigate(`/settings/integrations/meta_conversions`);
     } else {
       // Generic integration configuration page
       navigate(`/settings/integrations/${integration.id}`);
