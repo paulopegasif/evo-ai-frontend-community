@@ -17,7 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Search, User, Phone, Mail, MessageSquare } from 'lucide-react';
 import { ConversationForModal, PipelineStage } from '@/types/analytics';
 import { pipelinesService } from '@/services/pipelines';

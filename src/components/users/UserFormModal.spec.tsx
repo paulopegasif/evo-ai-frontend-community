@@ -49,7 +49,7 @@ vi.mock('@/hooks/useRoles', () => ({
 
 // Stub the design-system Select so every SelectItem renders inline (Radix only
 // mounts items when the dropdown is open, which is unreliable in jsdom).
-vi.mock('@evoapi/design-system', () => {
+vi.mock('@/components/ui/compat', () => {
   const Passthrough = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>;
   return {
     Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) =>

@@ -13,7 +13,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowLeft, FileUp, Loader2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

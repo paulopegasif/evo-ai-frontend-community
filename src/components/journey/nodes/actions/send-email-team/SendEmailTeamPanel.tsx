@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Label, Textarea, Checkbox } from '@evoapi/design-system';
+import { Label, Textarea, Checkbox } from '@/components/ui/compat';
 import { Mail } from 'lucide-react';
 import { SendEmailTeamNodeData } from './SendEmailTeamNode';
 import { automationService } from '@/services/automation/automationService';

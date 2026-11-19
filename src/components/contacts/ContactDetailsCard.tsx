@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, CardContent } from '@evoapi/design-system';
+import { Button, Card, CardContent } from '@/components/ui/compat';
 import { Edit, Lock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';

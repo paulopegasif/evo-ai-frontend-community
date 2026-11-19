@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Badge } from '@evoapi/design-system/badge';
+import { Badge } from '@/components/ui/compat';
 import {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-} from '@evoapi/design-system/context-menu';
+} from '@/components/ui/compat';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
+} from '@/components/ui/compat';
 import { LockIcon, Reply, Copy, Trash2, AlertTriangle, Shield, Ban, Pencil } from 'lucide-react';
 import { Message, MESSAGE_TYPE } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';

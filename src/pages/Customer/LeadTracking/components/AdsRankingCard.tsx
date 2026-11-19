@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Trophy } from 'lucide-react';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/compat';
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { AdPerformance } from '@/types/leadTracking';
 import { currencyOrDash, formatCurrency, formatNumber, roasOrDash } from './format';

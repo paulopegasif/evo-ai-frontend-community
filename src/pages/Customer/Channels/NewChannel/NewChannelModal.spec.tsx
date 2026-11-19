@@ -12,7 +12,7 @@ vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key, currentLanguage: 'en' }),
 }));
 
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/compat', () => ({
   // Controlled Dialog: render nothing when closed, mirroring Radix behavior.
   Dialog: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
     open ? <div data-testid="dialog">{children}</div> : null,

@@ -15,7 +15,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { ChatPage, ChatPagePayload, WebWidgetOption } from '@/types/chatPages';
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link2, Search, UserPlus, X } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@evoapi/design-system';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { contactsService } from '@/services/contacts/contactsService';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';

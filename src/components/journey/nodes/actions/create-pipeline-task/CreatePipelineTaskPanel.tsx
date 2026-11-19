@@ -8,7 +8,7 @@ import {
   Label,
   Input,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ClipboardList, AlertCircle } from 'lucide-react';
 import {
   CreatePipelineTaskNodeData,

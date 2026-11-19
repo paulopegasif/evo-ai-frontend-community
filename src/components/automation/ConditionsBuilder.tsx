@@ -1,6 +1,6 @@
 import { useFieldArray, type Control } from 'react-hook-form';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { Plus } from 'lucide-react';
 import type { AutomationRuleFormData } from '@/pages/Customer/Automation/registries';
 import type { AutomationFormData } from '@/hooks/automation/useAutomationFormData';

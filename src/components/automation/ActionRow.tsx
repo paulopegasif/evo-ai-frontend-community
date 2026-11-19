@@ -10,7 +10,7 @@ import {
   Textarea,
   Button,
   Checkbox,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Trash2 } from 'lucide-react';
 import {
   ALL_ACTION_NAMES,

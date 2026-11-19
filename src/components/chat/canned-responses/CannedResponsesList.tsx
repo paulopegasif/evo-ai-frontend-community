@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Card, CardContent } from '@evoapi/design-system/card';
+import { Card, CardContent } from '@/components/ui/compat';
 import { Hash, Loader2, Search, Paperclip } from 'lucide-react';
 import type { CannedResponse } from '@/types/knowledge';
 import { useLanguage } from '@/hooks/useLanguage';

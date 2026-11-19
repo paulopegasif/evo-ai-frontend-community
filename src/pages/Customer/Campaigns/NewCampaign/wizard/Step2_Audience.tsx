@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge } from '@evoapi/design-system';
+import { Button, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, Users, Plus, X, Tag as TagIcon, Target } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { contactsService } from '@/services/contacts';

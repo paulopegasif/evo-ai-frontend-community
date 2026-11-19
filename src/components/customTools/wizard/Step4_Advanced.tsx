@@ -1,4 +1,4 @@
-import { Button, Input, Label, Textarea } from '@evoapi/design-system';
+import { Button, Input, Label, Textarea } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, SkipForward } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';

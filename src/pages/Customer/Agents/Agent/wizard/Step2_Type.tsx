@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardContent, Button, Badge } from '@evoapi/design-system';
+import { Card, CardContent, Button, Badge } from '@/components/ui/compat';
 import {
   ArrowRight,
   ArrowLeft,

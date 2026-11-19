@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import BaseHeader from '@/components/base/BaseHeader';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import { useAppointmentMetadata } from '@/hooks/useAppointmentMetadata';

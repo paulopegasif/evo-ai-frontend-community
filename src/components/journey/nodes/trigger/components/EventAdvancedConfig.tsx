@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Label, Separator } from '@evoapi/design-system';
+import { Label, Separator } from '@/components/ui/compat';
 import { VariableMapping, type DataMapping } from '@/components/journey/environment-manager';
 import { propertiesToRecord, type EventProperty } from '@/lib/events-manifest';
 import { useLanguage } from '@/hooks/useLanguage';

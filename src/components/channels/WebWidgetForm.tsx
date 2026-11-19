@@ -1,4 +1,4 @@
-import { Input } from '@evoapi/design-system';
+import { Input } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface WebWidgetFormProps {

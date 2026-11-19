@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { LogOut } from 'lucide-react';
 import { ExitJourneyNodeData } from './ExitJourneyNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

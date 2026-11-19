@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, Settings2, Calendar, Clock, Zap, CheckCircle2 } from 'lucide-react';
 
 interface Step4Props {

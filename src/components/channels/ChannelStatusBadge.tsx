@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import { cn } from '@/utils/cn';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ChannelHealthStatus } from '@/utils/channelStatus';

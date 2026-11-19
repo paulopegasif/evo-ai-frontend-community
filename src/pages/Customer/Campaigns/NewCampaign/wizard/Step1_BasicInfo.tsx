@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Input, Label, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@evoapi/design-system';
+import { Input, Label, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@/components/ui/compat';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CampaignType } from '@/types/campaigns';

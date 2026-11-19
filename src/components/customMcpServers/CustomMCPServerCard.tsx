@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge, Card, CardContent, Button } from '@evoapi/design-system';
+import { Badge, Card, CardContent, Button } from '@/components/ui/compat';
 import { TestTube, Edit, Trash2, ExternalLink, Loader2 } from 'lucide-react';
 import { CustomMcpServer } from '@/types/ai';
 

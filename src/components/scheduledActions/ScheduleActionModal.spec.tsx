@@ -36,7 +36,7 @@ vi.mock('@/services/scheduledActions/scheduledActionsService', () => ({
   },
 }));
 
-vi.mock('@evoapi/design-system', () => {
+vi.mock('@/components/ui/compat', () => {
   const passthrough = ({ children }: { children?: React.ReactNode }) => <>{children}</>;
 
   const extractOptionNodes = (children: React.ReactNode): React.ReactNode[] => {

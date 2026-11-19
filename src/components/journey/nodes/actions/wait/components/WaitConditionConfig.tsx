@@ -8,7 +8,7 @@ import {
   SelectValue,
   Input,
   Checkbox,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { WaitNodeData } from '../WaitNode';
 import {
   LabelConfiguration,

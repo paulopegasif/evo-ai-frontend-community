@@ -11,7 +11,7 @@ import { UISettingsApplier } from './components/UISettingsApplier';
 import { unlockAudioContext } from '@/utils/audioNotificationUtils';
 import { PluginHostProvider, PluginSlot } from '@/plugin-host';
 
-import { Toaster } from '@evoapi/design-system';
+import { Toaster } from '@/components/ui/compat';
 
 import { useIsDarkClass } from '@/hooks/chat/useIsDarkClass';
 

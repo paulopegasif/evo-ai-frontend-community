@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';

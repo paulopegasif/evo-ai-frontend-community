@@ -9,7 +9,7 @@ vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/compat', () => ({
   Button: ({ children, onClick, ...props }: any) => (
     <button type="button" onClick={onClick} {...props}>{children}</button>
   ),

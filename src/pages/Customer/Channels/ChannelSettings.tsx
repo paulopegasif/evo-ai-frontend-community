@@ -10,7 +10,7 @@ import {
   TabsList,
   TabsTrigger,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   ArrowLeft,
   Check,

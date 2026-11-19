@@ -26,7 +26,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
+} from '@/components/ui/compat';
 
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import { ChatTour } from '@/tours';

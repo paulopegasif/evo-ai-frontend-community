@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { Avatar, AvatarImage, AvatarFallback } from '@evoapi/design-system/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system/tooltip';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/compat';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/compat';
 
 import { MessageCircle } from 'lucide-react';
 import { Contact } from '@/types/chat/api';

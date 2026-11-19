@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@evoapi/design-system';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/compat';
 import { X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CustomMcpServer, CustomMcpServerFormData } from '@/types/ai';

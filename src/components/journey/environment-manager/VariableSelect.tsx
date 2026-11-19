@@ -13,7 +13,7 @@ import {
   Button,
   Input,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';

@@ -1,4 +1,4 @@
-import { Card, Skeleton } from '@evoapi/design-system';
+import { Card, Skeleton } from '@/components/ui/compat';
 
 interface IntegrationLoadingStateProps {
   count?: number;

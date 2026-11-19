@@ -1,4 +1,4 @@
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/compat';
 import { Bot, Layers, TrendingUp, Users } from 'lucide-react';
 import { OperationHeatmapCard } from '@/components/charts';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';

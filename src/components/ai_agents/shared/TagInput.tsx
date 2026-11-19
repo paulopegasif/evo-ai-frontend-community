@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Input, Label, Badge } from '@evoapi/design-system';
+import { Input, Label, Badge } from '@/components/ui/compat';
 import { X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

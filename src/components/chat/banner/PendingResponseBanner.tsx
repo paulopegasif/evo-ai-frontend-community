@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@evoapi/design-system/button';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
 import { Shield, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';

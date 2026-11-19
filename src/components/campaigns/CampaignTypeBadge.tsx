@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import { CampaignType } from '@/types/campaigns';
 import { Layers, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';

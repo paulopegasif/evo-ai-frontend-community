@@ -8,7 +8,7 @@ import {
   Badge,
   Card,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { TransferJourneyNodeData } from './TransferJourneyNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
-import { Textarea } from '@evoapi/design-system/textarea';
+import { Textarea } from '@/components/ui/compat';
 
 interface ResizableTextareaProps {
   value: string;

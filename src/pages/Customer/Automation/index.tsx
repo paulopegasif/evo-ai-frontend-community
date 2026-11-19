@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { automationService } from '@/services/automation/automationService';
 import type { AutomationRule } from '@/types/automation';

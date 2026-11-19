@@ -1,4 +1,4 @@
-import { Switch } from '@evoapi/design-system';
+import { Switch } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface WebWidgetFormData {

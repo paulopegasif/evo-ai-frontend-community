@@ -6,9 +6,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@evoapi/design-system/dialog';
-import { Button } from '@evoapi/design-system/button';
-import { Textarea } from '@evoapi/design-system/textarea';
+} from '@/components/ui/compat';
+import { Button } from '@/components/ui/compat';
+import { Textarea } from '@/components/ui/compat';
 import { Loader2 } from 'lucide-react';
 import { Message } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';

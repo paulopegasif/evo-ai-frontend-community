@@ -25,7 +25,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Plus,
   Trash2,

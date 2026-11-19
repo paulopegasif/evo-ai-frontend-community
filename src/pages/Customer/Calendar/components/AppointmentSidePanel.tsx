@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CalendarClock, Edit2, Info, Megaphone, MessageCircle, MessageSquare, Phone, Route, Stethoscope, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@evoapi/design-system';
+import { Badge, Button, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import type { Appointment, AppointmentStatus } from '@/types/appointments';

@@ -1,4 +1,4 @@
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { AlertCircle, AlertTriangle, Inbox } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactEvents } from '@/hooks/useContactEvents';

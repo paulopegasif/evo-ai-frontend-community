@@ -22,7 +22,7 @@ import {
 } from '@xyflow/react';
 import './BaseFlow.css';
 
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { PanelRightOpen, PanelRightClose } from 'lucide-react';
 import { useDnD } from '@/contexts/DnDContext';
 import { BaseFlowContextMenu } from './BaseFlowContextMenu';

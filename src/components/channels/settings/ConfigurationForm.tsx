@@ -19,7 +19,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Key,
   Settings,

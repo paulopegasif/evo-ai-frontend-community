@@ -14,7 +14,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { cn } from '@/lib/utils';
 import { getEvent, isCustomEvent, type FieldSpec } from '@/lib/events-manifest';
 import { useLanguage } from '@/hooks/useLanguage';

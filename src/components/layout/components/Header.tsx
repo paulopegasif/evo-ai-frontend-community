@@ -19,7 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
   ScrollArea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { useLanguage } from '../../../hooks/useLanguage';
 import NotificationBell from '../NotificationBell';
 import ProfileMenu from './ProfileMenu';

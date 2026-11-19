@@ -6,7 +6,7 @@ import {
   SelectValue,
   Input,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { CustomAttributeNode } from '@/types/analytics';
 import { CustomAttributeDefinition } from '@/types/settings';
 import { useLanguage } from '@/hooks/useLanguage';

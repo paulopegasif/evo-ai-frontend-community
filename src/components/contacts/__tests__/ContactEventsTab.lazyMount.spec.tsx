@@ -6,7 +6,7 @@
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@evoapi/design-system';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/compat';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const listMock = vi.fn();

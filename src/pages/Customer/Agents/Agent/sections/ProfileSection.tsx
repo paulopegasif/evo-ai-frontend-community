@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Input, Label, Textarea } from '@evoapi/design-system';
+import { Button, Input, Label, Textarea } from '@/components/ui/compat';
 import { Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

@@ -1,4 +1,4 @@
-import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@evoapi/design-system';
+import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/compat';
 import { Clock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

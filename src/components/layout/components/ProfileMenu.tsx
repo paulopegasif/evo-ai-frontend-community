@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuLabel
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getProfileMenuItems } from '../config/menuItems';
 import { Role } from '@/types/auth';

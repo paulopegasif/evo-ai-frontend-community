@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from '@evoapi/design-system/badge';
+import { Badge } from '@/components/ui/compat';
 import { Wifi, WifiOff } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

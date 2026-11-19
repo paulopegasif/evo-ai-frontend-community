@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Integration } from '@/types/integrations';
 import BrandIcon from '@/components/BrandIcon';
 

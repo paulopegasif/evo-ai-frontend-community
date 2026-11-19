@@ -18,7 +18,7 @@ import {
   SelectValue,
   Switch,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { X, Plus } from 'lucide-react';
 import {
   CustomAttributeDefinition,
@@ -413,7 +413,7 @@ export default function CustomAttributeModal({
                         onClick={() => removeListValue(index)}
                         size="sm"
                         variant="ghost"
-                        className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                        className="h-4 w-4 p-0 hover:bg-destructive hover:text-white"
                       >
                         <X className="h-3 w-3" />
                       </Button>

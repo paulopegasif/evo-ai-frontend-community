@@ -8,7 +8,7 @@ import {
   SelectValue,
   Separator,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { labelsService } from '@/services/contacts/labelsService';
 import { Label as LabelType } from '@/types/settings';
 import { useLanguage } from '@/hooks/useLanguage';

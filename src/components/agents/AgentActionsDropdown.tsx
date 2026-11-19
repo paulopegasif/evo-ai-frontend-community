@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Agent } from '@/types/agents';

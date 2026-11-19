@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { User } from 'lucide-react';
 import { AssignAgentNodeData } from './AssignAgentNode';
 import { automationService } from '@/services/automation/automationService';

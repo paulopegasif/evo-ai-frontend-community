@@ -10,7 +10,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { CategoryPerformance, ProfessionalPerformance } from '@/types/leadTracking';
 import { AXIS_PROPS, SERIES } from './chartConfig';

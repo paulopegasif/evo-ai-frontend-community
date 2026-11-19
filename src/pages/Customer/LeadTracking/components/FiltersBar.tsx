@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import type { CampaignOption } from '@/types/leadTracking';
 
 const ALL = '__all__';

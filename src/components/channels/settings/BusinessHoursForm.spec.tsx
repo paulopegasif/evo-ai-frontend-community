@@ -48,7 +48,7 @@ vi.mock('./helpers/businessHours', async () => {
   };
 });
 
-vi.mock('@evoapi/design-system', async () => {
+vi.mock('@/components/ui/compat', async () => {
   const actual = await vi.importActual('@evoapi/design-system');
   return {
     ...actual,

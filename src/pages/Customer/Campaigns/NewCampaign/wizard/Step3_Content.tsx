@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Label, Checkbox, RadioGroup, RadioGroupItem } from '@evoapi/design-system';
+import { Button, Label, Checkbox, RadioGroup, RadioGroupItem } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, MessageSquare, FileText, Mail, MessageCircle, Smartphone, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CampaignChannelType } from '@/types/campaigns';

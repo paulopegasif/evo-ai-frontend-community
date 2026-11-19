@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { Loader2 } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useLanguage } from '@/hooks/useLanguage';

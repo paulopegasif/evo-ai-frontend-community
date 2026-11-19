@@ -10,7 +10,7 @@ import {
   Textarea,
   Switch,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { journeyService } from '@/services';
 import { Journey, TriggerType } from '@/types/automation';
 import type { Node, Edge } from '@xyflow/react';

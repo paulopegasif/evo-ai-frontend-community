@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {

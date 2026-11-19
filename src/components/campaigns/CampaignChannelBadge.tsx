@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import { CampaignChannelType } from '@/types/campaigns';
 import { Mail, MessageCircle, Smartphone } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';

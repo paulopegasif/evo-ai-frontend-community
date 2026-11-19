@@ -5,7 +5,7 @@ import { Settings } from 'lucide-react';
 import MenuItem from './MenuItem';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/compat', () => ({
   Tooltip: ({ children }: any) => <>{children}</>,
   TooltipTrigger: ({ children, asChild }: any) => (asChild ? <>{children}</> : <div>{children}</div>),
   TooltipContent: ({ children }: any) => <div data-testid="tooltip-content">{children}</div>,

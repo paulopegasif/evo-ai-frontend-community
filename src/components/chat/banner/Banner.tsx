@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 
 interface BannerProps {
   /**
@@ -53,7 +53,7 @@ const Banner: React.FC<BannerProps> = ({
   const colorSchemeClasses = {
     primary: 'bg-primary text-primary-foreground',
     secondary: 'bg-secondary text-secondary-foreground',
-    alert: 'bg-destructive/90 text-destructive-foreground',
+    alert: 'bg-destructive/90 text-white',
     warning: 'bg-yellow-500 text-white dark:bg-yellow-600',
   };
 

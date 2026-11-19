@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Input } from '@evoapi/design-system/input';
-import { Card } from '@evoapi/design-system/card';
+import { Input } from '@/components/ui/compat';
+import { Card } from '@/components/ui/compat';
 import { Search } from 'lucide-react';
 import type { MessageTemplate } from '@/types/channels/inbox';
 

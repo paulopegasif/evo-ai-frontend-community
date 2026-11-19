@@ -4,9 +4,9 @@ import { FacebookCommentModeration } from '@/types/channels/inbox';
 
 import { useLanguage } from '@/hooks/useLanguage';
 
-import { Button } from '@evoapi/design-system/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@evoapi/design-system/avatar';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/compat';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
 
 import { ChevronDown, Loader2 } from 'lucide-react';
 

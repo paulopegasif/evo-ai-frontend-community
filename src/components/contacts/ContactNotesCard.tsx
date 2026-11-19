@@ -6,7 +6,7 @@ import {
   CardContent,
   Textarea,
   Skeleton,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Pencil, StickyNote, Trash, X, Check } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useRelativeTime } from '@/lib/useRelativeTime';
-import { Avatar, AvatarFallback, AvatarImage, Button } from '@evoapi/design-system';
+import { Avatar, AvatarFallback, AvatarImage, Button } from '@/components/ui/compat';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR, pt, enUS, es, fr, it } from 'date-fns/locale';
 import type { Locale as DateFnsLocale } from 'date-fns';

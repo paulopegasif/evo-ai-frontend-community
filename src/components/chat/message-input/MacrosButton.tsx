@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
+} from '@/components/ui/compat';
 import { Zap, Loader2, Play } from 'lucide-react';
 import { toast } from 'sonner';
 

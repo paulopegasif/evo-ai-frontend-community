@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, Button, Badge } from '@evoapi/design-system';
+import { Card, CardContent, Button, Badge } from '@/components/ui/compat';
 import { CalendarClock, Plus, Edit, X, Clock, AlertCircle } from 'lucide-react';
 import { scheduledActionsService } from '@/services/scheduledActions/scheduledActionsService';
 import { ScheduleActionModal } from './ScheduleActionModal';

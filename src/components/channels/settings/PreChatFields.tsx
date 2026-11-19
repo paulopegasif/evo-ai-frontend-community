@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@evoapi/design-system';
-import { Switch, Input, Checkbox } from '@evoapi/design-system';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/compat';
+import { Switch, Input, Checkbox } from '@/components/ui/compat';
 import { GripVertical } from 'lucide-react';
 import { PreChatField, isFieldEditable } from './helpers/preChatHelpers';
 import { useLanguage } from '@/hooks/useLanguage';

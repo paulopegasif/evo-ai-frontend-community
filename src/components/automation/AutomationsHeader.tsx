@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Input } from '@evoapi/design-system';
+import { Button, Input } from '@/components/ui/compat';
 import { Plus, Search, Trash2 } from 'lucide-react';
 
 interface Props {

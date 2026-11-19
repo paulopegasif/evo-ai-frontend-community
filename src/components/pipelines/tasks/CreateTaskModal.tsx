@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Loader2 } from 'lucide-react';
 import type { CreateTaskData, PipelineTask } from '@/types/analytics';
 import type { User } from '@/types/users';

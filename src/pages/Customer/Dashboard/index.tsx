@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
-import { Badge, Card, CardContent } from '@evoapi/design-system';
+import { Badge, Card, CardContent } from '@/components/ui/compat';
 import { BaseHeader } from '@/components/base';
 import type { HeaderFilter } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import { Edit, Trash2, Copy } from 'lucide-react';
 import type { AutomationRule } from '@/types/automation';
 import BaseTable, { type TableColumn, type TableAction } from '@/components/base/BaseTable';

@@ -12,7 +12,7 @@ import {
   Label,
   RadioGroup,
   RadioGroupItem,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 

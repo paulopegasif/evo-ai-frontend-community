@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,8 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
-import { ScrollArea } from '@evoapi/design-system/scroll-area';
+} from '@/components/ui/compat';
+import { ScrollArea } from '@/components/ui/compat';
 import { Play, Loader2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { macrosService } from '@/services/macros/macrosService';

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CalendarDays } from 'lucide-react';
 import { ptBR } from 'date-fns/locale';
-import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@evoapi/design-system';
+import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@/components/ui/compat';
 import { formatRange, type DateRange } from '../periods';
 
 interface DateRangePickerProps {

@@ -8,7 +8,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { CheckCircle2, XCircle, ChevronDown, Clock, Activity } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { CustomTool, CustomToolTestResponse } from '@/types/ai';

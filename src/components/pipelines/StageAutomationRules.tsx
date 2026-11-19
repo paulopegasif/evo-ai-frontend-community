@@ -9,7 +9,7 @@ import {
   SelectValue,
   Input,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import type {
   StageAutomationRule,

@@ -11,7 +11,7 @@ import {
   Card,
   Label,
   Checkbox,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { VariableTextarea } from '@/components/journey/environment-manager';
 import {
   MessageSquare,

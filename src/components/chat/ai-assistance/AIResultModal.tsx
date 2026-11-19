@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@evoapi/design-system/dialog';
+} from '@/components/ui/compat';
 import { Loader2, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';

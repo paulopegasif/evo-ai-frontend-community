@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Variable } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getSystemVariables, VariableOption } from './EnvironmentManager';

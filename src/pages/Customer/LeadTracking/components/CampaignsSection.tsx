@@ -16,7 +16,7 @@ import {
   Tabs,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { CampaignPerformance } from '@/types/leadTracking';
 import { AXIS_PROPS, SERIES } from './chartConfig';

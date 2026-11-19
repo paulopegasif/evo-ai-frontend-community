@@ -14,7 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Search, Settings } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 

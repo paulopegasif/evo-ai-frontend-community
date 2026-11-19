@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import { User, Building2, Users, LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

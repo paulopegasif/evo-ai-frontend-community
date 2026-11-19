@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { Loader2, Lock, LockOpen, X, Check, ChevronRight, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';

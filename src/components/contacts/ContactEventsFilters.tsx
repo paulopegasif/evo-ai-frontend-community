@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { X } from 'lucide-react';
 import { useId, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';

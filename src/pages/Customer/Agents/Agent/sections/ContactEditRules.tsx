@@ -6,7 +6,7 @@ import {
   CardContent,
   Checkbox,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Info } from 'lucide-react';
 
 export interface ContactEditConfig {

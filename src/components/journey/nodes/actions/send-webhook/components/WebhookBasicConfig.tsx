@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

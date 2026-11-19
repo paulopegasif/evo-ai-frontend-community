@@ -44,7 +44,7 @@ vi.mock('sonner', () => ({
   toast: { loading: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
 
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/compat', () => ({
   Button: ({ children, onClick, ...props }: any) => (
     <button type="button" onClick={onClick} {...props}>{children}</button>
   ),

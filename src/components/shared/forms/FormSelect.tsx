@@ -1,4 +1,4 @@
-import { Label } from '@evoapi/design-system';
+import { Label } from '@/components/ui/compat';
 
 interface FormSelectProps {
   id: string;

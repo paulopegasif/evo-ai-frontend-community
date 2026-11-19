@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { WaitNodeData } from '../WaitNode';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

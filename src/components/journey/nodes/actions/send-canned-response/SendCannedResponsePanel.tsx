@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { AlertCircle, MessageSquareReply } from 'lucide-react';
 import { SendCannedResponseNodeData, SendCannedResponseOption } from './SendCannedResponseNode';
 import { cannedResponsesService } from '@/services/cannedResponses/cannedResponsesService';

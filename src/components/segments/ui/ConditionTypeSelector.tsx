@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface ConditionTypeSelectorProps {

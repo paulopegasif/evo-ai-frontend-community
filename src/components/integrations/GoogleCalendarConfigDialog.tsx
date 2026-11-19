@@ -8,7 +8,7 @@ import {
   Label,
   Button,
   Select,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import BrandIcon from '@/components/BrandIcon';
 import {
   SelectContent,
@@ -20,7 +20,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Calendar,
   Clock,

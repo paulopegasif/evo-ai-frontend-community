@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Badge, Card, CardContent } from '@evoapi/design-system';
+import { Button, Badge, Card, CardContent } from '@/components/ui/compat';
 import { toast } from 'sonner';
 import {
   X,

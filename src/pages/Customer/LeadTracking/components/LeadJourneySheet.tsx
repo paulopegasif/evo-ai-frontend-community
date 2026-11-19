@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CalendarCheck, DollarSign, ExternalLink, Megaphone, MessageSquare, MoveRight, UserPlus } from 'lucide-react';
-import { Badge, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@evoapi/design-system';
+import { Badge, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@/components/ui/compat';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import type { JourneyConversation, JourneyEvent, LeadJourney } from '@/types/leadTracking';
 import { DASH, currencyOrDash, formatCurrency } from './format';

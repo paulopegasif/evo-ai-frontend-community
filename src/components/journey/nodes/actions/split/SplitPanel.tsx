@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Split, Plus, Trash2 } from 'lucide-react';
 import { SplitNodeData, SplitVariant } from './SplitNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

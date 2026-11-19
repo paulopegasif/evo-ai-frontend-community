@@ -14,7 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

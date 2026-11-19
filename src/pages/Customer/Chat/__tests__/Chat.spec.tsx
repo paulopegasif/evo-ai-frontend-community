@@ -160,7 +160,7 @@ vi.mock('@/tours', () => ({
   ChatTour: () => null,
 }));
 
-vi.mock('@evoapi/design-system/alert-dialog', () => ({
+vi.mock('@/components/ui/compat', () => ({
   AlertDialog: ({ children }: any) => <>{children}</>,
   AlertDialogContent: ({ children }: any) => <>{children}</>,
   AlertDialogHeader: ({ children }: any) => <>{children}</>,

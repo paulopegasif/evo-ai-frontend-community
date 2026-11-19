@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Label } from '@evoapi/design-system';
+import { Button, Label } from '@/components/ui/compat';
 import { ArrowLeft, Check, CheckCircle2, Megaphone, Users, MessageSquare, Settings2, Calendar, Zap, Clock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';

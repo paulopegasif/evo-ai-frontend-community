@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card, CardContent } from '@evoapi/design-system';
+import { Button, Card, CardContent } from '@/components/ui/compat';
 import { Edit, Trash2, Eye, Play, Pause, Copy, BarChart3, Calendar, Square } from 'lucide-react';
 import { Campaign, CampaignStatus } from '@/types/campaigns';
 import CampaignStatusBadge from './CampaignStatusBadge';

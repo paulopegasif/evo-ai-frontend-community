@@ -1,5 +1,5 @@
 import { AlertTriangle, CalendarX2, Clock, Timer, UserX } from 'lucide-react';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/compat';
 import type { FunnelVelocity, TrackingAlerts } from '@/types/leadTracking';
 import { DASH, plural } from './format';
 import { formatDate, statusLabel } from './labels';

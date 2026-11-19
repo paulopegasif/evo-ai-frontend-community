@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { endOfYear, startOfYear } from 'date-fns';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import type { LeadTrackingParams, TimelineDataPoint } from '@/types/leadTracking';

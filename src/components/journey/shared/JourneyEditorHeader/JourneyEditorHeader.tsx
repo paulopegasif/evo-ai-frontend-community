@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { Activity, ArrowLeft, Clock, Loader2, Save } from 'lucide-react';
 
 export type JourneyEditorHeaderProps = {

@@ -11,7 +11,7 @@ import {
   Input,
   Label,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowRight, Calendar, Clock, RefreshCw, Sparkles, UserCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';

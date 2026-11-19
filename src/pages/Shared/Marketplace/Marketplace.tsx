@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card, CardContent, Badge, Input } from '@evoapi/design-system';
+import { Button, Card, CardContent, Badge, Input } from '@/components/ui/compat';
 import {
   Package,
   Search,

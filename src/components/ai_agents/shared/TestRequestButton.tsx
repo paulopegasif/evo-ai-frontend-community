@@ -8,7 +8,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Play, ChevronDown, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { testCustomTool } from '@/services/agents/customToolsService';

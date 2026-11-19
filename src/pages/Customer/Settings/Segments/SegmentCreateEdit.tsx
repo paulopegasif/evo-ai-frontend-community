@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { Button, Input, Label, RadioGroup, RadioGroupItem } from '@evoapi/design-system';
+import { Button, Input, Label, RadioGroup, RadioGroupItem } from '@/components/ui/compat';
 import { Plus, Save, ArrowLeft, RefreshCw, Target, Users, Filter, Eye, AlertCircle, List, Workflow } from 'lucide-react';
 
 import { segmentsService } from '@/services/segments/segmentsService';

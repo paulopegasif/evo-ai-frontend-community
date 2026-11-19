@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@evoapi/design-system';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/compat';
 import { ChevronDown, Settings } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

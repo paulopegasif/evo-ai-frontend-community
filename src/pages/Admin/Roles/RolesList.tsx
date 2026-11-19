@@ -14,7 +14,7 @@ import {
   Input,
   Label,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Plus, Pencil, Trash2, Loader2, ShieldCheck } from 'lucide-react';
 import BaseHeader from '@/components/base/BaseHeader';
 import EmptyState from '@/components/base/EmptyState';

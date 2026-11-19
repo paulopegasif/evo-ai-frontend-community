@@ -14,7 +14,7 @@ import {
   AvatarFallback,
   Separator,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   User,
   MapPin,

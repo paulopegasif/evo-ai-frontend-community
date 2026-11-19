@@ -6,7 +6,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { MenuItem as MenuItemType } from '../config/menuItems';
 import { UnreadBadge } from '@/components/shared';
 import { cn } from '@/utils/cn';

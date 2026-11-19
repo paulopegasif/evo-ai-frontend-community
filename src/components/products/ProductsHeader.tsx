@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { PlusIcon, Search, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { ProductKind, ProductStatus } from '@/types/products';

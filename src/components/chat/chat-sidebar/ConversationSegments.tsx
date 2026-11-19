@@ -1,12 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@evoapi/design-system/dropdown-menu';
+} from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { BaseFilter } from '@/types/core/filters';
 import type { ConversationFilter } from '@/types/chat/api';

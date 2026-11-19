@@ -13,7 +13,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowLeft } from 'lucide-react';
 import { automationService } from '@/services/automation/automationService';
 import {

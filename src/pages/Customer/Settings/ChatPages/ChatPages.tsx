@@ -14,7 +14,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import BaseHeader from '@/components/base/BaseHeader';
 import BasePagination from '@/components/base/BasePagination';
 import EmptyState from '@/components/base/EmptyState';

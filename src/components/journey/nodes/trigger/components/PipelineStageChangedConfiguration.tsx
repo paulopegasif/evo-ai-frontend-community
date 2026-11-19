@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Workflow } from 'lucide-react';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { pipelinesService } from '@/services/pipelines/pipelinesService';

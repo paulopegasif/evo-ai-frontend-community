@@ -10,7 +10,7 @@ import {
   CardTitle,
   Input,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +20,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
+} from '@/components/ui/compat';
 import { AlertTriangle, ArrowRight, BarChart3, Clock, KeyRound, PlugZap, RefreshCw } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';

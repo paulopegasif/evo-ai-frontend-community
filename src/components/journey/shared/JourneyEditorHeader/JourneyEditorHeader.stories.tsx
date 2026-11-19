@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { Variable } from 'lucide-react';
 import { JourneyEditorHeader } from './JourneyEditorHeader';
 

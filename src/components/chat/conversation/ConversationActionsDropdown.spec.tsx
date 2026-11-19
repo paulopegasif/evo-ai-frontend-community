@@ -20,7 +20,7 @@ vi.mock('@/hooks/chat/useConversations', () => ({
   useConversations: () => mockConversations,
 }));
 
-vi.mock('@evoapi/design-system/button', () => ({
+vi.mock('@/components/ui/compat', () => ({
   Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
     <button type="button" {...props}>
       {children}
@@ -28,11 +28,11 @@ vi.mock('@evoapi/design-system/button', () => ({
   ),
 }));
 
-vi.mock('@evoapi/design-system/badge', () => ({
+vi.mock('@/components/ui/compat', () => ({
   Badge: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
-vi.mock('@evoapi/design-system/dropdown-menu', () => ({
+vi.mock('@/components/ui/compat', () => ({
   DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   DropdownMenuContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

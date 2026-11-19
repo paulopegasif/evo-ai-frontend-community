@@ -12,7 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import type { TimelineDataPoint, TimelineGranularity } from '@/types/leadTracking';
 import { AXIS_PROPS, COMPARED_OPACITY, SERIES } from './chartConfig';
 import { compactCurrency, compactNumber, formatCurrency } from './format';

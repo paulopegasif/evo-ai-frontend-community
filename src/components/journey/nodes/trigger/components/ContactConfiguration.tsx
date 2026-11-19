@@ -8,7 +8,7 @@ import {
   SelectValue,
   Button,
   Separator,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Plus, X } from 'lucide-react';
 import { VariableInput, VariableMapping, type DataMapping } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

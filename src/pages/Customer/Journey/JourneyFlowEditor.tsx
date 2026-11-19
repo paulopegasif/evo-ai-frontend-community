@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { journeyService } from '@/services';
 import type { Journey } from '@/types/automation';

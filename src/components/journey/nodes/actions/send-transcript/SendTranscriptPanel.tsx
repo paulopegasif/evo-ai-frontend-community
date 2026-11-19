@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Label, Input } from '@evoapi/design-system';
+import { Label, Input } from '@/components/ui/compat';
 import { FileText } from 'lucide-react';
 import { SendTranscriptNodeData } from './SendTranscriptNode';
 import { automationService } from '@/services/automation/automationService';

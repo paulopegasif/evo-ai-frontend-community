@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import { Award, BadgeDollarSign, MessageCircle, PiggyBank } from 'lucide-react';
-import { Card, CardContent } from '@evoapi/design-system';
+import { Card, CardContent } from '@/components/ui/compat';
 import {
   deltaToneClass,
   formatDelta,

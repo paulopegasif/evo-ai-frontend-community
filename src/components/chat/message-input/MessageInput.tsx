@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@evoapi/design-system/tooltip';
+} from '@/components/ui/compat';
 import {
   Send,
   Mic,

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle } from '@evoapi/design-system';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import NewChannel from './index';
 

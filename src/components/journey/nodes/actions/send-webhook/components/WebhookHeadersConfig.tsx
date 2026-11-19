@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Label } from '@evoapi/design-system';
+import { Button, Label } from '@/components/ui/compat';
 import { Plus, X, Eye, EyeOff } from 'lucide-react';
 import { SendWebhookNodeData, WebhookHeader } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';

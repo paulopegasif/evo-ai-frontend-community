@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Code, Copy, Check, Table, FileText } from 'lucide-react';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableTextarea } from '@/components/journey/environment-manager';

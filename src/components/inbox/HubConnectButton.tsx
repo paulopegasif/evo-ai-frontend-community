@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { Loader2, ExternalLink, CheckCircle2, Link2 } from 'lucide-react';
 import { api } from '@/services/core';

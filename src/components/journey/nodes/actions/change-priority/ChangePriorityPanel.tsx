@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { AlertTriangle } from 'lucide-react';
 import { ChangePriorityNodeData } from './ChangePriorityNode';
 import { automationService } from '@/services/automation/automationService';

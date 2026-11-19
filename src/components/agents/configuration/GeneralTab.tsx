@@ -18,7 +18,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ApiKey, Agent } from '@/types/agents';
 import {
   Key,

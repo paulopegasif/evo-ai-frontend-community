@@ -9,7 +9,7 @@ import {
   Button,
   Label,
   Separator,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { EventSelector } from '@/components/journey/shared/EventSelector';
 import { EventPropertiesForm } from '@/components/journey/shared/EventPropertiesForm';

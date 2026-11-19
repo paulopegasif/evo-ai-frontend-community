@@ -8,7 +8,7 @@ import {
   SelectValue,
   Separator,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import { CustomAttributeDefinition } from '@/types/settings';
 import { VariableInput, VariableMapping, type DataMapping } from '@/components/journey/environment-manager';

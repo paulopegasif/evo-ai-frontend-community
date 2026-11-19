@@ -7,7 +7,7 @@ import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
 import { contactsService } from '@/services/contacts/contactsService';
 import { unixTimestampToIso } from '@/utils/chat/contactTimestamp';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   User,
   Phone,

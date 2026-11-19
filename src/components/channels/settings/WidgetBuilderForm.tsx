@@ -12,8 +12,8 @@ import {
   SelectValue,
   RadioGroup,
   RadioGroupItem,
-} from '@evoapi/design-system';
-import { Label } from '@evoapi/design-system';
+} from '@/components/ui/compat';
+import { Label } from '@/components/ui/compat';
 import { Code2, Upload, Trash2, Eye, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';

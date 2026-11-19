@@ -6,12 +6,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@evoapi/design-system/dialog';
-import { Button } from '@evoapi/design-system/button';
-import { Input } from '@evoapi/design-system/input';
-import { Badge } from '@evoapi/design-system/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@evoapi/design-system/avatar';
-import { Checkbox } from '@evoapi/design-system/checkbox';
+} from '@/components/ui/compat';
+import { Button } from '@/components/ui/compat';
+import { Input } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/compat';
+import { Checkbox } from '@/components/ui/compat';
 import { Search, User, Users, Tag, X, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import LabelModal from '@/components/labels/LabelModal';

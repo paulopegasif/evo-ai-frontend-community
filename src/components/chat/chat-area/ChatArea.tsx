@@ -9,7 +9,7 @@ import { useAppDataStore } from '@/store/appDataStore';
 
 import { MessageCircle } from 'lucide-react';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 
 import { MessageSkeleton } from '../loading-states';
 import { NoMessages } from '../empty-states';

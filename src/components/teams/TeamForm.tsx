@@ -6,7 +6,7 @@ import {
   Textarea,
   Switch,
   Separator,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Users, Settings, Save, X } from 'lucide-react';
 import { Team, TeamFormData } from '@/types/users';
 import { useLanguage } from '@/hooks/useLanguage';

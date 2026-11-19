@@ -25,7 +25,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Calendar as CalendarIcon,
   Check,

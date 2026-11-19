@@ -62,7 +62,7 @@ vi.mock('react-router-dom', async importOriginal => {
 // Keep the real design system EXCEPT the Radix Select family, which is hard to
 // drive in jsdom — render it as a native <select> so scope/provider switching is
 // assertable. Everything else (Button, Badge, Dialog, Table, etc.) stays real.
-vi.mock('@evoapi/design-system', async importOriginal => {
+vi.mock('@/components/ui/compat', async importOriginal => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,

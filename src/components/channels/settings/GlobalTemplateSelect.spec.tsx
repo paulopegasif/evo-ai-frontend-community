@@ -9,7 +9,7 @@ vi.mock('@/services/messageTemplates/globalMessageTemplatesService', () => ({
 }));
 
 // Render the design-system Select as a native <select> so options are assertable.
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/compat', () => ({
   Select: ({
     children,
     value,

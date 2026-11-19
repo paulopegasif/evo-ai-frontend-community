@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   formsService,

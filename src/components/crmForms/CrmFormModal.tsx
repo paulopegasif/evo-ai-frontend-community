@@ -18,7 +18,7 @@ import {
   SelectItem,
   SelectGroup,
   SelectLabel,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Trash2, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { Pipeline } from '@/types/analytics/pipelines';

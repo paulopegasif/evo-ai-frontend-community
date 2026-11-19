@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Edit, Trash2, Play, Pause, RefreshCw, List } from 'lucide-react';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import BaseTable from '@/components/base/BaseTable';
 import { Segment } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, SkipForward, LogIn, LogOut } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

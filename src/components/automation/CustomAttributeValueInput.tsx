@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
   Checkbox,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import type { CustomAttributeDefinition } from '@/types/settings';
 
 interface Props {

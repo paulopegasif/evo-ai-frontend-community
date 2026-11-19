@@ -21,7 +21,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   EVENT_CATEGORIES,
   getEventCatalog,

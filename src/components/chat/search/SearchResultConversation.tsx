@@ -1,4 +1,4 @@
-import { CommandItem } from '@evoapi/design-system';
+import { CommandItem } from '@/components/ui/compat';
 import { MessageSquare } from 'lucide-react';
 import type { SearchConversationResult } from '@/types/chat/search';
 import { highlightMatch } from './searchHighlight';

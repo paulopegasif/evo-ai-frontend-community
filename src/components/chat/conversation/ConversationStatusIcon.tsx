@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Clock, MessageCircle, Pause } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getStatusConfig } from '@/utils/chat/conversationStatus';
 

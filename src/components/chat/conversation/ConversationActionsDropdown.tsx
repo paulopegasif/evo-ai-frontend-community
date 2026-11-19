@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { Button } from '@evoapi/design-system/button';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@evoapi/design-system/dropdown-menu';
+} from '@/components/ui/compat';
 import {
   MoreVertical,
   Settings,

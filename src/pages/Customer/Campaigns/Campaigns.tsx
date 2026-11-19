@@ -11,7 +11,7 @@ import {
   DialogTitle,
   Button,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Megaphone } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 

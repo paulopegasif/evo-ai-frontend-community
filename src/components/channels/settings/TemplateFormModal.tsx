@@ -20,7 +20,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Plus, Trash2, Smile, Braces } from 'lucide-react';
 import EmojiPickerReact, { Theme } from 'emoji-picker-react';
 import { useLanguage } from '@/hooks/useLanguage';

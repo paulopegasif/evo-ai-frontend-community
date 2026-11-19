@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ChevronRight, Layers, Link2, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/utils/cn';

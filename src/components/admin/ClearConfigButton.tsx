@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { refreshGlobalConfig } from '@/contexts/GlobalConfigContext';
 import { useLanguage } from '@/hooks/useLanguage';

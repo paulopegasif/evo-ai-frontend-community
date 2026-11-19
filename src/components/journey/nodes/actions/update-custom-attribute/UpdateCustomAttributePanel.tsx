@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Settings as SettingsIcon } from 'lucide-react';
 import { UpdateCustomAttributeNodeData } from './UpdateCustomAttributeNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Input, Checkbox, Badge } from '@evoapi/design-system';
+import { Button, Input, Checkbox, Badge } from '@/components/ui/compat';
 import { Package, Cloud, Search } from 'lucide-react';
 import { productsService } from '@/services/products/productsService';
 import type { Agent } from '@/types/agents';

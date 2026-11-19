@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from 'react';
-import { Badge, Button, Card, CardContent } from '@evoapi/design-system';
+import { Badge, Button, Card, CardContent } from '@/components/ui/compat';
 import {
   Activity,
   ChevronDown,

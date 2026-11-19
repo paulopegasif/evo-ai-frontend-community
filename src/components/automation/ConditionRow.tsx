@@ -9,7 +9,7 @@ import {
   SelectValue,
   Input,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Trash2 } from 'lucide-react';
 import {
   type AutomationRuleFormData,

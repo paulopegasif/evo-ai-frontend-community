@@ -8,7 +8,7 @@ import {
   Input,
   Label,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Trash2, Settings, Clock, Plus, X } from 'lucide-react';
 import {
   EVENT_CATEGORIES,

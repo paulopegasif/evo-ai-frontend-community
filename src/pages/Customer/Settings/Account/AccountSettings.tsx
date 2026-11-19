@@ -12,7 +12,7 @@ import {
   SelectValue,
   Button,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useCurrentUser } from '@/utils/auth';

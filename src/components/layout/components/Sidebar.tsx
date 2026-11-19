@@ -9,7 +9,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import MenuItem from './MenuItem';
 import { MenuItem as MenuItemType } from '../config/menuItems';
 import { cn } from '@/utils/cn';

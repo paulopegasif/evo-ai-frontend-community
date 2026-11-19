@@ -15,7 +15,7 @@ import {
   RadioGroup,
   RadioGroupItem,
   Separator,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 
 
 export type FormFieldType =

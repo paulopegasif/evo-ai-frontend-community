@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/compat';
 import { CampaignStatus } from '@/types/campaigns';
 import { Clock, Send, Pause, StopCircle, CheckCircle, FileText, FlaskConical } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';

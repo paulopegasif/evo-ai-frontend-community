@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { scheduledActionsService } from '@/services/scheduledActions/scheduledActionsService';
 import InboxesService from '@/services/channels/inboxesService';
 import { contactsService } from '@/services/contacts';

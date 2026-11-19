@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Skeleton } from '@evoapi/design-system';
+import { Skeleton } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Inbox } from '@/types/channels/inbox';
 import { getChannelTypes } from '@/constants/channelTypes';

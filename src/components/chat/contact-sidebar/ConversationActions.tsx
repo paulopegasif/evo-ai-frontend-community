@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import { Button } from '@evoapi/design-system/button';
-import { Badge } from '@evoapi/design-system/badge';
-import { Card, CardHeader, CardTitle, CardContent } from '@evoapi/design-system/card';
+import { Button } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/compat';
 import { Settings, UserPlus, UserMinus, Tag, Zap, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Conversation } from '@/types/chat/api';

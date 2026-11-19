@@ -3,9 +3,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 
-import { Button } from '@evoapi/design-system/button';
-import { Card, CardHeader, CardContent } from '@evoapi/design-system/card';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/compat';
+import { Card, CardHeader, CardContent } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
 import { X, User, ChevronDown, Info } from 'lucide-react';
 
 import ContactHeader from './ContactHeader';

@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Input } from '@evoapi/design-system';
+import { Button, Input } from '@/components/ui/compat';
 import { Plus, Search, Trash2, X } from 'lucide-react';
 import BaseHeader from '@/components/base/BaseHeader';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -57,7 +57,7 @@ export default function CannedResponsesHeader({
                 variant="outline"
                 size="sm"
                 onClick={onBulkDelete}
-                className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                className="text-destructive border-destructive hover:bg-destructive hover:text-white"
               >
                 <Trash2 className="h-4 w-4" />
                 {t('header.bulkDelete')}

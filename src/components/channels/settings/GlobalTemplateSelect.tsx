@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import GlobalMessageTemplateService from '@/services/messageTemplates/globalMessageTemplatesService';
 import type { MessageTemplate } from '@/types';
 

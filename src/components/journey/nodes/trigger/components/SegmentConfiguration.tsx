@@ -8,7 +8,7 @@ import {
   SelectValue,
   Separator,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { segmentsService } from '@/services/segments/segmentsService';
 import { Segment } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';

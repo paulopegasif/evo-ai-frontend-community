@@ -8,7 +8,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@evoapi/design-system';
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/compat';
 import BaseHeader from '@/components/base/BaseHeader';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';

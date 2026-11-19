@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { CreateStageData } from '@/types/analytics';
 
 interface CreateStageModalProps {

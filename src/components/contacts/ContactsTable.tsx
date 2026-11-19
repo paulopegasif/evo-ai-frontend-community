@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { MessageSquare, Edit, Trash, Users, Lock } from 'lucide-react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { Contact } from '@/types/contacts';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';

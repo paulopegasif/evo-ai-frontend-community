@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Textarea, Label, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system';
+import { Textarea, Label, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

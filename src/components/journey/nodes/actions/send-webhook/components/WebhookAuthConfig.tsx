@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Shield, Eye, EyeOff, Lock } from 'lucide-react';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Input } from '@evoapi/design-system';
+import { Button, Input } from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';

@@ -15,7 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Building2, AlertCircle, ExternalLink } from 'lucide-react';
 import { LeadSquaredHook, LeadSquaredFormData, IntegrationHook } from '@/types/integrations';
 

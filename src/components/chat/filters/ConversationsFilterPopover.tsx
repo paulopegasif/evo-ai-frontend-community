@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '@evoapi/design-system/button';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
 import { Clock, Filter, Hash, Tag, UserCheck, Users, Workflow } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@evoapi/design-system/popover';
-import { ScrollArea } from '@evoapi/design-system/scroll-area';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@evoapi/design-system/accordion';
-import { Checkbox } from '@evoapi/design-system/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/compat';
+import { ScrollArea } from '@/components/ui/compat';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/compat';
+import { Checkbox } from '@/components/ui/compat';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useFilterOptions } from '@/hooks/chat/useFilterOptions';

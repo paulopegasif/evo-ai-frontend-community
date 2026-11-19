@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Download, Search, Users } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@evoapi/design-system';
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui/compat';
 import { toast } from 'sonner';
 import { BaseTable, type TableColumn } from '@/components/base';
 import BasePagination from '@/components/base/BasePagination';

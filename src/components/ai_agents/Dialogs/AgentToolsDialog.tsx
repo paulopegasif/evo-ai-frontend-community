@@ -11,7 +11,7 @@ import {
   Badge,
   Checkbox,
   ScrollArea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Search,
   Users,

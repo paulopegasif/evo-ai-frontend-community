@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@evoapi/design-system';
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/compat';
 import { AgentsTable, AgentsHeader, AgentsPagination, AgentWizardModal, AgentsFilter } from '@/components/agents';
 import { EmptyState } from '@/components/base';
 import { Bot, Search } from 'lucide-react';

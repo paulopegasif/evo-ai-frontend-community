@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNodeValidationIssues } from '@/contexts/JourneyValidationContext';
 

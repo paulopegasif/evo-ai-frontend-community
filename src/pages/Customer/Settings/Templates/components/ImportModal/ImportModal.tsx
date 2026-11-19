@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Upload, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';

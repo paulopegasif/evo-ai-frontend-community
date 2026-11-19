@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react';
 import { automationService } from '@/services/automation/automationService';
 import type {

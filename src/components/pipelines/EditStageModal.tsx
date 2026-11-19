@@ -21,7 +21,7 @@ import {
   TabsList,
   TabsTrigger,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { PipelineStage } from '@/types/analytics';
 import type { StageAutomationRule } from '@/types/analytics/pipelines';
 import type { Label as ConversationLabel } from '@/types/settings/labels';

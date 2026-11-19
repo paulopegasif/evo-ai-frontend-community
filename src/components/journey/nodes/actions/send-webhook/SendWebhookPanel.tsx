@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Label } from '@evoapi/design-system';
+import { Button, Label } from '@/components/ui/compat';
 import { Send, Play, ArrowRight } from 'lucide-react';
 import { SendWebhookNodeData, WebhookResponseMapping } from './SendWebhookNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Input, Label } from '@evoapi/design-system';
+import { Button, Input, Label } from '@/components/ui/compat';
 import { ArrowLeft, Plus, X, Check, Link2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

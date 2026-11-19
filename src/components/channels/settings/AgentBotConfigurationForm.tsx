@@ -13,7 +13,7 @@ import {
   Label,
   Badge,
   Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Bot,
   Trash2,

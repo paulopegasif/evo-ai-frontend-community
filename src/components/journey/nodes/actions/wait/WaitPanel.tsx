@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Clock, Zap, GitBranch } from 'lucide-react';
 import { WaitNodeData } from './WaitNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

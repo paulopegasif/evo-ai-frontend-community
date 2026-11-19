@@ -22,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 
 const DEFAULT_PAGE_SIZE = 25;
 

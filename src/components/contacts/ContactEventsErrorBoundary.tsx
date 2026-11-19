@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;

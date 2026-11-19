@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Link2, List, Plus, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/utils/cn';

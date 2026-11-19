@@ -1,4 +1,4 @@
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';

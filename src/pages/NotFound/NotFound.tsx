@@ -1,4 +1,4 @@
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 

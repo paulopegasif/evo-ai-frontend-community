@@ -11,8 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
-} from '@evoapi/design-system';
-import { Popover, PopoverContent, PopoverTrigger } from '@evoapi/design-system/popover';
+} from '@/components/ui/compat';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/compat';
 import {
   ArrowLeft,
   Plus,

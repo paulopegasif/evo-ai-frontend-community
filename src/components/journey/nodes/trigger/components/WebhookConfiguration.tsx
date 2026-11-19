@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Label, Input, Separator, Button, Badge, Textarea } from '@evoapi/design-system';
+import { Label, Input, Separator, Button, Badge, Textarea } from '@/components/ui/compat';
 import { Copy } from 'lucide-react';
 import {
   VariableInput,

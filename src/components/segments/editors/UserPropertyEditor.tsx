@@ -6,7 +6,7 @@ import {
   SelectValue,
   Input,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { UserPropertyNode } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';
 

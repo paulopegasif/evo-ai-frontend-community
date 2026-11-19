@@ -1,8 +1,8 @@
 import React from 'react';
 import { AlertTriangle, Settings } from 'lucide-react';
 
-import { Button } from '@evoapi/design-system/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@evoapi/design-system/card';
+import { Button } from '@/components/ui/compat';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/compat';
 
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -14,7 +14,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { journeyService } from '../../../services';
 import type { Journey } from '@/types/automation';
 import type { Node, Edge } from '@xyflow/react';
@@ -339,7 +339,7 @@ export default function JourneyPage() {
               {t('dialog.delete.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              className="bg-destructive hover:bg-destructive/90 text-white"
               onClick={handleDeleteConfirm}
             >
               {t('dialog.delete.confirm')}

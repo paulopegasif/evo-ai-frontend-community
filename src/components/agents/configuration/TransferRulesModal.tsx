@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 
 interface TransferRulesModalProps {
   open: boolean;

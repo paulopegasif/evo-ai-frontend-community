@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Button } from '@evoapi/design-system/button';
-import { Input } from '@evoapi/design-system/input';
+import { Button } from '@/components/ui/compat';
+import { Input } from '@/components/ui/compat';
 import type { MessageTemplate } from '@/types/channels/inbox';
 import { useLanguage } from '@/hooks/useLanguage';
 import {

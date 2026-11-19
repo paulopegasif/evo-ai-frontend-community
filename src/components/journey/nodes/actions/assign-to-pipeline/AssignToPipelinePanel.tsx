@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { AlertCircle, Workflow } from 'lucide-react';
 import { AssignToPipelineNodeData, AssignToPipelinePipelineOption } from './AssignToPipelineNode';
 import { pipelinesService } from '@/services/pipelines/pipelinesService';

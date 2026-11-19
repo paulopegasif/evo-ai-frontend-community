@@ -10,7 +10,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { WaitNodeData } from '../WaitNode';
 import { WaitEventConfig } from './WaitEventConfig';
 import { WaitConditionConfig } from './WaitConditionConfig';

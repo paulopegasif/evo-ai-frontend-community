@@ -6,11 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@evoapi/design-system/dialog';
-import { Button } from '@evoapi/design-system/button';
-import { Input } from '@evoapi/design-system/input';
-import { Label } from '@evoapi/design-system/label';
-import { Textarea } from '@evoapi/design-system/textarea';
+} from '@/components/ui/compat';
+import { Button } from '@/components/ui/compat';
+import { Input } from '@/components/ui/compat';
+import { Label } from '@/components/ui/compat';
+import { Textarea } from '@/components/ui/compat';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 

@@ -23,7 +23,7 @@ vi.mock('@/services/channels/messageTemplatesService', () => ({
   }),
 }));
 
-vi.mock('@evoapi/design-system', async importOriginal => {
+vi.mock('@/components/ui/compat', async importOriginal => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,

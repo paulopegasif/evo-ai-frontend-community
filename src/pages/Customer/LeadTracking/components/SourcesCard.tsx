@@ -11,7 +11,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import type { LeadSourcePerformance } from '@/types/leadTracking';
 import { CATEGORICAL, OTHER_COLOR } from './chartConfig';
 import { percentOrDash, plural } from './format';

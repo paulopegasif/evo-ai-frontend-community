@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { KnowledgeNexusConfig } from '@/hooks/useIntegrations';

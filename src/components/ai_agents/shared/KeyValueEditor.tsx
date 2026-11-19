@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Input, Label } from '@evoapi/design-system';
+import { Button, Input, Label } from '@/components/ui/compat';
 import { Plus, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

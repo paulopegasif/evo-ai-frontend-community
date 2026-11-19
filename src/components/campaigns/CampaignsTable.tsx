@@ -8,7 +8,7 @@ import CampaignChannelBadge from './CampaignChannelBadge';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR, enUS, es, fr, it } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 
 interface CampaignsTableProps {
   campaigns: Campaign[];

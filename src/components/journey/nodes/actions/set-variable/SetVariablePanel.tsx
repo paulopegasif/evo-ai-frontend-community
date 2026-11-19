@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Settings, Hash, Calendar } from 'lucide-react';
 import { SetVariableNodeData } from './SetVariableNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

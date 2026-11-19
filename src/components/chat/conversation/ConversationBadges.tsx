@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, ArrowUp, Minus, ArrowDown } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/compat';
 import { Conversation } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import ConversationStatusIcon from './ConversationStatusIcon';

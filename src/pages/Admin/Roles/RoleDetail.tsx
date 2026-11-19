@@ -9,7 +9,7 @@ import {
   Input,
   Label,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { ArrowLeft, ChevronDown, ChevronRight, Loader2, Pencil, Save, X } from 'lucide-react';
 import BaseHeader from '@/components/base/BaseHeader';
 import { TooltipInfo } from '@/components/base/TooltipInfo';

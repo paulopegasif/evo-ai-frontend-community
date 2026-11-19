@@ -7,7 +7,7 @@ import {
   Button,
   Checkbox,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Github, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';

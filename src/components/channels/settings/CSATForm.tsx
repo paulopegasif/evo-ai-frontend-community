@@ -11,7 +11,7 @@ import {
   SelectValue,
   Textarea,
   Badge,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Star, Info, X, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -30,7 +30,7 @@ import { labelsService } from '@/services/contacts/labelsService';
 import { Label } from '@/types/settings';
 import { pipelinesService } from '@/services/pipelines';
 import type { Pipeline, PipelineStage } from '@/types/analytics/pipelines';
-import { Input } from '@evoapi/design-system/input';
+import { Input } from '@/components/ui/compat';
 
 // API response type
 export interface APICSATConfig {

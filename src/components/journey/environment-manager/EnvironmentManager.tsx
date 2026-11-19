@@ -18,7 +18,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Settings, Plus, Edit, Trash2, Copy, Search } from 'lucide-react';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';
 import { useLanguage } from '@/hooks/useLanguage';

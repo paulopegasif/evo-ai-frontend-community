@@ -10,7 +10,7 @@ import {
   DialogTitle,
   Button,
   Card,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Key, Copy } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 

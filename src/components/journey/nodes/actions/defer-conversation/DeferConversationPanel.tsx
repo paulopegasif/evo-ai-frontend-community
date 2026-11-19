@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Clock } from 'lucide-react';
 import { DeferConversationNodeData } from './DeferConversationNode';
 import { automationService } from '@/services/automation/automationService';

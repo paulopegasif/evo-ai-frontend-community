@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Badge, Card, CardContent, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui/compat';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 import { deltaToneClass, formatDelta, type MetricComparison } from './metricComparison';
 

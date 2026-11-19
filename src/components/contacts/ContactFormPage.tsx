@@ -1,4 +1,4 @@
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { ArrowLeft, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import ContactDetailsCard from './ContactDetailsCard';

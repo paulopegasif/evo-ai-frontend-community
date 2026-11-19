@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Tag, X } from 'lucide-react';
 import { RemoveLabelNodeData } from './RemoveLabelNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

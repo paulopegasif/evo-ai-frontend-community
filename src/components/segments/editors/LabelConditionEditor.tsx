@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
   Label,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { LabelNode } from '@/types/analytics';
 import { Label as LabelType } from '@/types/settings';
 import { useLanguage } from '@/hooks/useLanguage';

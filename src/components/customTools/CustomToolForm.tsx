@@ -11,7 +11,7 @@ import {
   SelectValue,
   Textarea,
   Separator,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import {
   Wand,
   Globe,

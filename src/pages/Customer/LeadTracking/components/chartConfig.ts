@@ -1,4 +1,4 @@
-import type { ChartConfig } from '@evoapi/design-system';
+import type { ChartConfig } from '@/components/ui/compat';
 
 /**
  * One color per entity across the whole page, in the brand's categorical order

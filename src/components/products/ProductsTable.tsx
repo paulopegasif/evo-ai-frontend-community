@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Badge } from '@evoapi/design-system';
+import { Button, Badge } from '@/components/ui/compat';
 import { Pencil, Trash2, Package, Cloud } from 'lucide-react';
 import type { Product } from '@/types/products';
 import { stockInfo } from './productStock';

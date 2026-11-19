@@ -1,5 +1,5 @@
 import { ChevronRight, Layers } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/compat';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 import type { FunnelStage } from '@/types/leadTracking';
 import { percentOrDash } from './format';

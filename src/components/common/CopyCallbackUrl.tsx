@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input, Label, Button } from '@evoapi/design-system';
+import { Input, Label, Button } from '@/components/ui/compat';
 import { Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 

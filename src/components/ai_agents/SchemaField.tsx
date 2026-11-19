@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Save, Trash2, Edit3 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

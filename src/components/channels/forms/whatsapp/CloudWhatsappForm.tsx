@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import WhatsappService from '@/services/channels/whatsappService';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { FormSection } from '../../shared/FormSection';
 import HubConnectButton from '@/components/inbox/HubConnectButton';
 import { FormActionBar } from '@/components/channels/shared/FormActionBar';

@@ -15,7 +15,7 @@ import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Contact } from '@/types/contacts';
 import { Mail, Phone, Building2, User, Calendar } from 'lucide-react';
 import { formatContactPhone } from '@/utils/contact/formatContactPhone';

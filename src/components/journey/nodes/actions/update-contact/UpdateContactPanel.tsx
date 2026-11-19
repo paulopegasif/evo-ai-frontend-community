@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { UserCog } from 'lucide-react';
 import { UpdateContactNodeData } from './UpdateContactNode';

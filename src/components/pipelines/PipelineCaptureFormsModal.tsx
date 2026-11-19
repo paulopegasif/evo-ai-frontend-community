@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
   Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { Plus, Copy, Trash2, Edit, ExternalLink, FileText, Loader2 } from 'lucide-react';
 import { crmFormsService } from '@/services/crmForms/crmFormsService';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';

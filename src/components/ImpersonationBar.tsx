@@ -1,7 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { UserX } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 

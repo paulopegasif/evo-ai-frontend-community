@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/compat';
 import {
   ArrowLeft,
   X,
@@ -24,7 +24,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuLabel,
-} from '@evoapi/design-system/dropdown-menu';
+} from '@/components/ui/compat';
 import { Conversation } from '@/types/chat/api';
 import type { Pipeline, PipelineStage } from '@/types/analytics';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';

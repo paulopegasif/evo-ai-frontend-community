@@ -10,7 +10,7 @@ import {
   Label,
   Textarea,
   Checkbox,
-} from '@evoapi/design-system';
+} from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { AlertTriangle, ArrowRight, Check } from 'lucide-react';

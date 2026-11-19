@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/compat';
 import { Download, Upload, Package } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import ExportWizard from './components/ExportWizard/ExportWizard';

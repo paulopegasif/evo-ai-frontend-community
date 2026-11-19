@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Button } from '@evoapi/design-system/button';
-import { Checkbox } from '@evoapi/design-system/checkbox';
-import { Input } from '@evoapi/design-system/input';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/compat';
+import { Checkbox } from '@/components/ui/compat';
+import { Input } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/compat';
 import {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-} from '@evoapi/design-system/context-menu';
+} from '@/components/ui/compat';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@evoapi/design-system/dropdown-menu';
+} from '@/components/ui/compat';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
+} from '@/components/ui/compat';
 import {
   Search,
   Mail,
