@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { HttpMethodBadge } from '@/components/agents/resourceCard';
 import { Badge, Button } from '@/components/ui/compat';
 import { Edit, Trash2, Wand, Loader2, Globe } from 'lucide-react';
 import { CustomTool } from '@/types/ai';
@@ -34,22 +35,6 @@ export default function CustomToolsTable({
   const { can, isReady } = usePermissions();
   const toolsList = tools || [];
 
-  const getMethodColor = (method: string) => {
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return 'bg-info/10 text-info-foreground border-info/30';
-      case 'POST':
-        return 'bg-success/10 text-success-foreground border-success/30';
-      case 'PUT':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'DELETE':
-        return 'bg-destructive/10 text-destructive-foreground border-destructive/30';
-      case 'PATCH':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
-      default:
-        return 'bg-gray-500/10 text-muted-foreground border-gray-500/30';
-    }
-  };
 
   const columns: TableColumn<CustomTool>[] = [
     {
@@ -67,9 +52,7 @@ export default function CustomToolsTable({
           <div className="min-w-0 flex-1">
             <div className="font-medium text-sm truncate mb-1">{tool.name || t('table.noName')}</div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className={`text-xs ${getMethodColor(tool.method)}`}>
-                {tool.method}
-              </Badge>
+              <HttpMethodBadge method={tool.method} />
             </div>
           </div>
         </div>

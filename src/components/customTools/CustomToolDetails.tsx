@@ -1,4 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { HttpMethodBadge } from '@/components/agents/resourceCard';
 import {
   Dialog,
   DialogContent,
@@ -33,22 +34,6 @@ export default function CustomToolDetails({
 
   if (!tool) return null;
 
-  const getMethodColor = (method: string) => {
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return 'bg-info/10 text-info-foreground border-info/30';
-      case 'POST':
-        return 'bg-success/10 text-success-foreground border-success/30';
-      case 'PUT':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'DELETE':
-        return 'bg-destructive/10 text-destructive-foreground border-destructive/30';
-      case 'PATCH':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
-      default:
-        return 'bg-gray-500/10 text-muted-foreground border-gray-500/30';
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,9 +100,7 @@ export default function CustomToolDetails({
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">{t('details.fields.method')}</label>
                   <div className="mt-1">
-                    <Badge variant="outline" className={`text-xs ${getMethodColor(tool.method)}`}>
-                      {tool.method}
-                    </Badge>
+                    <HttpMethodBadge method={tool.method} />
                   </div>
                 </div>
                 <div>
