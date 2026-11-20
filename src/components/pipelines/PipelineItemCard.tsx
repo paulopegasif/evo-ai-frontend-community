@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { PipelineItem, Pipeline, PipelineStage } from '@/types/analytics';
 import { getContactColor } from '@/utils/avatar';
-import { initials } from './kanban/kanbanUtils';
+import { initials } from '@/lib/initials';
 
 interface PipelineItemCardProps {
   item: PipelineItem;

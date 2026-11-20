@@ -30,7 +30,8 @@ import {
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import type { PipelineItem, PipelineStage } from '@/types/analytics';
 import { cn } from '@/utils/cn';
-import { PRIORITY_VARIANT, STATUS_VARIANT, initials, priorityBucket } from './kanbanUtils';
+import { PRIORITY_VARIANT, STATUS_VARIANT, priorityBucket } from './kanbanUtils';
+import { initials } from '@/lib/initials';
 
 export interface KanbanCardProps {
   item: PipelineItem;

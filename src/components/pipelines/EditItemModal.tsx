@@ -22,7 +22,7 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 // Command (cmdk) is still served by the compat layer until a coss combobox replaces it.
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/compat';
-import { initials } from './kanban/kanbanUtils';
+import { initials } from '@/lib/initials';
 import {
   Plus,
   Trash2,
