@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Textarea,
-  Label,
-  Button,
-  Alert,
-  AlertDescription,
-} from '@/components/ui/compat';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import usersService from '@/services/users/usersService';
-import { Loader2, CheckCircle, XCircle, Mail } from 'lucide-react';
+import { CheckCircle, Info, XCircle, Mail } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface BulkInviteModalProps {
@@ -93,147 +88,132 @@ export default function BulkInviteModal({ isOpen, onClose, onSuccess }: BulkInvi
     setResult(null);
   };
 
+  const onOpenChange = (open: boolean) => {
+    if (!open) handleClose();
+  };
+
   if (result) {
     return (
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="bg-sidebar border-sidebar-border max-w-lg">
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogPopup className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-sidebar-foreground flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="size-5 text-muted-foreground" />
               {t('bulkInvite.resultTitle')}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <DialogPanel className="flex flex-col gap-4">
             {result.invited.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-success-foreground flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
+              <div className="flex flex-col gap-2">
+                <h3 className="flex items-center gap-2 font-medium text-sm text-success-foreground">
+                  <CheckCircle className="size-4" />
                   {t('bulkInvite.results.invited', { count: result.invited.length })}
                 </h3>
-                <div className="bg-success/8 border border-success/24 rounded-lg p-3">
-                  <ul className="text-sm space-y-1">
-                    {result.invited.map((user, index) => (
-                      <li key={index} className="text-success-foreground">
-                        {user.email}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <ul className="flex flex-col divide-y rounded-xl border border-success/24 bg-success/4 text-sm">
+                  {result.invited.map((user, index) => (
+                    <li key={index} className="px-3 py-2">
+                      {user.email}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
             {result.failed.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-destructive-foreground flex items-center gap-2">
-                  <XCircle className="h-4 w-4" />
+              <div className="flex flex-col gap-2">
+                <h3 className="flex items-center gap-2 font-medium text-destructive-foreground text-sm">
+                  <XCircle className="size-4" />
                   {t('bulkInvite.results.failed', { count: result.failed.length })}
                 </h3>
-                <div className="bg-destructive/8 border border-destructive/24 rounded-lg p-3">
-                  <ul className="text-sm space-y-1">
-                    {result.failed.map((failure, index) => (
-                      <li key={index} className="text-destructive-foreground">
-                        <span className="font-medium">{failure.email}</span>
-                        <span className="text-destructive-foreground"> - {failure.error}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <ul className="flex flex-col divide-y rounded-xl border border-destructive/24 bg-destructive/4 text-sm">
+                  {result.failed.map((failure, index) => (
+                    <li key={index} className="flex flex-col gap-0.5 px-3 py-2">
+                      <span className="font-medium">{failure.email}</span>
+                      <span className="text-destructive-foreground text-xs">{failure.error}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
+          </DialogPanel>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <Button
-                onClick={handleStartNew}
-                variant="outline"
-                className="bg-sidebar hover:bg-sidebar-accent border-sidebar-border"
-              >
-                {t('bulkInvite.actions.sendMore')}
-              </Button>
-              <Button
-                onClick={handleClose}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 font-semibold"
-              >
-                {t('bulkInvite.actions.finish')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
+          <DialogFooter>
+            <Button onClick={handleStartNew} variant="outline">
+              {t('bulkInvite.actions.sendMore')}
+            </Button>
+            <Button onClick={handleClose}>{t('bulkInvite.actions.finish')}</Button>
+          </DialogFooter>
+        </DialogPopup>
       </Dialog>
     );
   }
 
+  const emailCount = new Set(emailsText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || []).size;
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-sidebar border-sidebar-border max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-sidebar-foreground flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            {t('bulkInvite.title')}
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogPopup className="sm:max-w-lg">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="size-5 text-muted-foreground" />
+              {t('bulkInvite.title')}
+            </DialogTitle>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Alert className="border-info/24 bg-info/8">
-            <AlertDescription className="text-sm text-info-foreground">
-              <strong>{t('bulkInvite.howToUse.title')}</strong>
-              <br />• {t('bulkInvite.howToUse.step1')}
-              <br />• {t('bulkInvite.howToUse.step2')}
-              <br />• {t('bulkInvite.howToUse.step3')}
-              <br />• {t('bulkInvite.howToUse.step4')}
-            </AlertDescription>
-          </Alert>
+          <DialogPanel className="flex flex-col gap-5">
+            <Alert variant="info">
+              <Info />
+              <AlertTitle>{t('bulkInvite.howToUse.title')}</AlertTitle>
+              <AlertDescription>
+                <ul className="list-disc ps-4">
+                  <li>{t('bulkInvite.howToUse.step1')}</li>
+                  <li>{t('bulkInvite.howToUse.step2')}</li>
+                  <li>{t('bulkInvite.howToUse.step3')}</li>
+                  <li>{t('bulkInvite.howToUse.step4')}</li>
+                </ul>
+              </AlertDescription>
+            </Alert>
 
-          <div className="space-y-2">
-            <Label htmlFor="emails">
-              {t('bulkInvite.fields.emails.label')}
-              <span className="text-destructive ml-1">*</span>
-            </Label>
-            <Textarea
-              id="emails"
-              value={emailsText}
-              onChange={e => setEmailsText(e.target.value)}
-              placeholder={`usuario1@exemplo.com
+            <Field>
+              <div className="flex w-full items-center justify-between gap-2">
+                <FieldLabel htmlFor="emails">
+                  {t('bulkInvite.fields.emails.label')}
+                  <span className="text-destructive-foreground">*</span>
+                </FieldLabel>
+                {emailCount > 0 && (
+                  <Badge variant="secondary" className="tabular-nums">
+                    <Mail />
+                    {emailCount}
+                  </Badge>
+                )}
+              </div>
+              <Textarea
+                id="emails"
+                value={emailsText}
+                onChange={e => setEmailsText(e.target.value)}
+                placeholder={`usuario1@exemplo.com
 usuario2@exemplo.com, usuario3@exemplo.com
 usuario4@exemplo.com`}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground min-h-[120px]"
-              disabled={loading}
-            />
-            <p className="text-xs text-sidebar-foreground/60">
-              {t('bulkInvite.fields.emails.hint')}
-            </p>
-          </div>
+                className="min-h-32 font-mono text-sm"
+                disabled={loading}
+              />
+              <FieldDescription>{t('bulkInvite.fields.emails.hint')}</FieldDescription>
+            </Field>
+          </DialogPanel>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={loading}
-              className="bg-sidebar hover:bg-sidebar-accent border-sidebar-border"
-            >
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={handleClose} disabled={loading}>
               {t('bulkInvite.actions.cancel')}
             </Button>
-            <Button
-              type="submit"
-              disabled={loading || !emailsText.trim()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 font-semibold"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('bulkInvite.actions.sending')}
-                </>
-              ) : (
-                <>
-                  <Mail className="h-4 w-4 mr-2" />
-                  {t('bulkInvite.actions.sendInvites')}
-                </>
-              )}
+            <Button type="submit" disabled={!emailsText.trim()} loading={loading}>
+              {!loading && <Mail />}
+              {loading ? t('bulkInvite.actions.sending') : t('bulkInvite.actions.sendInvites')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }
