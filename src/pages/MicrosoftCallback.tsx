@@ -107,22 +107,22 @@ export default function MicrosoftCallback() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40 relative">
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <AppLogo className="h-10 mx-auto" />
+          <AppLogo className="h-9 mx-auto" />
         </div>
 
         {/* Card de Callback */}
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           {/* Header com Microsoft Icon */}
           <div className="text-center pb-6 border-b">
             <div className="flex items-center justify-center gap-3">
               <div className="p-3 rounded-full bg-gradient-to-br from-blue-500 to-blue-600">
                 <Mail className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">Outlook</h1>
+              <h1 className="font-semibold text-xl">Outlook</h1>
             </div>
           </div>
 

@@ -42,9 +42,9 @@ export const OAuthCallback: React.FC = () => {
   }, [searchParams, t]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
       <div className="w-full max-w-md space-y-6">
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg text-center">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8 text-center">
           <h1 className="text-2xl font-bold mb-4">{t('callback.title')}</h1>
 
           {status === 'loading' && (
@@ -65,7 +65,7 @@ export const OAuthCallback: React.FC = () => {
           )}
 
           {status === 'error' && (
-            <Alert variant="destructive">
+            <Alert variant="error">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>{t('callback.errors.title')}</AlertTitle>
               <AlertDescription>{message}</AlertDescription>

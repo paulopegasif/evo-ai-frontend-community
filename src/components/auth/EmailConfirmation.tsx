@@ -99,18 +99,18 @@ const EmailConfirmation = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40 relative">
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <AppLogo className="h-10 mx-auto" />
+          <AppLogo className="h-9 mx-auto" />
         </div>
 
         {/* Card */}
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           <div className="text-center mb-6">
             <div className="mx-auto flex items-center justify-center mb-4">{getStatusIcon()}</div>
-            <h2 className="text-2xl font-bold">{t('auth.emailConfirmation.title')}</h2>
+            <h2 className="font-semibold text-xl">{t('auth.emailConfirmation.title')}</h2>
             <p className="text-muted-foreground mt-2">
               {confirmationToken ? t('auth.emailConfirmation.confirming') : t('auth.emailConfirmation.confirm')}
             </p>

@@ -195,11 +195,11 @@ export const OAuthLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
       <div className="w-full max-w-md space-y-6">
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold mb-2">
+            <h1 className="font-semibold text-xl mb-2">
               {accounts.length > 0
                 ? t('login.titles.selectAccount')
                 : isAuthenticated
@@ -216,7 +216,7 @@ export const OAuthLogin: React.FC = () => {
           </div>
 
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="error" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>

@@ -103,23 +103,23 @@ const ResetPassword = () => {
 
   if (!resetToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40 relative">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
-            <AppLogo className="h-10 mx-auto" />
+            <AppLogo className="h-9 mx-auto" />
           </div>
 
-          <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+          <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
             <div className="text-center mb-6">
               <Lock className="h-12 w-12 text-destructive mx-auto mb-4" />
-              <h2 className="text-2xl font-bold">{t('auth.resetPassword.tokenInvalid.title')}</h2>
+              <h2 className="font-semibold text-xl">{t('auth.resetPassword.tokenInvalid.title')}</h2>
               <p className="text-muted-foreground mt-2">
                 {t('auth.resetPassword.tokenInvalid.description')}
               </p>
             </div>
 
             <div className="space-y-4">
-              <Alert variant="destructive">
+              <Alert variant="error">
                 <AlertDescription>
                   {t('auth.resetPassword.tokenInvalid.alert')}
                 </AlertDescription>
@@ -139,20 +139,20 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40 relative">
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <AppLogo className="h-10 mx-auto" />
+          <AppLogo className="h-9 mx-auto" />
         </div>
 
         {/* Form */}
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           <div className="text-center mb-6">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mb-4">
               <Lock className="h-6 w-6 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold">
+            <h2 className="font-semibold text-xl">
               {t('auth.resetPassword.title')}
             </h2>
             <p className="text-muted-foreground mt-2">
@@ -162,7 +162,7 @@ const ResetPassword = () => {
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="error">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
