@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { ChatAttachment } from './ChatAttachment';
 import { EmojiPickerComponent } from './EmojiPicker';
 import { ResizableTextarea, ResizableTextareaRef } from './ResizableTextarea';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Loader2, Send } from 'lucide-react';
+import { SendHorizontal } from 'lucide-react';
 
 interface ComposerProps {
   onSend: (text: string) => void | Promise<void>;
@@ -89,56 +89,48 @@ const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div className="flex gap-2 p-2 border-t border-border bg-background">
-      {/* Show attachment button only when input is empty (like Vue widget) */}
-      {text.length === 0 && (
-        <ChatAttachment
-          onFileUpload={handleFileUpload}
-          isUploading={isUploading}
-          isDisabled={false}
-        />
-      )}
-      <div className="flex-1 relative min-w-0">
-        <ResizableTextarea
-          ref={textareaRef}
-          value={text}
-          onChange={handleTextChange}
-          placeholder={t('composer.placeholder')}
-          className="w-full pr-12"
-          maxRows={4}
-          minRows={1}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
-        />
-        {/* Emoji picker positioned inside the textarea */}
-        <div className="absolute right-1 top-1/2 transform -translate-y-1/2">
+    <div className="p-3 pt-2">
+      <div className="relative flex items-end gap-1 rounded-xl border border-input bg-background p-1 shadow-xs/5 transition-shadow has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/24 dark:bg-input/32">
+        {/* Attachment button only while the input is empty (like the Vue widget) */}
+        {text.length === 0 && (
+          <div className="flex h-10 items-center">
+            <ChatAttachment onFileUpload={handleFileUpload} isUploading={isUploading} isDisabled={false} />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <ResizableTextarea
+            ref={textareaRef}
+            value={text}
+            onChange={handleTextChange}
+            placeholder={t('composer.placeholder')}
+            className={text.length === 0 ? 'ps-1.5' : undefined}
+            maxRows={4}
+            minRows={1}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+          />
+        </div>
+        <div className="flex h-10 items-center gap-1">
           <EmojiPickerComponent onEmojiSelect={handleEmojiSelect} />
+          {/* Send button only when there's text (like the Vue widget) */}
+          {text.length > 0 && (
+            <Button
+              size="icon-sm"
+              onClick={handleSend}
+              loading={isSending}
+              aria-label={t('composer.send')}
+              className="shrink-0 text-white hover:opacity-90"
+              style={{ backgroundColor: widgetColor, borderColor: widgetColor }}
+            >
+              <SendHorizontal />
+            </Button>
+          )}
         </div>
       </div>
-      {/* Show send button only when there's text (like Vue widget) */}
-      {text.length > 0 && (
-        <Button
-          size="icon"
-          onClick={handleSend}
-          disabled={isSending}
-          className="h-9 w-9 flex-shrink-0 disabled:bg-muted disabled:text-muted-foreground hover:opacity-80"
-          style={{
-            backgroundColor: widgetColor,
-            color: 'white',
-            borderColor: widgetColor,
-          }}
-        >
-          {isSending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-        </Button>
-      )}
     </div>
   );
 };

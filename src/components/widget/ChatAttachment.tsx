@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { Spinner } from '@/components/ui/spinner';
 import { useDropzone } from 'react-dropzone';
 import { PaperclipIcon, ImageIcon } from 'lucide-react';
 import { validateFile } from '@/types/core';
@@ -125,33 +126,23 @@ export const ChatAttachment: React.FC<ChatAttachmentProps> = ({
         type="button"
         onClick={openFileDialog}
         disabled={isDisabled || isUploading}
-        className={`
-          p-2 rounded-lg transition-colors duration-200
-          ${
-            isDisabled || isUploading
-              ? 'text-muted-foreground cursor-not-allowed'
-              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-          }
-        `}
+        aria-label={t('attachment.attach')}
         title={t('attachment.attach')}
+        className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-64"
       >
-        {isUploading ? (
-          <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-        ) : (
-          <PaperclipIcon size={20} />
-        )}
+        {isUploading ? <Spinner className="size-4" /> : <PaperclipIcon className="size-4.5" />}
       </button>
 
       {/* Drop Zone (activated on drag) */}
       {isDragActive && (
         <div
           {...getRootProps()}
-          className="absolute inset-0 bg-info/8 bg-opacity-90 border-2 border-dashed border-info/24 rounded-lg flex items-center justify-center z-50"
+          className="absolute inset-0 z-50 flex items-center justify-center rounded-xl border-2 border-info/48 border-dashed bg-background/90 backdrop-blur-sm"
         >
           <input {...getInputProps()} />
           <div className="text-center">
-            <ImageIcon size={48} className="mx-auto mb-2 text-info" />
-            <p className="text-info-foreground font-medium">{t('attachment.dropHere')}</p>
+            <ImageIcon className="mx-auto mb-2 size-10 text-info" />
+            <p className="font-medium text-info-foreground text-sm">{t('attachment.dropHere')}</p>
           </div>
         </div>
       )}
