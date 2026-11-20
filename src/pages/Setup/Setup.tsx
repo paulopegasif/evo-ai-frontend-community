@@ -6,18 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AlertCircle, Globe } from 'lucide-react';
 
-import {
-  Button,
-  Input,
-  Label,
-  Alert,
-  AlertDescription,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { useLanguage } from '@/hooks/useLanguage';
 import { type Locale } from '@/i18n/config';
@@ -209,20 +202,32 @@ const Setup: React.FC = () => {
     },
   };
 
+  const languages = [
+    { value: 'pt-BR', label: t('language.portuguese') },
+    { value: 'en', label: t('language.english') },
+    { value: 'es', label: t('language.spanish') },
+    { value: 'fr', label: t('language.french') },
+    { value: 'it', label: t('language.italian') },
+  ];
+
   const languageSelector = (
     <div className="absolute top-4 right-4">
-      <Select value={currentLanguage} onValueChange={handleLanguageChange}>
-        <SelectTrigger>
-          <Globe className="h-4 w-4 text-primary" />
+      <Select
+        items={languages}
+        value={currentLanguage}
+        onValueChange={value => value && handleLanguageChange(value as string)}
+      >
+        <SelectTrigger size="sm" className="w-auto min-w-36 bg-background" aria-label={t('language.selector')}>
+          <Globe className="text-muted-foreground" />
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="pt-BR">{t('language.portuguese')}</SelectItem>
-          <SelectItem value="en">{t('language.english')}</SelectItem>
-          <SelectItem value="es">{t('language.spanish')}</SelectItem>
-          <SelectItem value="fr">{t('language.french')}</SelectItem>
-          <SelectItem value="it">{t('language.italian')}</SelectItem>
-        </SelectContent>
+        <SelectPopup>
+          {languages.map(language => (
+            <SelectItem key={language.value} value={language.value}>
+              {language.label}
+            </SelectItem>
+          ))}
+        </SelectPopup>
       </Select>
     </div>
   );
