@@ -124,7 +124,10 @@
       ]
     },
     "close": "Close",
-    "tokenCopied": "Token copied!"
+    "tokenCopied": "Token copied!",
+    "copyValue": "Copy {{label}}",
+    "showToken": "Show token",
+    "hideToken": "Hide token"
   },
   "empty": {
     "title": "No tokens found",

@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Copy, Eye, EyeOff, Key } from 'lucide-react';
-import { Badge } from '@/components/ui/compat';
 import type { AccessToken } from '@/types/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { parseScopesFromAPI } from '@/services/auth/accessTokensService';
@@ -36,15 +40,37 @@ export default function ViewTokenModal({
     onCopy(text, label);
   };
 
+  const copyButton = (text: string, label: string) => {
+    const copyLabel = t('viewModal.copyValue', { label });
+    return (
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={copyLabel}
+              onClick={() => handleCopy(text, label)}
+            />
+          }
+        >
+          <Copy />
+        </TooltipTrigger>
+        <TooltipPopup>{copyLabel}</TooltipPopup>
+      </Tooltip>
+    );
+  };
+
   const maskedToken = token.token ? '•'.repeat(Math.min(token.token.length, 40)) : '';
   const scopes = parseScopesFromAPI(token.scopes);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" />
+            <Key className="size-5" />
             {t('viewModal.title')} - {token.name}
           </DialogTitle>
           <DialogDescription>
@@ -52,10 +78,10 @@ export default function ViewTokenModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[60vh] overflow-y-auto">
-          <div className="space-y-6">
+        <DialogPanel>
+          <div className="flex flex-col gap-6">
           {/* Token Info */}
-          <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
+          <div className="grid grid-cols-2 gap-4 p-4 rounded-xl border bg-muted/24">
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('viewModal.labels.name')}</p>
               <p className="font-medium">{token.name}</p>
@@ -75,21 +101,15 @@ export default function ViewTokenModal({
 
           {/* Token ID */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Token ID</label>
+            <p className="text-sm font-medium">Token ID</p>
             <div className="flex gap-2">
               <Input
                 value={token.id}
                 readOnly
-                className="font-mono text-sm"
+                aria-label="Token ID"
+                className="font-mono"
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleCopy(token.id, 'Token ID')}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
+              {copyButton(token.id, 'Token ID')}
             </div>
             <p className="text-xs text-muted-foreground">
               Unique identifier for this access token
@@ -98,33 +118,30 @@ export default function ViewTokenModal({
 
           {/* Access Token */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">{t('viewModal.labels.token')}</label>
+            <p className="text-sm font-medium">{t('viewModal.labels.token')}</p>
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Input
+              <InputGroup className="flex-1">
+                <InputGroupInput
                   value={showToken ? token.token : maskedToken}
                   readOnly
-                  className="font-mono text-sm pr-10"
+                  className="font-mono"
                   type={showToken ? 'text' : 'password'}
+                  aria-label={t('viewModal.labels.token')}
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
-                  onClick={() => setShowToken(!showToken)}
-                >
-                  {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleCopy(token.token, t('viewModal.copyToken'))}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
+                <InputGroupAddon align="inline-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    aria-label={showToken ? t('viewModal.hideToken') : t('viewModal.showToken')}
+                    aria-pressed={showToken}
+                    onClick={() => setShowToken(!showToken)}
+                  >
+                    {showToken ? <EyeOff /> : <Eye />}
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+              {copyButton(token.token, t('viewModal.copyToken'))}
             </div>
             <p className="text-xs text-muted-foreground">
               Use this token in the Authorization header: <code>Authorization: Bearer {token.token.substring(0, 20)}...</code>
@@ -133,8 +150,8 @@ export default function ViewTokenModal({
 
           {/* Scopes */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">{t('viewModal.labels.scopes')}</label>
-            <div className="flex flex-wrap gap-2 p-3 bg-muted rounded-md min-h-[2.5rem]">
+            <p className="text-sm font-medium">{t('viewModal.labels.scopes')}</p>
+            <div className="flex flex-wrap gap-2 p-3 rounded-lg border bg-muted/24 min-h-[2.5rem]">
               {scopes.length > 0 ? (
                 scopes.map((scope) => (
                   <Badge key={scope} variant="outline" className="text-xs font-mono">
@@ -151,7 +168,7 @@ export default function ViewTokenModal({
           </div>
 
           {/* Token Details */}
-          <div className="space-y-4 p-4 bg-muted rounded-lg">
+          <div className="space-y-4 p-4 rounded-xl border bg-muted/24">
             <h4 className="font-medium">Token Details</h4>
             
             <div className="grid grid-cols-2 gap-4">
@@ -172,69 +189,51 @@ export default function ViewTokenModal({
           </div>
 
           {/* API Usage Example */}
-          <div className="space-y-4 p-4 bg-muted rounded-lg">
+          <div className="space-y-4 p-4 rounded-xl border bg-muted/24">
             <h4 className="font-medium">API Usage Example</h4>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">cURL Example</label>
+              <p className="text-sm font-medium">cURL Example</p>
               <div className="flex gap-2">
                 <Input
                   value={`curl -H "api_access_token: ${token.token}" https://api.example.com/v1/endpoint`}
                   readOnly
-                  className="font-mono text-sm"
+                  className="font-mono"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(`curl -H "api_access_token: ${token.token}" https://api.example.com/v1/endpoint`, 'cURL Example')}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
+                {copyButton(`curl -H "api_access_token: ${token.token}" https://api.example.com/v1/endpoint`, 'cURL Example')}
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">JavaScript Example</label>
+              <p className="text-sm font-medium">JavaScript Example</p>
               <div className="flex gap-2">
                 <Input
                   value={`fetch('https://api.example.com/v1/endpoint', { headers: { 'Authorization': 'Bearer ${token.token}' } })`}
                   readOnly
-                  className="font-mono text-sm"
+                  className="font-mono"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(`fetch('https://api.example.com/v1/endpoint', { headers: { 'Authorization': 'Bearer ${token.token}' } })`, 'JavaScript Example')}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
+                {copyButton(`fetch('https://api.example.com/v1/endpoint', { headers: { 'Authorization': 'Bearer ${token.token}' } })`, 'JavaScript Example')}
               </div>
             </div>
           </div>
 
           {/* Security Warning */}
-          <div className="p-4 bg-warning/8 border border-warning/24 rounded-lg">
-            <div className="flex items-start gap-3">
-              <Key className="h-5 w-5 text-warning-foreground mt-0.5" />
-              <div>
-                <h4 className="font-medium text-warning-foreground">
-                  Important - Security
-                </h4>
-                <ul className="mt-2 text-sm text-warning-foreground space-y-1">
-                  <li>• Never expose the access token in client-side code or public repositories</li>
-                  <li>• Use HTTPS in production for all API communications</li>
-                  <li>• Regenerate the token if you suspect it has been compromised</li>
-                  <li>• Monitor token usage regularly</li>
-                  <li>• Store tokens securely using environment variables or secure vaults</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <Alert variant="warning">
+            <Key />
+            <AlertTitle>Important - Security</AlertTitle>
+            <AlertDescription>
+              <ul className="flex flex-col gap-1">
+                <li>• Never expose the access token in client-side code or public repositories</li>
+                <li>• Use HTTPS in production for all API communications</li>
+                <li>• Regenerate the token if you suspect it has been compromised</li>
+                <li>• Monitor token usage regularly</li>
+                <li>• Store tokens securely using environment variables or secure vaults</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
         </div>
-        </div>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }
