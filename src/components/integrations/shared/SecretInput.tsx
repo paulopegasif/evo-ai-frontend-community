@@ -20,7 +20,7 @@ export default function SecretInput({ className, ...props }: SecretInputProps) {
         type={visible ? 'text' : 'password'}
         autoComplete="off"
         spellCheck={false}
-        className="font-mono"
+        className="font-mono placeholder:font-sans"
         {...props}
       />
       <InputGroupAddon align="inline-end">
