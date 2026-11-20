@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Input, Label } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Plus, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -26,8 +28,7 @@ interface Row {
 let rowCounter = 0;
 const nextRowId = () => ++rowCounter;
 
-const isComplexValue = (v: unknown): boolean =>
-  typeof v === 'object' && v !== null;
+const isComplexValue = (v: unknown): boolean => typeof v === 'object' && v !== null;
 
 const stringifyComplex = (v: unknown): string => {
   try {
@@ -155,7 +156,6 @@ export default function KeyValueEditor({
                     aria-label={`${label} key`}
                     aria-invalid={!!err}
                     aria-describedby={err ? `${row.id}-err` : undefined}
-                    className={err ? 'border-destructive' : ''}
                   />
                   {row.isComplex ? (
                     <div className="flex-1 flex items-center gap-2 px-3 py-2 text-sm font-mono bg-muted/30 rounded border border-input min-h-[40px]">
@@ -176,7 +176,6 @@ export default function KeyValueEditor({
                       aria-label={`${label} value`}
                       aria-invalid={!!err}
                       aria-describedby={err ? `${row.id}-err` : undefined}
-                      className={err ? 'border-destructive' : ''}
                     />
                   )}
                   <Button
@@ -200,13 +199,7 @@ export default function KeyValueEditor({
           })}
         </div>
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={handleAddRow}
-        disabled={disabled}
-      >
+      <Button type="button" variant="outline" size="sm" onClick={handleAddRow} disabled={disabled}>
         <Plus className="h-4 w-4 mr-1" />
         {addRowLabel || t('keyValueEditor.addRow')}
       </Button>

@@ -18,7 +18,9 @@ import Step5_Instructions from '@/pages/Customer/Agents/Agent/wizard/Step5_Instr
 import Step6_ApiKeyModel from '@/pages/Customer/Agents/Agent/wizard/Step6_ApiKeyModel';
 import WizardStep4_Success from '@/pages/Customer/Agents/Agent/wizard/WizardStep4_Success';
 import { ProviderSelector } from '@/components/agents/ProviderSelector';
-import ExternalAgentConfig, { ExternalAgentConfigData } from '@/components/agents/ExternalAgentConfig';
+import ExternalAgentConfig, {
+  ExternalAgentConfigData,
+} from '@/components/agents/ExternalAgentConfig';
 
 // Types
 interface WizardData {
@@ -33,7 +35,12 @@ interface WizardData {
   sub_agents: string[];
 
   // Step 3: Task config (task type only)
-  tasks: { agent_id: string; description: string; expected_output: string; enabled_tools: string[] }[];
+  tasks: {
+    agent_id: string;
+    description: string;
+    expected_output: string;
+    enabled_tools: string[];
+  }[];
 
   // Step 4: Role e Goal (LLM only)
   role: string;
@@ -58,7 +65,12 @@ interface AgentWizardModalProps {
   embedded?: boolean;
 }
 
-const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false }: AgentWizardModalProps) => {
+const AgentWizardModal = ({
+  open,
+  onOpenChange,
+  onAgentCreated,
+  embedded = false,
+}: AgentWizardModalProps) => {
   const { t } = useLanguage('aiAgents');
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -148,26 +160,26 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         { id: 3, label: t('wizard.progress.role') },
         { id: 4, label: t('wizard.progress.instructions') },
         { id: 5, label: t('wizard.progress.model') },
-        { id: 6, label: t('wizard.progress.completed') }
+        { id: 6, label: t('wizard.progress.completed') },
       );
     } else if (wizardData.type === 'task') {
       // Fluxo Task: Nome → Tipo → Task Config → Sucesso
       steps.push(
         { id: 3, label: t('wizard.progress.taskConfig') },
-        { id: 4, label: t('wizard.progress.completed') }
+        { id: 4, label: t('wizard.progress.completed') },
       );
     } else if (wizardData.type === 'external') {
       // Fluxo External: Nome → Tipo → Provider → Configuração → Sucesso
       steps.push(
         { id: 3, label: t('wizard.progress.provider') },
         { id: 4, label: t('wizard.progress.configuration') },
-        { id: 5, label: t('wizard.progress.completed') }
+        { id: 5, label: t('wizard.progress.completed') },
       );
     } else if (typesWithSubAgents.includes(wizardData.type)) {
       // Fluxo com sub-agentes: Nome → Tipo → Sub-agentes → Sucesso
       steps.push(
         { id: 3, label: t('wizard.progress.subAgents') },
-        { id: 4, label: t('wizard.progress.completed') }
+        { id: 4, label: t('wizard.progress.completed') },
       );
     } else {
       // Outros tipos: Nome → Tipo → Sucesso
@@ -449,7 +461,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
       return (
         <Step1_Name
           data={{ name: wizardData.name, description: wizardData.description }}
-          onChange={(data) => setWizardData({ ...wizardData, ...data })}
+          onChange={data => setWizardData({ ...wizardData, ...data })}
           onNext={handleNext}
         />
       );
@@ -460,7 +472,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
       return (
         <Step2_Type
           data={{ type: wizardData.type }}
-          onChange={(data) => setWizardData({ ...wizardData, ...data })}
+          onChange={data => setWizardData({ ...wizardData, ...data })}
           onNext={handleNext}
           onBack={handleBack}
         />
@@ -474,7 +486,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <Step4_RoleGoal
             data={{ role: wizardData.role, goal: wizardData.goal }}
-            onChange={(data) => setWizardData({ ...wizardData, ...data })}
+            onChange={data => setWizardData({ ...wizardData, ...data })}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -487,14 +499,14 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
           <div className="space-y-6">
             <ProviderSelector
               value={wizardData.provider as any}
-              onChange={(provider) => {
+              onChange={provider => {
                 setWizardData({
                   ...wizardData,
                   provider,
                   externalConfig: {
                     ...wizardData.externalConfig,
                     provider,
-                  } as ExternalAgentConfigData
+                  } as ExternalAgentConfigData,
                 });
               }}
             />
@@ -522,7 +534,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <WizardStep3_TaskConfig
             data={{ tasks: wizardData.tasks }}
-            onChange={(data) => setWizardData({ ...wizardData, tasks: data.tasks })}
+            onChange={data => setWizardData({ ...wizardData, tasks: data.tasks })}
             onNext={handleNext}
             onBack={handleBack}
             folderId={undefined}
@@ -535,7 +547,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <WizardStep3_SubAgents
             data={{ sub_agents: wizardData.sub_agents }}
-            onChange={(data) => setWizardData({ ...wizardData, sub_agents: data.sub_agents })}
+            onChange={data => setWizardData({ ...wizardData, sub_agents: data.sub_agents })}
             onNext={handleNext}
             onBack={handleBack}
             agentType={wizardData.type}
@@ -562,7 +574,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <Step5_Instructions
             data={{ instruction: wizardData.instruction }}
-            onChange={(data) => setWizardData({ ...wizardData, ...data })}
+            onChange={data => setWizardData({ ...wizardData, ...data })}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -586,7 +598,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             <ExternalAgentConfig
               mode="create"
               data={externalConfigData}
-              onChange={(data) => setWizardData({ ...wizardData, externalConfig: data })}
+              onChange={data => setWizardData({ ...wizardData, externalConfig: data })}
               onValidationChange={() => {
                 // Validação será verificada no handleNext
               }}
@@ -611,8 +623,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
 
       // Para Task ou tipos com sub-agentes: Sucesso
       if (
-        (wizardData.type === 'task' ||
-          typesWithSubAgents.includes(wizardData.type)) &&
+        (wizardData.type === 'task' || typesWithSubAgents.includes(wizardData.type)) &&
         createdAgentId
       ) {
         return (
@@ -633,7 +644,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             api_key_id: wizardData.api_key_id,
             model: wizardData.model,
           }}
-          onChange={(data) => setWizardData({ ...wizardData, ...data })}
+          onChange={data => setWizardData({ ...wizardData, ...data })}
           onNext={handleNext}
           onBack={handleBack}
           apiKeys={apiKeys}
@@ -684,7 +695,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
       {isCreating ? (
         <div className="flex h-96 flex-col items-center justify-center gap-4" aria-busy="true">
           <Spinner className="size-8 text-primary" />
-          <p className="font-medium text-lg">Criando agente...</p>
+          <p className="font-medium text-lg">{t('wizard.creating')}</p>
         </div>
       ) : (
         renderCurrentStep()

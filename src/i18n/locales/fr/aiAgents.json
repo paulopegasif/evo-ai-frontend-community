@@ -823,7 +823,11 @@
         "addTask": "Ajouter Tâche",
         "removeTask": "Retirer Tâche",
         "notifyTeam": "Notifier l'équipe lors de l'arrivée à cette étape",
-        "removeStageAutomation": "Retirer Étape"
+        "removeStageAutomation": "Retirer Étape",
+        "modalTitle": "Automatisation des pipelines"
+      },
+      "contactEdit": {
+        "modalTitle": "Modification des contacts"
       }
     },
     "knowledge": {
@@ -1163,6 +1167,19 @@
         "title": "Déconnecter {{name}} ?",
         "description": "L'agent perdra l'accès aux outils {{name}} jusqu'à ce que vous le reconnectiez.",
         "cancel": "Annuler"
+      },
+      "toasts": {
+        "loadToolsError": "Impossible de charger les outils disponibles",
+        "connectError": "Impossible de se connecter à {{name}}",
+        "saveSuccess": "Paramètres enregistrés",
+        "saveError": "Impossible d'enregistrer les paramètres",
+        "disconnectSuccess": "{{name}} déconnecté",
+        "disconnectError": "Impossible de déconnecter {{name}}",
+        "loadSheetsError": "Impossible de charger les feuilles de calcul",
+        "loadCalendarsError": "Impossible de charger les agendas",
+        "emailRequired": "Veuillez saisir une adresse e-mail",
+        "selectSheet": "Veuillez sélectionner une feuille de calcul",
+        "selectCalendar": "Veuillez sélectionner un agenda"
       }
     },
     "mcpServers": {
@@ -1214,7 +1231,8 @@
     "view": "Visualiser",
     "saving": "Enregistrement...",
     "continue": "Continuer",
-    "skip": "Passer"
+    "skip": "Passer",
+    "more": "Plus d'actions"
   },
   "wizardActions": {
     "back": "Retour",
@@ -1325,7 +1343,8 @@
         "searchTools": "Rechercher des outils...",
         "noToolsAvailable": "Aucun outil disponible",
         "toolsFromAgents": "Les outils des agents LLM sélectionnés apparaîtront ici",
-        "saveSettings": "Sauvegarder les Paramètres"
+        "saveSettings": "Sauvegarder les Paramètres",
+        "expandDescription": "Agrandir la description"
       }
     },
     "step4": {
@@ -1441,7 +1460,9 @@
         "description": "Configurez des outils et intégrations pour étendre les capacités"
       },
       "viewAllAgents": "Voir tous les agents"
-    }
+    },
+    "close": "Fermer l'assistant",
+    "creating": "Création de l'agent..."
   },
   "chat": {
     "newConversation": "Nouvelle Conversation",
@@ -1457,7 +1478,10 @@
     "typeMessage": "Tapez votre message...",
     "deleteSession": "Supprimer la Session",
     "deleteSessionConfirm": "Êtes-vous sûr de vouloir supprimer cette session ? Cette action ne peut pas être annulée.",
-    "session": "Session"
+    "session": "Session",
+    "attachFile": "Joindre un fichier",
+    "removeFile": "Retirer {{name}}",
+    "send": "Envoyer le message"
   },
   "mcpServers": {
     "title": "Serveurs MCP",

@@ -1,14 +1,7 @@
 import { useCallback } from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-} from '@/components/ui/compat';
-import {
-  FileText,
-  Plus,
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { FileText, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import SchemaField from './SchemaField';
 
@@ -39,15 +32,15 @@ const OutputSchemaSection = ({
   const handleSchemaFieldUpdate = useCallback(
     (originalKey: string, newKey: string, field: { type?: string; description?: string }) => {
       const newSchema = { ...outputSchema };
-      
+
       // Se a chave mudou, remover a antiga
       if (originalKey !== newKey) {
         delete newSchema[originalKey];
       }
-      
+
       // Adicionar/atualizar com a nova chave
       newSchema[newKey] = field;
-      
+
       onOutputSchemaChange(newSchema);
     },
     [outputSchema, onOutputSchemaChange],
@@ -91,7 +84,7 @@ const OutputSchemaSection = ({
       </CardHeader>
 
       {isOpen && (
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           <div className="p-4 bg-info/8 rounded-lg border border-info/24">
             <div className="flex items-start gap-3">
               <div className="p-1 bg-info/12 rounded">
@@ -115,7 +108,9 @@ const OutputSchemaSection = ({
                   key={fieldKey}
                   fieldKey={fieldKey}
                   field={field}
-                  onUpdate={(newKey, newField) => handleSchemaFieldUpdate(fieldKey, newKey, newField)}
+                  onUpdate={(newKey, newField) =>
+                    handleSchemaFieldUpdate(fieldKey, newKey, newField)
+                  }
                   onRemove={handleSchemaFieldRemove}
                   isReadOnly={isReadOnly}
                 />
@@ -150,7 +145,7 @@ const OutputSchemaSection = ({
               )}
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       )}
     </Card>
   );

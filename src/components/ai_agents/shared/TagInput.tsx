@@ -1,5 +1,7 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Input, Label, Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -93,6 +95,7 @@ export default function TagInput({
           </Badge>
         ))}
         <Input
+          size="sm"
           ref={inputRef}
           value={draft}
           onChange={e => setDraft(e.target.value)}
@@ -100,7 +103,7 @@ export default function TagInput({
           onBlur={handleBlur}
           placeholder={value.length === 0 ? placeholder || t('tagInput.placeholder') : ''}
           disabled={disabled}
-          className="flex-1 min-w-[120px] border-0 shadow-none p-0 h-7 text-sm focus-visible:ring-0"
+          className="flex-1 min-w-[120px] border-0 shadow-none p-0 focus-visible:ring-0"
           aria-label={label || t('tagInput.placeholder')}
         />
       </div>

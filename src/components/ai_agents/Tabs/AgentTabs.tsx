@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/compat';
-import { Card, CardContent, CardHeader } from '@/components/ui/compat';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { User, Settings, Wrench, Users } from 'lucide-react';
 import BasicInfoForm, { BasicInfoData } from '../Forms/BasicInfoForm';
 import LLMConfigForm, { LLMConfigData } from '../Forms/LLMConfigForm';
@@ -8,7 +8,9 @@ import A2AConfigForm, { A2AConfigData } from '../Forms/A2AConfigForm';
 import ToolsConfigForm, { ToolsConfigData } from '../Forms/ToolsConfigForm';
 import SubAgentsForm, { SubAgentsData } from '../Forms/SubAgentsForm';
 import TaskConfigForm, { TaskConfigData } from '../Forms/TaskConfigForm';
-import ExternalAgentConfig, { ExternalAgentConfigData } from '@/components/agents/ExternalAgentConfig';
+import ExternalAgentConfig, {
+  ExternalAgentConfigData,
+} from '@/components/agents/ExternalAgentConfig';
 import { ApiKey } from '@/types/agents';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -306,7 +308,7 @@ const TabContent = ({
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardPanel>
         <div className="text-center py-12">
           <div className="text-muted-foreground">
             <p className="text-lg font-medium mb-2">
@@ -317,7 +319,7 @@ const TabContent = ({
             </p>
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
@@ -371,17 +373,17 @@ const AgentTabs = ({
             const IconComponent = tab.icon;
 
             return (
-              <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2">
+              <TabsTab key={tab.id} value={tab.id} className="flex items-center gap-2">
                 <IconComponent className="h-4 w-4" />
                 <span className="hidden sm:inline">{tab.label}</span>
                 <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
-              </TabsTrigger>
+              </TabsTab>
             );
           })}
         </TabsList>
 
         {tabs.map(tab => (
-          <TabsContent key={tab.id} value={tab.id} className="mt-0">
+          <TabsPanel key={tab.id} value={tab.id} className="mt-0">
             <TabContent
               tabId={tab.id}
               mode={mode}
@@ -407,7 +409,7 @@ const AgentTabs = ({
               editingAgentId={editingAgentId}
               folderId={folderId}
             />
-          </TabsContent>
+          </TabsPanel>
         ))}
       </Tabs>
     </div>

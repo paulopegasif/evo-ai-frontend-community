@@ -8,18 +8,23 @@ export interface AgentTypeMeta {
   badge: NonNullable<BadgeProps['variant']>;
 }
 
-const TYPES: Record<string, AgentTypeMeta> = {
-  llm: { label: 'Nativo', icon: Bot, badge: 'success' },
-  external: { label: 'Externo', icon: Plug, badge: 'info' },
-  a2a: { label: 'A2A', icon: ExternalLink, badge: 'info' },
-  sequential: { label: 'Agente Sequencial', icon: ArrowRight, badge: 'warning' },
-  parallel: { label: 'Agente Paralelo', icon: GitBranch, badge: 'secondary' },
-  loop: { label: 'Agente Loop', icon: RefreshCw, badge: 'secondary' },
-  workflow: { label: 'Workflow', icon: Workflow, badge: 'secondary' },
-  task: { label: 'Task', icon: ListChecks, badge: 'secondary' },
+const TYPES: Record<string, Omit<AgentTypeMeta, 'label'>> = {
+  llm: { icon: Bot, badge: 'success' },
+  external: { icon: Plug, badge: 'info' },
+  a2a: { icon: ExternalLink, badge: 'info' },
+  sequential: { icon: ArrowRight, badge: 'warning' },
+  parallel: { icon: GitBranch, badge: 'secondary' },
+  loop: { icon: RefreshCw, badge: 'secondary' },
+  workflow: { icon: Workflow, badge: 'secondary' },
+  task: { icon: ListChecks, badge: 'secondary' },
 };
 
-/** Label, icon and badge variant for an agent type (shared by list, cards and editor). */
-export function getAgentTypeMeta(type?: string): AgentTypeMeta {
-  return TYPES[type || ''] || { label: type || 'N/A', icon: Bot, badge: 'outline' };
+/**
+ * Label, icon and badge variant for an agent type (shared by list, cards and editor).
+ * Pass the `agents` namespace `t` to get the translated label (`typeLabels.<type>`).
+ */
+export function getAgentTypeMeta(type?: string, t?: (key: string) => string): AgentTypeMeta {
+  const known = TYPES[type || ''];
+  if (!known) return { label: type || 'N/A', icon: Bot, badge: 'outline' };
+  return { ...known, label: t ? t(`typeLabels.${type}`) : type || '' };
 }

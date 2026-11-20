@@ -1,11 +1,12 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
-} from '@/components/ui/compat';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import PipelineRules, { PipelineRule } from '@/pages/Customer/Agents/Agent/sections/PipelineRules';
 
 interface PipelineRulesModalProps {
@@ -31,7 +32,7 @@ export const PipelineRulesModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogPopup className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
             {t('edit.configuration.pipelineRules.modalTitle') || 'Regras de Pipeline'}
@@ -41,14 +42,14 @@ export const PipelineRulesModal = ({
               'Configure quando e como o agente deve mover conversas entre pipelines e estágios.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
+        <DialogPanel>
           <PipelineRules
             rules={rules}
             onChange={onChange}
             availablePipelines={availablePipelines}
           />
-        </div>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 };

@@ -1,12 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  Button,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { Settings, Save, Loader2, AlertCircle } from 'lucide-react';
 import integrationService from '@/services/agents/integrationService';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -88,7 +82,7 @@ const ExternalAgentConfig = ({
 
       // Map config to form data based on provider
       const newData: ExternalAgentConfigData = { ...data };
-      
+
       if (data.provider === 'flowise') {
         newData.flowise_apiUrl = config.apiUrl || '';
         newData.flowise_apiKey = config.apiKey || '';
@@ -124,42 +118,62 @@ const ExternalAgentConfig = ({
     const newErrors: Record<string, string> = {};
 
     if (!data.provider) {
-      newErrors.provider = t('edit.configuration.sections.externalIntegration.errors.providerRequired');
+      newErrors.provider = t(
+        'edit.configuration.sections.externalIntegration.errors.providerRequired',
+      );
       return newErrors;
     }
 
     // Validate based on provider
     if (data.provider === 'flowise') {
       if (!data.flowise_apiUrl?.trim()) {
-        newErrors.flowise_apiUrl = t('edit.configuration.sections.externalIntegration.errors.apiUrlRequired');
+        newErrors.flowise_apiUrl = t(
+          'edit.configuration.sections.externalIntegration.errors.apiUrlRequired',
+        );
       }
     } else if (data.provider === 'n8n') {
       if (!data.n8n_webhookUrl?.trim()) {
-        newErrors.n8n_webhookUrl = t('edit.configuration.sections.externalIntegration.errors.webhookUrlRequired');
+        newErrors.n8n_webhookUrl = t(
+          'edit.configuration.sections.externalIntegration.errors.webhookUrlRequired',
+        );
       }
     } else if (data.provider === 'dify') {
       if (!data.dify_apiUrl?.trim()) {
-        newErrors.dify_apiUrl = t('edit.configuration.sections.externalIntegration.errors.apiUrlRequired');
+        newErrors.dify_apiUrl = t(
+          'edit.configuration.sections.externalIntegration.errors.apiUrlRequired',
+        );
       }
       if (!data.dify_apiKey?.trim()) {
-        newErrors.dify_apiKey = t('edit.configuration.sections.externalIntegration.errors.apiKeyRequired');
+        newErrors.dify_apiKey = t(
+          'edit.configuration.sections.externalIntegration.errors.apiKeyRequired',
+        );
       }
     } else if (data.provider === 'openai') {
       if (!data.openai_apiKey?.trim()) {
-        newErrors.openai_apiKey = t('edit.configuration.sections.externalIntegration.errors.apiKeyRequired');
+        newErrors.openai_apiKey = t(
+          'edit.configuration.sections.externalIntegration.errors.apiKeyRequired',
+        );
       }
       if (data.openai_botType === 'assistant' && !data.openai_assistantId?.trim()) {
-        newErrors.openai_assistantId = t('edit.configuration.sections.externalIntegration.errors.assistantIdRequired');
+        newErrors.openai_assistantId = t(
+          'edit.configuration.sections.externalIntegration.errors.assistantIdRequired',
+        );
       }
       if (data.openai_botType === 'chatCompletion' && !data.openai_model?.trim()) {
-        newErrors.openai_model = t('edit.configuration.sections.externalIntegration.errors.modelRequired');
+        newErrors.openai_model = t(
+          'edit.configuration.sections.externalIntegration.errors.modelRequired',
+        );
       }
     } else if (data.provider === 'typebot') {
       if (!data.typebot_url?.trim()) {
-        newErrors.typebot_url = t('edit.configuration.sections.externalIntegration.errors.urlRequired');
+        newErrors.typebot_url = t(
+          'edit.configuration.sections.externalIntegration.errors.urlRequired',
+        );
       }
       if (!data.typebot_typebot?.trim()) {
-        newErrors.typebot_typebot = t('edit.configuration.sections.externalIntegration.errors.typebotIdRequired');
+        newErrors.typebot_typebot = t(
+          'edit.configuration.sections.externalIntegration.errors.typebotIdRequired',
+        );
       }
     }
 
@@ -179,9 +193,11 @@ const ExternalAgentConfig = ({
     return () => clearTimeout(timer);
   }, [validateForm, onValidationChange]);
 
-  const handleProviderConfigChange = (providerConfig: FlowiseConfig | N8NConfig | DifyConfig | OpenAIConfig | TypebotConfig) => {
+  const handleProviderConfigChange = (
+    providerConfig: FlowiseConfig | N8NConfig | DifyConfig | OpenAIConfig | TypebotConfig,
+  ) => {
     const newData: ExternalAgentConfigData = { ...data };
-    
+
     if (data.provider === 'flowise') {
       const flowiseConfig = providerConfig as FlowiseConfig;
       newData.flowise_apiUrl = flowiseConfig.apiUrl;
@@ -209,11 +225,12 @@ const ExternalAgentConfig = ({
       newData.typebot_typebot = typebotConfig.typebot;
       newData.typebot_apiVersion = typebotConfig.apiVersion;
     }
-    
+
     onChange(newData);
   };
 
-  const providerConfig = useMemo((): FlowiseConfig | N8NConfig | DifyConfig | OpenAIConfig | TypebotConfig => {
+  const providerConfig = useMemo(():
+    FlowiseConfig | N8NConfig | DifyConfig | OpenAIConfig | TypebotConfig => {
     if (data.provider === 'flowise') {
       return {
         apiUrl: data.flowise_apiUrl ?? '',
@@ -267,7 +284,6 @@ const ExternalAgentConfig = ({
     data.typebot_apiVersion,
   ]);
 
-
   const handleSaveIntegration = async () => {
     if (!agentId || !data.provider) return;
 
@@ -317,7 +333,7 @@ const ExternalAgentConfig = ({
 
   const providerErrors = useMemo(() => {
     const providerErrs: Record<string, string> = {};
-    
+
     if (data.provider === 'flowise') {
       if (errors.flowise_apiUrl) providerErrs.apiUrl = errors.flowise_apiUrl;
     } else if (data.provider === 'n8n') {
@@ -333,7 +349,7 @@ const ExternalAgentConfig = ({
       if (errors.typebot_url) providerErrs.url = errors.typebot_url;
       if (errors.typebot_typebot) providerErrs.typebot = errors.typebot_typebot;
     }
-    
+
     return providerErrs;
   }, [data.provider, errors]);
 
@@ -412,18 +428,20 @@ const ExternalAgentConfig = ({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-500/10">
-              <Settings className="h-5 w-5 text-purple-500" />
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Settings className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle>{t('edit.configuration.sections.externalIntegration.providerConfig.title')}</CardTitle>
+              <CardTitle>
+                {t('edit.configuration.sections.externalIntegration.providerConfig.title')}
+              </CardTitle>
               <CardDescription>
                 {t('edit.configuration.sections.externalIntegration.providerConfig.subtitle')}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           {/* Security Alert */}
           <div className="flex items-start gap-3 p-4 bg-warning/8 rounded-lg border border-warning/24">
             <AlertCircle className="w-5 h-5 text-warning-foreground mt-0.5 flex-shrink-0" />
@@ -459,7 +477,7 @@ const ExternalAgentConfig = ({
               </Button>
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

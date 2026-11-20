@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Button,
-  Input,
-  Label,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Separator,
-} from '@/components/ui/compat';
-import {
-  Wand,
-  Globe,
-  FileText,
-  Tags,
-  Plus,
-  X,
-} from 'lucide-react';
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { Wand, Globe, FileText, Tags, Plus, X } from 'lucide-react';
 import { CustomTool, CustomToolFormData } from '@/types/ai';
 import {
   KeyValueEditor,
   AdvancedJsonCollapse,
   TestRequestButton,
 } from '@/components/ai_agents/shared';
-
 
 interface CustomToolFormProps {
   tool?: CustomTool;
@@ -135,14 +127,14 @@ export default function CustomToolForm({
     }
   };
 
-  const handleKvChange = (
-    field: 'headers' | 'body_params' | 'query_params' | 'path_params',
-  ) => (next: Record<string, unknown>) => {
-    setFormData(prev => ({ ...prev, [field]: next }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
+  const handleKvChange =
+    (field: 'headers' | 'body_params' | 'query_params' | 'path_params') =>
+    (next: Record<string, unknown>) => {
+      setFormData(prev => ({ ...prev, [field]: next }));
+      if (errors[field]) {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+      }
+    };
 
   const handleAdvancedJsonChange = (
     field: 'values' | 'error_handling',
@@ -182,7 +174,10 @@ export default function CustomToolForm({
 
   const handleTagsChange = (value: string) => {
     setTagsInput(value);
-    const tags = value.split(',').map(tag => tag.trim()).filter(Boolean);
+    const tags = value
+      .split(',')
+      .map(tag => tag.trim())
+      .filter(Boolean);
     setFormData(prev => ({ ...prev, tags }));
   };
 
@@ -286,9 +281,7 @@ export default function CustomToolForm({
   };
 
   const showBodyParams =
-    formData.method === 'POST' ||
-    formData.method === 'PUT' ||
-    formData.method === 'PATCH';
+    formData.method === 'POST' || formData.method === 'PUT' || formData.method === 'PATCH';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -310,7 +303,7 @@ export default function CustomToolForm({
               onChange={e => handleInputChange('name', e.target.value)}
               placeholder={t('form.fields.name.placeholder')}
               disabled={loading}
-              className={errors.name ? 'border-destructive' : ''}
+              aria-invalid={!!errors.name || undefined}
             />
             {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
           </div>
@@ -321,19 +314,19 @@ export default function CustomToolForm({
             </Label>
             <Select
               value={formData.method}
-              onValueChange={(value) => handleInputChange('method', value)}
+              onValueChange={value => value && handleInputChange('method', value)}
               disabled={loading}
             >
-              <SelectTrigger className={errors.method ? 'border-destructive' : ''}>
+              <SelectTrigger aria-invalid={!!errors.method || undefined}>
                 <SelectValue placeholder={t('form.fields.method.placeholder')} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 {HTTP_METHODS.map(method => (
                   <SelectItem key={method} value={method}>
                     {method}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
             {errors.method && <p className="text-sm text-destructive">{errors.method}</p>}
           </div>
@@ -372,7 +365,7 @@ export default function CustomToolForm({
               onChange={e => handleInputChange('endpoint', e.target.value)}
               placeholder={t('form.fields.endpoint.placeholder')}
               disabled={loading}
-              className={errors.endpoint ? 'border-destructive' : ''}
+              aria-invalid={!!errors.endpoint || undefined}
             />
             {errors.endpoint && <p className="text-sm text-destructive">{errors.endpoint}</p>}
           </div>
@@ -439,7 +432,8 @@ export default function CustomToolForm({
                 placeholder={t('form.fields.values.placeholder')}
                 disabled={loading}
                 rows={6}
-                className={`font-mono ${errors.values ? 'border-destructive' : ''}`}
+                className="font-mono"
+                aria-invalid={!!errors.values || undefined}
               />
               {errors.values && <p className="text-sm text-destructive">{errors.values}</p>}
               <p className="text-sm text-muted-foreground">{t('form.fields.values.hint')}</p>
@@ -450,13 +444,18 @@ export default function CustomToolForm({
               <Textarea
                 id="error_handling"
                 value={errorHandlingJson}
-                onChange={e => handleAdvancedJsonChange('error_handling', e.target.value, setErrorHandlingJson)}
+                onChange={e =>
+                  handleAdvancedJsonChange('error_handling', e.target.value, setErrorHandlingJson)
+                }
                 placeholder={t('form.fields.errorHandling.placeholder')}
                 disabled={loading}
                 rows={6}
-                className={`font-mono ${errors.error_handling ? 'border-destructive' : ''}`}
+                className="font-mono"
+                aria-invalid={!!errors.error_handling || undefined}
               />
-              {errors.error_handling && <p className="text-sm text-destructive">{errors.error_handling}</p>}
+              {errors.error_handling && (
+                <p className="text-sm text-destructive">{errors.error_handling}</p>
+              )}
               <p className="text-sm text-muted-foreground">{t('form.fields.errorHandling.hint')}</p>
             </div>
 
@@ -465,13 +464,18 @@ export default function CustomToolForm({
               <Textarea
                 id="input_modes"
                 value={inputModesJson}
-                onChange={e => handleModesJsonChange('input_modes', e.target.value, setInputModesJson)}
+                onChange={e =>
+                  handleModesJsonChange('input_modes', e.target.value, setInputModesJson)
+                }
                 placeholder={t('form.fields.inputModes.placeholder')}
                 disabled={loading}
                 rows={3}
-                className={`font-mono ${errors.input_modes ? 'border-destructive' : ''}`}
+                className="font-mono"
+                aria-invalid={!!errors.input_modes || undefined}
               />
-              {errors.input_modes && <p className="text-sm text-destructive">{errors.input_modes}</p>}
+              {errors.input_modes && (
+                <p className="text-sm text-destructive">{errors.input_modes}</p>
+              )}
               <p className="text-sm text-muted-foreground">{t('form.fields.inputModes.hint')}</p>
             </div>
 
@@ -480,13 +484,18 @@ export default function CustomToolForm({
               <Textarea
                 id="output_modes"
                 value={outputModesJson}
-                onChange={e => handleModesJsonChange('output_modes', e.target.value, setOutputModesJson)}
+                onChange={e =>
+                  handleModesJsonChange('output_modes', e.target.value, setOutputModesJson)
+                }
                 placeholder={t('form.fields.outputModes.placeholder')}
                 disabled={loading}
                 rows={3}
-                className={`font-mono ${errors.output_modes ? 'border-destructive' : ''}`}
+                className="font-mono"
+                aria-invalid={!!errors.output_modes || undefined}
               />
-              {errors.output_modes && <p className="text-sm text-destructive">{errors.output_modes}</p>}
+              {errors.output_modes && (
+                <p className="text-sm text-destructive">{errors.output_modes}</p>
+              )}
               <p className="text-sm text-muted-foreground">{t('form.fields.outputModes.hint')}</p>
             </div>
           </AdvancedJsonCollapse>
@@ -511,9 +520,7 @@ export default function CustomToolForm({
             placeholder={t('form.fields.tags.placeholder')}
             disabled={loading}
           />
-          <p className="text-sm text-muted-foreground">
-            {t('form.fields.tags.hint')}
-          </p>
+          <p className="text-sm text-muted-foreground">{t('form.fields.tags.hint')}</p>
         </div>
       </div>
 

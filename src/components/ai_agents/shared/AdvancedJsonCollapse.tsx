@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/compat';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Settings } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -29,13 +29,9 @@ export default function AdvancedJsonCollapse({
           <Settings className="h-4 w-4" />
           {resolvedTitle}
         </span>
-        <ChevronDown
-          className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`}
-        />
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-4 py-4 space-y-4 border-t">
-        {children}
-      </CollapsibleContent>
+      <CollapsiblePanel className="px-4 py-4 space-y-4 border-t">{children}</CollapsiblePanel>
     </Collapsible>
   );
 }

@@ -1,17 +1,16 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Label,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { GitBranch, Trash2, Plus, Info, CheckSquare, Briefcase } from 'lucide-react';
 
 export interface StageRule {
@@ -60,9 +59,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
   };
 
   const handleUpdatePipeline = (id: string, updates: Partial<PipelineRule>) => {
-    onChange(
-      safeRules.map(rule => (rule.id === id ? { ...rule, ...updates } : rule))
-    );
+    onChange(safeRules.map(rule => (rule.id === id ? { ...rule, ...updates } : rule)));
   };
 
   const handleRemovePipeline = (id: string) => {
@@ -85,12 +82,16 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
     });
   };
 
-  const handleUpdateStage = (pipelineRuleId: string, stageId: string, updates: Partial<StageRule>) => {
+  const handleUpdateStage = (
+    pipelineRuleId: string,
+    stageId: string,
+    updates: Partial<StageRule>,
+  ) => {
     const pipelineRule = safeRules.find(r => r.id === pipelineRuleId);
     if (!pipelineRule) return;
 
     const updatedStages = pipelineRule.stages.map(stage =>
-      stage.id === stageId ? { ...stage, ...updates } : stage
+      stage.id === stageId ? { ...stage, ...updates } : stage,
     );
 
     handleUpdatePipeline(pipelineRuleId, { stages: updatedStages });
@@ -126,15 +127,20 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
 
           return (
             <Card key={rule.id} className="bg-card border-2">
-              <CardContent className="p-5">
+              <CardPanel className="p-5">
                 <div className="space-y-4">
                   {/* Pipeline Selection Header */}
                   <div className="flex items-center gap-3 pb-3 border-b">
                     <GitBranch className="h-5 w-5 text-primary" />
                     <div className="flex-1">
                       <Select
-                        value={rule.pipelineId || ''}
+                        items={availablePipelines.map(pipeline => ({
+                          value: pipeline.id,
+                          label: pipeline.name,
+                        }))}
+                        value={rule.pipelineId || null}
                         onValueChange={value => {
+                          if (value === null) return;
                           const pipeline = availablePipelines.find(p => p.id === value);
                           handleUpdatePipeline(rule.id, {
                             pipelineId: value,
@@ -151,7 +157,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                             }
                           />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           {availablePipelines.map(pipeline => (
                             <SelectItem key={pipeline.id} value={pipeline.id}>
                               <div className="flex items-center gap-2">
@@ -162,7 +168,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                               </div>
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                     <Button
@@ -184,7 +190,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                           <Checkbox
                             id={`allow-tasks-${rule.id}`}
                             checked={rule.allowTasks || false}
-                            onCheckedChange={(checked) =>
+                            onCheckedChange={checked =>
                               handleUpdatePipeline(rule.id, { allowTasks: !!checked })
                             }
                           />
@@ -202,7 +208,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                           <Checkbox
                             id={`allow-services-${rule.id}`}
                             checked={rule.allowServices || false}
-                            onCheckedChange={(checked) =>
+                            onCheckedChange={checked =>
                               handleUpdatePipeline(rule.id, { allowServices: !!checked })
                             }
                           />
@@ -225,12 +231,12 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                               'Instruções gerais (quando e o que fazer):'}
                           </Label>
                           <span className="text-xs text-muted-foreground">
-                            {(rule.generalInstructions?.length || 0)}/500
+                            {rule.generalInstructions?.length || 0}/500
                           </span>
                         </div>
                         <Textarea
                           value={rule.generalInstructions || ''}
-                          onChange={(e) =>
+                          onChange={e =>
                             handleUpdatePipeline(rule.id, {
                               generalInstructions: e.target.value,
                             })
@@ -258,10 +264,15 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                           <div className="flex items-center gap-3">
                             <div className="flex-1">
                               <Select
-                                value={stage.stageId || ''}
+                                items={selectedPipeline.stages.map(stageOption => ({
+                                  value: stageOption.id,
+                                  label: stageOption.name,
+                                }))}
+                                value={stage.stageId || null}
                                 onValueChange={value => {
+                                  if (value === null) return;
                                   const stageData = selectedPipeline.stages.find(
-                                    s => s.id === value
+                                    s => s.id === value,
                                   );
                                   handleUpdateStage(rule.id, stage.id, {
                                     stageId: value,
@@ -277,13 +288,13 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                                     }
                                   />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectPopup>
                                   {selectedPipeline.stages.map(stageOption => (
                                     <SelectItem key={stageOption.id} value={stageOption.id}>
                                       {stageOption.name}
                                     </SelectItem>
                                   ))}
-                                </SelectContent>
+                                </SelectPopup>
                               </Select>
                             </div>
                             <Button
@@ -304,7 +315,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                                   'Regras de atribuição:'}
                               </label>
                               <span className="text-xs text-muted-foreground">
-                                {(stage.instructions?.length || 0)}/255
+                                {stage.instructions?.length || 0}/255
                               </span>
                             </div>
                             <Textarea
@@ -334,8 +345,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                         className="w-full"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        {t('edit.configuration.pipelineRules.addStage') ||
-                          'Adicionar estágio'}
+                        {t('edit.configuration.pipelineRules.addStage') || 'Adicionar estágio'}
                       </Button>
                     </div>
                   )}
@@ -348,19 +358,14 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                     </div>
                   )}
                 </div>
-              </CardContent>
+              </CardPanel>
             </Card>
           );
         })}
       </div>
 
       {/* Add Pipeline Button */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleAddPipeline}
-        className="w-full"
-      >
+      <Button type="button" variant="outline" onClick={handleAddPipeline} className="w-full">
         <Plus className="h-4 w-4 mr-2" />
         {t('edit.configuration.pipelineRules.addPipeline') || 'Adicionar pipeline'}
       </Button>

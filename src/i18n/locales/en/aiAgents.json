@@ -814,7 +814,11 @@
         "addTask": "Add",
         "noTasks": "No tasks configured",
         "taskTitle": "Task title",
-        "noStagesConfigured": "No stages configured. Add stages to create automations."
+        "noStagesConfigured": "No stages configured. Add stages to create automations.",
+        "modalTitle": "Pipeline automation"
+      },
+      "contactEdit": {
+        "modalTitle": "Contact editing"
       }
     },
     "knowledge": {
@@ -1237,6 +1241,19 @@
         "title": "Disconnect {{name}}?",
         "description": "The agent will lose access to {{name}} tools until you connect again.",
         "cancel": "Cancel"
+      },
+      "toasts": {
+        "loadToolsError": "Could not load the available tools",
+        "connectError": "Could not connect to {{name}}",
+        "saveSuccess": "Settings saved",
+        "saveError": "Could not save settings",
+        "disconnectSuccess": "{{name}} disconnected",
+        "disconnectError": "Could not disconnect {{name}}",
+        "loadSheetsError": "Could not load spreadsheets",
+        "loadCalendarsError": "Could not load calendars",
+        "emailRequired": "Please enter an email",
+        "selectSheet": "Please select a spreadsheet",
+        "selectCalendar": "Please select a calendar"
       }
     },
     "mcpServers": {
@@ -1280,7 +1297,8 @@
     "view": "View",
     "saving": "Saving...",
     "continue": "Continue",
-    "skip": "Skip"
+    "skip": "Skip",
+    "more": "More actions"
   },
   "wizardActions": {
     "back": "Back",
@@ -1391,7 +1409,8 @@
         "searchTools": "Search tools...",
         "noToolsAvailable": "No tools available",
         "toolsFromAgents": "Tools from selected LLM agents will appear here",
-        "saveSettings": "Save Settings"
+        "saveSettings": "Save Settings",
+        "expandDescription": "Expand description"
       }
     },
     "step4": {
@@ -1512,7 +1531,9 @@
         "description": "Configure tools and integrations to expand capabilities"
       },
       "viewAllAgents": "View all agents"
-    }
+    },
+    "close": "Close wizard",
+    "creating": "Creating agent..."
   },
   "chat": {
     "newConversation": "New Conversation",
@@ -1528,7 +1549,10 @@
     "typeMessage": "Type your message...",
     "deleteSession": "Delete Session",
     "deleteSessionConfirm": "Are you sure you want to delete this session? This action cannot be undone.",
-    "session": "Session"
+    "session": "Session",
+    "attachFile": "Attach file",
+    "removeFile": "Remove {{name}}",
+    "send": "Send message"
   },
   "mcpServers": {
     "title": "MCP Servers",

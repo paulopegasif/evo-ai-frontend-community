@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Input, Label, Button, Textarea } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -42,12 +45,13 @@ const Step1_Name = ({ data, onChange, onNext }: Step1Props) => {
               {t('wizard.step1.nameLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
+              size="lg"
               placeholder={t('wizard.step1.namePlaceholder')}
               value={data.name}
-              onChange={(e) => onChange({ ...data, name: e.target.value })}
-              className={`h-10 text-sm ${error ? 'border-red-500 focus:border-red-500' : ''}`}
+              onChange={e => onChange({ ...data, name: e.target.value })}
+              aria-invalid={!!error || undefined}
               autoFocus
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter' && !error && data.name) {
                   handleNext();
                 }
@@ -56,12 +60,14 @@ const Step1_Name = ({ data, onChange, onNext }: Step1Props) => {
             {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
           </div>
           <div>
-            <Label className="text-sm mb-1.5 block font-semibold">{t('wizard.step1.descriptionLabel')}</Label>
+            <Label className="text-sm mb-1.5 block font-semibold">
+              {t('wizard.step1.descriptionLabel')}
+            </Label>
             <Textarea
               placeholder={t('wizard.step1.descriptionPlaceholder')}
               value={data.description}
-              onChange={(e) => onChange({ ...data, description: e.target.value })}
-              className="min-h-[100px] text-sm resize-none"
+              onChange={e => onChange({ ...data, description: e.target.value })}
+              className="min-h-[100px] resize-none"
               maxLength={500}
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
@@ -73,11 +79,7 @@ const Step1_Name = ({ data, onChange, onNext }: Step1Props) => {
       </div>
 
       <div className="flex justify-end flex-shrink-0 pt-2 border-t">
-        <Button
-          className="px-6 gap-2"
-          onClick={handleNext}
-          disabled={!data.name || !!error}
-        >
+        <Button className="px-6 gap-2" onClick={handleNext} disabled={!data.name || !!error}>
           {t('actions.continue')}
           <ArrowRight className="h-4 w-4" />
         </Button>

@@ -1,16 +1,15 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { UserRound, Trash2, Plus, Info } from 'lucide-react';
 
 export interface TransferRule {
@@ -31,7 +30,12 @@ interface TransferRulesProps {
   availableTeams?: Array<{ id: string; name: string }>;
 }
 
-const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = [] }: TransferRulesProps) => {
+const TransferRules = ({
+  rules,
+  onChange,
+  availableUsers = [],
+  availableTeams = [],
+}: TransferRulesProps) => {
   const { t } = useLanguage('aiAgents');
 
   const handleAddRule = () => {
@@ -45,9 +49,7 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
   };
 
   const handleUpdateRule = (id: string, updates: Partial<TransferRule>) => {
-    onChange(
-      rules.map(rule => (rule.id === id ? { ...rule, ...updates } : rule))
-    );
+    onChange(rules.map(rule => (rule.id === id ? { ...rule, ...updates } : rule)));
   };
 
   const handleRemoveRule = (id: string) => {
@@ -69,7 +71,7 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
       <div className="space-y-4">
         {rules.map(rule => (
           <Card key={rule.id} className="bg-card">
-            <CardContent className="p-4">
+            <CardPanel className="p-4">
               <div className="space-y-4">
                 {/* Transfer To */}
                 <div className="flex items-center gap-4">
@@ -78,22 +80,33 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                       {t('edit.configuration.transferRules.transferTo') || 'Transferir para:'}
                     </label>
                     <Select
+                      items={[
+                        {
+                          value: 'human',
+                          label: t('edit.configuration.transferRules.aHuman') || 'Humano',
+                        },
+                        {
+                          value: 'team',
+                          label: t('edit.configuration.transferRules.aTeam') || 'Time',
+                        },
+                      ]}
                       value={rule.transferTo}
                       onValueChange={value =>
+                        value !== null &&
                         handleUpdateRule(rule.id, { transferTo: value as 'human' | 'team' })
                       }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectPopup>
                         <SelectItem value="human">
                           {t('edit.configuration.transferRules.aHuman') || 'Humano'}
                         </SelectItem>
                         <SelectItem value="team">
                           {t('edit.configuration.transferRules.aTeam') || 'Time'}
                         </SelectItem>
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
                   </div>
 
@@ -104,8 +117,10 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                         {t('edit.configuration.transferRules.selectUser') || 'Selecione o usuário:'}
                       </label>
                       <Select
-                        value={rule.userId || ''}
+                        items={availableUsers.map(user => ({ value: user.id, label: user.name }))}
+                        value={rule.userId || null}
                         onValueChange={value => {
+                          if (value === null) return;
                           const user = availableUsers.find(u => u.id === value);
                           handleUpdateRule(rule.id, {
                             userId: value,
@@ -114,9 +129,14 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                         }}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t('edit.configuration.transferRules.selectUserPlaceholder') || 'Selecione um usuário'} />
+                          <SelectValue
+                            placeholder={
+                              t('edit.configuration.transferRules.selectUserPlaceholder') ||
+                              'Selecione um usuário'
+                            }
+                          />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           {availableUsers.map(user => (
                             <SelectItem key={user.id} value={user.id}>
                               <div className="flex items-center gap-2">
@@ -127,7 +147,7 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                               </div>
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                   )}
@@ -139,8 +159,10 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                         {t('edit.configuration.transferRules.selectTeam') || 'Selecione o time:'}
                       </label>
                       <Select
-                        value={rule.teamId || ''}
+                        items={availableTeams.map(team => ({ value: team.id, label: team.name }))}
+                        value={rule.teamId || null}
                         onValueChange={value => {
+                          if (value === null) return;
                           const team = availableTeams.find(t => t.id === value);
                           handleUpdateRule(rule.id, {
                             teamId: value,
@@ -149,9 +171,14 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                         }}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t('edit.configuration.transferRules.selectTeamPlaceholder') || 'Selecione um time'} />
+                          <SelectValue
+                            placeholder={
+                              t('edit.configuration.transferRules.selectTeamPlaceholder') ||
+                              'Selecione um time'
+                            }
+                          />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           {availableTeams.map(team => (
                             <SelectItem key={team.id} value={team.id}>
                               <div className="flex items-center gap-2">
@@ -162,7 +189,7 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                               </div>
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                   )}
@@ -181,7 +208,8 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                     htmlFor={`return-${rule.id}`}
                     className="text-sm font-medium cursor-pointer"
                   >
-                    {t('edit.configuration.transferRules.returnOnFinish') || 'Devolver ao finalizar'}
+                    {t('edit.configuration.transferRules.returnOnFinish') ||
+                      'Devolver ao finalizar'}
                   </label>
                 </div>
 
@@ -193,7 +221,7 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                     </label>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">
-                        {(rule.instructions?.length || 0)}/255
+                        {rule.instructions?.length || 0}/255
                       </span>
                       <Button
                         type="button"
@@ -207,27 +235,23 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
                   </div>
                   <Textarea
                     value={rule.instructions || ''}
-                    onChange={e =>
-                      handleUpdateRule(rule.id, { instructions: e.target.value })
+                    onChange={e => handleUpdateRule(rule.id, { instructions: e.target.value })}
+                    placeholder={
+                      t('edit.configuration.transferRules.instructionsPlaceholder') ||
+                      'Quando o cliente quiser falar sobre tal assunto...'
                     }
-                    placeholder={t('edit.configuration.transferRules.instructionsPlaceholder') || 'Quando o cliente quiser falar sobre tal assunto...'}
                     maxLength={255}
                     className="min-h-[100px]"
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardPanel>
           </Card>
         ))}
       </div>
 
       {/* Add Rule Button */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleAddRule}
-        className="w-full"
-      >
+      <Button type="button" variant="outline" onClick={handleAddRule} className="w-full">
         <Plus className="h-4 w-4 mr-2" />
         {t('edit.configuration.transferRules.addRule') || 'Adicionar regra de transferência'}
       </Button>
@@ -236,4 +260,3 @@ const TransferRules = ({ rules, onChange, availableUsers = [], availableTeams = 
 };
 
 export default TransferRules;
-

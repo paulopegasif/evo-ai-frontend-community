@@ -37,7 +37,7 @@ export function AgentAvatar({ agent, size = 'default' }: { agent: Pick<Agent, 'n
 
 export default function AgentCard({ agent, onEdit, onDelete, onExportAsJSON, onShare }: AgentCardProps) {
   const { t } = useLanguage('agents');
-  const meta = getAgentTypeMeta(agent.type);
+  const meta = getAgentTypeMeta(agent.type, t);
 
   return (
     <Card className="group relative flex flex-col gap-4 p-4 transition-colors hover:border-primary/40">

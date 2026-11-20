@@ -1,6 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { HttpMethodBadge } from '@/components/agents/resourceCard';
-import { Badge, Button } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Wand, Loader2, Globe } from 'lucide-react';
 import { CustomTool } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -35,7 +36,6 @@ export default function CustomToolsTable({
   const { can, isReady } = usePermissions();
   const toolsList = tools || [];
 
-
   const columns: TableColumn<CustomTool>[] = [
     {
       key: 'tool',
@@ -50,7 +50,9 @@ export default function CustomToolsTable({
             <Wand className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-sm truncate mb-1">{tool.name || t('table.noName')}</div>
+            <div className="font-medium text-sm truncate mb-1">
+              {tool.name || t('table.noName')}
+            </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <HttpMethodBadge method={tool.method} />
             </div>
@@ -78,9 +80,7 @@ export default function CustomToolsTable({
         <div className="max-w-[200px]">
           <div className="flex items-center gap-1">
             <Globe className="h-3 w-3 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground truncate">
-              {tool.endpoint}
-            </span>
+            <span className="text-sm text-muted-foreground truncate">{tool.endpoint}</span>
           </div>
         </div>
       ),
@@ -126,7 +126,7 @@ export default function CustomToolsTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             onTestTool(tool);
           }}

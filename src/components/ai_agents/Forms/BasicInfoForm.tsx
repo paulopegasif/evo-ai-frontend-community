@@ -1,20 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Input,
-  Label,
-  Textarea,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Badge,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Bot,
   ExternalLink,
@@ -173,7 +169,7 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           {/* Tipo de Agente */}
           <div className="space-y-2">
             <Label htmlFor="agent-type" className="text-sm font-medium">
@@ -195,16 +191,18 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
             ) : (
               // Modo edição/criação
               <Select
-                value={data.type || ''}
-                onValueChange={value => handleInputChange('type', value)}
+                items={agentTypes.map(type => ({ value: type.value, label: type.label }))}
+                value={data.type || null}
+                onValueChange={value => value && handleInputChange('type', value)}
               >
                 <SelectTrigger
-                  className={`w-full ${errors.type ? 'border-red-500 focus:border-red-500' : ''}`}
+                  className="w-full"
+                  aria-invalid={!!errors.type || undefined}
                   id="agent-type"
                 >
                   <SelectValue placeholder={t('basicInfo.type')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {agentTypes.map(type => {
                     const IconComponent = type.icon;
                     return (
@@ -216,7 +214,7 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
                       </SelectItem>
                     );
                   })}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             )}
 
@@ -234,7 +232,7 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
               onChange={e => handleInputChange('name', e.target.value)}
               placeholder={t('basicInfo.namePlaceholder')}
               disabled={isReadOnly}
-              className={errors.name ? 'border-destructive focus:border-destructive' : ''}
+              aria-invalid={!!errors.name || undefined}
             />
             {errors.name && <p className="text-xs text-destructive-foreground">{errors.name}</p>}
             <p className="text-xs text-muted-foreground">{t('basicInfo.namePlaceholder')}</p>
@@ -275,9 +273,11 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
                   onChange={e => handleInputChange('role', e.target.value)}
                   placeholder={t('basicInfo.rolePlaceholder')}
                   disabled={isReadOnly}
-                  className={errors.role ? 'border-destructive focus:border-destructive' : ''}
+                  aria-invalid={!!errors.role || undefined}
                 />
-                {errors.role && <p className="text-xs text-destructive-foreground">{errors.role}</p>}
+                {errors.role && (
+                  <p className="text-xs text-destructive-foreground">{errors.role}</p>
+                )}
                 <p className="text-xs text-muted-foreground">{t('basicInfo.rolePlaceholder')}</p>
               </div>
 
@@ -292,9 +292,11 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
                   onChange={e => handleInputChange('goal', e.target.value)}
                   placeholder={t('basicInfo.goalPlaceholder')}
                   disabled={isReadOnly}
-                  className={errors.goal ? 'border-destructive focus:border-destructive' : ''}
+                  aria-invalid={!!errors.goal || undefined}
                 />
-                {errors.goal && <p className="text-xs text-destructive-foreground">{errors.goal}</p>}
+                {errors.goal && (
+                  <p className="text-xs text-destructive-foreground">{errors.goal}</p>
+                )}
                 <p className="text-xs text-muted-foreground">{t('basicInfo.goalPlaceholder')}</p>
               </div>
             </>
@@ -304,11 +306,11 @@ const BasicInfoForm = ({ mode, data, onChange, onValidationChange }: BasicInfoFo
           {data.type === 'external' && (
             <ProviderSelector
               value={data.provider as any}
-              onChange={(provider) => handleInputChange('provider', provider)}
+              onChange={provider => handleInputChange('provider', provider)}
               disabled={isReadOnly}
             />
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

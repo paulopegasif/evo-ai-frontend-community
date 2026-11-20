@@ -1,4 +1,6 @@
-import { Label, Input } from '@/components/ui/compat';
+import { Input } from '@/components/ui/input';
+import SecretInput from '@/components/integrations/shared/SecretInput';
+import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/hooks/useLanguage';
 
 export interface N8NConfig {
@@ -21,15 +23,17 @@ export const N8NConfigForm = ({
   disabled = false,
 }: N8NConfigFormProps) => {
   const { t } = useLanguage('aiAgents');
-  
+
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="n8n_webhookUrl">{t('edit.configuration.sections.externalIntegration.forms.n8n.webhookUrl')}</Label>
+        <Label htmlFor="n8n_webhookUrl">
+          {t('edit.configuration.sections.externalIntegration.forms.n8n.webhookUrl')}
+        </Label>
         <Input
           id="n8n_webhookUrl"
           value={config.webhookUrl || ''}
-          onChange={(e) => onChange({ ...config, webhookUrl: e.target.value })}
+          onChange={e => onChange({ ...config, webhookUrl: e.target.value })}
           placeholder="https://n8n.example.com/webhook/..."
           disabled={disabled}
         />
@@ -39,21 +43,24 @@ export const N8NConfigForm = ({
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="n8n_basicAuthUser">{t('edit.configuration.sections.externalIntegration.forms.n8n.basicAuthUser')}</Label>
+          <Label htmlFor="n8n_basicAuthUser">
+            {t('edit.configuration.sections.externalIntegration.forms.n8n.basicAuthUser')}
+          </Label>
           <Input
             id="n8n_basicAuthUser"
             value={config.basicAuthUser || ''}
-            onChange={(e) => onChange({ ...config, basicAuthUser: e.target.value })}
+            onChange={e => onChange({ ...config, basicAuthUser: e.target.value })}
             disabled={disabled}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="n8n_basicAuthPass">{t('edit.configuration.sections.externalIntegration.forms.n8n.basicAuthPass')}</Label>
-          <Input
+          <Label htmlFor="n8n_basicAuthPass">
+            {t('edit.configuration.sections.externalIntegration.forms.n8n.basicAuthPass')}
+          </Label>
+          <SecretInput
             id="n8n_basicAuthPass"
-            type="password"
             value={config.basicAuthPass || ''}
-            onChange={(e) => onChange({ ...config, basicAuthPass: e.target.value })}
+            onChange={e => onChange({ ...config, basicAuthPass: e.target.value })}
             disabled={disabled}
           />
         </div>

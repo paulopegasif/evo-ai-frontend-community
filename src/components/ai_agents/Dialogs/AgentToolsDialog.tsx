@@ -1,17 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-  Badge,
-  Checkbox,
-  ScrollArea,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Search,
   Users,
@@ -70,16 +71,16 @@ const getAgentTypeInfo = (type: string, t: (key: string) => string) => {
       color: 'bg-info/12 text-info-foreground border-info/24',
     },
     sequential: {
-      label: 'Sequential',
+      label: t('basicInfo.types.sequential'),
       color: 'bg-warning/12 text-warning-foreground border-warning/24',
     },
     parallel: {
-      label: 'Parallel',
-      color: 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900 dark:text-violet-200 dark:border-violet-700',
+      label: t('basicInfo.types.parallel'),
+      color: 'bg-primary/8 text-primary border-primary/32 dark:bg-primary/16',
     },
     loop: {
-      label: 'Loop',
-      color: 'bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-900 dark:text-indigo-200 dark:border-indigo-700',
+      label: t('basicInfo.types.loop'),
+      color: 'bg-primary/8 text-primary border-primary/32 dark:bg-primary/16',
     },
     task: {
       label: t('basicInfo.types.task'),
@@ -174,96 +175,95 @@ export default function AgentToolsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl h-[70vh] flex flex-col">
+      <DialogPopup className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-info" />
             {t('dialogs.agentTools.title')}
           </DialogTitle>
-          <DialogDescription>{t('tools.agentTools.description')}</DialogDescription>
+          <DialogDescription>{t('tools.agentTools.subtitle')}</DialogDescription>
         </DialogHeader>
+        <DialogPanel>
+          {/* Barra de pesquisa */}
+          <InputGroup>
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder={t('dialogs.agentTools.search')}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </InputGroup>
 
-        {/* Barra de pesquisa */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('dialogs.agentTools.search')}
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+          {/* Lista de agentes */}
+          <div className="flex-1 min-h-0">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-40">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-muted-foreground">{t('messages.loadingAgents')}</span>
+              </div>
+            ) : error ? (
+              <div className="flex items-center justify-center h-40 text-destructive">
+                <p>{error}</p>
+              </div>
+            ) : filteredAgents.length === 0 ? (
+              <div className="flex items-center justify-center h-40 text-muted-foreground">
+                <p>{searchTerm ? t('messages.noResults') : t('tools.agentTools.noAgents')}</p>
+              </div>
+            ) : (
+              <ScrollArea className="h-full">
+                <div className="space-y-2 pr-4">
+                  {filteredAgents.map(agent => {
+                    const typeInfo = getAgentTypeInfo(agent.type, t);
+                    const isSelected = tempSelectedIds.includes(agent.id);
 
-        {/* Lista de agentes */}
-        <div className="flex-1 min-h-0">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-40">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">{t('messages.loadingAgents')}</span>
-            </div>
-          ) : error ? (
-            <div className="flex items-center justify-center h-40 text-destructive">
-              <p>{error}</p>
-            </div>
-          ) : filteredAgents.length === 0 ? (
-            <div className="flex items-center justify-center h-40 text-muted-foreground">
-              <p>{searchTerm ? t('messages.noResults') : t('tools.agentTools.noAgents')}</p>
-            </div>
-          ) : (
-            <ScrollArea className="h-full">
-              <div className="space-y-2 pr-4">
-                {filteredAgents.map(agent => {
-                  const typeInfo = getAgentTypeInfo(agent.type, t);
-                  const isSelected = tempSelectedIds.includes(agent.id);
+                    return (
+                      <div
+                        key={agent.id}
+                        className={cn(
+                          'flex items-center space-x-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer',
+                          isSelected
+                            ? 'ring-2 ring-primary/20 border-primary bg-primary/5 shadow-sm hover:bg-primary/10 hover:shadow-md'
+                            : 'bg-background hover:bg-muted/30 hover:shadow-md hover:border-border/60',
+                        )}
+                        onClick={() => handleAgentToggle(agent.id)}
+                      >
+                        {/* Toggled by the row's onClick */}
+                        <Checkbox checked={isSelected} tabIndex={-1} />
 
-                  return (
-                    <div
-                      key={agent.id}
-                      className={cn(
-                        'flex items-center space-x-3 p-3 rounded-lg border transition-all duration-200 cursor-pointer',
-                        isSelected
-                          ? 'ring-2 ring-primary/20 border-primary bg-primary/5 shadow-sm hover:bg-primary/10 hover:shadow-md'
-                          : 'bg-background hover:bg-muted/30 hover:shadow-md hover:border-border/60',
-                      )}
-                      onClick={() => handleAgentToggle(agent.id)}
-                    >
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={() => {}} // Controlado pelo onClick do div
-                      />
-
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="flex-shrink-0">{getAgentTypeIcon(agent.type)}</div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium truncate">{agent.name}</span>
-                            <Badge className={cn('text-xs border', typeInfo.color)}>
-                              {typeInfo.label}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {agent.description || t('basicInfo.description')}
-                          </p>
-                          {agent.model && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <span className="text-xs text-muted-foreground">
-                                {t('llmConfig.model')}:
-                              </span>
-                              <Badge variant="outline" className="text-xs">
-                                {agent.model}
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="flex-shrink-0">{getAgentTypeIcon(agent.type)}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium truncate">{agent.name}</span>
+                              <Badge className={cn('text-xs border', typeInfo.color)}>
+                                {typeInfo.label}
                               </Badge>
                             </div>
-                          )}
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {agent.description || t('basicInfo.description')}
+                            </p>
+                            {agent.model && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <span className="text-xs text-muted-foreground">
+                                  {t('llmConfig.model')}:
+                                </span>
+                                <Badge variant="outline" className="text-xs">
+                                  {agent.model}
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </ScrollArea>
-          )}
-        </div>
-
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            )}
+          </div>
+        </DialogPanel>
         <DialogFooter>
           <div className="flex items-center gap-2 w-full">
             <div className="flex-1 text-sm text-muted-foreground">
@@ -277,7 +277,7 @@ export default function AgentToolsDialog({
             </Button>
           </div>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

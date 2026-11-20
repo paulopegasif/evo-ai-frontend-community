@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+import { HttpMethodBadge } from '@/components/agents/resourceCard';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Badge,
-  Input,
-  Checkbox,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
 import { Search, Code, Tag, Plus, ExternalLink } from 'lucide-react';
 import { listCustomTools, createCustomTool } from '@/services/agents/customToolsService';
 import { CustomTool, CustomToolFormData } from '@/types/ai';
@@ -128,16 +130,6 @@ const CustomToolsSelectionDialog = ({
     onOpenChange(false);
   };
 
-  const getMethodColor = (method: string) => {
-    const colors: Record<string, string> = {
-      GET: 'bg-success/10 text-success-foreground border-success/30',
-      POST: 'bg-info/10 text-info-foreground border-info/30',
-      PUT: 'bg-warning/10 text-warning-foreground border-warning/30',
-      PATCH: 'bg-orange-500/10 text-orange-600 border-orange-500/30',
-      DELETE: 'bg-destructive/10 text-destructive-foreground border-destructive/30',
-    };
-    return colors[method.toUpperCase()] || 'bg-gray-500/10 text-muted-foreground border-gray-500/30';
-  };
 
   const filteredTools = customTools.filter(tool => {
     if (!searchTerm) return true;
@@ -145,157 +137,146 @@ const CustomToolsSelectionDialog = ({
       tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (tool.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       tool.endpoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (Array.isArray(tool.tags) && tool.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase())))
+      (Array.isArray(tool.tags) &&
+        tool.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase())))
     );
   });
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogPopup className="sm:max-w-[700px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Code className="h-5 w-5 text-purple-500" />
+              <Code className="h-5 w-5 text-primary" />
               {t('dialogs.customTools.title')}
             </DialogTitle>
-            <DialogDescription>
-              {t('tools.customTools.subtitle')}
-            </DialogDescription>
+            <DialogDescription>{t('tools.customTools.subtitle')}</DialogDescription>
           </DialogHeader>
-
-          <div className="flex-1 overflow-hidden flex flex-col">
-            {/* Search + Create */}
-            <div className="p-4 border-b flex gap-2 items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('dialogs.customTools.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+          <DialogPanel>
+            <div className="flex-1 overflow-hidden flex flex-col">
+              {/* Search + Create */}
+              <div className="p-4 border-b flex gap-2 items-center">
+                <InputGroup>
+                  <InputGroupAddon>
+                    <Search />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    placeholder={t('dialogs.customTools.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </InputGroup>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowCreateDialog(true)}
+                  className="gap-2 flex-shrink-0"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t('tools.customTools.create')}
+                </Button>
               </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setShowCreateDialog(true)}
-                className="gap-2 flex-shrink-0"
-              >
-                <Plus className="h-4 w-4" />
-                {t('tools.customTools.create')}
-              </Button>
-            </div>
 
-            {/* Tools List */}
-            <div className="flex-1 overflow-auto p-4">
-              {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-                </div>
-              ) : filteredTools.length > 0 ? (
-                <div className="space-y-3">
-                  {filteredTools.map(tool => {
-                    const isSelected = selectedTools.some(t => t.id === tool.id);
-                    return (
-                      <div
-                        key={tool.id}
-                        className={`border rounded-lg p-4 transition-colors cursor-pointer ${
-                          isSelected
-                            ? 'border-purple-500/50 bg-purple-500/10'
-                            : 'border-border hover:border-purple-500/30'
-                        }`}
-                        onClick={() => toggleTool(tool)}
-                      >
-                        <div className="flex items-start gap-3">
-                          <Checkbox
-                            checked={isSelected}
-                            onCheckedChange={() => toggleTool(tool)}
-                            className="mt-1 data-checked:bg-purple-500 data-checked:border-purple-500"
-                            onClick={e => e.stopPropagation()}
-                          />
+              {/* Tools List */}
+              <div className="flex-1 overflow-auto p-4">
+                {loading ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary/32"></div>
+                  </div>
+                ) : filteredTools.length > 0 ? (
+                  <div className="space-y-3">
+                    {filteredTools.map(tool => {
+                      const isSelected = selectedTools.some(t => t.id === tool.id);
+                      return (
+                        <div
+                          key={tool.id}
+                          className={`border rounded-lg p-4 transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'border-primary/50 bg-primary/10'
+                              : 'border-border hover:border-primary/30'
+                          }`}
+                          onClick={() => toggleTool(tool)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={() => toggleTool(tool)}
+                              className="mt-1 data-checked:bg-primary data-checked:border-primary/32"
+                              onClick={e => e.stopPropagation()}
+                            />
 
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Code className="h-4 w-4 text-purple-500 flex-shrink-0" />
-                              <h3 className="font-medium truncate">{tool.name}</h3>
-                              <Badge
-                                variant="outline"
-                                className={`text-xs ${getMethodColor(tool.method)}`}
-                              >
-                                {tool.method.toUpperCase()}
-                              </Badge>
-                            </div>
-
-                            {tool.description && (
-                              <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
-                                {tool.description}
-                              </p>
-                            )}
-
-                            <div className="flex items-center gap-1 mb-2">
-                              <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                              <span className="text-xs text-muted-foreground font-mono truncate">
-                                {tool.endpoint}
-                              </span>
-                            </div>
-
-                            {Array.isArray(tool.tags) && tool.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {tool.tags.slice(0, 3).map((tag: string) => (
-                                  <Badge key={tag} variant="outline" className="text-xs">
-                                    <Tag className="h-3 w-3 mr-1" />
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {tool.tags.length > 3 && (
-                                  <Badge variant="outline" className="text-xs">
-                                    +{tool.tags.length - 3} {t('dialogs.customTools.more')}
-                                  </Badge>
-                                )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Code className="h-4 w-4 text-primary flex-shrink-0" />
+                                <h3 className="font-medium truncate">{tool.name}</h3>
+                                <HttpMethodBadge method={tool.method} />
                               </div>
-                            )}
+
+                              {tool.description && (
+                                <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
+                                  {tool.description}
+                                </p>
+                              )}
+
+                              <div className="flex items-center gap-1 mb-2">
+                                <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                <span className="text-xs text-muted-foreground font-mono truncate">
+                                  {tool.endpoint}
+                                </span>
+                              </div>
+
+                              {Array.isArray(tool.tags) && tool.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {tool.tags.slice(0, 3).map((tag: string) => (
+                                    <Badge key={tag} variant="outline" className="text-xs">
+                                      <Tag className="h-3 w-3 mr-1" />
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                  {tool.tags.length > 3 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{tool.tags.length - 3} {t('dialogs.customTools.more')}
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-32 text-center">
-                  <Code className="h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">
-                    {searchTerm
-                      ? t('messages.noResults')
-                      : t('tools.customTools.noTools')}
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-32 text-center">
+                    <Code className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">
+                      {searchTerm ? t('messages.noResults') : t('tools.customTools.noTools')}
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-1 mb-3">
+                      {!searchTerm && t('dialogs.customTools.createFirst')}
+                    </p>
+                    {!searchTerm && (
+                      <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        {t('tools.customTools.create')}
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Selected Count */}
+              {selectedTools.length > 0 && (
+                <div className="border-t p-4">
+                  <p className="text-sm text-muted-foreground">
+                    {t('dialogs.customTools.toolsSelected', { count: selectedTools.length })}
                   </p>
-                  <p className="text-muted-foreground text-sm mt-1 mb-3">
-                    {!searchTerm && t('dialogs.customTools.createFirst')}
-                  </p>
-                  {!searchTerm && (
-                    <Button
-                      size="sm"
-                      onClick={() => setShowCreateDialog(true)}
-                      className="gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      {t('tools.customTools.create')}
-                    </Button>
-                  )}
                 </div>
               )}
             </div>
-
-            {/* Selected Count */}
-            {selectedTools.length > 0 && (
-              <div className="border-t p-4">
-                <p className="text-sm text-muted-foreground">
-                  {t('dialogs.customTools.toolsSelected', { count: selectedTools.length })}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter className="border-t p-4">
+          </DialogPanel>
+          <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               {t('actions.cancel')}
             </Button>
@@ -305,25 +286,27 @@ const CustomToolsSelectionDialog = ({
                 : t('dialogs.customTools.addSelected', { count: selectedTools.length })}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
 
       {/* Inline create tool sub-dialog — preserves wizard state */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogPopup className="sm:max-w-[700px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Plus className="h-5 w-5 text-purple-500" />
+              <Plus className="h-5 w-5 text-primary" />
               {t('tools.customTools.create')}
             </DialogTitle>
           </DialogHeader>
-          <CustomToolForm
-            mode="create"
-            loading={isCreatingTool}
-            onSubmit={handleCreateTool}
-            onCancel={() => setShowCreateDialog(false)}
-          />
-        </DialogContent>
+          <DialogPanel>
+            <CustomToolForm
+              mode="create"
+              loading={isCreatingTool}
+              onSubmit={handleCreateTool}
+              onCancel={() => setShowCreateDialog(false)}
+            />
+          </DialogPanel>
+        </DialogPopup>
       </Dialog>
     </>
   );

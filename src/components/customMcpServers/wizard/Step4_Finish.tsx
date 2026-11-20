@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { ArrowLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -52,13 +52,8 @@ export default function Step4_Finish({
 
           <dl className="divide-y rounded-lg border">
             {rows.map(row => (
-              <div
-                key={row.label}
-                className="grid grid-cols-[140px_1fr] gap-3 px-4 py-2.5"
-              >
-                <dt className="text-sm font-semibold text-muted-foreground">
-                  {row.label}
-                </dt>
+              <div key={row.label} className="grid grid-cols-[140px_1fr] gap-3 px-4 py-2.5">
+                <dt className="text-sm font-semibold text-muted-foreground">{row.label}</dt>
                 <dd className="text-sm break-words">{row.value}</dd>
               </div>
             ))}

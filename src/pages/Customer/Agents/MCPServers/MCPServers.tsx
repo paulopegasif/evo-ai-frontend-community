@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Grid3X3, List, Server } from 'lucide-react';
+import { Server } from 'lucide-react';
+import {
+  ResourceGridSkeleton,
+  ResourceViewToggle,
+  type ResourceView,
+} from '@/components/agents/resourceCard';
+import ListSkeleton from '@/components/base/ListSkeleton';
 import EmptyState from '@/components/base/EmptyState';
 import { MCPServer, MCPServersState, MCPServersListParams } from '@/types/ai';
 import { MCPServerCard } from '@/components/mcpServers';
@@ -40,7 +45,7 @@ export default function MCPServers() {
   const { t } = useLanguage('customerMcpServers');
   const { can, isReady: permissionsReady } = usePermissions();
   const [state, setState] = useState<MCPServersState>(INITIAL_STATE);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<ResourceView>('cards');
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [detailsServer, setDetailsServer] = useState<MCPServer | null>(null);
   const hasLoaded = useRef(false);
@@ -68,7 +73,9 @@ export default function MCPServers() {
           servers: response,
           meta: {
             pagination: {
-              page: Math.floor((requestParams.skip || 0) / (requestParams.limit || DEFAULT_PAGE_SIZE)) + 1,
+              page:
+                Math.floor((requestParams.skip || 0) / (requestParams.limit || DEFAULT_PAGE_SIZE)) +
+                1,
               page_size: requestParams.limit || DEFAULT_PAGE_SIZE,
               total: response.length,
               total_pages: Math.ceil(response.length / (requestParams.limit || DEFAULT_PAGE_SIZE)),
@@ -113,11 +120,12 @@ export default function MCPServers() {
     setDetailsModalOpen(true);
   };
 
-
-
   const handlePageChange = (page: number) => {
     const skip = (page - 1) * state.meta.pagination.page_size;
-    setState(prev => ({ ...prev, meta: { ...prev.meta, pagination: { ...prev.meta.pagination, page } } }));
+    setState(prev => ({
+      ...prev,
+      meta: { ...prev.meta, pagination: { ...prev.meta.pagination, page } },
+    }));
     loadServers({ skip });
   };
 
@@ -129,12 +137,12 @@ export default function MCPServers() {
     loadServers({ skip: 0, limit: pageSize });
   };
 
-  const selectedServers = state.servers.filter(server => 
-    state.selectedServerIds.includes(server.id)
+  const selectedServers = state.servers.filter(server =>
+    state.selectedServerIds.includes(server.id),
   );
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       {/* Header */}
       <MCPServersHeader
         totalCount={state.meta.pagination.total}
@@ -144,34 +152,18 @@ export default function MCPServers() {
         onClearSelection={() => setState(prev => ({ ...prev, selectedServerIds: [] }))}
       />
 
-      {/* View Toggle */}
-      <div className="flex items-center justify-end mb-4">
-        <div className="flex items-center">
-          <Button
-            variant={viewMode === 'cards' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('cards')}
-            className="border-0 rounded-r-none"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-            className="border-0 rounded-l-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+      <div className="mb-3 flex items-center justify-end">
+        <ResourceViewToggle value={viewMode} onChange={setViewMode} />
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading.servers')}</div>
-          </div>
+          viewMode === 'cards' ? (
+            <ResourceGridSkeleton />
+          ) : (
+            <ListSkeleton rows={6} />
+          )
         ) : state.servers.length === 0 ? (
           <EmptyState
             icon={Server}
@@ -179,7 +171,7 @@ export default function MCPServers() {
             description={t('emptyState.description')}
           />
         ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {state.servers.map(server => (
               <MCPServerCard
                 key={server.id}
@@ -193,7 +185,7 @@ export default function MCPServers() {
             servers={state.servers}
             selectedServers={selectedServers}
             loading={state.loading.list}
-            onSelectionChange={(servers) =>
+            onSelectionChange={servers =>
               setState(prev => ({
                 ...prev,
                 selectedServerIds: servers.map(s => s.id),
@@ -222,7 +214,6 @@ export default function MCPServers() {
         onOpenChange={setDetailsModalOpen}
         server={detailsServer}
       />
-
     </div>
   );
 }

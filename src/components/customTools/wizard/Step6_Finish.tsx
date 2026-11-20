@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Button, Input, Label } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowLeft, Plus, X, Check, Link2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -55,6 +57,7 @@ export default function Step6_Finish({
             </Label>
             <div className="flex gap-2">
               <Input
+                size="lg"
                 value={newExample}
                 onChange={e => setNewExample(e.target.value)}
                 placeholder={t('form.fields.examples.placeholder')}
@@ -64,7 +67,6 @@ export default function Step6_Finish({
                     handleAdd();
                   }
                 }}
-                className="h-10 text-sm"
               />
               <Button
                 type="button"
@@ -79,10 +81,7 @@ export default function Step6_Finish({
             {data.examples.length > 0 && (
               <div className="space-y-2 mt-3">
                 {data.examples.map((example, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 p-2 bg-muted/30 rounded"
-                  >
+                  <div key={index} className="flex items-center gap-2 p-2 bg-muted/30 rounded">
                     <span className="flex-1 text-sm">{example}</span>
                     <Button
                       type="button"

@@ -179,5 +179,15 @@
   "view": {
     "grid": "Ver em cartões",
     "table": "Ver em tabela"
+  },
+  "typeLabels": {
+    "llm": "Nativo",
+    "external": "Externo",
+    "a2a": "A2A",
+    "sequential": "Agente Sequencial",
+    "parallel": "Agente Paralelo",
+    "loop": "Agente Loop",
+    "workflow": "Workflow",
+    "task": "Tarefa"
   }
 }

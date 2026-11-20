@@ -803,7 +803,11 @@
         "addTask": "Adicionar",
         "noTasks": "Nenhuma tarefa configurada",
         "taskTitle": "Título da tarefa",
-        "noStagesConfigured": "Nenhum estágio configurado. Adicione estágios para criar automações."
+        "noStagesConfigured": "Nenhum estágio configurado. Adicione estágios para criar automações.",
+        "modalTitle": "Automação de Pipelines"
+      },
+      "contactEdit": {
+        "modalTitle": "Edição de Contactos"
       }
     },
     "knowledge": {
@@ -1212,6 +1216,19 @@
         "title": "Desligar {{name}}?",
         "description": "O agente perderá o acesso às ferramentas do {{name}} até voltar a ligar.",
         "cancel": "Cancelar"
+      },
+      "toasts": {
+        "loadToolsError": "Erro ao carregar ferramentas disponíveis",
+        "connectError": "Erro ao ligar a {{name}}",
+        "saveSuccess": "Configurações guardadas com sucesso!",
+        "saveError": "Erro ao guardar configurações",
+        "disconnectSuccess": "{{name}} desligado com sucesso!",
+        "disconnectError": "Erro ao desligar {{name}}",
+        "loadSheetsError": "Erro ao carregar folhas de cálculo",
+        "loadCalendarsError": "Erro ao carregar calendários",
+        "emailRequired": "Por favor, introduza um e-mail",
+        "selectSheet": "Por favor, selecione uma folha de cálculo",
+        "selectCalendar": "Por favor, selecione um calendário"
       }
     },
     "mcpServers": {
@@ -1263,7 +1280,8 @@
     "view": "Visualizar",
     "saving": "Salvando...",
     "continue": "Continuar",
-    "skip": "Pular"
+    "skip": "Pular",
+    "more": "Mais ações"
   },
   "wizardActions": {
     "back": "Voltar",
@@ -1374,7 +1392,8 @@
         "searchTools": "Buscar ferramentas...",
         "noToolsAvailable": "Nenhuma ferramenta disponível",
         "toolsFromAgents": "Ferramentas dos agentes LLM selecionados aparecerão aqui",
-        "saveSettings": "Salvar Configurações"
+        "saveSettings": "Salvar Configurações",
+        "expandDescription": "Expandir descrição"
       }
     },
     "step4": {
@@ -1490,7 +1509,9 @@
         "description": "Configure ferramentas e integrações para expandir capacidades"
       },
       "viewAllAgents": "Ver todos os agentes"
-    }
+    },
+    "close": "Fechar assistente",
+    "creating": "A criar agente..."
   },
   "chat": {
     "newConversation": "Nova Conversa",
@@ -1506,7 +1527,10 @@
     "typeMessage": "Digite sua mensagem...",
     "deleteSession": "Deletar Sessão",
     "deleteSessionConfirm": "Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita.",
-    "session": "Sessão"
+    "session": "Sessão",
+    "attachFile": "Anexar ficheiro",
+    "removeFile": "Remover {{name}}",
+    "send": "Enviar mensagem"
   },
   "mcpServers": {
     "title": "Servidores MCP",

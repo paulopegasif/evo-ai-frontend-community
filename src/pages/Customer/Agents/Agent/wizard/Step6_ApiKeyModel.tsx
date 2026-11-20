@@ -1,16 +1,15 @@
 import { useState, useCallback } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import {
-  Label,
-  Card,
-  CardContent,
-  Button,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Badge,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { ArrowRight, ArrowLeft, Key, Bot, Settings } from 'lucide-react';
 import { ApiKey } from '@/types/agents';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -31,7 +30,14 @@ interface Step6Props {
   onApiKeysReload: () => void;
 }
 
-const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysReload }: Step6Props) => {
+const Step6_ApiKeyModel = ({
+  data,
+  onChange,
+  onNext,
+  onBack,
+  apiKeys,
+  onApiKeysReload,
+}: Step6Props) => {
   const { t } = useLanguage('aiAgents');
   const [errors, setErrors] = useState<{ api_key_id?: string; model?: string }>({});
   const [showApiKeysModal, setShowApiKeysModal] = useState(false);
@@ -70,7 +76,7 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
         <div className="flex-1 space-y-3 overflow-y-auto min-h-0">
           {/* API Key */}
           <Card>
-            <CardContent className="pt-3">
+            <CardPanel className="pt-3">
               <div className="flex items-center gap-2 mb-3">
                 <div className="p-1.5 rounded-lg bg-success/10">
                   <Key className="h-4 w-4 text-success" />
@@ -96,18 +102,24 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
               </div>
 
               <Select
-                value={data.api_key_id || ''}
+                items={apiKeys
+                  .filter(key => key.is_active)
+                  .map(key => ({ value: key.id, label: key.name }))}
+                value={data.api_key_id || null}
                 onValueChange={value => {
+                  if (value === null) return;
                   onChange({ ...data, api_key_id: value });
                   setErrors({ ...errors, api_key_id: undefined });
                 }}
               >
                 <SelectTrigger
-                  className={`w-full h-10 ${errors.api_key_id ? 'border-red-500' : ''}`}
+                  size="lg"
+                  className="w-full"
+                  aria-invalid={!!errors.api_key_id || undefined}
                 >
                   <SelectValue placeholder={t('wizard.step6.apiKeyPlaceholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {apiKeys
                     .filter(key => key.is_active)
                     .map(apiKey => (
@@ -120,15 +132,17 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
                         </div>
                       </SelectItem>
                     ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
-              {errors.api_key_id && <p className="text-xs text-destructive-foreground mt-1">{errors.api_key_id}</p>}
-            </CardContent>
+              {errors.api_key_id && (
+                <p className="text-xs text-destructive-foreground mt-1">{errors.api_key_id}</p>
+              )}
+            </CardPanel>
           </Card>
 
           {/* Model */}
           <Card>
-            <CardContent className="pt-3">
+            <CardPanel className="pt-3">
               <div className="flex items-center gap-2 mb-3">
                 <div className="p-1.5 rounded-lg bg-info/10">
                   <Bot className="h-4 w-4 text-info" />
@@ -139,7 +153,9 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {selectedApiKey
-                      ? t('wizard.step6.modelDescriptionWithProvider', { provider: selectedApiKey.provider.toUpperCase() })
+                      ? t('wizard.step6.modelDescriptionWithProvider', {
+                          provider: selectedApiKey.provider.toUpperCase(),
+                        })
                       : t('wizard.step6.modelDescriptionDefault')}
                   </p>
                 </div>
@@ -147,7 +163,7 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
 
               <ModelSelector
                 value={data.model || ''}
-                onChange={(model) => {
+                onChange={model => {
                   onChange({ ...data, model });
                   setErrors({ ...errors, model: undefined });
                 }}
@@ -159,11 +175,13 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
                 showLabel={false}
                 description={
                   selectedApiKey
-                    ? t('wizard.step6.modelDescriptionWithProvider', { provider: selectedApiKey.provider.toUpperCase() })
+                    ? t('wizard.step6.modelDescriptionWithProvider', {
+                        provider: selectedApiKey.provider.toUpperCase(),
+                      })
                     : t('wizard.step6.modelDescriptionDefault')
                 }
               />
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
 

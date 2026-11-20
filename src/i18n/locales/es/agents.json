@@ -179,5 +179,15 @@
   "view": {
     "grid": "Vista de tarjetas",
     "table": "Vista de tabla"
+  },
+  "typeLabels": {
+    "llm": "Nativo",
+    "external": "Externo",
+    "a2a": "A2A",
+    "sequential": "Agente secuencial",
+    "parallel": "Agente paralelo",
+    "loop": "Agente en bucle",
+    "workflow": "Workflow",
+    "task": "Tarea"
   }
 }
