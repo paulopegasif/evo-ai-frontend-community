@@ -160,7 +160,11 @@
     },
     "pageTitle": "Création d'un nouveau Pipeline",
     "back": "Retour",
-    "newStageColor": "Couleur de l'étape"
+    "newStageColor": "Couleur de l'étape",
+    "teamSelection": {
+      "remove": "Retirer {{name}}"
+    },
+    "removeStage": "Supprimer l’étape {{name}}"
   },
   "createStage": {
     "title": "Créer une Nouvelle Étape",
@@ -347,7 +351,10 @@
     "pipelineActive": "Pipeline actif",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Enregistrer les Modifications"
+    "save": "Enregistrer les Modifications",
+    "teamSelection": {
+      "remove": "Retirer {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Règles d'Automatisation",

@@ -109,7 +109,8 @@
       "label": "Teams",
       "placeholder": "Select teams...",
       "required": "Select at least one team",
-      "noTeams": "No teams available"
+      "noTeams": "No teams available",
+      "remove": "Remove {{name}}"
     },
     "stages": "Stages",
     "stagesCount": "{{count}} stages",
@@ -193,7 +194,8 @@
     },
     "pageTitle": "Creating a new Pipeline",
     "back": "Back",
-    "newStageColor": "Stage color"
+    "newStageColor": "Stage color",
+    "removeStage": "Remove stage {{name}}"
   },
   "createStage": {
     "title": "Create New Stage",
@@ -380,7 +382,8 @@
       "label": "Teams",
       "placeholder": "Select teams...",
       "required": "Select at least one team",
-      "noTeams": "No teams available"
+      "noTeams": "No teams available",
+      "remove": "Remove {{name}}"
     },
     "pipelineActive": "Pipeline active",
     "cancel": "Cancel",

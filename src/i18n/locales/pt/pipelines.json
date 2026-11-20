@@ -187,7 +187,11 @@
     },
     "pageTitle": "Criando um novo Pipeline",
     "back": "Voltar",
-    "newStageColor": "Cor da etapa"
+    "newStageColor": "Cor da etapa",
+    "teamSelection": {
+      "remove": "Remover {{name}}"
+    },
+    "removeStage": "Remover etapa {{name}}"
   },
   "createStage": {
     "title": "Criar Nova Etapa",
@@ -373,7 +377,10 @@
     "pipelineActive": "Pipeline ativo",
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "save": "Salvar Alterações"
+    "save": "Salvar Alterações",
+    "teamSelection": {
+      "remove": "Remover {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Regras de Automação",

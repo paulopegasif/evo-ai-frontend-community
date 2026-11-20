@@ -160,7 +160,11 @@
     },
     "pageTitle": "Creazione di una nuova Pipeline",
     "back": "Indietro",
-    "newStageColor": "Colore della fase"
+    "newStageColor": "Colore della fase",
+    "teamSelection": {
+      "remove": "Rimuovi {{name}}"
+    },
+    "removeStage": "Rimuovi fase {{name}}"
   },
   "createStage": {
     "title": "Crea Nuova Fase",
@@ -346,7 +350,10 @@
     "pipelineActive": "Pipeline attiva",
     "cancel": "Annulla",
     "saving": "Salvataggio...",
-    "save": "Salva Modifiche"
+    "save": "Salva Modifiche",
+    "teamSelection": {
+      "remove": "Rimuovi {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Regole di Automazione",

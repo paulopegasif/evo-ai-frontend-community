@@ -109,7 +109,8 @@
       "label": "Equipes",
       "placeholder": "Selecione as equipes...",
       "required": "Selecione pelo menos uma equipe",
-      "noTeams": "Nenhuma equipe disponível"
+      "noTeams": "Nenhuma equipe disponível",
+      "remove": "Remover {{name}}"
     },
     "stages": "Etapas do Pipeline",
     "stagesCount": "{{count}} etapas",
@@ -193,7 +194,8 @@
     },
     "pageTitle": "Criando um novo Pipeline",
     "back": "Voltar",
-    "newStageColor": "Cor da etapa"
+    "newStageColor": "Cor da etapa",
+    "removeStage": "Remover etapa {{name}}"
   },
   "createStage": {
     "title": "Criar Nova Etapa",
@@ -380,7 +382,8 @@
       "label": "Equipes",
       "placeholder": "Selecione as equipes...",
       "required": "Selecione pelo menos uma equipe",
-      "noTeams": "Nenhuma equipe disponível"
+      "noTeams": "Nenhuma equipe disponível",
+      "remove": "Remover {{name}}"
     },
     "pipelineActive": "Pipeline ativo",
     "cancel": "Cancelar",

@@ -1,26 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
-import { Plus, Trash2, GripVertical, Loader2, X, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { GripVertical, Plus, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import PipelineTeamPicker from './PipelineTeamPicker';
 import { CreatePipelineData, PipelineStage } from '@/types/analytics';
 import TeamsService from '@/services/teams/teamsService';
 import { Team } from '@/types/users/teams';
+
+const PIPELINE_TYPES = ['custom', 'sales', 'support', 'marketing'] as const;
+const VISIBILITIES = ['private', 'public', 'team'] as const;
 
 interface StageFormData {
   name: string;
@@ -356,8 +350,8 @@ export default function CreatePipelineModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-5xl max-h-[85vh] overflow-hidden sm:max-w-5xl">
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+      <DialogPopup className="max-w-5xl">
+        <form onSubmit={handleSubmit} className="contents">
           <DialogHeader>
             <DialogTitle>{t('createPipeline.title')}</DialogTitle>
             <DialogDescription>
@@ -365,12 +359,12 @@ export default function CreatePipelineModal({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex-1 overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
+          <DialogPanel>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
               {/* Coluna da Esquerda - Informações Básicas (2/5) */}
               <div className="lg:col-span-2 space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">{t('createPipeline.basicInfo')}</h3>
+                  <h3 className="mb-4 font-semibold text-base">{t('createPipeline.basicInfo')}</h3>
 
                   {/* Nome */}
                   <div className="space-y-2 mb-4">
@@ -404,20 +398,22 @@ export default function CreatePipelineModal({
                       <Label htmlFor="type">{t('createPipeline.type')}</Label>
                       <Select
                         value={formData.pipeline_type}
-                        onValueChange={(value: 'custom' | 'sales' | 'support' | 'marketing') =>
+                        items={PIPELINE_TYPES.map(v => ({ value: v, label: t(`createPipeline.types.${v}`) }))}
+                onValueChange={(value: 'custom' | 'sales' | 'support' | 'marketing' | null) =>
+                  value != null &&
                           setFormData({ ...formData, pipeline_type: value })
                         }
                         disabled={loading}
                       >
-                        <SelectTrigger id="type">
+                        <SelectTrigger id="type" className="w-full">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           <SelectItem value="custom">{t('createPipeline.types.custom')}</SelectItem>
                           <SelectItem value="sales">{t('createPipeline.types.sales')}</SelectItem>
                           <SelectItem value="support">{t('createPipeline.types.support')}</SelectItem>
                           <SelectItem value="marketing">{t('createPipeline.types.marketing')}</SelectItem>
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
 
@@ -425,84 +421,42 @@ export default function CreatePipelineModal({
                       <Label htmlFor="visibility">{t('createPipeline.visibility')}</Label>
                       <Select
                         value={formData.visibility}
-                        onValueChange={(value: 'private' | 'public' | 'team') =>
+                        items={VISIBILITIES.map(v => ({ value: v, label: t(`createPipeline.visibilities.${v}`) }))}
+                onValueChange={(value: 'private' | 'public' | 'team' | null) =>
+                  value != null &&
                           setFormData({ ...formData, visibility: value })
                         }
                         disabled={loading}
                       >
-                        <SelectTrigger id="visibility">
+                        <SelectTrigger id="visibility" className="w-full">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           <SelectItem value="private">{t('createPipeline.visibilities.private')}</SelectItem>
                           <SelectItem value="public">{t('createPipeline.visibilities.public')}</SelectItem>
                           <SelectItem value="team">{t('createPipeline.visibilities.team')}</SelectItem>
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
 
-                    {/* Team Selection - conditional on visibility === 'team' */}
                     {formData.visibility === 'team' && (
-                      <div className="space-y-2">
-                        <Label>{t('createPipeline.teamSelection.label')}</Label>
-                        {teamIds.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5">
-                            {teamIds.map(id => {
-                              const team = teams.find(t => t.id === id);
-                              return team ? (
-                                <span key={id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground text-xs">
-                                  <Users className="h-3 w-3" />
-                                  {team.name}
-                                  <button type="button" onClick={() => setTeamIds(prev => prev.filter(tid => tid !== id))} className="hover:text-destructive">
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </span>
-                              ) : null;
-                            })}
-                          </div>
-                        )}
-                        <div className="border rounded-lg max-h-36 overflow-y-auto">
-                          {teamsLoading ? (
-                            <div className="flex items-center justify-center py-4">
-                              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                            </div>
-                          ) : teams.length === 0 ? (
-                            <div className="text-center text-sm text-muted-foreground py-4">
-                              {t('createPipeline.teamSelection.noTeams')}
-                            </div>
-                          ) : (
-                            <div className="p-1.5 space-y-0.5">
-                              {teams.map(team => (
-                                <label key={team.id} className="flex items-center gap-2 p-1.5 hover:bg-muted/50 rounded cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={teamIds.includes(team.id)}
-                                    onChange={() => {
-                                      setTeamIds(prev =>
-                                        prev.includes(team.id) ? prev.filter(id => id !== team.id) : [...prev, team.id]
-                                      );
-                                    }}
-                                    className="rounded border-border"
-                                  />
-                                  <span className="text-sm">{team.name}</span>
-                                </label>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        {teamIds.length === 0 && (
-                          <p className="text-xs text-destructive">{t('createPipeline.teamSelection.required')}</p>
-                        )}
-                      </div>
+                      <PipelineTeamPicker
+                        prefix="createPipeline"
+                        teams={teams}
+                        teamIds={teamIds}
+                        loading={teamsLoading}
+                        disabled={loading}
+                        onChange={setTeamIds}
+                      />
                     )}
                   </div>
                 </div>
               </div>
 
               {/* Coluna da Direita - Etapas (3/5) */}
-              <div className="lg:col-span-3 flex flex-col h-full">
+              <div className="flex flex-col lg:col-span-3">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">{t('createPipeline.stages')}</h3>
+                  <h3 className="font-semibold text-base">{t('createPipeline.stages')}</h3>
                   <div className="flex items-center gap-2">
                     {hasManualStageChanges && (
                       <Button
@@ -510,18 +464,18 @@ export default function CreatePipelineModal({
                         variant="ghost"
                         size="sm"
                         onClick={resetToTemplate}
-                        className="text-primary text-xs"
+                        
                       >
                         {t('createPipeline.reset')}
                       </Button>
                     )}
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm tabular-nums">
                       {t('createPipeline.stagesCount', { count: formData.stages?.length || 0 })}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                <div className="space-y-2">
                   {formData.stages?.map((stage, index) => (
                     <div
                       key={`${stage.name}-${index}`}
@@ -529,21 +483,17 @@ export default function CreatePipelineModal({
                       onDragStart={e => handleDragStart(e, index)}
                       onDragOver={handleDragOver}
                       onDrop={e => handleDrop(e, index)}
-                      className={`
-                        flex items-center justify-between p-3 bg-background border border-border rounded-lg
-                        hover:shadow-sm transition-all cursor-move group
-                        ${draggedIndex === index ? 'opacity-50 scale-95' : ''}
-                      `}
+                      className={cn(
+                        'group flex cursor-move items-center justify-between rounded-lg border bg-background p-3 transition-all hover:border-ring/40',
+                        draggedIndex === index && 'scale-95 opacity-50',
+                      )}
                     >
-                      <div className="flex items-center space-x-3 flex-1 min-w-0">
-                        <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <span className="text-xs font-medium text-muted-foreground w-5 text-center">
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <GripVertical className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                        <span className="w-5 text-center font-medium text-muted-foreground text-xs tabular-nums">
                           {index + 1}
                         </span>
-                        <div
-                          className="w-3 h-3 rounded-full ring-1 ring-background"
-                          style={{ backgroundColor: stage.color }}
-                        />
+                        <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
                         <div className="min-w-0 flex-1">
                           <div className="font-medium text-sm truncate">{stage.name}</div>
                           {stage.description && (
@@ -557,17 +507,18 @@ export default function CreatePipelineModal({
                       <Button
                         type="button"
                         variant="ghost"
-                        size="sm"
+                        size="icon-xs"
                         onClick={() => removeStage(index)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive p-1 h-auto"
+                        className="text-muted-foreground opacity-0 transition-opacity hover:text-destructive-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                        aria-label={t('createPipeline.removeStage', { name: stage.name })}
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 />
                       </Button>
                     </div>
                   )) || []}
 
                   {/* Adicionar Nova Etapa - Inline */}
-                  <div className="border-2 border-dashed border-border rounded-lg p-3 bg-muted/30">
+                  <div className="rounded-lg border border-dashed bg-muted/48 p-3 dark:bg-muted/24">
                     <div className="space-y-3">
                       <div className="grid grid-cols-1 gap-2">
                         <Input
@@ -575,7 +526,6 @@ export default function CreatePipelineModal({
                           onChange={e => setNewStage({ ...newStage, name: e.target.value })}
                           placeholder={t('createPipeline.newStageName')}
                           onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addStage())}
-                          className="text-sm"
                         />
 
                         <div className="flex items-center gap-2">
@@ -583,7 +533,8 @@ export default function CreatePipelineModal({
                             type="color"
                             value={newStage.color}
                             onChange={e => setNewStage({ ...newStage, color: e.target.value })}
-                            className="w-8 h-8 border border-border rounded cursor-pointer"
+                            className="size-9 shrink-0 cursor-pointer rounded-lg border bg-background p-1"
+                            aria-label={t('createPipeline.newStageColor')}
                           />
                           <Input
                             value={newStage.description}
@@ -591,16 +542,16 @@ export default function CreatePipelineModal({
                               setNewStage({ ...newStage, description: e.target.value })
                             }
                             placeholder={t('createPipeline.newStageDescription')}
-                            className="text-sm flex-1"
+                            className="flex-1"
                           />
                           <Button
                             type="button"
                             onClick={addStage}
                             disabled={!newStage.name.trim()}
-                            size="sm"
-                            className="px-3"
+                            size="icon"
+                            aria-label={t('createPipeline.addStage')}
                           >
-                            <Plus className="w-4 h-4" />
+                            <Plus />
                           </Button>
                         </div>
                       </div>
@@ -608,32 +559,23 @@ export default function CreatePipelineModal({
                   </div>
 
                   {(!formData.stages || formData.stages.length === 0) && (
-                    <div className="text-center py-6">
-                      <div className="text-muted-foreground text-sm">
-                        {t('createPipeline.addStageMessage')}
-                      </div>
-                    </div>
+                    <p className="py-6 text-center text-muted-foreground text-sm">{t('createPipeline.addStageMessage')}</p>
                   )}
                 </div>
               </div>
             </div>
-          </div>
+          </DialogPanel>
 
-          <DialogFooter className="mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleClose(false)}
-              disabled={loading}
-            >
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => handleClose(false)} disabled={loading}>
               {t('createPipeline.cancel')}
             </Button>
-            <Button type="submit" disabled={loading || !canCreatePipeline}>
-              {loading ? t('createPipeline.creating') : t('createPipeline.create')}
+            <Button type="submit" disabled={!canCreatePipeline} loading={loading}>
+              {t('createPipeline.create')}
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }
