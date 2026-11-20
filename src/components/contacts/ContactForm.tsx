@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-  Avatar,
-  AvatarFallback,
-  Separator,
-  Switch,
-} from '@/components/ui/compat';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import {
   User,
   MapPin,
@@ -126,6 +119,11 @@ export default function ContactForm({
   const [availableLabels, setAvailableLabels] = useState<LabelType[]>([]);
   const [phoneCountry, setPhoneCountry] = useState<Country>('BR'); // Track phone country
   const [customAttributes, setCustomAttributes] = useState<Record<string, unknown>>({});
+
+  const industryItems = (['technology', 'retail', 'health', 'education', 'finance', 'other'] as const).map(value => ({
+    value,
+    label: t(`form.fields.industry.options.${value}`),
+  }));
 
   const countryOptions = [
     { value: 'BR', label: t('form.countries.BR'), name: 'Brazil' },
@@ -379,22 +377,24 @@ export default function ContactForm({
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="contactType">
-              {t('form.fields.type.label')} <span className="text-destructive">*</span>
+              {t('form.fields.type.label')} <span className="text-destructive-foreground">*</span>
             </Label>
             <Select
+              items={[
+                { value: 'person', label: t('form.fields.type.person') },
+                { value: 'company', label: t('form.fields.type.company') },
+              ]}
               value={formData.type}
-              onValueChange={(value: 'person' | 'company' | 'group') =>
-                setFormData(prev => ({ ...prev, type: value }))
-              }
+              onValueChange={value => value && setFormData(prev => ({ ...prev, type: value as 'person' | 'company' | 'group' }))}
               disabled={loading}
             >
-              <SelectTrigger id="contactType">
+              <SelectTrigger id="contactType" className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 <SelectItem value="person">
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
+                    <User className="size-4 text-muted-foreground" />
                     <div>
                       <div className="font-medium">{t('form.fields.type.person')}</div>
                       <div className="text-xs text-muted-foreground">
@@ -405,7 +405,7 @@ export default function ContactForm({
                 </SelectItem>
                 <SelectItem value="company">
                   <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4" />
+                    <Building2 className="size-4 text-muted-foreground" />
                     <div>
                       <div className="font-medium">{t('form.fields.type.company')}</div>
                       <div className="text-xs text-muted-foreground">
@@ -414,12 +414,12 @@ export default function ContactForm({
                     </div>
                   </div>
                 </SelectItem>
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg border">
+        <div className="flex items-center gap-2 rounded-lg border bg-muted/48 p-3 dark:bg-muted/24">
           <div className="flex items-center gap-2">
             {formData.type === 'company' ? (
               <Building2 className="h-4 w-4 text-primary" />
@@ -448,14 +448,9 @@ export default function ContactForm({
 
       {/* Avatar Section */}
       <div className="flex items-center gap-4">
-        <Avatar className="h-16 w-16">
-          {avatarPreview ? (
-            <img src={avatarPreview} alt="Avatar" className="h-16 w-16 rounded-full object-cover" />
-          ) : (
-            <AvatarFallback className="bg-primary/10 text-primary text-lg">
-              {getUserInitials()}
-            </AvatarFallback>
-          )}
+        <Avatar className="size-16 text-lg">
+          {avatarPreview && <AvatarImage src={avatarPreview} alt="Avatar" className="object-cover" />}
+          <AvatarFallback className="bg-primary/10 font-semibold text-primary">{getUserInitials()}</AvatarFallback>
         </Avatar>
 
         <div className="flex gap-2">
@@ -466,7 +461,7 @@ export default function ContactForm({
             onClick={() => document.getElementById('avatar-upload')?.click()}
             disabled={loading}
           >
-            <Upload className="h-4 w-4 mr-2" />
+            <Upload />
             {avatarPreview ? t('form.avatar.change') : t('form.avatar.upload')}
           </Button>
 
@@ -474,11 +469,12 @@ export default function ContactForm({
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={removeAvatar}
               disabled={loading}
+              aria-label={t('form.avatar.remove')}
             >
-              <X className="h-4 w-4" />
+              <X />
             </Button>
           )}
         </div>
@@ -492,12 +488,12 @@ export default function ContactForm({
         />
       </div>
 
-      {errors.avatar && <p className="text-sm text-destructive">{errors.avatar}</p>}
+      {errors.avatar && <p className="text-destructive-foreground text-xs">{errors.avatar}</p>}
 
       {/* Basic Information */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          {isCompany ? <Building2 className="h-5 w-5" /> : <User className="h-5 w-5" />}
+        <h3 className="flex items-center gap-2 font-semibold text-sm">
+          {isCompany ? <Building2 className="size-4 text-muted-foreground" /> : <User className="size-4 text-muted-foreground" />}
           {t('form.sections.basicInfo')}
         </h3>
 
@@ -506,7 +502,7 @@ export default function ContactForm({
           <div className="space-y-2">
             <Label htmlFor="firstName">
               {isCompany ? t('form.fields.companyName.label') : t('form.fields.firstName.label')}{' '}
-              <span className="text-destructive">*</span>
+              <span className="text-destructive-foreground">*</span>
             </Label>
             <Input
               id="firstName"
@@ -518,9 +514,9 @@ export default function ContactForm({
                   : t('form.fields.firstName.placeholder')
               }
               disabled={loading}
-              className={errors.firstName ? 'border-destructive' : ''}
+              aria-invalid={errors.firstName ? true : undefined}
             />
-            {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
+            {errors.firstName && <p className="text-destructive-foreground text-xs">{errors.firstName}</p>}
           </div>
 
           {/* Sobrenome - Somente para pessoa */}
@@ -549,7 +545,7 @@ export default function ContactForm({
               disabled={loading}
               error={!!errors.tax_id}
             />
-            {errors.tax_id && <p className="text-sm text-destructive">{errors.tax_id}</p>}
+            {errors.tax_id && <p className="text-destructive-foreground text-xs">{errors.tax_id}</p>}
           </div>
 
           <div className="space-y-2">
@@ -561,9 +557,9 @@ export default function ContactForm({
               onChange={e => handleInputChange('email', e.target.value)}
               placeholder={t('form.fields.email.placeholder')}
               disabled={loading}
-              className={errors.email ? 'border-destructive' : ''}
+              aria-invalid={errors.email ? true : undefined}
             />
-            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+            {errors.email && <p className="text-destructive-foreground text-xs">{errors.email}</p>}
           </div>
 
           <div className="space-y-2">
@@ -576,7 +572,7 @@ export default function ContactForm({
               error={!!errors.phoneNumber}
               defaultCountry={phoneCountry}
             />
-            {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
+            {errors.phoneNumber && <p className="text-destructive-foreground text-xs">{errors.phoneNumber}</p>}
           </div>
         </div>
       </div>
@@ -587,7 +583,7 @@ export default function ContactForm({
       {!isNew && (
         <>
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
+            <h3 className="flex items-center gap-2 font-semibold text-sm">
               {formData.blocked ? (
                 <ShieldX className="h-5 w-5 text-destructive" />
               ) : (
@@ -630,8 +626,8 @@ export default function ContactForm({
         <>
           {/* Informações da Empresa */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Briefcase className="h-5 w-5" />
+            <h3 className="flex items-center gap-2 font-semibold text-sm">
+              <Briefcase className="size-4 text-muted-foreground" />
               {t('form.sections.companyInfo')}
             </h3>
 
@@ -645,39 +641,29 @@ export default function ContactForm({
                   onChange={e => handleInputChange('website', e.target.value)}
                   placeholder={t('form.fields.website.placeholder')}
                   disabled={loading}
-                  className={errors.website ? 'border-destructive' : ''}
+                  aria-invalid={errors.website ? true : undefined}
                 />
-                {errors.website && <p className="text-sm text-destructive">{errors.website}</p>}
+                {errors.website && <p className="text-destructive-foreground text-xs">{errors.website}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="industry">{t('form.fields.industry.label')}</Label>
                 <Select
-                  value={formData.industry}
-                  onValueChange={value => handleInputChange('industry', value)}
+                  items={industryItems}
+                  value={formData.industry || null}
+                  onValueChange={value => value != null && handleInputChange('industry', String(value))}
                   disabled={loading}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="industry" className="w-full">
                     <SelectValue placeholder={t('form.fields.industry.placeholder')} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="technology">
-                      {t('form.fields.industry.options.technology')}
-                    </SelectItem>
-                    <SelectItem value="retail">
-                      {t('form.fields.industry.options.retail')}
-                    </SelectItem>
-                    <SelectItem value="health">
-                      {t('form.fields.industry.options.health')}
-                    </SelectItem>
-                    <SelectItem value="education">
-                      {t('form.fields.industry.options.education')}
-                    </SelectItem>
-                    <SelectItem value="finance">
-                      {t('form.fields.industry.options.finance')}
-                    </SelectItem>
-                    <SelectItem value="other">{t('form.fields.industry.options.other')}</SelectItem>
-                  </SelectContent>
+                  <SelectPopup>
+                    {industryItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
                 </Select>
               </div>
             </div>
@@ -691,8 +677,8 @@ export default function ContactForm({
       {isPerson && (
         <>
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
+            <h3 className="flex items-center gap-2 font-semibold text-sm">
+              <Building2 className="size-4 text-muted-foreground" />
               {t('form.sections.company')}
             </h3>
 
@@ -709,8 +695,8 @@ export default function ContactForm({
 
       {/* Location */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <MapPin className="h-5 w-5" />
+        <h3 className="flex items-center gap-2 font-semibold text-sm">
+          <MapPin className="size-4 text-muted-foreground" />
           {t('form.sections.location')}
         </h3>
 
@@ -729,20 +715,21 @@ export default function ContactForm({
           <div className="space-y-2">
             <Label htmlFor="country">{t('form.fields.country.label')}</Label>
             <Select
-              value={formData.additional_attributes.country}
-              onValueChange={value => handleInputChange('additional_attributes.country', value)}
+              items={countryOptions}
+              value={formData.additional_attributes.country || null}
+              onValueChange={value => value != null && handleInputChange('additional_attributes.country', String(value))}
               disabled={loading}
             >
-              <SelectTrigger>
+              <SelectTrigger id="country" className="w-full">
                 <SelectValue placeholder={t('form.fields.country.placeholder')} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 {countryOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </div>
         </div>
@@ -769,8 +756,8 @@ export default function ContactForm({
 
       {/* Social Profiles */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Globe className="h-5 w-5" />
+        <h3 className="flex items-center gap-2 font-semibold text-sm">
+          <Globe className="size-4 text-muted-foreground" />
           {t('form.sections.socialProfiles')}
         </h3>
 
@@ -846,8 +833,8 @@ export default function ContactForm({
 
       {/* Labels */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Tag className="h-5 w-5" />
+        <h3 className="flex items-center gap-2 font-semibold text-sm">
+          <Tag className="size-4 text-muted-foreground" />
           {t('form.sections.labels')}
         </h3>
         <ContactLabels
@@ -863,8 +850,8 @@ export default function ContactForm({
 
       {/* Custom Attributes */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Settings className="h-5 w-5" />
+        <h3 className="flex items-center gap-2 font-semibold text-sm">
+          <Settings className="size-4 text-muted-foreground" />
           {t('form.sections.customAttributes')}
         </h3>
         <CustomAttributes
@@ -875,11 +862,11 @@ export default function ContactForm({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-4">
+      <div className="flex gap-3 border-t pt-4">
         {onCancel && (
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             onClick={onCancel}
             disabled={loading}
             className="flex-1"
@@ -887,12 +874,8 @@ export default function ContactForm({
             {t('form.actions.cancel')}
           </Button>
         )}
-        <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/85 text-primary-foreground border-0 font-semibold flex-1">
-          {loading
-            ? t('form.actions.saving')
-            : isNew
-            ? t('form.actions.create')
-            : t('form.actions.save')}
+        <Button type="submit" loading={loading} className="flex-1">
+          {isNew ? t('form.actions.create') : t('form.actions.save')}
         </Button>
       </div>
     </form>

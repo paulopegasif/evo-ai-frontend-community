@@ -125,7 +125,8 @@
       "errors": {
         "invalidType": "Please select an image file.",
         "tooLarge": "File too large. Maximum 5MB."
-      }
+      },
+      "remove": "Remove photo"
     },
     "sections": {
       "basicInfo": "Basic Information",
@@ -448,7 +449,8 @@
   "labels": {
     "add": "Add Label",
     "search": "Search labels...",
-    "empty": "No labels found."
+    "empty": "No labels found.",
+    "remove": "Remove"
   },
   "modal": {
     "title": {
