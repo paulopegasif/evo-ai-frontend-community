@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsAgentsTour } from '@/tours';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/compat';
-import { Grid3X3, List, Users as UsersIcon } from 'lucide-react';
+import { Users as UsersIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import ViewModeToggle from '@/components/users/ViewModeToggle';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 
@@ -374,7 +376,7 @@ export default function Users() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4" data-tour="settings-agents-page">
+    <div className="flex h-full flex-col p-4 md:p-6" data-tour="settings-agents-page">
       <SettingsAgentsTour />
       <div data-tour="settings-agents-header">
         <UsersHeader
@@ -393,33 +395,28 @@ export default function Users() {
       </div>
 
       {/* View Mode Toggle */}
-      <div className="flex items-center justify-end mb-3" data-tour="settings-agents-view-toggle">
-        <div className="flex items-center border rounded-lg">
-          <Button
-            variant={viewMode === 'cards' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('cards')}
-            className="border-0 rounded-r-none"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-            className="border-0 rounded-l-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+      <div className="mb-3 flex items-center justify-end" data-tour="settings-agents-view-toggle">
+        <ViewModeToggle
+          value={viewMode}
+          onValueChange={setViewMode}
+          cardsLabel={t('viewMode.cards')}
+          tableLabel={t('viewMode.table')}
+        />
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto" data-tour="settings-agents-content">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading')}</div>
-          </div>
+          viewMode === 'cards' ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-busy="true">
+              <span className="sr-only">{t('loading')}</span>
+              {Array.from({ length: 8 }, (_, i) => (
+                <Skeleton key={i} className="h-40 rounded-2xl" />
+              ))}
+            </div>
+          ) : (
+            <ListSkeleton />
+          )
         ) : state.users.length === 0 ? (
           <EmptyState
             icon={UsersIcon}
@@ -432,7 +429,7 @@ export default function Users() {
             className="h-full"
           />
         ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {state.users.map(user => (
               <UserCard
                 key={user.id}
@@ -473,7 +470,7 @@ export default function Users() {
 
       {/* Pagination */}
       {state.meta.pagination.total > 0 && (
-        <div className="mt-auto pt-4 border-t border-sidebar-border" data-tour="settings-agents-pagination">
+        <div className="mt-auto border-t pt-4" data-tour="settings-agents-pagination">
           <UsersPagination
             currentPage={state.meta.pagination.page}
             totalPages={state.meta.pagination.total_pages}
