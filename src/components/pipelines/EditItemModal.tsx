@@ -20,8 +20,7 @@ import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-// Command (cmdk) is still served by the compat layer until a coss combobox replaces it.
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/compat';
+import { Command, CommandGroup, CommandGroupLabel, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { initials } from '@/lib/initials';
 import {
   Plus,
@@ -394,47 +393,56 @@ export default function EditItemModal({
                         </PopoverTrigger>
                         <PopoverPopup className="w-[300px] [--viewport-inline-padding:0] **:data-[slot=popover-viewport]:py-0" align="start">
                           <Command
-                            filter={(value, search) => {
-                              const it = catalogServices.find(cs => cs.id === value);
-                              if (!it) return 0;
-                              return it.name.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+                            // The list is filtered here; picking an item must not write its value into the field.
+                            filter={null}
+                            value={service.name}
+                            onValueChange={(value, details) => {
+                              if (details.reason === 'item-press') return;
+                              updateService(index, 'name', value);
                             }}
                           >
-                            <CommandInput
-                              placeholder={t('editItem.searchService') || 'Buscar ou digitar serviço...'}
-                              value={service.name}
-                              onValueChange={value => updateService(index, 'name', value)}
-                            />
-                            <CommandList>
-                              <CommandEmpty>
-                                {service.name ? (
-                                  <button
-                                    type="button"
-                                    className="w-full cursor-pointer rounded px-2 py-1.5 text-left text-sm hover:bg-accent"
-                                    onClick={() => setOpenServicePopover(null)}
-                                  >
-                                    {t('editItem.useCustomService', { name: service.name })}
-                                  </button>
-                                ) : (
-                                  <span>{t('editItem.noServicesFound') || 'Nenhum serviço encontrado'}</span>
-                                )}
-                              </CommandEmpty>
-                              {catalogServices.length > 0 && (
-                                <CommandGroup heading={t('editItem.catalogServices') || 'Catálogo de serviços'}>
-                                  {catalogServices.map(cs => (
-                                    <CommandItem key={cs.id} value={cs.id} onSelect={() => selectCatalogService(index, cs)}>
-                                      <Check className={cn('mr-2 size-4', service.name === cs.name ? 'opacity-100' : 'opacity-0')} />
-                                      <div className="flex flex-col">
-                                        <span>{cs.name}</span>
-                                        <span className="text-muted-foreground text-xs">
-                                          {cs.currency} {cs.formatted_default_value}
-                                        </span>
-                                      </div>
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              )}
-                            </CommandList>
+                            <CommandInput placeholder={t('editItem.searchService') || 'Buscar ou digitar serviço...'} />
+                            {(() => {
+                              const query = service.name.trim().toLowerCase();
+                              const matches = catalogServices.filter(cs => cs.name.toLowerCase().includes(query));
+                              if (matches.length === 0) {
+                                return (
+                                  <div className="border-t p-1.5 text-sm">
+                                    {service.name ? (
+                                      <button
+                                        type="button"
+                                        className="w-full cursor-pointer rounded-md px-2 py-1.5 text-left hover:bg-accent"
+                                        onClick={() => setOpenServicePopover(null)}
+                                      >
+                                        {t('editItem.useCustomService', { name: service.name })}
+                                      </button>
+                                    ) : (
+                                      <p className="px-2 py-4 text-center text-muted-foreground">
+                                        {t('editItem.noServicesFound') || 'Nenhum serviço encontrado'}
+                                      </p>
+                                    )}
+                                  </div>
+                                );
+                              }
+                              return (
+                                <CommandList className="max-h-64 border-t">
+                                  <CommandGroup>
+                                    <CommandGroupLabel>{t('editItem.catalogServices') || 'Catálogo de serviços'}</CommandGroupLabel>
+                                    {matches.map(cs => (
+                                      <CommandItem key={cs.id} value={cs.id} onClick={() => selectCatalogService(index, cs)}>
+                                        <Check className={cn('size-4', service.name === cs.name ? 'opacity-100' : 'opacity-0')} />
+                                        <div className="flex flex-col">
+                                          <span>{cs.name}</span>
+                                          <span className="text-muted-foreground text-xs tabular-nums">
+                                            {cs.currency} {cs.formatted_default_value}
+                                          </span>
+                                        </div>
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              );
+                            })()}
                           </Command>
                         </PopoverPopup>
                       </Popover>
