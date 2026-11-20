@@ -1,5 +1,7 @@
 import { memo, useMemo, useState } from 'react';
-import { Badge, Button, Card, CardContent } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
   Activity,
   ChevronDown,
@@ -70,8 +72,8 @@ function ContactEventCardImpl({ event }: ContactEventCardProps) {
   const hasTraits = hasKeys(event.traits);
 
   return (
-    <Card className="border border-border bg-card transition-colors hover:bg-accent/30">
-      <CardContent className="p-4">
+    <Card className="transition-colors hover:bg-accent/30">
+      <CardPanel className="p-4">
         <div className="flex items-start gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
             <Icon className="h-4 w-4 text-muted-foreground" />
@@ -154,7 +156,7 @@ function ContactEventCardImpl({ event }: ContactEventCardProps) {
             )}
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 }

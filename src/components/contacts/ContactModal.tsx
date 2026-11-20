@@ -1,11 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  ScrollArea,
-} from '@/components/ui/compat';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Contact, ContactFormData } from '@/types/contacts';
 import ContactForm from './ContactForm';
 
@@ -38,14 +32,12 @@ export default function ContactModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">
-            {isNew ? t('form.title.new') : t('form.title.edit')}
-          </DialogTitle>
+      <DialogPopup className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{isNew ? t('form.title.new') : t('form.title.edit')}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6 py-4">
+        <DialogPanel>
           <ContactForm
             contact={contact}
             isNew={isNew}
@@ -53,8 +45,8 @@ export default function ContactModal({
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />
-        </ScrollArea>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }
