@@ -629,7 +629,14 @@ const ToolsDialog = ({ open, onOpenChange, onSelectTools, editingTool }: ToolsDi
                     {t('dialogs.toolsDialog.filterByCategory')}
                   </Label>
                   <Select
-                    value={selectedCategoryFilter || undefined}
+                    items={[
+                      { value: 'clear', label: t('dialogs.toolsDialog.allCategories') },
+                      ...toolCategories.map(category => ({
+                        value: category.id,
+                        label: category.name,
+                      })),
+                    ]}
+                    value={selectedCategoryFilter || null}
                     onValueChange={value => {
                       const newValue = value === 'clear' ? '' : value || '';
                       setSelectedCategoryFilter(newValue);
