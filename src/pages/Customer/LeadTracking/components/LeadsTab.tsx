@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Download, Search, Users } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tabs, TabsList, TabsTab } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { BaseTable, type TableColumn } from '@/components/base';
 import BasePagination from '@/components/base/BasePagination';
@@ -25,8 +29,8 @@ const STEPS: { key: LeadStep | 'all'; label: string }[] = [
 ];
 
 const outcome = (lead: LeadRow) => {
-  if (lead.won) return <Badge className="bg-success/15 text-success-foreground border-success/30" variant="outline">Venda</Badge>;
-  if (lead.attended) return <Badge variant="outline">Compareceu</Badge>;
+  if (lead.won) return <Badge variant="success">Venda</Badge>;
+  if (lead.attended) return <Badge variant="info">Compareceu</Badge>;
   if (lead.scheduled) return <Badge variant="outline">Agendou</Badge>;
   return <span className="text-muted-foreground text-xs">{DASH}</span>;
 };
@@ -172,45 +176,37 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
           </CardDescription>
         </div>
         <Button variant="outline" size="sm" onClick={exportCsv}>
-          <Download className="h-4 w-4 mr-2" />
+          <Download />
           Exportar CSV
         </Button>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardPanel className="space-y-3">
         <div className="flex flex-col md:flex-row md:items-center gap-2">
-          <div className="relative md:w-80 shrink-0">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
+          <InputGroup className="shrink-0 md:w-80">
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
+            <InputGroupInput
+              type="search"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Buscar por nome, telefone ou campanha"
-              className="pl-8 h-9"
               aria-label="Buscar leads"
             />
-          </div>
-          <div className="flex items-center gap-1 overflow-x-auto" role="tablist" aria-label="Situação no funil">
-            {STEPS.map(({ key, label }) => {
-              const count = data?.meta.step_counts?.[key];
-              const active = step === key;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setStep(key)}
-                  className={`shrink-0 inline-flex items-center gap-1.5 rounded-md px-2.5 h-8 text-xs font-medium border transition-colors ${
-                    active
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'border-border text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  }`}
-                >
-                  {label}
-                  {count != null && <span className={active ? 'opacity-80' : 'opacity-60'}>{count}</span>}
-                </button>
-              );
-            })}
-          </div>
+          </InputGroup>
+          <Tabs value={step} onValueChange={(value) => setStep(value as LeadStep | 'all')} className="min-w-0 overflow-x-auto">
+            <TabsList aria-label="Situação no funil">
+              {STEPS.map(({ key, label }) => {
+                const count = data?.meta.step_counts?.[key];
+                return (
+                  <TabsTab key={key} value={key}>
+                    {label}
+                    {count != null && <span className="text-muted-foreground text-xs tabular-nums">{count}</span>}
+                  </TabsTab>
+                );
+              })}
+            </TabsList>
+          </Tabs>
         </div>
         <BaseTable
           data={data?.leads ?? []}
@@ -237,7 +233,7 @@ const LeadsTab = ({ params }: LeadsTabProps) => {
             itemsPerPageOptions={[25, 50, 100, 200]}
           />
         )}
-      </CardContent>
+      </CardPanel>
       <LeadJourneySheet contactId={selected} onClose={() => setSelected(null)} />
     </Card>
   );

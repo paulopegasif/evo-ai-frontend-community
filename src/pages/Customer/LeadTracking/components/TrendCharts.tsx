@@ -1,18 +1,7 @@
 import { BarChart3, Megaphone, MessageCircle } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from '@/components/ui/compat';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/compat';
 import type { TimelineDataPoint, TimelineGranularity } from '@/types/leadTracking';
 import { AXIS_PROPS, COMPARED_OPACITY, SERIES } from './chartConfig';
 import { compactCurrency, compactNumber, formatCurrency } from './format';
@@ -86,7 +75,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
           </CardTitle>
           <CardDescription>Novos leads, consultas marcadas e comparecimentos</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardPanel>
           <ChartContainer config={volumeConfig} className="h-[260px] w-full">
             <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid vertical={false} strokeOpacity={0.4} />
@@ -120,7 +109,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
               )}
             </LineChart>
           </ChartContainer>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {showSpend && (
@@ -133,7 +122,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
               </CardTitle>
               <CardDescription>Gasto importado da Meta Ads</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardPanel>
               <ChartContainer config={spendConfig} className="h-[260px] w-full">
                 <BarChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }} barGap={2}>
                   <CartesianGrid vertical={false} strokeOpacity={0.4} />
@@ -166,7 +155,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
                   )}
                 </BarChart>
               </ChartContainer>
-            </CardContent>
+            </CardPanel>
           </Card>
 
           <Card>
@@ -177,7 +166,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
               </CardTitle>
               <CardDescription>Resultado medido pela Meta nos anúncios de mensagem</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardPanel>
               <ChartContainer config={conversationsConfig} className="h-[260px] w-full">
                 <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                   <CartesianGrid vertical={false} strokeOpacity={0.4} />
@@ -208,7 +197,7 @@ const TrendCharts = ({ timeline, previousTimeline, granularity, showSpend }: Tre
                   )}
                 </LineChart>
               </ChartContainer>
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
       )}
