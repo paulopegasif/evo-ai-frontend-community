@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -9,14 +10,20 @@ vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('@/components/ui/compat', () => ({
+vi.mock('@/components/ui/button', () => ({
   Button: ({ children, onClick, ...props }: any) => (
     <button type="button" onClick={onClick} {...props}>{children}</button>
   ),
+}));
+
+vi.mock('@/components/ui/tooltip', () => ({
   TooltipProvider: ({ children }: any) => <>{children}</>,
   Tooltip: ({ children }: any) => <>{children}</>,
-  TooltipTrigger: ({ children }: any) => <>{children}</>,
+  // Base UI triggers render their `render` element; keep that so the real button shows up.
+  TooltipTrigger: ({ children, render }: any) =>
+    render ? React.cloneElement(render, {}, children ?? render.props.children) : <>{children}</>,
   TooltipContent: ({ children }: any) => <>{children}</>,
+  TooltipPopup: ({ children }: any) => <>{children}</>,
 }));
 
 vi.mock('./MenuItem', () => ({
