@@ -470,9 +470,9 @@ export function SendMessagePanel({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const inboxItems = filteredInboxes.map((inbox: any) => ({
+  const inboxItems = (filteredInboxes as Array<{ id: string | number; name: string }>).map(inbox => ({
     value: String(inbox.id),
-    label: inbox.name as string,
+    label: inbox.name,
   }));
   const templateItems = templates.map(template => ({
     value: String(template.id),

@@ -1,16 +1,19 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { ReactElement, ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Settings } from 'lucide-react';
 import MenuItem from './MenuItem';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 
+type MockProps = { children?: ReactNode; render?: ReactElement };
+
 vi.mock('@/components/ui/tooltip', () => ({
-  Tooltip: ({ children }: any) => <>{children}</>,
-  TooltipTrigger: ({ children, render }: any) => render ?? <div>{children}</div>,
-  TooltipContent: ({ children }: any) => <div data-testid="tooltip-content">{children}</div>,
-  TooltipPopup: ({ children }: any) => <div data-testid="tooltip-content">{children}</div>,
-  TooltipProvider: ({ children }: any) => <>{children}</>,
+  Tooltip: ({ children }: MockProps) => <>{children}</>,
+  TooltipTrigger: ({ children, render }: MockProps) => render ?? <div>{children}</div>,
+  TooltipContent: ({ children }: MockProps) => <div data-testid="tooltip-content">{children}</div>,
+  TooltipPopup: ({ children }: MockProps) => <div data-testid="tooltip-content">{children}</div>,
+  TooltipProvider: ({ children }: MockProps) => <>{children}</>,
 }));
 
 const settingsItem: MenuItemType = {

@@ -1,5 +1,8 @@
-// Chart wrapper for recharts (shadcn/ui chart, MIT), formerly served by
-// @evoapi/design-system. Colors come from --chart-* theme tokens.
+// Chart wrapper for recharts (shadcn/ui chart, MIT). Colors come from the
+// --chart-* theme tokens.
+// Tooltip/legend payloads carry each caller's own row type, so they stay
+// loosely typed here as in upstream shadcn.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import { ResponsiveContainer, Tooltip, Legend } from "recharts";
 

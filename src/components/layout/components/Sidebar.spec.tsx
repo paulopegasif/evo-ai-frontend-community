@@ -6,6 +6,8 @@ import { Settings, Cog } from 'lucide-react';
 import Sidebar from './Sidebar';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 
+type MockProps = { children?: React.ReactNode; render?: React.ReactElement };
+
 vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key }),
 }));
@@ -17,13 +19,13 @@ vi.mock('@/components/ui/button', () => ({
 }));
 
 vi.mock('@/components/ui/tooltip', () => ({
-  TooltipProvider: ({ children }: any) => <>{children}</>,
-  Tooltip: ({ children }: any) => <>{children}</>,
+  TooltipProvider: ({ children }: MockProps) => <>{children}</>,
+  Tooltip: ({ children }: MockProps) => <>{children}</>,
   // Base UI triggers render their `render` element; keep that so the real button shows up.
-  TooltipTrigger: ({ children, render }: any) =>
+  TooltipTrigger: ({ children, render }: MockProps) =>
     render ? React.cloneElement(render, {}, children ?? render.props.children) : <>{children}</>,
-  TooltipContent: ({ children }: any) => <>{children}</>,
-  TooltipPopup: ({ children }: any) => <>{children}</>,
+  TooltipContent: ({ children }: MockProps) => <>{children}</>,
+  TooltipPopup: ({ children }: MockProps) => <>{children}</>,
 }));
 
 vi.mock('./MenuItem', () => ({
