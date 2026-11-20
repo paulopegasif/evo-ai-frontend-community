@@ -1,4 +1,5 @@
-import { Badge, Card, CardContent } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardPanel } from '@/components/ui/card';
 import { Wrench } from 'lucide-react';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -16,7 +17,7 @@ export default function ToolCard({ tool, onClick }: ToolCardProps) {
       className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
       onClick={() => onClick(tool)}
     >
-      <CardContent className="p-4">
+      <CardPanel className="p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -99,7 +100,7 @@ export default function ToolCard({ tool, onClick }: ToolCardProps) {
             count: Array.isArray(tool.examples) ? tool.examples.length : 0,
           })}
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 }

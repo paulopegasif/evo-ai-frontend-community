@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { Wrench, Eye } from 'lucide-react';
 import { Tool } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';

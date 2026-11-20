@@ -633,7 +633,10 @@
     },
     "contact": "Contacto",
     "contactPlaceholder": "Buscar un contacto...",
-    "noContactsFound": "No se encontraron contactos"
+    "noContactsFound": "No se encontraron contactos",
+    "clearContact": "Borrar contacto",
+    "loadingChannels": "Cargando canales...",
+    "selectChannel": "Selecciona un canal"
   },
   "events": {
     "timeline": {

@@ -1,11 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  ScrollArea,
-} from '@/components/ui/compat';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { MCPServer, MCPServerFormData } from '@/types/ai';
 import MCPServerForm from './MCPServerForm';
 
@@ -54,14 +48,12 @@ export default function MCPServerModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">
-            {getModalTitle()}
-          </DialogTitle>
+      <DialogPopup className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{getModalTitle()}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6 py-4">
+        <DialogPanel>
           <MCPServerForm
             server={server as MCPServer}
             mode={mode}
@@ -70,8 +62,8 @@ export default function MCPServerModal({
             onCancel={handleCancel}
             onChange={handleServerFormChange}
           />
-        </ScrollArea>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }

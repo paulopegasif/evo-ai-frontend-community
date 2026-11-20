@@ -641,7 +641,10 @@
     },
     "contact": "Contact",
     "contactPlaceholder": "Search for a contact...",
-    "noContactsFound": "No contacts found"
+    "noContactsFound": "No contacts found",
+    "clearContact": "Clear contact",
+    "loadingChannels": "Loading channels...",
+    "selectChannel": "Select a channel"
   },
   "events": {
     "timeline": {

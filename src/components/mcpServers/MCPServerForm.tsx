@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-  Separator,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { Server, Settings, Wrench } from 'lucide-react';
 import { MCPServer, MCPServerFormData } from '@/types/ai';
 
@@ -145,47 +139,48 @@ export default function MCPServerForm({
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">
-              {t('form.labels.name')} <span className="text-destructive">*</span>
-            </Label>
+          <Field invalid={!!errors.name}>
+            <FieldLabel htmlFor="name">
+              {t('form.labels.name')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
             <Input
               id="name"
               value={formData.name}
               onChange={e => handleInputChange('name', e.target.value)}
               placeholder={t('form.placeholders.name')}
               disabled={loading}
-              className={errors.name ? 'border-destructive' : ''}
+              aria-invalid={errors.name ? true : undefined}
             />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-          </div>
+            {errors.name && <FieldError match>{errors.name}</FieldError>}
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="type">
-              {t('form.labels.type')} <span className="text-destructive">*</span>
-            </Label>
+          <Field invalid={!!errors.type}>
+            <FieldLabel htmlFor="type">
+              {t('form.labels.type')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
             <Select
-              value={formData.type}
-              onValueChange={value => handleInputChange('type', value)}
+              items={serverTypeOptions}
+              value={formData.type || null}
+              onValueChange={value => handleInputChange('type', value == null ? '' : String(value))}
               disabled={loading}
             >
-              <SelectTrigger className={errors.type ? 'border-destructive' : ''}>
+              <SelectTrigger id="type" aria-invalid={errors.type ? true : undefined}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup alignItemWithTrigger={false}>
                 {serverTypeOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
-            {errors.type && <p className="text-sm text-destructive">{errors.type}</p>}
-          </div>
+            {errors.type && <FieldError match>{errors.type}</FieldError>}
+          </Field>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="description">{t('form.labels.description')}</Label>
+        <Field>
+          <FieldLabel htmlFor="description">{t('form.labels.description')}</FieldLabel>
           <Textarea
             id="description"
             value={formData.description}
@@ -194,7 +189,7 @@ export default function MCPServerForm({
             disabled={loading}
             rows={3}
           />
-        </div>
+        </Field>
       </div>
 
       <Separator />
@@ -206,28 +201,29 @@ export default function MCPServerForm({
           {t('form.sections.configuration')}
         </h3>
 
-        <div className="space-y-2">
-          <Label htmlFor="config_type">
-            {t('form.labels.configType')} <span className="text-destructive">*</span>
-          </Label>
+        <Field invalid={!!errors.config_type}>
+          <FieldLabel htmlFor="config_type">
+            {t('form.labels.configType')} <span className="text-destructive-foreground">*</span>
+          </FieldLabel>
           <Select
-            value={formData.config_type}
-            onValueChange={value => handleInputChange('config_type', value)}
+            items={configTypeOptions}
+            value={formData.config_type || null}
+            onValueChange={value => handleInputChange('config_type', value == null ? '' : String(value))}
             disabled={loading}
           >
-            <SelectTrigger className={errors.config_type ? 'border-destructive' : ''}>
+            <SelectTrigger id="config_type" aria-invalid={errors.config_type ? true : undefined}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup alignItemWithTrigger={false}>
               {configTypeOptions.map(option => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-          {errors.config_type && <p className="text-sm text-destructive">{errors.config_type}</p>}
-        </div>
+          {errors.config_type && <FieldError match>{errors.config_type}</FieldError>}
+        </Field>
       </div>
 
       <Separator />
@@ -238,7 +234,7 @@ export default function MCPServerForm({
           <Wrench className="h-5 w-5" />
           {t('form.sections.tools')}
         </h3>
-        <div className="p-4 bg-muted/30 rounded-lg border border-dashed">
+        <div className="rounded-lg border border-dashed bg-muted/24 p-4">
           <div className="text-center">
             <Wrench className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
@@ -264,11 +260,7 @@ export default function MCPServerForm({
             {t('form.buttons.cancel')}
           </Button>
         )}
-        <Button
-          type="submit"
-          disabled={loading}
-          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-0 font-semibold"
-        >
+        <Button type="submit" disabled={loading} className="flex-1">
           {loading
             ? t('form.buttons.saving')
             : mode === 'create'
