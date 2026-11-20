@@ -1,24 +1,21 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { type ChangeEvent, useState, useEffect, useCallback, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Button,
-  Switch,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/compat';
 import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X } from 'lucide-react';
+import { PlugZap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import {
+  SecretField,
+  SelectField,
+  SettingsHeader,
+  SettingsSaveBar,
+  SettingsSkeleton,
+  TextField,
+  ToggleGroupBox,
+  ToggleRow,
+} from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -144,7 +141,7 @@ export default function SmtpConfig() {
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<EmailFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(emailConfigSchema) as any,
@@ -242,249 +239,187 @@ export default function SmtpConfig() {
     setSecretModified((prev) => ({ ...prev, [fieldName]: true }));
   };
 
-  const renderSecretField = (fieldName: string, label: string, placeholder: string) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={fieldName}>{label}</Label>
-        {!secretModified[fieldName] && (
-          secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
-              <Lock className="h-3 w-3" />
-              {t('email.secretConfigured')}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t('email.secretNotConfigured')}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={fieldName}
-          type="password"
-          placeholder={placeholder}
-          {...register(fieldName as EmailFieldKey, {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleSecretChange(fieldName, e.target.value),
-          })}
-        />
-        {secretConfigured[fieldName] && !secretModified[fieldName] && (
-          <button
-            type="button"
-            onClick={() => handleClearSecret(fieldName)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t('email.clearSecret')}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-    </div>
+  const fieldErrors = errors as Record<string, { message?: string } | undefined>;
+
+  const secretField = (fieldName: string, label: string, placeholder: string) => (
+    <SecretField
+      id={fieldName}
+      label={label}
+      placeholder={placeholder}
+      registration={register(fieldName as EmailFieldKey, {
+        onChange: (e: ChangeEvent<HTMLInputElement>) => handleSecretChange(fieldName, e.target.value),
+      })}
+      configured={Boolean(secretConfigured[fieldName])}
+      modified={Boolean(secretModified[fieldName])}
+      onClear={() => handleClearSecret(fieldName)}
+      configuredLabel={t('email.secretConfigured')}
+      notConfiguredLabel={t('email.secretNotConfigured')}
+      clearLabel={t('email.clearSecret')}
+    />
   );
 
+  const providerItems = [
+    { value: 'smtp', label: t('email.provider.smtp') },
+    { value: 'bms', label: t('email.provider.bms') },
+    { value: 'resend', label: t('email.provider.resend') },
+  ];
+  const providerLabel = providerItems.find(i => i.value === mailerType)?.label;
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <SettingsSkeleton cards={2} fields={4} />;
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-sidebar-foreground">{t('email.title')}</h2>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('email.description')}</p>
-      </div>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    <form onSubmit={handleSubmit(onSubmit as any)} className="flex max-w-3xl flex-col gap-6">
+      <SettingsHeader
+        title={t('email.title')}
+        description={t('email.description')}
+        status={providerLabel ? { label: providerLabel, variant: 'info' } : null}
+      />
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{t('email.provider.label')}</CardTitle>
         </CardHeader>
-        <CardContent>
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-5">
-            {/* Provider selector — driven by RHF Controller */}
-            <div className="space-y-2">
-              <Label>{t('email.provider.label')}</Label>
+        <CardPanel className="flex flex-col gap-5">
+          <Controller
+            name="MAILER_TYPE"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                id="MAILER_TYPE"
+                label={t('email.provider.label')}
+                items={providerItems}
+                value={field.value}
+                onValueChange={(v) => handleProviderChange(v as MailerType)}
+              />
+            )}
+          />
+          <TextField
+            id="MAILER_SENDER_EMAIL"
+            type="email"
+            label={t('email.fields.senderEmail')}
+            placeholder={t('email.placeholders.senderEmail')}
+            registration={register('MAILER_SENDER_EMAIL')}
+            error={errors.MAILER_SENDER_EMAIL?.message}
+          />
+        </CardPanel>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{providerLabel}</CardTitle>
+        </CardHeader>
+        <CardPanel className="flex flex-col gap-5">
+          {mailerType === 'smtp' && (
+            <>
+              <div className="grid gap-5 md:grid-cols-[1fr_160px]">
+                <TextField
+                  id="SMTP_ADDRESS"
+                  label={t('email.fields.host')}
+                  placeholder={t('email.placeholders.host')}
+                  registration={register('SMTP_ADDRESS' as EmailFieldKey)}
+                  error={fieldErrors.SMTP_ADDRESS?.message}
+                />
+                <TextField
+                  id="SMTP_PORT"
+                  type="number"
+                  label={t('email.fields.port')}
+                  placeholder={t('email.placeholders.port')}
+                  registration={register('SMTP_PORT' as EmailFieldKey)}
+                  error={fieldErrors.SMTP_PORT?.message}
+                />
+              </div>
+              <div className="grid gap-5 md:grid-cols-2">
+                <TextField
+                  id="SMTP_USERNAME"
+                  label={t('email.fields.username')}
+                  placeholder={t('email.placeholders.username')}
+                  registration={register('SMTP_USERNAME' as EmailFieldKey)}
+                />
+                {secretField('SMTP_PASSWORD_SECRET', t('email.fields.password'), t('email.placeholders.password'))}
+              </div>
+              <div className="grid gap-5 md:grid-cols-3">
+                <Controller
+                  name={'SMTP_AUTHENTICATION' as EmailFieldKey}
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      id="SMTP_AUTHENTICATION"
+                      label={t('email.fields.authentication')}
+                      items={['plain', 'login', 'cram_md5'].map(v => ({ value: v, label: v }))}
+                      value={field.value as string | undefined}
+                      onValueChange={field.onChange}
+                    />
+                  )}
+                />
+                <Controller
+                  name={'SMTP_OPENSSL_VERIFY_MODE' as EmailFieldKey}
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      id="SMTP_OPENSSL_VERIFY_MODE"
+                      label={t('email.fields.sslVerifyMode')}
+                      items={['none', 'peer'].map(v => ({ value: v, label: v }))}
+                      value={field.value as string | undefined}
+                      onValueChange={field.onChange}
+                    />
+                  )}
+                />
+                <TextField
+                  id="SMTP_DOMAIN"
+                  label={t('email.fields.domain')}
+                  placeholder={t('email.placeholders.domain')}
+                  registration={register('SMTP_DOMAIN' as EmailFieldKey)}
+                />
+              </div>
               <Controller
-                name="MAILER_TYPE"
+                name={'SMTP_ENABLE_STARTTLS_AUTO' as EmailFieldKey}
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => handleProviderChange(v as MailerType)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="smtp">{t('email.provider.smtp')}</SelectItem>
-                      <SelectItem value="bms">{t('email.provider.bms')}</SelectItem>
-                      <SelectItem value="resend">{t('email.provider.resend')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <ToggleGroupBox>
+                    <ToggleRow
+                      id="SMTP_ENABLE_STARTTLS_AUTO"
+                      label={t('email.fields.starttls')}
+                      checked={!!field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </ToggleGroupBox>
                 )}
               />
-            </div>
+            </>
+          )}
 
-            {/* SMTP fields */}
-            {mailerType === 'smtp' && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="SMTP_ADDRESS">{t('email.fields.host')}</Label>
-                    <Input
-                      id="SMTP_ADDRESS"
-                      placeholder={t('email.placeholders.host')}
-                      {...register('SMTP_ADDRESS' as EmailFieldKey)}
-                    />
-                    {(errors as Record<string, { message?: string }>).SMTP_ADDRESS && (
-                      <p className="text-xs text-destructive">{(errors as Record<string, { message?: string }>).SMTP_ADDRESS?.message}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="SMTP_PORT">{t('email.fields.port')}</Label>
-                    <Input
-                      id="SMTP_PORT"
-                      type="number"
-                      placeholder={t('email.placeholders.port')}
-                      {...register('SMTP_PORT' as EmailFieldKey)}
-                    />
-                    {(errors as Record<string, { message?: string }>).SMTP_PORT && (
-                      <p className="text-xs text-destructive">{(errors as Record<string, { message?: string }>).SMTP_PORT?.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="SMTP_USERNAME">{t('email.fields.username')}</Label>
-                    <Input
-                      id="SMTP_USERNAME"
-                      placeholder={t('email.placeholders.username')}
-                      {...register('SMTP_USERNAME' as EmailFieldKey)}
-                    />
-                  </div>
-                  {renderSecretField('SMTP_PASSWORD_SECRET', t('email.fields.password'), t('email.placeholders.password'))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="SMTP_AUTHENTICATION">{t('email.fields.authentication')}</Label>
-                    <Controller
-                      name={'SMTP_AUTHENTICATION' as EmailFieldKey}
-                      control={control}
-                      render={({ field }) => (
-                        <Select value={field.value as string | undefined} onValueChange={field.onChange}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="plain">plain</SelectItem>
-                            <SelectItem value="login">login</SelectItem>
-                            <SelectItem value="cram_md5">cram_md5</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="SMTP_DOMAIN">{t('email.fields.domain')}</Label>
-                    <Input
-                      id="SMTP_DOMAIN"
-                      placeholder={t('email.placeholders.domain')}
-                      {...register('SMTP_DOMAIN' as EmailFieldKey)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 pt-6">
-                    <Controller
-                      name={'SMTP_ENABLE_STARTTLS_AUTO' as EmailFieldKey}
-                      control={control}
-                      render={({ field }) => (
-                        <Switch
-                          checked={!!field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      )}
-                    />
-                    <Label>{t('email.fields.starttls')}</Label>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="SMTP_OPENSSL_VERIFY_MODE">{t('email.fields.sslVerifyMode')}</Label>
-                    <Controller
-                      name={'SMTP_OPENSSL_VERIFY_MODE' as EmailFieldKey}
-                      control={control}
-                      render={({ field }) => (
-                        <Select value={field.value as string | undefined} onValueChange={field.onChange}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">none</SelectItem>
-                            <SelectItem value="peer">peer</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* BMS fields */}
-            {mailerType === 'bms' && (
-              <>
-                {renderSecretField('BMS_API_SECRET', t('email.fields.apiKey'), t('email.placeholders.apiKey'))}
-                <div className="space-y-2">
-                  <Label htmlFor="BMS_IPPOOL">{t('email.fields.ipPool')}</Label>
-                  <Input
-                    id="BMS_IPPOOL"
-                    placeholder={t('email.placeholders.ipPool')}
-                    {...register('BMS_IPPOOL' as EmailFieldKey)}
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Resend fields */}
-            {mailerType === 'resend' && (
-              renderSecretField('RESEND_API_SECRET', t('email.fields.apiKey'), t('email.placeholders.apiKey'))
-            )}
-
-            {/* Sender email — always visible */}
-            <div className="space-y-2">
-              <Label htmlFor="MAILER_SENDER_EMAIL">{t('email.fields.senderEmail')}</Label>
-              <Input
-                id="MAILER_SENDER_EMAIL"
-                type="email"
-                placeholder={t('email.placeholders.senderEmail')}
-                {...register('MAILER_SENDER_EMAIL')}
+          {mailerType === 'bms' && (
+            <>
+              {secretField('BMS_API_SECRET', t('email.fields.apiKey'), t('email.placeholders.apiKey'))}
+              <TextField
+                id="BMS_IPPOOL"
+                label={t('email.fields.ipPool')}
+                placeholder={t('email.placeholders.ipPool')}
+                registration={register('BMS_IPPOOL' as EmailFieldKey)}
               />
-              {errors.MAILER_SENDER_EMAIL && (
-                <p className="text-xs text-destructive">{errors.MAILER_SENDER_EMAIL.message}</p>
-              )}
-            </div>
+            </>
+          )}
 
-            {/* Actions */}
-            <div className="pt-2 flex gap-3">
-              <Button type="submit" disabled={saving}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {saving ? t('email.saving') : t('email.save')}
-              </Button>
-              <Button type="button" variant="outline" onClick={handleTestConnection} disabled={testing}>
-                {testing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {testing ? t('email.testing') : t('email.testConnection')}
-              </Button>
-              <ClearConfigButton configType="smtp" configLabel="Email / SMTP" onCleared={() => { reset(); loadConfig(); }} />
-            </div>
-          </form>
-        </CardContent>
+          {mailerType === 'resend' &&
+            secretField('RESEND_API_SECRET', t('email.fields.apiKey'), t('email.placeholders.apiKey'))}
+        </CardPanel>
       </Card>
-    </div>
+
+      <SettingsSaveBar
+        dirty={isDirty || Object.values(secretModified).some(Boolean)}
+        saving={saving}
+        saveLabel={t('email.save')}
+        savingLabel={t('email.saving')}
+      >
+        <ClearConfigButton configType="smtp" configLabel="Email / SMTP" onCleared={() => { reset(); loadConfig(); }} />
+        <Button type="button" variant="outline" onClick={handleTestConnection} loading={testing}>
+          <PlugZap />
+          {testing ? t('email.testing') : t('email.testConnection')}
+        </Button>
+      </SettingsSaveBar>
+    </form>
   );
 }

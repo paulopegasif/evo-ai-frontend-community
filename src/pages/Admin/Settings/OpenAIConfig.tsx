@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { type ChangeEvent, useState, useEffect, useCallback, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Switch,
-  Textarea,
-} from '@/components/ui/compat';
 import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X } from 'lucide-react';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  SecretField,
+  SettingsHeader,
+  SettingsSaveBar,
+  SettingsSkeleton,
+  TextField,
+  ToggleGroupBox,
+  ToggleRow,
+  useConfiguredStatus,
+} from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -109,7 +110,7 @@ export default function OpenAIConfig() {
     reset,
     setValue,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<OpenAIFormData>({
     resolver: zodResolver(openaiSchema),
     defaultValues: DEFAULTS,
@@ -181,143 +182,96 @@ export default function OpenAIConfig() {
     setSecretModified((prev) => ({ ...prev, [fieldName]: true }));
   };
 
-  const renderSecretField = (fieldName: string, label: string, placeholder: string) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={fieldName}>{label}</Label>
-        {!secretModified[fieldName] && (
-          secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
-              <Lock className="h-3 w-3" />
-              {t('openai.secretConfigured')}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t('openai.secretNotConfigured')}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={fieldName}
-          type="password"
-          autoComplete="off"
-          placeholder={placeholder}
-          {...register(fieldName as keyof OpenAIFormData, {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleSecretChange(fieldName, e.target.value),
-          })}
-        />
-        {secretConfigured[fieldName] && !secretModified[fieldName] && (
-          <button
-            type="button"
-            onClick={() => handleClearSecret(fieldName)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t('openai.clearSecret')}
-            aria-label={t('openai.clearSecret')}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
+  const status = useConfiguredStatus(Boolean(secretConfigured.OPENAI_API_SECRET));
+  const secretDirty = Object.values(secretModified).some(Boolean);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <SettingsSkeleton cards={2} fields={4} />;
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-sidebar-foreground">{t('openai.title')}</h2>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('openai.description')}</p>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex max-w-3xl flex-col gap-6">
+      <SettingsHeader title={t('openai.title')} description={t('openai.description')} status={status} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Connection Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t('openai.connection.cardTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="OPENAI_API_URL">{t('openai.connection.fields.apiUrl')}</Label>
-              <Input
-                id="OPENAI_API_URL"
-                placeholder={t('openai.connection.placeholders.apiUrl')}
-                {...register('OPENAI_API_URL')}
-              />
-              {errors.OPENAI_API_URL && (
-                <p className="text-xs text-destructive">{errors.OPENAI_API_URL.message}</p>
-              )}
-            </div>
-
-            {renderSecretField('OPENAI_API_SECRET', t('openai.connection.fields.apiSecret'), t('openai.connection.placeholders.apiSecret'))}
-
-            <div className="space-y-2">
-              <Label htmlFor="OPENAI_MODEL">{t('openai.connection.fields.model')}</Label>
-              <Input
-                id="OPENAI_MODEL"
-                placeholder={t('openai.connection.placeholders.model')}
-                {...register('OPENAI_MODEL')}
-              />
-              {errors.OPENAI_MODEL && (
-                <p className="text-xs text-destructive">{errors.OPENAI_MODEL.message}</p>
-              )}
-            </div>
-
-            <Controller
-              name="OPENAI_ENABLE_AUDIO_TRANSCRIPTION"
-              control={control}
-              render={({ field }) => (
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="OPENAI_ENABLE_AUDIO_TRANSCRIPTION">
-                    {t('openai.connection.fields.audioTranscription')}
-                  </Label>
-                  <Switch
-                    id="OPENAI_ENABLE_AUDIO_TRANSCRIPTION"
-                    checked={toBool(field.value)}
-                    onCheckedChange={field.onChange}
-                  />
-                </div>
-              )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('openai.connection.cardTitle')}</CardTitle>
+        </CardHeader>
+        <CardPanel className="flex flex-col gap-5">
+          <div className="grid gap-5 md:grid-cols-2">
+            <TextField
+              id="OPENAI_API_URL"
+              label={t('openai.connection.fields.apiUrl')}
+              placeholder={t('openai.connection.placeholders.apiUrl')}
+              registration={register('OPENAI_API_URL')}
+              error={errors.OPENAI_API_URL?.message}
             />
-          </CardContent>
-        </Card>
+            <TextField
+              id="OPENAI_MODEL"
+              label={t('openai.connection.fields.model')}
+              placeholder={t('openai.connection.placeholders.model')}
+              registration={register('OPENAI_MODEL')}
+              error={errors.OPENAI_MODEL?.message}
+            />
+          </div>
 
-        {/* AI Prompts */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t('openai.prompts.cardTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            {PROMPT_FIELDS.map((fieldName) => (
-              <div key={fieldName} className="space-y-2">
-                <Label htmlFor={fieldName}>{t(`openai.prompts.fields.${fieldName}`)}</Label>
-                <Textarea
-                  id={fieldName}
-                  rows={4}
-                  placeholder={t(`openai.prompts.placeholders.${fieldName}`)}
-                  {...register(fieldName)}
+          <SecretField
+            id="OPENAI_API_SECRET"
+            label={t('openai.connection.fields.apiSecret')}
+            placeholder={t('openai.connection.placeholders.apiSecret')}
+            registration={register('OPENAI_API_SECRET', {
+              onChange: (e: ChangeEvent<HTMLInputElement>) => handleSecretChange('OPENAI_API_SECRET', e.target.value),
+            })}
+            configured={Boolean(secretConfigured.OPENAI_API_SECRET)}
+            modified={Boolean(secretModified.OPENAI_API_SECRET)}
+            onClear={() => handleClearSecret('OPENAI_API_SECRET')}
+            configuredLabel={t('openai.secretConfigured')}
+            notConfiguredLabel={t('openai.secretNotConfigured')}
+            clearLabel={t('openai.clearSecret')}
+          />
+
+          <Controller
+            name="OPENAI_ENABLE_AUDIO_TRANSCRIPTION"
+            control={control}
+            render={({ field }) => (
+              <ToggleGroupBox>
+                <ToggleRow
+                  id="OPENAI_ENABLE_AUDIO_TRANSCRIPTION"
+                  label={t('openai.connection.fields.audioTranscription')}
+                  checked={toBool(field.value)}
+                  onCheckedChange={field.onChange}
                 />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              </ToggleGroupBox>
+            )}
+          />
+        </CardPanel>
+      </Card>
 
-        <div className="pt-2">
-          <Button type="submit" disabled={saving} aria-label={t('openai.save')}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {saving ? t('openai.saving') : t('openai.save')}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('openai.prompts.cardTitle')}</CardTitle>
+        </CardHeader>
+        <CardPanel className="grid gap-5 md:grid-cols-2">
+          {PROMPT_FIELDS.map((fieldName) => (
+            <Field key={fieldName}>
+              <FieldLabel htmlFor={fieldName}>{t(`openai.prompts.fields.${fieldName}`)}</FieldLabel>
+              <Textarea
+                id={fieldName}
+                rows={4}
+                placeholder={t(`openai.prompts.placeholders.${fieldName}`)}
+                {...register(fieldName)}
+              />
+            </Field>
+          ))}
+        </CardPanel>
+      </Card>
+
+      <SettingsSaveBar
+        dirty={isDirty || secretDirty}
+        saving={saving}
+        saveLabel={t('openai.save')}
+        savingLabel={t('openai.saving')}
+      />
+    </form>
   );
 }

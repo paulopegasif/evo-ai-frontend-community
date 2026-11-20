@@ -2,17 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/compat';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
+import { SettingsHeader, SettingsSaveBar, TextField } from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -47,7 +41,12 @@ export default function FrontendServicesSection() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<FrontendServicesFormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm<FrontendServicesFormData>({
     resolver: zodResolver(frontendServicesSchema),
     defaultValues: DEFAULTS,
   });
@@ -90,50 +89,51 @@ export default function FrontendServicesSection() {
   };
 
   return (
-    <section className="mt-10 pt-8 border-t border-sidebar-border">
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-sidebar-foreground">{t('frontendRuntime.title')}</h3>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('frontendRuntime.description')}</p>
-      </div>
+    <section className="flex flex-col gap-4 border-t pt-8">
+      <SettingsHeader as="h3" title={t('frontendRuntime.title')} description={t('frontendRuntime.description')} />
 
       {loading ? (
-        <div className="flex items-center justify-center h-32">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
-      ) : (
-        <Card className="mb-6">
+        <Card aria-busy="true">
           <CardHeader>
-            <CardTitle className="text-base">{t('frontendRuntime.fields.cardTitle')}</CardTitle>
+            <div className="flex items-center gap-2">
+              <Spinner className="size-4 text-muted-foreground" />
+              <Skeleton className="h-5 w-40" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <form data-testid="frontend-runtime-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="RECAPTCHA_SITE_KEY">{t('frontendRuntime.fields.recaptchaSiteKey')}</Label>
-                <Input
-                  id="RECAPTCHA_SITE_KEY"
-                  placeholder={t('frontendRuntime.placeholders.recaptchaSiteKey')}
-                  {...register('RECAPTCHA_SITE_KEY')}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="CLARITY_PROJECT_ID">{t('frontendRuntime.fields.clarityProjectId')}</Label>
-                <Input
-                  id="CLARITY_PROJECT_ID"
-                  placeholder={t('frontendRuntime.placeholders.clarityProjectId')}
-                  {...register('CLARITY_PROJECT_ID')}
-                />
-              </div>
-
-              <div className="pt-2">
-                <Button type="submit" disabled={saving}>
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {saving ? t('frontendRuntime.saving') : t('frontendRuntime.save')}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
+          <CardPanel className="flex flex-col gap-5">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </CardPanel>
         </Card>
+      ) : (
+        <form data-testid="frontend-runtime-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t('frontendRuntime.fields.cardTitle')}</CardTitle>
+              <CardDescription>reCAPTCHA · Microsoft Clarity</CardDescription>
+            </CardHeader>
+            <CardPanel className="grid gap-5 md:grid-cols-2">
+              <TextField
+                id="RECAPTCHA_SITE_KEY"
+                label={t('frontendRuntime.fields.recaptchaSiteKey')}
+                placeholder={t('frontendRuntime.placeholders.recaptchaSiteKey')}
+                registration={register('RECAPTCHA_SITE_KEY')}
+              />
+              <TextField
+                id="CLARITY_PROJECT_ID"
+                label={t('frontendRuntime.fields.clarityProjectId')}
+                placeholder={t('frontendRuntime.placeholders.clarityProjectId')}
+                registration={register('CLARITY_PROJECT_ID')}
+              />
+            </CardPanel>
+          </Card>
+          <SettingsSaveBar
+            dirty={isDirty}
+            saving={saving}
+            saveLabel={t('frontendRuntime.save')}
+            savingLabel={t('frontendRuntime.saving')}
+          />
+        </form>
       )}
     </section>
   );

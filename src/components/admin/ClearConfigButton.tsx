@@ -1,18 +1,8 @@
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Button,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { refreshGlobalConfig } from '@/contexts/GlobalConfigContext';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -26,6 +16,7 @@ interface ClearConfigButtonProps {
 export const ClearConfigButton = ({ configType, configLabel, onCleared }: ClearConfigButtonProps) => {
   const { t } = useLanguage('adminSettings');
   const [isClearing, setIsClearing] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClear = async () => {
     setIsClearing(true);
@@ -36,6 +27,7 @@ export const ClearConfigButton = ({ configType, configLabel, onCleared }: ClearC
         t('clearConfig.success', { config: configLabel }) ||
           `${configLabel} configuration cleared successfully`,
       );
+      setOpen(false);
       onCleared?.();
     } catch (error) {
       console.error('Error clearing config:', error);
@@ -49,41 +41,24 @@ export const ClearConfigButton = ({ configType, configLabel, onCleared }: ClearC
   };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" size="sm" className="text-destructive-foreground border-destructive/30 hover:bg-destructive/10 hover:text-destructive-foreground">
-          <Trash2 className="h-4 w-4 mr-2" />
-          {t('clearConfig.button', 'Clear Configuration')}
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            {t('clearConfig.dialogTitle', 'Clear Configuration')}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('clearConfig.dialogDescription', {
-              config: configLabel,
-            }) ||
-              `Are you sure? This will remove all ${configLabel} credentials. The provider will stop working until you reconfigure it.`}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>
-            {t('clearConfig.cancel', 'Cancel')}
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleClear}
-            disabled={isClearing}
-            className="bg-destructive text-white hover:bg-destructive/90"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {isClearing
-              ? t('clearConfig.clearing', 'Clearing...')
-              : t('clearConfig.confirm', 'Clear')}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <>
+      <Button type="button" variant="destructive-outline" onClick={() => setOpen(true)}>
+        <Trash2 />
+        {t('clearConfig.button', 'Clear Configuration')}
+      </Button>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={t('clearConfig.dialogTitle', 'Clear Configuration')}
+        description={
+          t('clearConfig.dialogDescription', { config: configLabel }) ||
+          `Are you sure? This will remove all ${configLabel} credentials. The provider will stop working until you reconfigure it.`
+        }
+        cancelLabel={t('clearConfig.cancel', 'Cancel')}
+        confirmLabel={isClearing ? t('clearConfig.clearing', 'Clearing...') : t('clearConfig.confirm', 'Clear')}
+        onConfirm={handleClear}
+        loading={isClearing}
+      />
+    </>
   );
 };
