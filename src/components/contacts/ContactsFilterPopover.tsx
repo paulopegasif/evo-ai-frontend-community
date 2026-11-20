@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/compat';
-import { Badge } from '@/components/ui/compat';
-import { Filter, Tag, UserCheck } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/compat';
-import { ScrollArea } from '@/components/ui/compat';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/compat';
-import { Checkbox } from '@/components/ui/compat';
+import { ListFilter, Tag, UserCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactFilterOptions } from '@/hooks/contacts/useContactFilterOptions';
@@ -20,11 +19,12 @@ interface ContactsFilterPopoverProps {
   onClearFilters: () => void;
   activeFiltersCount?: number;
   disabled?: boolean;
+  /** When set, the popover has no trigger of its own and anchors to this element
+   *  (e.g. the BaseHeader filter button). */
+  anchorSelector?: string;
 }
 
-// Sanctioned hardcoded exception (see BaseStatusBadge): active/blocked always
-// render as emerald/red dots, matching the badge shown elsewhere in the UI —
-// not tokenized on purpose.
+// Active/blocked dots match the status badge shown elsewhere in the UI.
 const BLOCKED_OPTIONS: Array<{ value: 'false' | 'true'; dotColor: string }> = [
   { value: 'false', dotColor: 'bg-success' },
   { value: 'true', dotColor: 'bg-destructive' },
@@ -47,8 +47,6 @@ const buildFilter = (attributeKey: string, values: string[]): BaseFilter => ({
   attributeModel: 'standard',
 });
 
-const SECTION_ACCENT = 'text-primary';
-
 const ContactsFilterPopover: React.FC<ContactsFilterPopoverProps> = ({
   open,
   onOpenChange,
@@ -58,13 +56,13 @@ const ContactsFilterPopover: React.FC<ContactsFilterPopoverProps> = ({
   onClearFilters,
   activeFiltersCount = 0,
   disabled = false,
+  anchorSelector,
 }) => {
   const { t } = useLanguage('contacts');
   const { labels } = useContactFilterOptions({ enabled: open });
 
   // Rascunho local: só vira `filters` de verdade ao clicar Aplicar.
   const [draft, setDraft] = useState<BaseFilter[]>(filters);
-  const [openSections, setOpenSections] = useState<string[]>(['blocked']);
 
   useEffect(() => {
     if (open) {
@@ -109,119 +107,92 @@ const ContactsFilterPopover: React.FC<ContactsFilterPopoverProps> = ({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={disabled}
-          className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent whitespace-nowrap relative"
-          data-tour="contacts-filter-button"
+      {!anchorSelector && (
+        <PopoverTrigger
+          render={<Button variant="outline" disabled={disabled} data-tour="contacts-filter-button" />}
         >
-          <Filter className="h-4 w-4 mr-2" />
+          <ListFilter />
           {t('filter.popover.trigger')}
           {hasAppliedFilters && (
-            <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-xs bg-sidebar-accent">
+            <Badge size="sm" className="tabular-nums">
               {activeFiltersCount || activeCount}
             </Badge>
           )}
-        </Button>
-      </PopoverTrigger>
+        </PopoverTrigger>
+      )}
 
-      <PopoverContent
-        className="w-80 h-[22rem] p-0 flex flex-col overflow-hidden bg-muted"
+      <PopoverPopup
+        className="w-72"
         side="bottom"
-        align="end"
-        sideOffset={8}
-        collisionPadding={12}
+        align="start"
+        sideOffset={6}
+        anchor={anchorSelector ? () => document.querySelector(anchorSelector) : undefined}
       >
-        <div className="flex items-center justify-between px-4 py-3 shrink-0 bg-background border-b">
-          <span className="text-sm font-semibold">{t('filter.popover.title')}</span>
-          {activeCount > 0 && (
-            <Badge variant="secondary" className="text-xs">
-              {activeCount}
-            </Badge>
-          )}
-        </div>
-
-        <ScrollArea className="grow min-h-0 overflow-y-auto">
-          <div className="p-2.5 flex flex-col gap-2">
-            <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
-              <AccordionItem
-                value="blocked"
-                className="border-0 rounded-xl bg-background shadow-sm overflow-hidden"
-              >
-                <AccordionTrigger className="px-3.5 py-3 text-sm font-semibold hover:no-underline [&>svg]:text-muted-foreground">
-                  <span className="flex items-center gap-2">
-                    <UserCheck className={cn('h-4 w-4', SECTION_ACCENT)} />
-                    {t('filter.attributes.blocked')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-3.5 pb-3 pt-0 space-y-1">
-                  {BLOCKED_OPTIONS.map(option => (
-                    <label
-                      key={option.value}
-                      className="flex items-center gap-2.5 w-full py-1.5 text-sm rounded-lg cursor-pointer"
-                    >
-                      <Checkbox
-                        checked={blockedValues.includes(option.value)}
-                        onCheckedChange={() => toggleValue('blocked', option.value, false)}
-                      />
-                      <span className="flex-1">{t(`filter.options.blocked.${option.value}`)}</span>
-                      <span className={cn('h-2.5 w-2.5 rounded-full flex-shrink-0', option.dotColor)} />
-                    </label>
-                  ))}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
-              <AccordionItem
-                value="labels"
-                className={cn(
-                  'border-0 rounded-xl bg-background shadow-sm overflow-hidden',
-                  openSections.includes('labels') && 'ring-1 ring-primary/25',
-                )}
-              >
-                <AccordionTrigger className="px-3.5 py-3 text-sm font-semibold hover:no-underline [&>svg]:text-muted-foreground">
-                  <span className="flex items-center gap-2">
-                    <Tag className={cn('h-4 w-4', SECTION_ACCENT)} />
-                    {t('filter.attributes.labels')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-3.5 pb-3 pt-0 space-y-1">
-                  {labels.length === 0 ? (
-                    <div className="py-1.5 text-xs text-muted-foreground">
-                      {t('filter.popover.noOptions')}
-                    </div>
-                  ) : (
-                    labels.map(option => (
-                      <label
-                        key={option.value}
-                        className="flex items-center gap-2.5 w-full py-1.5 text-sm rounded-lg cursor-pointer"
-                      >
-                        <Checkbox
-                          checked={labelValues.includes(option.value)}
-                          onCheckedChange={() => toggleValue('labels', option.value, true)}
-                        />
-                        <span className="flex-1 truncate">{option.label}</span>
-                      </label>
-                    ))
-                  )}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-sm">{t('filter.popover.title')}</span>
+            {activeCount > 0 && (
+              <Badge variant="secondary" className="tabular-nums">
+                {activeCount}
+              </Badge>
+            )}
           </div>
-        </ScrollArea>
 
-        <div className="flex items-center justify-between px-4 py-3 border-t bg-background gap-2 shrink-0">
-          <Button variant="ghost" size="sm" onClick={handleClearAll} className="text-xs cursor-pointer">
-            {t('filter.popover.clearAll')}
-          </Button>
-          <Button size="sm" onClick={handleApply} className="cursor-pointer">
-            {t('filter.apply')}
-          </Button>
+          <fieldset className="flex flex-col gap-1">
+            <legend className="mb-1.5 flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
+              <UserCheck className="size-3.5" />
+              {t('filter.attributes.blocked')}
+            </legend>
+            {BLOCKED_OPTIONS.map(option => (
+              <Label
+                key={option.value}
+                className="flex cursor-pointer items-center gap-2.5 rounded-md px-1 py-1.5 font-normal hover:bg-accent/50"
+              >
+                <Checkbox
+                  checked={blockedValues.includes(option.value)}
+                  onCheckedChange={() => toggleValue('blocked', option.value, false)}
+                />
+                <span className="flex-1">{t(`filter.options.blocked.${option.value}`)}</span>
+                <span className={cn('size-2 shrink-0 rounded-full', option.dotColor)} />
+              </Label>
+            ))}
+          </fieldset>
+
+          <fieldset className="flex min-h-0 flex-col gap-1">
+            <legend className="mb-1.5 flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
+              <Tag className="size-3.5" />
+              {t('filter.attributes.labels')}
+            </legend>
+            {labels.length === 0 ? (
+              <p className="px-1 py-1.5 text-muted-foreground text-xs">{t('filter.popover.noOptions')}</p>
+            ) : (
+              <div className="-mx-1 flex max-h-44 flex-col gap-0.5 overflow-y-auto px-1">
+                {labels.map(option => (
+                  <Label
+                    key={option.value}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-md px-1 py-1.5 font-normal hover:bg-accent/50"
+                  >
+                    <Checkbox
+                      checked={labelValues.includes(option.value)}
+                      onCheckedChange={() => toggleValue('labels', option.value, true)}
+                    />
+                    <span className="flex-1 truncate">{option.label}</span>
+                  </Label>
+                ))}
+              </div>
+            )}
+          </fieldset>
+
+          <div className="flex items-center justify-end gap-2 border-t pt-3">
+            <Button variant="ghost" size="sm" onClick={handleClearAll}>
+              {t('filter.popover.clearAll')}
+            </Button>
+            <Button size="sm" onClick={handleApply}>
+              {t('filter.apply')}
+            </Button>
+          </div>
         </div>
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 };
