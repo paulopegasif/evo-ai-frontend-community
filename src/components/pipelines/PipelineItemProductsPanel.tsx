@@ -1,20 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/compat';
+import { ConfirmDialog } from '@/components/base';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Trash2 } from 'lucide-react';
 import { productsService } from '@/services/products/productsService';
 import type {
@@ -42,6 +35,8 @@ function formatPrice(value: number, currency: string) {
 
 export default function PipelineItemProductsPanel({ pipelineItemId, canEdit = true }: Props) {
   const { t } = useLanguage('products');
+  // Removing a product from the deal confirms first.
+  const [removeId, setRemoveId] = useState<string | null>(null);
   const [links, setLinks] = useState<PipelineItemProductLink[]>([]);
   const [totalValue, setTotalValue] = useState(0);
   const [currency, setCurrency] = useState<ProductCurrency>('BRL');
@@ -129,12 +124,22 @@ export default function PipelineItemProductsPanel({ pipelineItemId, canEdit = tr
     }
   };
 
+  const productItems = productOptions.map(p => ({
+    value: p.id,
+    label: `${p.name} (${formatPrice(p.default_price, p.currency)})`,
+  }));
+  const variantItems = [
+    { value: null, label: t('pipelinePanel.noVariant') },
+    ...variants.map(v => ({ value: v.id, label: v.name })),
+  ];
+  const linkToRemove = links.find(link => link.id === removeId);
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-semibold">{t('pipelinePanel.title')}</h3>
-          <p className="text-xs text-muted-foreground">
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-semibold text-sm">{t('pipelinePanel.title')}</h3>
+          <p className="text-muted-foreground text-xs">
             {links.length === 0
               ? t('pipelinePanel.empty')
               : t('pipelinePanel.summary', { count: links.length, total: formatPrice(totalValue, currency) })}
@@ -142,121 +147,148 @@ export default function PipelineItemProductsPanel({ pipelineItemId, canEdit = tr
         </div>
         {canEdit && (
           <Button size="sm" variant="outline" onClick={openAdd} disabled={busy}>
-            <Plus className="h-4 w-4 mr-1" />
+            <Plus />
             {t('pipelinePanel.add')}
           </Button>
         )}
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">{t('page.loading')}</p>
-      ) : (
-        <div className="border rounded-md divide-y">
-          {links.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              {t('pipelinePanel.emptyList')}
-            </p>
-          ) : (
-            links.map((link) => (
-              <div key={link.id} className="flex items-center gap-3 px-3 py-2 text-sm">
-                <div className="flex-1">
-                  <div className="font-medium">
-                    {link.product?.name}
-                    {link.product_variant?.name && (
-                      <span className="text-muted-foreground text-xs ml-1">
-                        / {link.product_variant.name}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {link.quantity} × {formatPrice(link.locked_unit_price, link.currency)}
-                  </div>
-                </div>
-                <div className="text-sm font-mono">
-                  {formatPrice(link.subtotal, link.currency)}
-                </div>
-                {canEdit && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemove(link.id)}
-                    disabled={busy}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
+        <div className="flex flex-col divide-y rounded-lg border" aria-busy="true">
+          {Array.from({ length: 2 }, (_, i) => (
+            <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Skeleton className="h-3.5 w-40" />
+                <Skeleton className="h-3 w-24" />
               </div>
-            ))
-          )}
+              <Skeleton className="h-4 w-16" />
+            </div>
+          ))}
         </div>
+      ) : links.length === 0 ? (
+        <p className="rounded-lg border border-dashed py-6 text-center text-muted-foreground text-sm">
+          {t('pipelinePanel.emptyList')}
+        </p>
+      ) : (
+        <ul className="divide-y rounded-lg border">
+          {links.map(link => (
+            <li key={link.id} className="flex items-center gap-3 px-3 py-2 text-sm">
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-medium">
+                  {link.product?.name}
+                  {link.product_variant?.name && (
+                    <span className="ms-1 text-muted-foreground text-xs">/ {link.product_variant.name}</span>
+                  )}
+                </div>
+                <div className="text-muted-foreground text-xs tabular-nums">
+                  {link.quantity} × {formatPrice(link.locked_unit_price, link.currency)}
+                </div>
+              </div>
+              <div className="font-medium tabular-nums">{formatPrice(link.subtotal, link.currency)}</div>
+              {canEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setRemoveId(link.id)}
+                  disabled={busy}
+                  className="text-muted-foreground hover:text-destructive-foreground"
+                  aria-label={`${t('actions.delete')} ${link.product?.name ?? ''}`}
+                >
+                  <Trash2 />
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
       )}
 
+      <ConfirmDialog
+        open={removeId !== null}
+        onOpenChange={open => !open && !busy && setRemoveId(null)}
+        title={t('actions.delete')}
+        description={linkToRemove?.product?.name}
+        cancelLabel={t('actions.cancel')}
+        confirmLabel={t('actions.delete')}
+        onConfirm={async () => {
+          if (removeId) await handleRemove(removeId);
+          setRemoveId(null);
+        }}
+        loading={busy}
+        variant="destructive"
+      />
+
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent>
+        <DialogPopup className="max-w-md">
           <DialogHeader>
             <DialogTitle>{t('pipelinePanel.add')}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-muted-foreground">{t('pipelinePanel.product')}</label>
-              <Select value={selectedProductId} onValueChange={setSelectedProductId}>
-                <SelectTrigger>
+          <DialogPanel className="flex flex-col gap-4">
+            <Field>
+              <FieldLabel>{t('pipelinePanel.product')}</FieldLabel>
+              <Select
+                items={productItems}
+                value={selectedProductId || null}
+                onValueChange={value => setSelectedProductId(value ? String(value) : '')}
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('pipelinePanel.selectProduct')} />
                 </SelectTrigger>
-                <SelectContent>
-                  {productOptions.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name} ({formatPrice(p.default_price, p.currency)})
+                <SelectPopup>
+                  {productItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
-            </div>
+            </Field>
 
             {variants.length > 0 && (
-              <div>
-                <label className="text-xs text-muted-foreground">{t('pipelinePanel.variant')}</label>
-                <Select value={selectedVariantId} onValueChange={setSelectedVariantId}>
-                  <SelectTrigger>
+              <Field>
+                <FieldLabel>{t('pipelinePanel.variant')}</FieldLabel>
+                <Select
+                  items={variantItems}
+                  value={selectedVariantId || null}
+                  onValueChange={value => setSelectedVariantId(value ? String(value) : '')}
+                >
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('pipelinePanel.selectVariant')} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">{t('pipelinePanel.noVariant')}</SelectItem>
-                    {variants.map((v) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.name}
+                  <SelectPopup>
+                    {variantItems.map(item => (
+                      <SelectItem key={item.value ?? '__none__'} value={item.value}>
+                        {item.label}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
-              </div>
+              </Field>
             )}
 
-            <div>
-              <label className="text-xs text-muted-foreground">{t('pipelinePanel.quantity')}</label>
+            <Field>
+              <FieldLabel>{t('pipelinePanel.quantity')}</FieldLabel>
               <Input
                 type="number"
                 min={1}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                onChange={e => setQuantity(Math.max(1, Number(e.target.value) || 1))}
               />
-            </div>
+            </Field>
 
-            <div>
-              <label className="text-xs text-muted-foreground">{t('pipelinePanel.notes')}</label>
-              <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
-            </div>
-          </div>
+            <Field>
+              <FieldLabel>{t('pipelinePanel.notes')}</FieldLabel>
+              <Input value={notes} onChange={e => setNotes(e.target.value)} />
+            </Field>
+          </DialogPanel>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAddOpen(false)} disabled={busy}>
+            <Button variant="ghost" onClick={() => setAddOpen(false)} disabled={busy}>
               {t('actions.cancel')}
             </Button>
-            <Button onClick={handleAdd} disabled={busy || !selectedProductId || quantity < 1}>
-              {busy ? t('actions.saving') : t('pipelinePanel.add')}
+            <Button onClick={handleAdd} disabled={!selectedProductId || quantity < 1} loading={busy}>
+              {t('pipelinePanel.add')}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </div>
   );
