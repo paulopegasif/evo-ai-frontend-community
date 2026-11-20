@@ -2,15 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { Power, Settings, type LucideIcon } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogClose,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogPopup,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import {
@@ -220,26 +212,16 @@ export default function GenericIntegrationSettings({
         )}
       </div>
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogPopup>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t('genericSettings.dialog.deleteTitle', { name: displayName })}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('genericSettings.dialog.deleteDescription', { name: displayName })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogClose render={<Button variant="ghost" />} disabled={loading.delete}>
-              {t('genericSettings.dialog.cancel')}
-            </AlertDialogClose>
-            <Button variant="destructive" onClick={confirmDelete} loading={loading.delete}>
-              {t('genericSettings.dialog.remove')}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogPopup>
-      </AlertDialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('genericSettings.dialog.deleteTitle', { name: displayName })}
+        description={t('genericSettings.dialog.deleteDescription', { name: displayName })}
+        cancelLabel={t('genericSettings.dialog.cancel')}
+        confirmLabel={t('genericSettings.dialog.remove')}
+        onConfirm={confirmDelete}
+        loading={loading.delete}
+      />
 
       {/* Config Modal */}
       <ConfigComponent
