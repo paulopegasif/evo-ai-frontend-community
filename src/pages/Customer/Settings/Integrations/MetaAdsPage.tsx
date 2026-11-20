@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-} from '@/components/ui/compat';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/compat';
-import { AlertTriangle, ArrowRight, BarChart3, Clock, KeyRound, PlugZap, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, BarChart3, Clock, PlugZap, Power, RefreshCw } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
-import IntegrationBackButton from '@/components/integrations/shared/IntegrationBackButton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import BrandIcon from '@/components/BrandIcon';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { metaAdsService } from '@/services/integrations/metaAdsService';
@@ -35,25 +29,14 @@ import type { MetaAdsConnectionStatus, MetaAdsIntegration } from '@/types/integr
 const AD_ACCOUNT_PATTERN = /^(act_)?\d{5,25}$/;
 const POLL_INTERVAL_MS = 5000;
 
-const controlClassName = 'bg-sidebar border-sidebar-border text-sidebar-foreground';
-
-const STATUS_BADGES: Record<MetaAdsConnectionStatus, { label: string; className: string }> = {
-  connected: {
-    label: 'Conectado',
-    className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
-  },
-  error: {
-    label: 'Erro',
-    className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30',
-  },
-  token_invalid: {
-    label: 'Token expirado ou revogado',
-    className: 'bg-destructive/10 text-destructive border-destructive/30',
-  },
-  not_configured: {
-    label: 'Não configurado',
-    className: 'bg-muted text-muted-foreground border-border',
-  },
+const STATUS_BADGES: Record<
+  MetaAdsConnectionStatus,
+  { label: string; variant: 'success' | 'warning' | 'error' | 'outline' }
+> = {
+  connected: { label: 'Conectado', variant: 'success' },
+  error: { label: 'Erro', variant: 'warning' },
+  token_invalid: { label: 'Token expirado ou revogado', variant: 'error' },
+  not_configured: { label: 'Não configurado', variant: 'outline' },
 };
 
 const formatDateTime = (value?: string | null) =>
@@ -184,190 +167,180 @@ export default function MetaAdsPage() {
   };
 
   const syncDisabled = !configured || !canSync || syncing || isRequestingSync || status === 'token_invalid';
+  const disabled = !canEdit || loading;
 
   return (
-    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
-      <div className="flex items-center justify-between gap-3">
-        <IntegrationBackButton onBack={() => navigate('/settings/integrations')} />
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate('/tracking')} className="gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Ver tracking de leads
-            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        {/* Top bar */}
+        <div className="flex items-center justify-between gap-3">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/settings/integrations')}>
+            <ArrowLeft />
+            Integrações
           </Button>
-          <Button size="sm" onClick={handleSync} disabled={syncDisabled} className="gap-2">
-            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-            {syncing ? 'Sincronizando…' : 'Sincronizar agora'}
-          </Button>
-        </div>
-      </div>
-
-      {/* Header */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <div className="h-14 w-14 rounded-lg border border-border bg-card flex items-center justify-center shrink-0">
-                <BrandIcon id="meta_ads" className="h-8 w-8" />
-              </div>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Meta Ads</h1>
-                  {!loading && (
-                    <Badge variant="outline" className={badge.className}>
-                      {badge.label}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                  Importe campanhas e investimento da sua conta de anúncios para ver leads, agendamentos, receita, custo
-                  por lead e ROAS de cada campanha.
-                </p>
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-3">
-                  <Clock className="h-4 w-4" />
-                  Última sincronização:{' '}
-                  <span className="font-medium text-foreground">{lastSync || 'Nunca sincronizado'}</span>
-                </div>
-              </div>
-            </div>
-
-            {configured && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Button variant="outline" size="sm" onClick={handleTest} disabled={!canEdit || isTesting}>
-                  <PlugZap className="h-4 w-4 mr-2" />
-                  {isTesting ? 'Testando…' : 'Testar conexão'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setConfirmDisconnect(true)}
-                  disabled={!canDelete}
-                  className="text-destructive hover:text-destructive"
-                >
-                  Desconectar
-                </Button>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/tracking')}>
+              <BarChart3 />
+              Ver tracking de leads
+              <ArrowRight className="text-muted-foreground" />
+            </Button>
+            <Button size="sm" onClick={handleSync} disabled={syncDisabled} loading={isRequestingSync}>
+              <RefreshCw className={syncing ? 'animate-spin' : undefined} />
+              {syncing ? 'Sincronizando…' : 'Sincronizar agora'}
+            </Button>
           </div>
+        </div>
 
-          {integration?.last_error && (
-            <div className="mt-5 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm">
-              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium text-foreground">{integration.last_error.message}</p>
-                <p className="text-muted-foreground mt-0.5">
-                  {formatDateTime(integration.last_error.at)}
-                  {status === 'token_invalid' &&
-                    ' • Gere um novo token do System User no Business Manager e salve abaixo para retomar a sincronização.'}
-                </p>
+        {/* Header */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-start gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-card shadow-xs/5">
+              <BrandIcon id="meta_ads" className="size-7" />
+            </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-semibold text-xl tracking-tight">Meta Ads</h1>
+                {loading ? <Skeleton className="h-5 w-24" /> : <Badge variant={badge.variant}>{badge.label}</Badge>}
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Connection form */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <KeyRound className="h-4 w-4 text-primary" />
-              Credenciais
-            </CardTitle>
-            <CardDescription>
-              Use um token de System User do Business Manager com as permissões <code>ads_read</code> e{' '}
-              <code>business_management</code>, com acesso à conta de anúncios.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="meta-ad-account">ID da conta de anúncios</Label>
-              <Input
-                id="meta-ad-account"
-                value={adAccountId}
-                onChange={e => setAdAccountId(e.target.value)}
-                placeholder="act_1234567890"
-                disabled={!canEdit || loading}
-                className={controlClassName}
-              />
-              {adAccountId && !accountIdValid ? (
-                <p className="text-xs text-destructive">Use o formato act_1234567890 ou apenas os números.</p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Encontre em Gerenciador de Anúncios → Configurações da conta.
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="meta-token">Token de acesso</Label>
-              <Input
-                id="meta-token"
-                type="password"
-                autoComplete="off"
-                value={accessToken}
-                onChange={e => setAccessToken(e.target.value)}
-                placeholder={configured ? `Manter o token atual (${integration?.token_hint || '••••'})` : 'EAAB…'}
-                disabled={!canEdit || loading}
-                className={controlClassName}
-              />
-              <p className="text-xs text-muted-foreground">
-                O token é validado na Meta antes de salvar e fica criptografado. Ele nunca é exibido novamente.
+              <p className="mt-1 max-w-2xl text-muted-foreground text-sm">
+                Importe campanhas e investimento da sua conta de anúncios para ver leads, agendamentos, receita, custo
+                por lead e ROAS de cada campanha.
+              </p>
+              <p className="mt-2 flex items-center gap-1.5 text-muted-foreground text-sm">
+                <Clock className="size-4" />
+                Última sincronização:
+                <span className="font-medium text-foreground">{lastSync || 'Nunca sincronizado'}</span>
               </p>
             </div>
+          </div>
+          {configured && (
+            <div className="flex shrink-0 items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleTest} disabled={!canEdit} loading={isTesting}>
+                <PlugZap />
+                Testar conexão
+              </Button>
+              <Button
+                variant="destructive-outline"
+                size="sm"
+                onClick={() => setConfirmDisconnect(true)}
+                disabled={!canDelete}
+              >
+                <Power />
+                Desconectar
+              </Button>
+            </div>
+          )}
+        </div>
 
-            <Button onClick={handleSave} disabled={!canEdit || isSaving || loading || !adAccountId}>
-              {isSaving ? 'Validando…' : configured ? 'Salvar alterações' : 'Conectar conta'}
-            </Button>
-          </CardContent>
-        </Card>
+        {integration?.last_error && (
+          <Alert variant="error">
+            <AlertTriangle />
+            <AlertTitle>{integration.last_error.message}</AlertTitle>
+            <AlertDescription>
+              {formatDateTime(integration.last_error.at)}
+              {status === 'token_invalid' &&
+                ' • Gere um novo token do System User no Business Manager e salve abaixo para retomar a sincronização.'}
+            </AlertDescription>
+          </Alert>
+        )}
 
-        {/* Account & totals */}
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          {/* Connection form */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Conta conectada</CardTitle>
+            <CardHeader>
+              <CardTitle>Credenciais</CardTitle>
+              <CardDescription>
+                Use um token de System User do Business Manager com as permissões <code>ads_read</code> e{' '}
+                <code>business_management</code>, com acesso à conta de anúncios.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              {configured ? (
-                <>
-                  <InfoRow label="Nome" value={integration?.account_name} />
-                  <InfoRow label="Conta" value={integration?.ad_account_id} />
-                  <InfoRow label="Moeda" value={integration?.currency} />
-                  <InfoRow label="Fuso horário" value={integration?.timezone_name} />
-                  <InfoRow label="Token" value={integration?.token_hint} />
-                  <InfoRow label="Graph API" value={integration?.graph_api_version} />
-                </>
-              ) : (
-                <p className="text-muted-foreground">Nenhuma conta conectada.</p>
-              )}
-            </CardContent>
+            <CardPanel className="flex flex-col gap-5">
+              <Field invalid={Boolean(adAccountId) && !accountIdValid}>
+                <FieldLabel>ID da conta de anúncios</FieldLabel>
+                <Input
+                  id="meta-ad-account"
+                  value={adAccountId}
+                  onChange={e => setAdAccountId(e.target.value)}
+                  placeholder="act_1234567890"
+                  disabled={disabled}
+                />
+                {adAccountId && !accountIdValid ? (
+                  <FieldError match>Use o formato act_1234567890 ou apenas os números.</FieldError>
+                ) : (
+                  <FieldDescription>Encontre em Gerenciador de Anúncios → Configurações da conta.</FieldDescription>
+                )}
+              </Field>
+
+              <Field>
+                <FieldLabel>Token de acesso</FieldLabel>
+                <Input
+                  id="meta-token"
+                  type="password"
+                  autoComplete="off"
+                  value={accessToken}
+                  onChange={e => setAccessToken(e.target.value)}
+                  placeholder={configured ? `Manter o token atual (${integration?.token_hint || '••••'})` : 'EAAB…'}
+                  disabled={disabled}
+                />
+                <FieldDescription>
+                  O token é validado na Meta antes de salvar e fica criptografado. Ele nunca é exibido novamente.
+                </FieldDescription>
+              </Field>
+            </CardPanel>
+            <CardFooter className="justify-end border-t">
+              <Button onClick={handleSave} disabled={disabled || !adAccountId} loading={isSaving}>
+                {configured ? 'Salvar alterações' : 'Conectar conta'}
+              </Button>
+            </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Dados sincronizados</CardTitle>
-              <CardDescription>Campanhas pausadas e arquivadas também são importadas</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-2">
-                <CountTile label="Campanhas" value={integration?.counts?.campaigns ?? 0} />
-                <CountTile label="Conjuntos" value={integration?.counts?.adsets ?? 0} />
-                <CountTile label="Anúncios" value={integration?.counts?.ads ?? 0} />
-              </div>
-              {configured && (
-                <p className="mt-3 text-xs text-muted-foreground flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 shrink-0" />
-                  {historyLabel(integration)}
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          {/* Account & totals */}
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Conta conectada</CardTitle>
+              </CardHeader>
+              <CardPanel>
+                {configured ? (
+                  <dl className="flex flex-col gap-2.5 text-sm">
+                    <InfoRow label="Nome" value={integration?.account_name} />
+                    <InfoRow label="Conta" value={integration?.ad_account_id} mono />
+                    <InfoRow label="Moeda" value={integration?.currency} />
+                    <InfoRow label="Fuso horário" value={integration?.timezone_name} />
+                    <InfoRow label="Token" value={integration?.token_hint} mono />
+                    <InfoRow label="Graph API" value={integration?.graph_api_version} mono />
+                  </dl>
+                ) : (
+                  <p className="text-muted-foreground text-sm">Nenhuma conta conectada.</p>
+                )}
+              </CardPanel>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Dados sincronizados</CardTitle>
+                <CardDescription>Campanhas pausadas e arquivadas também são importadas.</CardDescription>
+              </CardHeader>
+              <CardPanel className="flex flex-col gap-3">
+                <div className="grid grid-cols-3 gap-2">
+                  <CountTile label="Campanhas" value={integration?.counts?.campaigns ?? 0} />
+                  <CountTile label="Conjuntos" value={integration?.counts?.adsets ?? 0} />
+                  <CountTile label="Anúncios" value={integration?.counts?.ads ?? 0} />
+                </div>
+                {configured && (
+                  <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                    <Clock className="size-3.5 shrink-0" />
+                    {historyLabel(integration)}
+                  </p>
+                )}
+              </CardPanel>
+            </Card>
+          </div>
         </div>
       </div>
 
       <AlertDialog open={confirmDisconnect} onOpenChange={setConfirmDisconnect}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>Desconectar Meta Ads?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -376,34 +349,31 @@ export default function MetaAdsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDisconnect}
-              className="bg-destructive text-white hover:bg-destructive/90"
-            >
+            <AlertDialogClose render={<Button variant="ghost" />}>Cancelar</AlertDialogClose>
+            <Button variant="destructive" onClick={handleDisconnect}>
               Desconectar
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>
     </div>
   );
 }
 
-function InfoRow({ label, value }: { label: string; value?: string | null }) {
+function InfoRow({ label, value, mono }: { label: string; value?: string | null; mono?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right truncate">{value || '—'}</span>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className={`truncate text-end font-medium ${mono ? 'font-mono text-xs' : ''}`}>{value || '—'}</dd>
     </div>
   );
 }
 
 function CountTile({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border border-sidebar-border bg-sidebar p-3 text-center">
-      <div className="text-xl font-semibold">{value}</div>
-      <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+    <div className="rounded-lg border bg-muted/32 p-3 text-center">
+      <div className="font-semibold text-xl tabular-nums">{value}</div>
+      <div className="mt-0.5 text-muted-foreground text-xs">{label}</div>
     </div>
   );
 }
