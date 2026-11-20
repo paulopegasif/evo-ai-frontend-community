@@ -88,11 +88,10 @@ vi.mock('@/components/segments/ui/OptionSelect', () => ({
   ),
 }));
 
-// TemplateFormModal (components/channels) still renders the compat Select:
-// keep the real design system EXCEPT the Radix Select family, which is hard to
-// drive in jsdom — render it as a native <select> so scope/provider switching is
+// TemplateFormModal (components/channels) renders the coss Select family, which is
+// hard to drive in jsdom: render it as a native <select> so provider switching is
 // assertable. Everything else (Button, Badge, Dialog, Table, etc.) stays real.
-vi.mock('@/components/ui/compat', async importOriginal => {
+vi.mock('@/components/ui/select', async importOriginal => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
@@ -118,7 +117,7 @@ vi.mock('@/components/ui/compat', async importOriginal => {
     ),
     SelectTrigger: () => null,
     SelectValue: () => null,
-    SelectContent: ({ children }: { children: ReactNode }) => <>{children}</>,
+    SelectPopup: ({ children }: { children: ReactNode }) => <>{children}</>,
     SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
       <option value={value}>{children}</option>
     ),
