@@ -1168,6 +1168,19 @@
         "title": "Disconnettere {{name}}?",
         "description": "L'agente perderà l'accesso agli strumenti di {{name}} finché non lo ricolleghi.",
         "cancel": "Annulla"
+      },
+      "toasts": {
+        "loadToolsError": "Impossibile caricare gli strumenti disponibili",
+        "connectError": "Impossibile connettersi a {{name}}",
+        "saveSuccess": "Impostazioni salvate",
+        "saveError": "Impossibile salvare le impostazioni",
+        "disconnectSuccess": "{{name}} disconnesso",
+        "disconnectError": "Impossibile disconnettere {{name}}",
+        "loadSheetsError": "Impossibile caricare i fogli di calcolo",
+        "loadCalendarsError": "Impossibile caricare i calendari",
+        "emailRequired": "Inserisci un'email",
+        "selectSheet": "Seleziona un foglio di calcolo",
+        "selectCalendar": "Seleziona un calendario"
       }
     },
     "mcpServers": {
@@ -1448,7 +1461,9 @@
         "description": "Configura strumenti e integrazioni per espandere le capacità"
       },
       "viewAllAgents": "Visualizza tutti gli agenti"
-    }
+    },
+    "close": "Chiudi procedura guidata",
+    "creating": "Creazione dell'agente..."
   },
   "chat": {
     "newConversation": "Nuova Conversazione",

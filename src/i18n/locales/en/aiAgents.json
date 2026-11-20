@@ -1241,6 +1241,19 @@
         "title": "Disconnect {{name}}?",
         "description": "The agent will lose access to {{name}} tools until you connect again.",
         "cancel": "Cancel"
+      },
+      "toasts": {
+        "loadToolsError": "Could not load the available tools",
+        "connectError": "Could not connect to {{name}}",
+        "saveSuccess": "Settings saved",
+        "saveError": "Could not save settings",
+        "disconnectSuccess": "{{name}} disconnected",
+        "disconnectError": "Could not disconnect {{name}}",
+        "loadSheetsError": "Could not load spreadsheets",
+        "loadCalendarsError": "Could not load calendars",
+        "emailRequired": "Please enter an email",
+        "selectSheet": "Please select a spreadsheet",
+        "selectCalendar": "Please select a calendar"
       }
     },
     "mcpServers": {
@@ -1518,7 +1531,9 @@
         "description": "Configure tools and integrations to expand capabilities"
       },
       "viewAllAgents": "View all agents"
-    }
+    },
+    "close": "Close wizard",
+    "creating": "Creating agent..."
   },
   "chat": {
     "newConversation": "New Conversation",

@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/compat';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Grid3X3, List, Wrench } from 'lucide-react';
+import { Wrench } from 'lucide-react';
+import {
+  ResourceGridSkeleton,
+  ResourceViewToggle,
+  type ResourceView,
+} from '@/components/agents/resourceCard';
+import ListSkeleton from '@/components/base/ListSkeleton';
 import EmptyState from '@/components/base/EmptyState';
 
 import { listTools } from '@/services/agents/toolsService';
@@ -43,7 +48,7 @@ export default function Tools() {
   const { t } = useLanguage('tools');
   const { can, isReady: permissionsReady } = usePermissions();
   const [state, setState] = useState<ToolsState>(INITIAL_STATE);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<ResourceView>('cards');
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [detailsTool, setDetailsTool] = useState<Tool | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -72,7 +77,8 @@ export default function Tools() {
           search: requestParams.search,
         });
 
-        const currentPage = Math.floor((requestParams.skip || 0) / (requestParams.limit || DEFAULT_PAGE_SIZE)) + 1;
+        const currentPage =
+          Math.floor((requestParams.skip || 0) / (requestParams.limit || DEFAULT_PAGE_SIZE)) + 1;
         const pageSize = requestParams.limit || DEFAULT_PAGE_SIZE;
         const total = response.metadata?.total_tools || 0;
         const totalPages = Math.ceil(total / pageSize);
@@ -210,7 +216,7 @@ export default function Tools() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       <ToolsHeader
         totalCount={state.meta.pagination.total}
         selectedCount={state.selectedToolIds.length}
@@ -222,34 +228,18 @@ export default function Tools() {
         showFilters={false}
       />
 
-      {/* View Mode Toggle */}
-      <div className="flex items-center justify-end mb-4">
-        <div className="flex items-center">
-          <Button
-            variant={viewMode === 'cards' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('cards')}
-            className="border-0 rounded-r-none"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-            className="border-0 rounded-l-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+      <div className="mb-3 flex items-center justify-end">
+        <ResourceViewToggle value={viewMode} onChange={setViewMode} />
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading.tools')}</div>
-          </div>
+          viewMode === 'cards' ? (
+            <ResourceGridSkeleton />
+          ) : (
+            <ListSkeleton rows={6} />
+          )
         ) : state.tools.length === 0 ? (
           <EmptyState
             icon={Wrench}
@@ -258,7 +248,7 @@ export default function Tools() {
             className="h-full"
           />
         ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {state.tools.map(tool => (
               <ToolCard key={tool.id} tool={tool} onClick={handleToolClick} />
             ))}

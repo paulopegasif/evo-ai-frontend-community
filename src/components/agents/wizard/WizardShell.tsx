@@ -2,6 +2,7 @@ import type { ReactNode, Ref } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { useLanguage } from '@/hooks/useLanguage';
 import WizardProgress from '@/pages/Customer/Agents/Agent/wizard/WizardProgress';
 
 interface WizardShellProps {
@@ -36,6 +37,7 @@ export default function WizardShell({
   contentRef,
   children,
 }: WizardShellProps) {
+  const { t } = useLanguage('aiAgents');
   const content = (
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex shrink-0 flex-col gap-5 border-b px-4 pt-4 pb-5 md:px-8 md:pt-6">
@@ -51,7 +53,7 @@ export default function WizardShell({
             size="icon"
             className="-me-2 -mt-1 shrink-0"
             onClick={() => onOpenChange(false)}
-            aria-label="Close wizard"
+            aria-label={t('wizard.close')}
           >
             <X />
           </Button>

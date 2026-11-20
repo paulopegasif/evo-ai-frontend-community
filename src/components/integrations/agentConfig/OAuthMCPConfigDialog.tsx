@@ -78,7 +78,7 @@ export function OAuthMCPConfigDialog({
       setAvailableTools(response.tools || []);
     } catch (error) {
       console.error(`Error loading ${name} tools:`, error);
-      toast.error('Erro ao carregar ferramentas disponíveis');
+      toast.error(tShared('edit.integrations.toasts.loadToolsError'));
     } finally {
       setIsLoadingTools(false);
     }
@@ -120,7 +120,7 @@ export function OAuthMCPConfigDialog({
       }
     } catch (error) {
       console.error(`Error connecting to ${name}:`, error);
-      toast.error(`Erro ao conectar com ${name}`);
+      toast.error(tShared('edit.integrations.toasts.connectError', { name }));
     } finally {
       setIsConnecting(false);
     }
@@ -144,11 +144,11 @@ export function OAuthMCPConfigDialog({
       const updatedConfig = { ...config, tools: selectedTools };
       await service.saveConfiguration(agentId, updatedConfig);
       onSave(updatedConfig);
-      toast.success('Configurações salvas com sucesso!');
+      toast.success(tShared('edit.integrations.toasts.saveSuccess'));
       onOpenChange(false);
     } catch (error) {
       console.error(`Error saving ${name} configuration:`, error);
-      toast.error('Erro ao salvar configurações');
+      toast.error(tShared('edit.integrations.toasts.saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -159,12 +159,12 @@ export function OAuthMCPConfigDialog({
     try {
       await service.disconnect(agentId);
       onDisconnect?.();
-      toast.success(`${name} desconectado com sucesso!`);
+      toast.success(tShared('edit.integrations.toasts.disconnectSuccess', { name }));
       setConfirmDisconnect(false);
       onOpenChange(false);
     } catch (error) {
       console.error(`Error disconnecting ${name}:`, error);
-      toast.error(`Erro ao desconectar ${name}`);
+      toast.error(tShared('edit.integrations.toasts.disconnectError', { name }));
     } finally {
       setIsDisconnecting(false);
     }

@@ -5,17 +5,20 @@ import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { AgentIntegrationDialog, SettingRow } from './agentConfig/AgentIntegrationDialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import GoogleSheetsService from '@/services/integrations/googleSheetsService';
-import type {
-  GoogleSheetsConfig,
-  GoogleSheetsItem,
-} from '@/types/integrations/googleSheets';
+import type { GoogleSheetsConfig, GoogleSheetsItem } from '@/types/integrations/googleSheets';
 
 interface GoogleSheetsConfigDialogProps {
   open: boolean;
@@ -88,7 +91,7 @@ const GoogleSheetsConfigDialog = ({
       setConfig((prev: GoogleSheetsConfig) => ({ ...prev, spreadsheets }));
     } catch (error) {
       console.error('Error loading spreadsheets:', error);
-      toast.error('Erro ao carregar planilhas');
+      toast.error(t('edit.integrations.toasts.loadSheetsError'));
     } finally {
       setIsLoadingSpreadsheets(false);
     }
@@ -96,7 +99,7 @@ const GoogleSheetsConfigDialog = ({
 
   const handleConnectGoogle = async () => {
     if (!config.email) {
-      toast.error('Por favor, insira um e-mail');
+      toast.error(t('edit.integrations.toasts.emailRequired'));
       return;
     }
 
@@ -110,7 +113,7 @@ const GoogleSheetsConfigDialog = ({
       }
     } catch (error) {
       console.error('Error connecting to Google Sheets:', error);
-      toast.error('Erro ao conectar com Google Sheets');
+      toast.error(t('edit.integrations.toasts.connectError', { name: 'Google Sheets' }));
     } finally {
       setIsConnecting(false);
     }
@@ -118,7 +121,7 @@ const GoogleSheetsConfigDialog = ({
 
   const handleSave = async () => {
     if (!config.settings?.selectedSpreadsheetId) {
-      toast.error('Por favor, selecione uma planilha');
+      toast.error(t('edit.integrations.toasts.selectSheet'));
       return;
     }
 
@@ -128,11 +131,11 @@ const GoogleSheetsConfigDialog = ({
 
       // Then update local state
       onSave(config);
-      toast.success('Configurações salvas com sucesso!');
+      toast.success(t('edit.integrations.toasts.saveSuccess'));
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving Google Sheets configuration:', error);
-      toast.error('Erro ao salvar configurações');
+      toast.error(t('edit.integrations.toasts.saveError'));
     }
   };
 
@@ -146,17 +149,20 @@ const GoogleSheetsConfigDialog = ({
         onDisconnect();
       }
 
-      toast.success('Google Sheets desconectado com sucesso!');
+      toast.success(t('edit.integrations.toasts.disconnectSuccess', { name: 'Google Sheets' }));
       onOpenChange(false);
     } catch (error) {
       console.error('Error disconnecting Google Sheets:', error);
-      toast.error('Erro ao desconectar Google Sheets');
+      toast.error(t('edit.integrations.toasts.disconnectError', { name: 'Google Sheets' }));
     }
   };
 
   const { t: tShared } = useLanguage('aiAgents');
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
-  const spreadsheetItems = availableSpreadsheets.map(sheet => ({ value: sheet.id, label: sheet.name }));
+  const spreadsheetItems = availableSpreadsheets.map(sheet => ({
+    value: sheet.id,
+    label: sheet.name,
+  }));
   const setSetting = (key: 'allowRead' | 'allowWrite' | 'allowCreate', checked: boolean) =>
     setConfig({ ...config, settings: { ...config.settings, [key]: checked } });
 
@@ -205,7 +211,11 @@ const GoogleSheetsConfigDialog = ({
               {t('edit.integrations.googleSheets.saveConfig') || 'APLICAR CONFIGURAÇÕES'}
             </Button>
           ) : (
-            <Button onClick={handleConnectGoogle} loading={isConnecting} className="w-full sm:w-auto">
+            <Button
+              onClick={handleConnectGoogle}
+              loading={isConnecting}
+              className="w-full sm:w-auto"
+            >
               {!isConnecting && <Sheet />}
               {isConnecting
                 ? t('edit.integrations.googleSheets.connecting') || 'Conectando...'
@@ -225,7 +235,9 @@ const GoogleSheetsConfigDialog = ({
               </h3>
             </div>
             <Field>
-              <FieldLabel>{t('edit.integrations.googleSheets.email') || 'E-mail do Google'}</FieldLabel>
+              <FieldLabel>
+                {t('edit.integrations.googleSheets.email') || 'E-mail do Google'}
+              </FieldLabel>
               <Input
                 id="email"
                 type="email"
@@ -238,14 +250,19 @@ const GoogleSheetsConfigDialog = ({
         ) : (
           <div className="flex flex-col gap-5">
             <Field>
-              <FieldLabel>{t('edit.integrations.googleSheets.selectSpreadsheet') || 'Planilha'}</FieldLabel>
+              <FieldLabel>
+                {t('edit.integrations.googleSheets.selectSpreadsheet') || 'Planilha'}
+              </FieldLabel>
               <Select
                 items={spreadsheetItems}
                 value={config.settings?.selectedSpreadsheetId || null}
                 onValueChange={value =>
                   setConfig({
                     ...config,
-                    settings: { ...config.settings, selectedSpreadsheetId: (value as string) || '' },
+                    settings: {
+                      ...config.settings,
+                      selectedSpreadsheetId: (value as string) || '',
+                    },
                   })
                 }
                 disabled={isLoadingSpreadsheets}

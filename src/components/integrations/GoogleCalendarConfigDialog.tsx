@@ -20,7 +20,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
@@ -180,10 +186,10 @@ const GoogleCalendarConfigDialog = ({
     try {
       const calendars = await GoogleCalendarService.getCalendars(agentId);
       setAvailableCalendars(calendars);
-      setConfig((prev) => ({ ...prev, calendars }));
+      setConfig(prev => ({ ...prev, calendars }));
     } catch (error) {
       console.error('Error loading calendars:', error);
-      toast.error('Erro ao carregar agendas');
+      toast.error(t('edit.integrations.toasts.loadCalendarsError'));
     } finally {
       setIsLoadingCalendars(false);
     }
@@ -191,16 +197,13 @@ const GoogleCalendarConfigDialog = ({
 
   const handleConnectGoogle = async () => {
     if (!config.email) {
-      toast.error('Por favor, insira um e-mail');
+      toast.error(t('edit.integrations.toasts.emailRequired'));
       return;
     }
 
     setIsConnecting(true);
     try {
-      const response = await GoogleCalendarService.generateAuthorization(
-        agentId,
-        config.email
-      );
+      const response = await GoogleCalendarService.generateAuthorization(agentId, config.email);
 
       if (response.url) {
         // Redirect to Google OAuth
@@ -208,7 +211,7 @@ const GoogleCalendarConfigDialog = ({
       }
     } catch (error) {
       console.error('Error connecting to Google Calendar:', error);
-      toast.error('Erro ao conectar com Google Calendar');
+      toast.error(t('edit.integrations.toasts.connectError', { name: 'Google Calendar' }));
     } finally {
       setIsConnecting(false);
     }
@@ -216,7 +219,7 @@ const GoogleCalendarConfigDialog = ({
 
   const handleSave = async () => {
     if (!config.settings?.selectedCalendarId) {
-      toast.error('Por favor, selecione uma agenda');
+      toast.error(t('edit.integrations.toasts.selectCalendar'));
       return;
     }
 
@@ -226,11 +229,11 @@ const GoogleCalendarConfigDialog = ({
 
       // Then update local state
       onSave(config);
-      toast.success('Configurações salvas com sucesso!');
+      toast.success(t('edit.integrations.toasts.saveSuccess'));
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving Google Calendar configuration:', error);
-      toast.error('Erro ao salvar configurações');
+      toast.error(t('edit.integrations.toasts.saveError'));
     }
   };
 
@@ -244,17 +247,25 @@ const GoogleCalendarConfigDialog = ({
         onDisconnect();
       }
 
-      toast.success('Google Calendar desconectado com sucesso!');
+      toast.success(t('edit.integrations.toasts.disconnectSuccess', { name: 'Google Calendar' }));
       onOpenChange(false);
     } catch (error) {
       console.error('Error disconnecting Google Calendar:', error);
-      toast.error('Erro ao desconectar Google Calendar');
+      toast.error(t('edit.integrations.toasts.disconnectError', { name: 'Google Calendar' }));
     }
   };
 
-  const updateBusinessHours = (day: string, field: 'enabled' | 'start' | 'end', value: boolean | string) => {
-    setConfig((prev) => {
-      const currentDayData = prev.settings?.businessHours?.[day] || { enabled: false, start: '08:00', end: '18:00' };
+  const updateBusinessHours = (
+    day: string,
+    field: 'enabled' | 'start' | 'end',
+    value: boolean | string,
+  ) => {
+    setConfig(prev => {
+      const currentDayData = prev.settings?.businessHours?.[day] || {
+        enabled: false,
+        start: '08:00',
+        end: '18:00',
+      };
       return {
         ...prev,
         settings: {
@@ -273,12 +284,12 @@ const GoogleCalendarConfigDialog = ({
   };
 
   const updateBookingField = (fieldId: string, enabled: boolean) => {
-    setConfig((prev) => ({
+    setConfig(prev => ({
       ...prev,
       settings: {
         ...prev.settings,
-        bookingFields: prev.settings?.bookingFields?.map((field) =>
-          field.id === fieldId ? { ...field, enabled } : field
+        bookingFields: prev.settings?.bookingFields?.map(field =>
+          field.id === fieldId ? { ...field, enabled } : field,
         ),
       },
     }));
@@ -304,7 +315,10 @@ const GoogleCalendarConfigDialog = ({
   };
 
   const patchSettings = (patch: Partial<NonNullable<GoogleCalendarConfig['settings']>>) =>
-    setConfig({ ...config, settings: { ...config.settings, ...patch } as GoogleCalendarConfig['settings'] });
+    setConfig({
+      ...config,
+      settings: { ...config.settings, ...patch } as GoogleCalendarConfig['settings'],
+    });
 
   const calendarItems = availableCalendars.map(calendar => ({
     value: calendar.id,
@@ -360,7 +374,11 @@ const GoogleCalendarConfigDialog = ({
               {t('edit.integrations.googleCalendar.saveConfig') || 'APLICAR CONFIGURAÇÕES'}
             </Button>
           ) : (
-            <Button onClick={handleConnectGoogle} loading={isConnecting} className="w-full sm:w-auto">
+            <Button
+              onClick={handleConnectGoogle}
+              loading={isConnecting}
+              className="w-full sm:w-auto"
+            >
               {!isConnecting && <Calendar />}
               {isConnecting
                 ? t('edit.integrations.googleCalendar.connecting') || 'Conectando...'
@@ -376,11 +394,14 @@ const GoogleCalendarConfigDialog = ({
                 <BrandIcon id="google-calendar" size={28} />
               </div>
               <h3 className="font-semibold text-base">
-                {t('edit.integrations.googleCalendar.connectTitle') || 'Conectar com Google Calendar'}
+                {t('edit.integrations.googleCalendar.connectTitle') ||
+                  'Conectar com Google Calendar'}
               </h3>
             </div>
             <Field>
-              <FieldLabel>{t('edit.integrations.googleCalendar.email') || 'E-mail do Google'}</FieldLabel>
+              <FieldLabel>
+                {t('edit.integrations.googleCalendar.email') || 'E-mail do Google'}
+              </FieldLabel>
               <Input
                 id="email"
                 type="email"
@@ -415,7 +436,9 @@ const GoogleCalendarConfigDialog = ({
                 <Select
                   items={calendarItems}
                   value={config.settings?.selectedCalendarId || null}
-                  onValueChange={value => patchSettings({ selectedCalendarId: (value as string) || '' })}
+                  onValueChange={value =>
+                    patchSettings({ selectedCalendarId: (value as string) || '' })
+                  }
                   disabled={isLoadingCalendars}
                 >
                   <SelectTrigger>
@@ -527,7 +550,8 @@ const GoogleCalendarConfigDialog = ({
               <Field>
                 <FieldLabel>
                   <Clock className="size-4 text-muted-foreground" />
-                  {t('edit.integrations.googleCalendar.maxDuration.title') || 'Duração máxima da agenda'}
+                  {t('edit.integrations.googleCalendar.maxDuration.title') ||
+                    'Duração máxima da agenda'}
                 </FieldLabel>
                 <AmountUnit
                   value={config.settings?.maxDuration?.value || 1}
@@ -606,7 +630,10 @@ const GoogleCalendarConfigDialog = ({
                     {DAYS_OF_WEEK.map(day => {
                       const dayData = config.settings?.businessHours?.[day];
                       return (
-                        <div key={day} className="flex min-h-12 flex-wrap items-center gap-3 px-3.5 py-2">
+                        <div
+                          key={day}
+                          className="flex min-h-12 flex-wrap items-center gap-3 px-3.5 py-2"
+                        >
                           <Label className="w-36 cursor-pointer capitalize">
                             <Checkbox
                               checked={Boolean(dayData?.enabled)}
@@ -661,7 +688,9 @@ const GoogleCalendarConfigDialog = ({
                   control={
                     <Switch
                       checked={Boolean(config.settings?.allowAvailabilityCheck)}
-                      onCheckedChange={checked => patchSettings({ allowAvailabilityCheck: checked })}
+                      onCheckedChange={checked =>
+                        patchSettings({ allowAvailabilityCheck: checked })
+                      }
                     />
                   }
                 />
@@ -670,7 +699,9 @@ const GoogleCalendarConfigDialog = ({
               <section className="flex flex-col gap-2">
                 <div className="flex flex-col gap-0.5">
                   <h4 className="font-medium text-sm">Modo de distribuição</h4>
-                  <p className="text-muted-foreground text-xs">Como os agendamentos serão divididos</p>
+                  <p className="text-muted-foreground text-xs">
+                    Como os agendamentos serão divididos
+                  </p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {distributionModes.map(mode => {
@@ -683,7 +714,9 @@ const GoogleCalendarConfigDialog = ({
                         onClick={() => patchSettings({ distributionMode: mode.value })}
                         className={cn(
                           'flex flex-col gap-1 rounded-lg border p-3.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
-                          active ? 'border-primary bg-primary/8' : 'hover:border-primary/40 hover:bg-accent/50',
+                          active
+                            ? 'border-primary bg-primary/8'
+                            : 'hover:border-primary/40 hover:bg-accent/50',
                         )}
                       >
                         <span className="font-medium text-sm">{mode.title}</span>
@@ -720,7 +753,9 @@ const GoogleCalendarConfigDialog = ({
         open={confirmDisconnect}
         onOpenChange={setConfirmDisconnect}
         title={t('edit.integrations.disconnectConfirm.title', { name: 'Google Calendar' })}
-        description={t('edit.integrations.disconnectConfirm.description', { name: 'Google Calendar' })}
+        description={t('edit.integrations.disconnectConfirm.description', {
+          name: 'Google Calendar',
+        })}
         cancelLabel={t('edit.integrations.disconnectConfirm.cancel')}
         confirmLabel={t('edit.integrations.googleCalendar.disconnect') || 'Desconectar'}
         onConfirm={async () => {
@@ -787,7 +822,11 @@ function AmountUnit({
         value={value}
         onChange={e => onValueChange(parseInt(e.target.value) || 1)}
       />
-      <Select items={units} value={unit} onValueChange={next => next && onUnitChange(next as string)}>
+      <Select
+        items={units}
+        value={unit}
+        onValueChange={next => next && onUnitChange(next as string)}
+      >
         <SelectTrigger className="w-32 min-w-32">
           <SelectValue />
         </SelectTrigger>

@@ -1187,6 +1187,19 @@
         "title": "¿Desconectar {{name}}?",
         "description": "El agente perderá el acceso a las herramientas de {{name}} hasta que vuelvas a conectar.",
         "cancel": "Cancelar"
+      },
+      "toasts": {
+        "loadToolsError": "Error al cargar las herramientas disponibles",
+        "connectError": "Error al conectar con {{name}}",
+        "saveSuccess": "¡Configuración guardada!",
+        "saveError": "Error al guardar la configuración",
+        "disconnectSuccess": "¡{{name}} desconectado!",
+        "disconnectError": "Error al desconectar {{name}}",
+        "loadSheetsError": "Error al cargar las hojas de cálculo",
+        "loadCalendarsError": "Error al cargar los calendarios",
+        "emailRequired": "Introduce un correo electrónico",
+        "selectSheet": "Selecciona una hoja de cálculo",
+        "selectCalendar": "Selecciona un calendario"
       }
     },
     "mcpServers": {
@@ -1472,7 +1485,9 @@
         "description": "Configure herramientas e integraciones para expandir capacidades"
       },
       "viewAllAgents": "Ver todos los agentes"
-    }
+    },
+    "close": "Cerrar asistente",
+    "creating": "Creando agente..."
   },
   "chat": {
     "newConversation": "Nueva Conversación",
