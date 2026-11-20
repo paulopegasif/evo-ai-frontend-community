@@ -3,7 +3,7 @@ import type { UseFormRegisterReturn } from 'react-hook-form';
 import { Lock, LockOpen, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { Card, CardFooter, CardHeader, CardPanel } from '@/components/ui/card';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
@@ -109,14 +109,14 @@ export function TextField({
 }) {
   return (
     <Field invalid={Boolean(error)} className={className}>
-      <FieldLabel htmlFor={id}>
-        {label}
+      <span className="inline-flex items-center gap-0.5">
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
         {required && (
-          <span className="-ms-1 text-destructive-foreground" aria-hidden="true">
+          <span className="text-destructive-foreground text-sm" aria-hidden="true">
             *
           </span>
         )}
-      </FieldLabel>
+      </span>
       <Input
         id={id}
         placeholder={placeholder}
@@ -173,14 +173,14 @@ export function SecretField({
   return (
     <Field invalid={Boolean(error)}>
       <div className="flex w-full items-center justify-between gap-2">
-        <FieldLabel htmlFor={id}>
-          {label}
+        <span className="inline-flex items-center gap-0.5">
+          <FieldLabel htmlFor={id}>{label}</FieldLabel>
           {required && (
-            <span className="-ms-1 text-destructive-foreground" aria-hidden="true">
+            <span className="text-destructive-foreground text-sm" aria-hidden="true">
               *
             </span>
           )}
-        </FieldLabel>
+        </span>
         {!modified &&
           (configured ? (
             <Badge variant="success">
@@ -366,5 +366,42 @@ export function SelectField({
       </Select>
       {description && <FieldDescription>{description}</FieldDescription>}
     </Field>
+  );
+}
+
+/** Save footer for a Card that holds its own form (several forms per page). */
+export function CardSaveFooter({
+  dirty,
+  saving,
+  saveLabel,
+  savingLabel,
+  disabled,
+  children,
+}: {
+  dirty?: boolean;
+  saving?: boolean;
+  saveLabel: string;
+  savingLabel?: string;
+  disabled?: boolean;
+  children?: ReactNode;
+}) {
+  const { t } = useLanguage('adminSettings');
+  return (
+    <CardFooter className="flex-wrap justify-between gap-3 border-t">
+      <span className="flex items-center gap-2 text-muted-foreground text-sm">
+        {dirty && (
+          <>
+            <span className="size-2 rounded-full bg-warning" aria-hidden="true" />
+            {t('common.unsavedChanges')}
+          </>
+        )}
+      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        {children}
+        <Button type="submit" disabled={saving || disabled} loading={saving}>
+          {saving && savingLabel ? savingLabel : saveLabel}
+        </Button>
+      </div>
+    </CardFooter>
   );
 }

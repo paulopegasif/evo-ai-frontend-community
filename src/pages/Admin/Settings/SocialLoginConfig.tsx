@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useForm, UseFormRegister } from 'react-hook-form';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/compat';
 import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X } from 'lucide-react';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { StatusBadge } from './components/StatusBadge';
+import {
+  CardSaveFooter,
+  SecretField,
+  SettingsHeader,
+  SettingsSkeleton,
+  TextField,
+  useConfiguredStatus,
+} from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -80,78 +80,6 @@ function buildMicrosoftFormValues(data: Record<string, unknown>): MicrosoftFormD
     }
   }
   return formValues as MicrosoftFormData;
-}
-
-// --- SecretField subcomponent ---
-
-interface SecretFieldProps<T extends Record<string, unknown>> {
-  fieldName: string & keyof T;
-  label: string;
-  placeholder: string;
-  register: UseFormRegister<T>;
-  secretModified: Record<string, boolean>;
-  onSecretModifiedChange: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  secretConfigured: Record<string, boolean>;
-  onClear: () => void;
-  sectionKey: string;
-  t: (key: string) => string;
-}
-
-function SecretField<T extends Record<string, unknown>>({
-  fieldName,
-  label,
-  placeholder,
-  register,
-  secretModified,
-  onSecretModifiedChange,
-  secretConfigured,
-  onClear,
-  sectionKey,
-  t,
-}: SecretFieldProps<T>) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={fieldName}>{label}</Label>
-        {!secretModified[fieldName] && (
-          secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
-              <Lock className="h-3 w-3" />
-              {t(`socialLogin.${sectionKey}.secretConfigured`)}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t(`socialLogin.${sectionKey}.secretNotConfigured`)}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={fieldName}
-          type="password"
-          autoComplete="off"
-          placeholder={placeholder}
-          {...register(fieldName as Parameters<typeof register>[0], {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              onSecretModifiedChange((prev) => ({ ...prev, [fieldName]: e.target.value.length > 0 })),
-          })}
-        />
-        {secretConfigured[fieldName] && !secretModified[fieldName] && (
-          <button
-            type="button"
-            onClick={onClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t(`socialLogin.${sectionKey}.clearSecret`)}
-            aria-label={t(`socialLogin.${sectionKey}.clearSecret`)}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
 }
 
 // --- Main component ---
@@ -289,120 +217,117 @@ export default function SocialLoginConfig() {
     setMicrosoftSecretModified((prev) => ({ ...prev, [fieldName]: true }));
   };
 
+  const googleStatus = useConfiguredStatus(Boolean(googleSecretConfigured.GOOGLE_OAUTH_CLIENT_SECRET));
+  const microsoftStatus = useConfiguredStatus(Boolean(microsoftSecretConfigured.AZURE_APP_SECRET));
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <SettingsSkeleton cards={2} fields={3} />;
   }
 
+  const googleErrors = googleForm.formState.errors;
+  const microsoftErrors = microsoftForm.formState.errors;
+
   return (
-    <section>
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-sidebar-foreground">{t('socialLogin.title')}</h3>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('socialLogin.description')}</p>
-      </div>
+    <section className="flex flex-col gap-4">
+      <SettingsHeader as="h3" title={t('socialLogin.title')} description={t('socialLogin.description')} />
 
-      {/* Google OAuth Section */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-base">{t('socialLogin.google.cardTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={googleForm.handleSubmit(onSubmitGoogle)} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="GOOGLE_OAUTH_CLIENT_ID">{t('socialLogin.google.fields.clientId')}</Label>
-              <Input
+      <div className="grid gap-4 xl:grid-cols-2">
+        <form onSubmit={googleForm.handleSubmit(onSubmitGoogle)}>
+          <Card className="h-full">
+            <CardHeader>
+              <div className="flex flex-wrap items-center gap-2">
+                <CardTitle className="text-base">{t('socialLogin.google.cardTitle')}</CardTitle>
+                <StatusBadge status={googleStatus} />
+              </div>
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-5">
+              <TextField
                 id="GOOGLE_OAUTH_CLIENT_ID"
+                label={t('socialLogin.google.fields.clientId')}
                 placeholder={t('socialLogin.google.placeholders.clientId')}
-                {...googleForm.register('GOOGLE_OAUTH_CLIENT_ID')}
+                registration={googleForm.register('GOOGLE_OAUTH_CLIENT_ID')}
+                error={googleErrors.GOOGLE_OAUTH_CLIENT_ID?.message}
               />
-              {googleForm.formState.errors.GOOGLE_OAUTH_CLIENT_ID && (
-                <p className="text-xs text-destructive">{googleForm.formState.errors.GOOGLE_OAUTH_CLIENT_ID.message}</p>
-              )}
-            </div>
-
-            <SecretField<GoogleOauthFormData>
-              fieldName="GOOGLE_OAUTH_CLIENT_SECRET"
-              label={t('socialLogin.google.fields.clientSecret')}
-              placeholder={t('socialLogin.google.placeholders.clientSecret')}
-              register={googleForm.register}
-              secretModified={googleSecretModified}
-              onSecretModifiedChange={setGoogleSecretModified}
-              secretConfigured={googleSecretConfigured}
-              onClear={() => handleClearGoogleSecret('GOOGLE_OAUTH_CLIENT_SECRET')}
-              sectionKey="google"
-              t={t}
+              <SecretField
+                id="GOOGLE_OAUTH_CLIENT_SECRET"
+                label={t('socialLogin.google.fields.clientSecret')}
+                placeholder={t('socialLogin.google.placeholders.clientSecret')}
+                registration={googleForm.register('GOOGLE_OAUTH_CLIENT_SECRET', {
+                  onChange: (e) =>
+                    setGoogleSecretModified((prev) => ({ ...prev, GOOGLE_OAUTH_CLIENT_SECRET: e.target.value.length > 0 })),
+                })}
+                configured={Boolean(googleSecretConfigured.GOOGLE_OAUTH_CLIENT_SECRET)}
+                modified={Boolean(googleSecretModified.GOOGLE_OAUTH_CLIENT_SECRET)}
+                onClear={() => handleClearGoogleSecret('GOOGLE_OAUTH_CLIENT_SECRET')}
+                configuredLabel={t('socialLogin.google.secretConfigured')}
+                notConfiguredLabel={t('socialLogin.google.secretNotConfigured')}
+                clearLabel={t('socialLogin.google.clearSecret')}
+              />
+              <CopyCallbackUrl
+                url={`${window.location.origin}/google/callback`}
+                label={t('socialLogin.callbackUrl.label')}
+                hint={t('socialLogin.callbackUrl.hint')}
+                copyLabel={t('socialLogin.callbackUrl.copy')}
+                copiedMessage={t('socialLogin.callbackUrl.copied')}
+              />
+            </CardPanel>
+            <CardSaveFooter
+              dirty={googleForm.formState.isDirty || Boolean(googleSecretModified.GOOGLE_OAUTH_CLIENT_SECRET)}
+              saving={savingGoogle}
+              saveLabel={t('socialLogin.save')}
+              savingLabel={t('socialLogin.saving')}
             />
+          </Card>
+        </form>
 
-            <CopyCallbackUrl
-              url={`${window.location.origin}/google/callback`}
-              label={t('socialLogin.callbackUrl.label')}
-              hint={t('socialLogin.callbackUrl.hint')}
-              copyLabel={t('socialLogin.callbackUrl.copy')}
-              copiedMessage={t('socialLogin.callbackUrl.copied')}
-            />
-
-            <div className="pt-2">
-              <Button type="submit" disabled={savingGoogle}>
-                {savingGoogle && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {savingGoogle ? t('socialLogin.saving') : t('socialLogin.save')}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* Microsoft / Azure Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t('socialLogin.microsoft.cardTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={microsoftForm.handleSubmit(onSubmitMicrosoft)} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="AZURE_APP_ID">{t('socialLogin.microsoft.fields.appId')}</Label>
-              <Input
+        <form onSubmit={microsoftForm.handleSubmit(onSubmitMicrosoft)}>
+          <Card className="h-full">
+            <CardHeader>
+              <div className="flex flex-wrap items-center gap-2">
+                <CardTitle className="text-base">{t('socialLogin.microsoft.cardTitle')}</CardTitle>
+                <StatusBadge status={microsoftStatus} />
+              </div>
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-5">
+              <TextField
                 id="AZURE_APP_ID"
+                label={t('socialLogin.microsoft.fields.appId')}
                 placeholder={t('socialLogin.microsoft.placeholders.appId')}
-                {...microsoftForm.register('AZURE_APP_ID')}
+                registration={microsoftForm.register('AZURE_APP_ID')}
+                error={microsoftErrors.AZURE_APP_ID?.message}
               />
-              {microsoftForm.formState.errors.AZURE_APP_ID && (
-                <p className="text-xs text-destructive">{microsoftForm.formState.errors.AZURE_APP_ID.message}</p>
-              )}
-            </div>
-
-            <SecretField<MicrosoftFormData>
-              fieldName="AZURE_APP_SECRET"
-              label={t('socialLogin.microsoft.fields.appSecret')}
-              placeholder={t('socialLogin.microsoft.placeholders.appSecret')}
-              register={microsoftForm.register}
-              secretModified={microsoftSecretModified}
-              onSecretModifiedChange={setMicrosoftSecretModified}
-              secretConfigured={microsoftSecretConfigured}
-              onClear={() => handleClearMicrosoftSecret('AZURE_APP_SECRET')}
-              sectionKey="microsoft"
-              t={t}
+              <SecretField
+                id="AZURE_APP_SECRET"
+                label={t('socialLogin.microsoft.fields.appSecret')}
+                placeholder={t('socialLogin.microsoft.placeholders.appSecret')}
+                registration={microsoftForm.register('AZURE_APP_SECRET', {
+                  onChange: (e) =>
+                    setMicrosoftSecretModified((prev) => ({ ...prev, AZURE_APP_SECRET: e.target.value.length > 0 })),
+                })}
+                configured={Boolean(microsoftSecretConfigured.AZURE_APP_SECRET)}
+                modified={Boolean(microsoftSecretModified.AZURE_APP_SECRET)}
+                onClear={() => handleClearMicrosoftSecret('AZURE_APP_SECRET')}
+                configuredLabel={t('socialLogin.microsoft.secretConfigured')}
+                notConfiguredLabel={t('socialLogin.microsoft.secretNotConfigured')}
+                clearLabel={t('socialLogin.microsoft.clearSecret')}
+              />
+              <CopyCallbackUrl
+                url={`${window.location.origin}/microsoft/callback`}
+                label={t('socialLogin.callbackUrl.label')}
+                hint={t('socialLogin.callbackUrl.hint')}
+                copyLabel={t('socialLogin.callbackUrl.copy')}
+                copiedMessage={t('socialLogin.callbackUrl.copied')}
+              />
+            </CardPanel>
+            <CardSaveFooter
+              dirty={microsoftForm.formState.isDirty || Boolean(microsoftSecretModified.AZURE_APP_SECRET)}
+              saving={savingMicrosoft}
+              saveLabel={t('socialLogin.save')}
+              savingLabel={t('socialLogin.saving')}
             />
-
-            <CopyCallbackUrl
-              url={`${window.location.origin}/microsoft/callback`}
-              label={t('socialLogin.callbackUrl.label')}
-              hint={t('socialLogin.callbackUrl.hint')}
-              copyLabel={t('socialLogin.callbackUrl.copy')}
-              copiedMessage={t('socialLogin.callbackUrl.copied')}
-            />
-
-            <div className="pt-2">
-              <Button type="submit" disabled={savingMicrosoft}>
-                {savingMicrosoft && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {savingMicrosoft ? t('socialLogin.saving') : t('socialLogin.save')}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          </Card>
+        </form>
+      </div>
     </section>
   );
 }
