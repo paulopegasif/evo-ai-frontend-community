@@ -3,13 +3,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useUnreadConversationsStore } from '@/store/unreadConversationsStore';
 import { Link, useLocation } from 'react-router-dom';
 import { X } from 'lucide-react';
-import {
-  Button,
-  TooltipProvider,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import MenuItem from './MenuItem';
 import { MenuItem as MenuItemType } from '../config/menuItems';
 import { cn } from '@/utils/cn';
@@ -47,14 +42,12 @@ export default function Sidebar({
   const companyName = t('sidebar.footer.brand');
   const supportUrl = BRAND.links.support;
 
-  const totalUnread = useUnreadConversationsStore((state) => state.totalUnread);
+  const totalUnread = useUnreadConversationsStore(state => state.totalUnread);
 
   const enrichedMenuItems = useMemo(
     () =>
-      menuItems.map((item) =>
-        item.href === '/conversations' && totalUnread > 0
-          ? { ...item, badge: totalUnread }
-          : item,
+      menuItems.map(item =>
+        item.href === '/conversations' && totalUnread > 0 ? { ...item, badge: totalUnread } : item,
       ),
     [menuItems, totalUnread],
   );
@@ -145,7 +138,9 @@ export default function Sidebar({
               : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
           )}
         >
-          <subItem.icon className={cn('size-4 shrink-0', isSubActive ? 'text-primary' : 'opacity-80')} />
+          <subItem.icon
+            className={cn('size-4 shrink-0', isSubActive ? 'text-primary' : 'opacity-80')}
+          />
           <span className="flex-1 truncate">{subItem.name}</span>
         </Link>
       );
@@ -155,23 +150,27 @@ export default function Sidebar({
     <div className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4">
       <item.icon className="size-4.5 text-primary" />
       <div className="min-w-0 flex-1">
-        <h3 id="flyout-title" className="truncate font-semibold text-sidebar-foreground text-sm">{item.name}</h3>
+        <h3 id="flyout-title" className="truncate font-semibold text-sidebar-foreground text-sm">
+          {item.name}
+        </h3>
       </div>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label={t('sidebar.closeSubmenu')}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setActiveSubmenu(null);
-            }}
-            className="size-7 p-0 text-sidebar-foreground/72 hover:text-sidebar-foreground"
-          >
-            <X className="size-4" />
-          </Button>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={t('sidebar.closeSubmenu')}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveSubmenu(null);
+              }}
+              className="size-7 p-0 text-sidebar-foreground/72 hover:text-sidebar-foreground"
+            />
+          }
+        >
+          <X className="size-4" />
         </TooltipTrigger>
         <TooltipContent side="left">
           <p>{t('sidebar.closeSubmenu')}</p>
@@ -189,7 +188,7 @@ export default function Sidebar({
           isCollapsed ? 'w-16' : 'w-60',
         )}
       >
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider delay={300}>
           {/* Navigation Menu */}
           <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
             {mainMenuItems.map(item => (
@@ -199,7 +198,7 @@ export default function Sidebar({
                 isCollapsed={isCollapsed}
                 isActive={isMenuWithSubItemsActive(item)}
                 activeMenu={activeMenu}
-                onClick={(e) => handleMenuClick(item, e)}
+                onClick={e => handleMenuClick(item, e)}
               />
             ))}
             <PluginSlot id="sidebar.afterMain" />
@@ -213,7 +212,7 @@ export default function Sidebar({
                 isCollapsed={isCollapsed}
                 isActive={pathname === tutorialsItem.href}
                 activeMenu={activeMenu}
-                onClick={(e) => handleMenuClick(tutorialsItem, e)}
+                onClick={e => handleMenuClick(tutorialsItem, e)}
               />
             </div>
           )}
@@ -231,9 +230,7 @@ export default function Sidebar({
                   {t('sidebar.footer.copyright', { year: currentYear })}
                 </div>
                 {__APP_VERSION__ !== 'dev' && (
-                  <div className="text-xs text-muted-foreground/70 mt-1">
-                    {__APP_VERSION__}
-                  </div>
+                  <div className="text-xs text-muted-foreground/70 mt-1">{__APP_VERSION__}</div>
                 )}
                 <div className="mt-2 flex flex-col gap-1 text-xs">
                   {BRAND.links.docs && (
@@ -277,9 +274,7 @@ export default function Sidebar({
           className={cn(
             'hidden md:flex bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border',
             'transition-all duration-150 ease-in-out overflow-hidden',
-            activeSubmenu
-              ? 'w-64 opacity-100'
-              : 'w-0 opacity-0 pointer-events-none',
+            activeSubmenu ? 'w-64 opacity-100' : 'w-0 opacity-0 pointer-events-none',
           )}
         >
           {activeSubmenu && (

@@ -1,25 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useUnreadConversationsStore } from '@/store/unreadConversationsStore';
 import { Link } from 'react-router-dom';
-import {
-  Menu,
-  PanelRightClose,
-  PanelRightOpen,
-  ChevronDown,
-  ChevronRight,
-} from 'lucide-react';
-import {
-  Button,
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  ScrollArea,
-} from '@/components/ui/compat';
+import { Menu, PanelRightClose, PanelRightOpen, ChevronDown, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sheet, SheetHeader, SheetPopup, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '../../../hooks/useLanguage';
 import NotificationBell from '../NotificationBell';
 import ProfileMenu from './ProfileMenu';
@@ -74,14 +60,12 @@ export default function Header({
 }: HeaderProps) {
   const { t } = useLanguage('layout');
   const [expandedMobileMenus, setExpandedMobileMenus] = useState<Set<string>>(new Set());
-  const totalUnread = useUnreadConversationsStore((state) => state.totalUnread);
+  const totalUnread = useUnreadConversationsStore(state => state.totalUnread);
 
   const enrichedMenuItems = useMemo(
     () =>
-      menuItems.map((item) =>
-        item.href === '/conversations' && totalUnread > 0
-          ? { ...item, badge: totalUnread }
-          : item,
+      menuItems.map(item =>
+        item.href === '/conversations' && totalUnread > 0 ? { ...item, badge: totalUnread } : item,
       ),
     [menuItems, totalUnread],
   );
@@ -93,15 +77,20 @@ export default function Header({
         {/* Left: Menu Button */}
         <div className="flex-1 flex justify-start">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-sidebar-foreground cursor-pointer">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">{t('sidebar.openMenu')}</span>
-              </Button>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-sidebar-foreground cursor-pointer"
+                />
+              }
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">{t('sidebar.openMenu')}</span>
             </SheetTrigger>
 
-            <SheetContent side="left" className="w-80 p-0 !bg-sidebar text-sidebar-foreground">
-
+            <SheetPopup side="left" className="w-80 gap-4 p-0 !bg-sidebar text-sidebar-foreground">
               <SheetHeader className="border-b border-sidebar-border p-6">
                 <SheetTitle className="text-left text-sidebar-foreground">
                   {t('sidebar.navigationMenu')}
@@ -129,7 +118,7 @@ export default function Header({
                     }
 
                     const isParentActive = item.subItems!.some(
-                      sub => pathname === sub.href || pathname.startsWith(sub.href + '/')
+                      sub => pathname === sub.href || pathname.startsWith(sub.href + '/'),
                     );
 
                     return (
@@ -154,7 +143,12 @@ export default function Header({
                               : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
                           )}
                         >
-                          <item.icon className={cn('size-4.5 shrink-0', isParentActive ? 'text-primary' : 'opacity-80')} />
+                          <item.icon
+                            className={cn(
+                              'size-4.5 shrink-0',
+                              isParentActive ? 'text-primary' : 'opacity-80',
+                            )}
+                          />
                           <span className="flex-1">{item.name}</span>
                           {isExpanded ? (
                             <ChevronDown className="h-4 w-4" />
@@ -166,7 +160,9 @@ export default function Header({
                         {isExpanded && (
                           <div className="ms-4 mt-0.5 flex flex-col gap-0.5 border-s border-sidebar-border ps-2">
                             {item.subItems!.map(subItem => {
-                              const isSubActive = pathname === subItem.href || pathname.startsWith(subItem.href + '/');
+                              const isSubActive =
+                                pathname === subItem.href ||
+                                pathname.startsWith(subItem.href + '/');
                               return (
                                 <Link
                                   key={subItem.href}
@@ -179,7 +175,12 @@ export default function Header({
                                       : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
                                   )}
                                 >
-                                  <subItem.icon className={cn('size-4 shrink-0', isSubActive ? 'text-primary' : 'opacity-80')} />
+                                  <subItem.icon
+                                    className={cn(
+                                      'size-4 shrink-0',
+                                      isSubActive ? 'text-primary' : 'opacity-80',
+                                    )}
+                                  />
                                   <span>{subItem.name}</span>
                                 </Link>
                               );
@@ -204,7 +205,7 @@ export default function Header({
                 setLogoutDialogOpen={setLogoutDialogOpen}
                 setIsMobileMenuOpen={setIsMobileMenuOpen}
               />
-            </SheetContent>
+            </SheetPopup>
           </Sheet>
         </div>
 
@@ -220,10 +221,7 @@ export default function Header({
           <PluginSlot id="header.right" />
           <TourFab />
           <NotificationBell />
-          <ProfileMenu
-            user={user}
-            setLogoutDialogOpen={setLogoutDialogOpen}
-          />
+          <ProfileMenu user={user} setLogoutDialogOpen={setLogoutDialogOpen} />
         </div>
       </div>
 
@@ -244,18 +242,22 @@ export default function Header({
           )}
 
           {/* Desktop sidebar toggle - always at the right edge of sidebar area */}
-          <div className={cn('flex items-center', isCollapsed ? 'w-full justify-center' : 'ml-auto')}>
+          <div
+            className={cn('flex items-center', isCollapsed ? 'w-full justify-center' : 'ml-auto')}
+          >
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleSidebar}
-                  aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
-                  className="size-8 shrink-0 text-sidebar-foreground/72 hover:text-sidebar-foreground"
-                >
-                  {isCollapsed ? <PanelRightClose /> : <PanelRightOpen />}
-                </Button>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleSidebar}
+                    aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+                    className="size-8 shrink-0 text-sidebar-foreground/72 hover:text-sidebar-foreground"
+                  />
+                }
+              >
+                {isCollapsed ? <PanelRightClose /> : <PanelRightOpen />}
               </TooltipTrigger>
               <TooltipContent>
                 <p>{isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}</p>
@@ -277,10 +279,7 @@ export default function Header({
           {/* Notifications */}
           <NotificationBell />
           {/* User Menu */}
-          <ProfileMenu
-            user={user}
-            setLogoutDialogOpen={setLogoutDialogOpen}
-          />
+          <ProfileMenu user={user} setLogoutDialogOpen={setLogoutDialogOpen} />
         </div>
       </div>
     </header>

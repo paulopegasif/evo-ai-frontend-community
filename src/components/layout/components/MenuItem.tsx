@@ -2,11 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/compat';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { MenuItem as MenuItemType } from '../config/menuItems';
 import { UnreadBadge } from '@/components/shared';
 import { cn } from '@/utils/cn';
@@ -52,11 +48,7 @@ export default function MenuItem({
         <>
           <span className="flex-1 truncate">{item.name}</span>
           {item.badge ? (
-            <UnreadBadge
-              count={item.badge}
-              ariaLabel={badgeAriaLabel}
-              className="ml-auto"
-            />
+            <UnreadBadge count={item.badge} ariaLabel={badgeAriaLabel} className="ml-auto" />
           ) : hasSubItems && !mobile ? (
             <ChevronRight className="ms-auto size-4 opacity-48" />
           ) : null}
@@ -76,7 +68,7 @@ export default function MenuItem({
   if (!mobile && isCollapsed) {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>{menuItem}</TooltipTrigger>
+        <TooltipTrigger render={menuItem} />
         <TooltipContent side="right">
           <p className="font-medium">{item.name}</p>
           {badgeAriaLabel ? (

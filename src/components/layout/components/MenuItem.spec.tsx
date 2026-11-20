@@ -5,10 +5,12 @@ import { Settings } from 'lucide-react';
 import MenuItem from './MenuItem';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 
-vi.mock('@/components/ui/compat', () => ({
+vi.mock('@/components/ui/tooltip', () => ({
   Tooltip: ({ children }: any) => <>{children}</>,
-  TooltipTrigger: ({ children, asChild }: any) => (asChild ? <>{children}</> : <div>{children}</div>),
+  TooltipTrigger: ({ children, render }: any) => render ?? <div>{children}</div>,
   TooltipContent: ({ children }: any) => <div data-testid="tooltip-content">{children}</div>,
+  TooltipPopup: ({ children }: any) => <div data-testid="tooltip-content">{children}</div>,
+  TooltipProvider: ({ children }: any) => <>{children}</>,
 }));
 
 const settingsItem: MenuItemType = {
