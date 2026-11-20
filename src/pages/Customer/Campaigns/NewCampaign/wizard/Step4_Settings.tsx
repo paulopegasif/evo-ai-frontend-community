@@ -1,19 +1,26 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import {
-  Button,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
-  Switch,
-  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from '@/components/ui/input-group';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 import WizardStepLayout from './WizardStepLayout';
 import { useLanguage } from '@/hooks/useLanguage';
-import { ArrowRight, ArrowLeft, Settings2, Calendar, Clock, Zap, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clock, Zap, RotateCcw, Timer } from 'lucide-react';
 
 interface Step4Props {
   data: {
@@ -57,36 +64,178 @@ interface Step4Props {
   onBack: () => void;
 }
 
-const Step4_Settings = ({ data, availableTemplates = [], onChange, onNext, onBack }: Step4Props) => {
+const SPREAD_OPTIONS = [
+  '0.166',
+  '0.5',
+  '1',
+  '1.5',
+  '2',
+  '2.5',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '11',
+  '12',
+  '18',
+  '24',
+  '0',
+];
+const WEEKDAYS = [
+  { id: 1, key: 'monday' },
+  { id: 2, key: 'tuesday' },
+  { id: 3, key: 'wednesday' },
+  { id: 4, key: 'thursday' },
+  { id: 5, key: 'friday' },
+  { id: 6, key: 'saturday' },
+  { id: 0, key: 'sunday' },
+] as const;
+const STRATEGIES = ['round_robin', 'weighted', 'random', 'ab_test'] as const;
+
+/** Selectable card wrapping a radio: the whole tile is the label. */
+function OptionCard({
+  value,
+  selected,
+  icon,
+  title,
+  description,
+}: {
+  value: string;
+  selected: boolean;
+  icon?: React.ReactNode;
+  title: string;
+  description?: string;
+}) {
+  return (
+    <label
+      className={cn(
+        'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+        selected ? 'border-primary bg-primary/4' : 'bg-background hover:bg-accent/50',
+      )}
+    >
+      <Radio value={value} className="mt-0.5" />
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="flex items-center gap-2 font-medium text-sm">
+          {icon && (
+            <span
+              className={cn('[&_svg]:size-4', selected ? 'text-primary' : 'text-muted-foreground')}
+            >
+              {icon}
+            </span>
+          )}
+          {title}
+        </span>
+        {description && <span className="text-muted-foreground text-xs">{description}</span>}
+      </span>
+    </label>
+  );
+}
+
+/** Row inside the advanced options card: icon tile, title/description and a trailing control. */
+function SettingRow({
+  icon,
+  title,
+  description,
+  action,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+      <div className="flex items-center gap-3">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground [&_svg]:size-4">
+          {icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-sm">{title}</p>
+          <p className="text-muted-foreground text-xs">{description}</p>
+        </div>
+        {action}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+const Step4_Settings = ({
+  data,
+  availableTemplates = [],
+  onChange,
+  onNext,
+  onBack,
+}: Step4Props) => {
   const { t } = useLanguage('campaigns');
 
   const handleNext = () => {
-    const scheduleOption = data.template_strategy === 'ab_test' ? data.ab_test_schedule_option : data.schedule_option;
-    const scheduleDate = data.template_strategy === 'ab_test' ? data.ab_test_scheduled_date : data.scheduled_date;
+    const scheduleOption =
+      data.template_strategy === 'ab_test' ? data.ab_test_schedule_option : data.schedule_option;
+    const scheduleDate =
+      data.template_strategy === 'ab_test' ? data.ab_test_scheduled_date : data.scheduled_date;
 
     if (!scheduleOption) return;
     if (scheduleOption === 'later' && !scheduleDate) return;
 
-    if (data.template_strategy === 'ab_test' && !data.ab_test_skip_winner && !data.ab_test_winner_scheduled_date) {
+    if (
+      data.template_strategy === 'ab_test' &&
+      !data.ab_test_skip_winner &&
+      !data.ab_test_winner_scheduled_date
+    ) {
       return;
     }
 
     onNext();
   };
 
-  const isScheduledValid = data.template_strategy === 'ab_test'
-    ? (data.ab_test_schedule_option === 'now' || !!data.ab_test_scheduled_date) && (data.ab_test_skip_winner || !!data.ab_test_winner_scheduled_date)
-    : (data.schedule_option === 'now' || !!data.scheduled_date);
+  const isAbTest = data.template_strategy === 'ab_test';
 
-  const isSplitValid = data.template_strategy === 'weighted'
-    ? Object.values(data.template_weights || {}).reduce((a, b) => a + b, 0) === 100
-    : true;
+  const isScheduledValid = isAbTest
+    ? (data.ab_test_schedule_option === 'now' || !!data.ab_test_scheduled_date) &&
+      (data.ab_test_skip_winner || !!data.ab_test_winner_scheduled_date)
+    : data.schedule_option === 'now' || !!data.scheduled_date;
 
-  const isValid = !!(data.template_strategy === 'ab_test' ? data.ab_test_schedule_option : data.schedule_option) && isScheduledValid && isSplitValid;
+  const weightTotal = Object.values(data.template_weights || {}).reduce((a, b) => a + b, 0);
+  const isSplitValid = data.template_strategy === 'weighted' ? weightTotal === 100 : true;
 
-  const currentScheduleOption = data.template_strategy === 'ab_test' ? data.ab_test_schedule_option : data.schedule_option;
+  const isValid =
+    !!(isAbTest ? data.ab_test_schedule_option : data.schedule_option) &&
+    isScheduledValid &&
+    isSplitValid;
+
+  const currentScheduleOption = isAbTest ? data.ab_test_schedule_option : data.schedule_option;
 
   const showStrategySelector = (data.template_ids?.length || 0) > 1;
+  const abPercentage = data.ab_test_percentage || 20;
+
+  const spreadLabel = (value: string) => {
+    const hours = parseFloat(value);
+    if (hours === 0) return t('wizard.step4.ui.spread.none');
+    if (hours < 1) return t('wizard.step4.ui.spread.minutes', { count: Math.round(hours * 60) });
+    if (!Number.isInteger(hours)) {
+      return t('wizard.step4.ui.spread.hoursMinutes', {
+        hours: Math.floor(hours),
+        minutes: Math.round((hours % 1) * 60),
+      });
+    }
+    return t('wizard.step4.ui.spread.hours', { count: hours });
+  };
+  const spreadItems = SPREAD_OPTIONS.map(value => ({ value, label: spreadLabel(value) }));
+  const strategyItems = STRATEGIES.map(value => ({
+    value,
+    label: t(`wizard.step4.ui.strategyOptions.${value}`),
+  }));
+
+  const setScheduleOption = (value: 'now' | 'later') => {
+    if (isAbTest) onChange({ ab_test_schedule_option: value });
+    else onChange({ schedule_option: value });
+  };
 
   return (
     <WizardStepLayout
@@ -104,377 +253,335 @@ const Step4_Settings = ({ data, availableTemplates = [], onChange, onNext, onBac
       }
     >
       <div className="flex flex-col gap-6">
+        {showStrategySelector && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('wizard.step4.ui.sendStrategy')}</CardTitle>
+              <CardDescription>{t('wizard.step4.ui.sendStrategyDescription')}</CardDescription>
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-6">
+              <Field>
+                <FieldLabel>{t('wizard.step4.ui.distributionStrategy')}</FieldLabel>
+                <Select
+                  items={strategyItems}
+                  value={data.template_strategy || 'round_robin'}
+                  onValueChange={value =>
+                    value &&
+                    onChange({
+                      template_strategy: value as Step4Props['data']['template_strategy'],
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {strategyItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
 
-          {/* 1. DISTRIBUIÇÃO DE TEMPLATES (Condicional) */}
-          {showStrategySelector && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Settings2 className="h-5 w-5 text-primary" />
+              {data.template_strategy === 'weighted' && (
+                <div className="flex flex-col gap-3 border-t pt-4">
+                  <p className="font-medium text-sm">{t('wizard.step4.ui.weightPerTemplate')}</p>
+                  {data.template_ids?.map(id => {
+                    const templateName =
+                      availableTemplates.find(template => template.id === id)?.name ||
+                      t('wizard.step4.ui.templateFallback', { id });
+                    return (
+                      <div
+                        key={id}
+                        className="flex items-center gap-4 rounded-xl border bg-muted/24 p-3"
+                      >
+                        <p className="min-w-0 flex-1 truncate font-medium text-sm">
+                          {templateName}
+                        </p>
+                        <InputGroup className="w-28">
+                          <InputGroupInput
+                            type="number"
+                            min="0"
+                            max="100"
+                            className="text-right tabular-nums"
+                            aria-label={t('wizard.step4.ui.weightFor', { name: templateName })}
+                            value={data.template_weights?.[id] || 0}
+                            onChange={e => {
+                              const val = parseInt(e.target.value) || 0;
+                              onChange({
+                                template_weights: {
+                                  ...(data.template_weights || {}),
+                                  [id]: val,
+                                },
+                              });
+                            }}
+                          />
+                          <InputGroupAddon align="inline-end">
+                            <InputGroupText>%</InputGroupText>
+                          </InputGroupAddon>
+                        </InputGroup>
+                      </div>
+                    );
+                  })}
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-muted-foreground text-xs">
+                      {t('wizard.step4.ui.total')}
+                    </span>
+                    <span
+                      className={cn(
+                        'font-semibold text-sm tabular-nums',
+                        weightTotal === 100 ? 'text-success-foreground' : 'text-warning-foreground',
+                      )}
+                    >
+                      {weightTotal}%
+                    </span>
+                  </div>
                 </div>
-                <Label className="text-xl font-bold">Estratégia de Envio</Label>
+              )}
+
+              {isAbTest && (
+                <div className="flex flex-col gap-6 border-t pt-4">
+                  <div className="flex flex-col gap-2">
+                    <p className="font-medium text-sm">{t('wizard.step4.ui.winnerCriteria')}</p>
+                    <RadioGroup
+                      value={data.ab_test_winner_criteria || 'open_rate'}
+                      onValueChange={value =>
+                        onChange({
+                          ab_test_winner_criteria:
+                            value as Step4Props['data']['ab_test_winner_criteria'],
+                        })
+                      }
+                      className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
+                      <OptionCard
+                        value="open_rate"
+                        selected={(data.ab_test_winner_criteria || 'open_rate') === 'open_rate'}
+                        title={t('wizard.step4.ui.openRate')}
+                      />
+                      <OptionCard
+                        value="click_rate"
+                        selected={data.ab_test_winner_criteria === 'click_rate'}
+                        title={t('wizard.step4.ui.clickRate')}
+                      />
+                    </RadioGroup>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="ab-test-sample" className="font-medium text-sm">
+                        {t('wizard.step4.ui.testSample')}
+                      </label>
+                      <span className="font-semibold text-primary text-sm tabular-nums">
+                        {abPercentage}%
+                      </span>
+                    </div>
+                    <input
+                      id="ab-test-sample"
+                      type="range"
+                      min="10"
+                      max="50"
+                      step="5"
+                      value={abPercentage}
+                      onChange={e => onChange({ ab_test_percentage: parseInt(e.target.value) })}
+                      className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
+                    />
+                    <div className="flex justify-between text-muted-foreground text-xs tabular-nums">
+                      <span>{t('wizard.step4.ui.baseMessage', { value: abPercentage / 2 })}</span>
+                      <span>
+                        {t('wizard.step4.ui.remainderWinner', { value: 100 - abPercentage })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardPanel>
+          </Card>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {t('wizard.step4.scheduling')}
+              <span className="ms-1 text-destructive-foreground" aria-hidden="true">
+                *
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-3">
+            <RadioGroup
+              value={currentScheduleOption || null}
+              onValueChange={value => setScheduleOption(value as 'now' | 'later')}
+              className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+            >
+              <OptionCard
+                value="now"
+                selected={currentScheduleOption === 'now'}
+                icon={<Zap />}
+                title={t('wizard.step4.sendNow')}
+                description={t('wizard.step4.sendNowDescription')}
+              />
+              <OptionCard
+                value="later"
+                selected={currentScheduleOption === 'later'}
+                icon={<Clock />}
+                title={t('wizard.step4.scheduleLater')}
+                description={t('wizard.step4.scheduleLaterDescription')}
+              />
+            </RadioGroup>
+
+            {currentScheduleOption === 'later' && (
+              <Field className="rounded-xl border bg-muted/24 p-4">
+                <FieldLabel>
+                  {t('wizard.step4.dateTime')} {isAbTest ? t('wizard.step4.ui.testSuffix') : ''}
+                </FieldLabel>
+                <Input
+                  type="datetime-local"
+                  value={(isAbTest ? data.ab_test_scheduled_date : data.scheduled_date) || ''}
+                  onChange={e => {
+                    if (isAbTest) onChange({ ab_test_scheduled_date: e.target.value });
+                    else onChange({ scheduled_date: e.target.value });
+                  }}
+                />
+              </Field>
+            )}
+
+            {isAbTest && (
+              <div className="flex flex-col gap-4 rounded-xl border bg-muted/24 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-medium text-sm">{t('wizard.step4.ui.winnerMessage')}</p>
+                  <label className="flex cursor-pointer items-center gap-2 text-muted-foreground text-xs">
+                    {t('wizard.step4.ui.skipWinner')}
+                    <Switch
+                      checked={!!data.ab_test_skip_winner}
+                      onCheckedChange={v => onChange({ ab_test_skip_winner: v })}
+                    />
+                  </label>
+                </div>
+
+                {!data.ab_test_skip_winner && (
+                  <Field>
+                    <FieldLabel>{t('wizard.step4.ui.sendAt')}</FieldLabel>
+                    <Input
+                      type="datetime-local"
+                      value={data.ab_test_winner_scheduled_date || ''}
+                      onChange={e => onChange({ ab_test_winner_scheduled_date: e.target.value })}
+                    />
+                  </Field>
+                )}
               </div>
+            )}
+          </CardPanel>
+        </Card>
 
-              <div className="bg-card border border-border rounded-xl p-6 space-y-6">
-                <div className="space-y-2">
-                  <Label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Estratégia de Distribuição</Label>
-                  <Select
-                    value={data.template_strategy || 'round_robin'}
-                    onValueChange={(value) => onChange({ template_strategy: value as any })}
-                  >
-                    <SelectTrigger className="h-12 bg-background border-border text-foreground hover:border-primary/50 transition-colors rounded-xl">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="round_robin">sequencial</SelectItem>
-                      <SelectItem value="weighted">Split</SelectItem>
-                      <SelectItem value="random">Aleatorio</SelectItem>
-                      <SelectItem value="ab_test">Teste A/B</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('wizard.step4.ui.advancedOptions')}</CardTitle>
+            <CardDescription>{t('wizard.step4.ui.advancedOptionsDescription')}</CardDescription>
+          </CardHeader>
+          <CardPanel className="flex flex-col divide-y">
+            <SettingRow
+              icon={<Timer />}
+              title={t('wizard.step4.ui.spreadWindow')}
+              description={t('wizard.step4.ui.spreadWindowDescription')}
+            >
+              <Select
+                items={spreadItems}
+                value={String(data.spread_sending_hours || '0')}
+                onValueChange={val =>
+                  val != null && onChange({ spread_sending_hours: parseFloat(String(val)) })
+                }
+              >
+                <SelectTrigger aria-label={t('wizard.step4.ui.spreadWindow')}>
+                  <SelectValue placeholder={t('wizard.step4.ui.spread.none')} />
+                </SelectTrigger>
+                <SelectPopup>
+                  {spreadItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </SettingRow>
 
-                {/* Split (Weighted) Strategy UI */}
-                {data.template_strategy === 'weighted' && (
-                  <div className="space-y-4 pt-4 border-t border-border animate-in fade-in duration-500">
-                    <Label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Distribuição por Template (%)</Label>
-                    <div className="space-y-3">
-                      {data.template_ids?.map((id) => {
-                        const templateName = availableTemplates.find((t) => t.id === id)?.name || `Template ${id}`;
+            <SettingRow
+              icon={<Clock />}
+              title={t('wizard.step4.timeWindows')}
+              description={t('wizard.step4.ui.timeWindowsHint')}
+              action={
+                <Switch
+                  aria-label={t('wizard.step4.timeWindows')}
+                  checked={!!data.use_business_hours}
+                  onCheckedChange={v => onChange({ use_business_hours: v })}
+                />
+              }
+            >
+              {data.use_business_hours && (
+                <div className="flex flex-col gap-4 sm:ps-11">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                      <FieldLabel>{t('wizard.step4.start')}</FieldLabel>
+                      <Input
+                        type="time"
+                        value={data.business_hours_start || '09:00'}
+                        onChange={e => onChange({ business_hours_start: e.target.value })}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>{t('wizard.step4.end')}</FieldLabel>
+                      <Input
+                        type="time"
+                        value={data.business_hours_end || '18:00'}
+                        onChange={e => onChange({ business_hours_end: e.target.value })}
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <p className="font-medium text-sm">{t('wizard.step4.weekdays')}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {WEEKDAYS.map(day => {
+                        const isSelected = !!data.allowed_weekdays?.includes(day.id);
                         return (
-                          <div key={id} className="flex items-center gap-4 bg-muted/40 p-3 rounded-xl border border-border">
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{templateName}</p>
-                            </div>
-                            <div className="w-24">
-                              <div className="relative">
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  value={data.template_weights?.[id] || 0}
-                                  onChange={(e) => {
-                                    const val = parseInt(e.target.value) || 0;
-                                    onChange({
-                                      template_weights: {
-                                        ...(data.template_weights || {}),
-                                        [id]: val,
-                                      },
-                                    });
-                                  }}
-                                  className="h-10 bg-background border-border text-foreground text-right pr-7 rounded-lg"
-                                />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
-                              </div>
-                            </div>
-                          </div>
+                          <Button
+                            key={day.id}
+                            size="sm"
+                            variant={isSelected ? 'default' : 'outline'}
+                            aria-pressed={isSelected}
+                            onClick={() => {
+                              const current = data.allowed_weekdays || [];
+                              const next = isSelected
+                                ? current.filter(d => d !== day.id)
+                                : [...current, day.id];
+                              onChange({ allowed_weekdays: next });
+                            }}
+                          >
+                            {t(`wizard.step4.${day.key}`)}
+                          </Button>
                         );
                       })}
-                      <div className="flex justify-between items-center px-1 pt-2">
-                        <span className="text-xs text-muted-foreground">Total</span>
-                        <span className={`text-sm font-bold ${Object.values(data.template_weights || {}).reduce((a, b) => a + b, 0) === 100 ? 'text-primary' : 'text-orange-500'}`}>
-                          {Object.values(data.template_weights || {}).reduce((a, b) => a + b, 0)}%
-                        </span>
-                      </div>
                     </div>
                   </div>
-                )}
-
-                {/* A/B Test Config */}
-                {data.template_strategy === 'ab_test' && (
-                  <div className="space-y-6 pt-4 border-t border-border animate-in fade-in duration-500">
-                    <div className="space-y-3">
-                      <Label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Critério de Vencedor</Label>
-                      <RadioGroup
-                        value={data.ab_test_winner_criteria || 'open_rate'}
-                        onValueChange={(value) => onChange({ ab_test_winner_criteria: value as any })}
-                        className="grid grid-cols-2 gap-3"
-                      >
-                        <div className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${data.ab_test_winner_criteria === 'open_rate' ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/50'}`}>
-                          <RadioGroupItem value="open_rate" id="open_rate" />
-                          <Label htmlFor="open_rate" className="font-semibold cursor-pointer">Taxa de Abertura</Label>
-                        </div>
-                        <div className={`flex items-center space-x-3 p-4 border rounded-xl transition-all cursor-pointer ${data.ab_test_winner_criteria === 'click_rate' ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/50'}`}>
-                          <RadioGroupItem value="click_rate" id="click_rate" />
-                          <Label htmlFor="click_rate" className="font-semibold cursor-pointer">Taxa de Clique</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Amostra do Teste</Label>
-                        <span className="text-primary font-bold">{data.ab_test_percentage || 20}%</span>
-                      </div>
-                      <Input
-                        type="range"
-                        min="10"
-                        max="50"
-                        step="5"
-                        value={data.ab_test_percentage || 20}
-                        onChange={(e) => onChange({ ab_test_percentage: parseInt(e.target.value) })}
-                        className="h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                      <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
-                        <span>Mensagem Base: {(data.ab_test_percentage || 20) / 2}%</span>
-                        <span>Restante (Vencedor): {100 - (data.ab_test_percentage || 20)}%</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* 2. AGENDAMENTO */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-orange-500" />
-              </div>
-              <Label className="text-xl font-bold">Agendamento <span className="text-destructive">*</span></Label>
-            </div>
-
-            <div className="space-y-3">
-              <div
-                className={`relative flex items-center p-4 rounded-xl border transition-all cursor-pointer group ${currentScheduleOption === 'now'
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border bg-card hover:border-primary/50 hover:shadow-sm'
-                  }`}
-                onClick={() => {
-                  if (data.template_strategy === 'ab_test') onChange({ ab_test_schedule_option: 'now' });
-                  else onChange({ schedule_option: 'now' });
-                }}
-              >
-                <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-colors ${currentScheduleOption === 'now' ? 'border-primary bg-primary' : 'border-muted-foreground'}`}>
-                  {currentScheduleOption === 'now' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Zap className={`h-4 w-4 ${currentScheduleOption === 'now' ? 'text-primary' : 'text-muted-foreground'}`} />
-                    <Label className="text-base font-semibold cursor-pointer">Enviar agora</Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground">O envio começará assim que a campanha for criada</p>
-                </div>
-              </div>
-
-              <div
-                className={`relative flex items-center p-4 rounded-xl border transition-all cursor-pointer group ${currentScheduleOption === 'later'
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border bg-card hover:border-primary/50 hover:shadow-sm'
-                  }`}
-                onClick={() => {
-                  if (data.template_strategy === 'ab_test') onChange({ ab_test_schedule_option: 'later' });
-                  else onChange({ schedule_option: 'later' });
-                }}
-              >
-                <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-colors ${currentScheduleOption === 'later' ? 'border-primary bg-primary' : 'border-muted-foreground'}`}>
-                  {currentScheduleOption === 'later' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Clock className={`h-4 w-4 ${currentScheduleOption === 'later' ? 'text-primary' : 'text-muted-foreground'}`} />
-                    <Label className="text-base font-semibold cursor-pointer">Agendar para mais tarde</Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Escolha uma data e horário futuro para o início</p>
-                </div>
-              </div>
-
-              {currentScheduleOption === 'later' && (
-                <div className="bg-muted/20 border border-border rounded-xl p-4 mt-2 animate-in zoom-in-95 duration-300">
-                  <Label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 block">
-                    Data e Hora {data.template_strategy === 'ab_test' ? '(Teste)' : ''}
-                  </Label>
-                  <Input
-                    type="datetime-local"
-                    value={(data.template_strategy === 'ab_test' ? data.ab_test_scheduled_date : data.scheduled_date) || ''}
-                    onChange={(e) => {
-                      if (data.template_strategy === 'ab_test') onChange({ ab_test_scheduled_date: e.target.value });
-                      else onChange({ scheduled_date: e.target.value });
-                    }}
-                    className="h-10 bg-background border-border text-foreground rounded-lg focus-visible:ring-primary"
-                  />
                 </div>
               )}
+            </SettingRow>
 
-              {data.template_strategy === 'ab_test' && (
-                <div className="bg-muted/30 border border-border rounded-xl p-4 mt-4 space-y-4 animate-in slide-in-from-top-4 duration-500">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-bold">Mensagem Vencedora</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Não enviar automaticamente</span>
-                      <Switch
-                        checked={data.ab_test_skip_winner}
-                        onCheckedChange={(v) => onChange({ ab_test_skip_winner: v })}
-                      />
-                    </div>
-                  </div>
-
-                  {!data.ab_test_skip_winner && (
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Enviar em</Label>
-                      <Input
-                        type="datetime-local"
-                        value={data.ab_test_winner_scheduled_date || ''}
-                        onChange={(e) => onChange({ ab_test_winner_scheduled_date: e.target.value })}
-                        className="h-10 bg-background border-border text-foreground rounded-lg"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* 3. OPÇÕES AVANÇADAS */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center">
-                <Settings2 className="h-5 w-5 text-info" />
-              </div>
-              <Label className="text-xl font-bold">Opções Avançadas</Label>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl divide-y divide-border overflow-hidden">
-              {/* Janela de Distribuição (Spread Sending) */}
-              <div className="p-4 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                    <Zap className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <Label className="text-sm font-bold">Janela de Distribuição</Label>
-                    <p className="text-[10px] text-muted-foreground">Intervalo entre os disparos da campanha</p>
-                  </div>
-                </div>
-                <Select
-                  value={String(data.spread_sending_hours || '0')}
-                  onValueChange={(val) => onChange({ spread_sending_hours: parseFloat(val) })}
-                >
-                  <SelectTrigger className="h-10 bg-background border-border text-foreground rounded-lg">
-                    <SelectValue placeholder="Sem intervalo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.166">10 minutos</SelectItem>
-                    <SelectItem value="0.5">30 minutos</SelectItem>
-                    <SelectItem value="1">60 minutos</SelectItem>
-                    <SelectItem value="1.5">1 Hora 30 minutos</SelectItem>
-                    <SelectItem value="2">2 Horas</SelectItem>
-                    <SelectItem value="2.5">2 Horas 30 minutos</SelectItem>
-                    <SelectItem value="3">3 Horas</SelectItem>
-                    <SelectItem value="4">4 Horas</SelectItem>
-                    <SelectItem value="5">5 Horas</SelectItem>
-                    <SelectItem value="6">6 Horas</SelectItem>
-                    <SelectItem value="7">7 Horas</SelectItem>
-                    <SelectItem value="8">8 Horas</SelectItem>
-                    <SelectItem value="9">10 Horas</SelectItem>
-                    <SelectItem value="11">11 Horas</SelectItem>
-                    <SelectItem value="12">12 Horas</SelectItem>
-                    <SelectItem value="18">18 Horas</SelectItem>
-                    <SelectItem value="24">24 Horas</SelectItem>
-                    <SelectItem value="0">Sem intervalo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Janelas de Tempo (Business Hours) */}
-              <div className="p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-bold">Janelas de Tempo</Label>
-                      <p className="text-[10px] text-muted-foreground">Restringir envios ao horário permitido e dias</p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={data.use_business_hours}
-                    onCheckedChange={(v) => onChange({ use_business_hours: v })}
-                  />
-                </div>
-
-                {data.use_business_hours && (
-                  <div className="space-y-4 animate-in fade-in duration-300 pl-11">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Início</Label>
-                        <Input
-                          type="time"
-                          value={data.business_hours_start || '09:00'}
-                          onChange={(e) => onChange({ business_hours_start: e.target.value })}
-                          className="h-9 bg-background border-border"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Fim</Label>
-                        <Input
-                          type="time"
-                          value={data.business_hours_end || '18:00'}
-                          onChange={(e) => onChange({ business_hours_end: e.target.value })}
-                          className="h-9 bg-background border-border"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Dias da Semana</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { id: 1, label: 'Seg' },
-                          { id: 2, label: 'Ter' },
-                          { id: 3, label: 'Qua' },
-                          { id: 4, label: 'Qui' },
-                          { id: 5, label: 'Sex' },
-                          { id: 6, label: 'Sáb' },
-                          { id: 0, label: 'Dom' },
-                        ].map((day) => {
-                          const isSelected = data.allowed_weekdays?.includes(day.id);
-                          return (
-                            <button
-                              key={day.id}
-                              type="button"
-                              onClick={() => {
-                                const current = data.allowed_weekdays || [];
-                                const next = isSelected
-                                  ? current.filter(d => d !== day.id)
-                                  : [...current, day.id];
-                                onChange({ allowed_weekdays: next });
-                              }}
-                              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all border ${isSelected
-                                  ? 'bg-primary border-primary text-white shadow-sm'
-                                  : 'bg-background border-border text-muted-foreground hover:border-primary/50'
-                                }`}
-                            >
-                              {day.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                    <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <Label className="text-sm font-bold">Tentativas Automáticas</Label>
-                    <p className="text-[10px] text-muted-foreground">Tentar reenviar em caso de falha</p>
-                  </div>
-                </div>
+            <SettingRow
+              icon={<RotateCcw />}
+              title={t('wizard.step4.ui.retry')}
+              description={t('wizard.step4.ui.retryDescription')}
+              action={
                 <Switch
-                  checked={data.enable_retry}
-                  onCheckedChange={(v) => onChange({ enable_retry: v })}
+                  aria-label={t('wizard.step4.ui.retry')}
+                  checked={!!data.enable_retry}
+                  onCheckedChange={v => onChange({ enable_retry: v })}
                 />
-              </div>
-            </div>
-          </div>
-
+              }
+            />
+          </CardPanel>
+        </Card>
       </div>
     </WizardStepLayout>
   );
