@@ -320,12 +320,12 @@
         "distributionStrategy": "Estratégia de distribuição",
         "strategyOptions": {
           "round_robin": "Sequencial",
-          "weighted": "Split",
+          "weighted": "Ponderado",
           "random": "Aleatório",
           "ab_test": "Teste A/B"
         },
         "weightPerTemplate": "Distribuição por template (%)",
-        "templateFallback": "Template {{id}}",
+        "templateFallback": "Modelo {{id}}",
         "weightFor": "Peso de {{name}}",
         "total": "Total",
         "winnerCriteria": "Critério de vencedor",
