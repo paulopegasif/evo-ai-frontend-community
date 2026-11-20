@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Input, Label, Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
@@ -44,10 +46,11 @@ export default function Step2_Connection({ data, onChange, onNext, onBack }: Ste
               {t('form.labels.url')} <span className="text-destructive">*</span>
             </Label>
             <Input
+              size="lg"
               placeholder={t('form.placeholders.url')}
               value={data.url}
               onChange={e => onChange({ ...data, url: e.target.value })}
-              className={`h-10 text-sm ${error ? 'border-red-500' : ''}`}
+              aria-invalid={!!error || undefined}
               autoFocus
             />
             {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}

@@ -1,14 +1,14 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Input,
-  Label,
-  Button,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
@@ -58,18 +58,18 @@ export default function Step2_Endpoint({ data, onChange, onNext, onBack }: Step2
               </Label>
               <Select
                 value={data.method}
-                onValueChange={value => onChange({ ...data, method: value })}
+                onValueChange={value => value && onChange({ ...data, method: value })}
               >
-                <SelectTrigger className="h-10">
+                <SelectTrigger size="lg">
                   <SelectValue placeholder={t('form.fields.method.placeholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {HTTP_METHODS.map(method => (
                     <SelectItem key={method} value={method}>
                       {method}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
 
@@ -78,10 +78,11 @@ export default function Step2_Endpoint({ data, onChange, onNext, onBack }: Step2
                 {t('form.fields.endpoint.label')} <span className="text-destructive">*</span>
               </Label>
               <Input
+                size="lg"
                 placeholder={t('form.fields.endpoint.placeholder')}
                 value={data.endpoint}
                 onChange={e => onChange({ ...data, endpoint: e.target.value })}
-                className={`h-10 text-sm ${error ? 'border-red-500' : ''}`}
+                aria-invalid={!!error || undefined}
               />
               {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
             </div>

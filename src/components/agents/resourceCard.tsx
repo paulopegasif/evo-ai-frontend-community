@@ -164,3 +164,72 @@ export function HttpMethodBadge({ method }: { method: string }) {
     </Badge>
   );
 }
+
+/** Titled block used inside the custom tool / MCP details dialogs. */
+export function DetailSection({
+  icon: Icon,
+  title,
+  count,
+  isEmpty = false,
+  emptyLabel,
+  children,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  count?: number;
+  isEmpty?: boolean;
+  emptyLabel?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <section className="flex flex-col gap-2.5">
+      <h3 className="flex items-center gap-2 font-medium text-sm">
+        <Icon className="size-4 text-muted-foreground" />
+        {title}
+        {count !== undefined && (
+          <Badge variant="secondary" size="sm" className="tabular-nums">
+            {count}
+          </Badge>
+        )}
+      </h3>
+      {isEmpty ? (
+        <p className="rounded-lg border border-dashed px-3 py-4 text-center text-muted-foreground text-xs">
+          {emptyLabel}
+        </p>
+      ) : (
+        children
+      )}
+    </section>
+  );
+}
+
+export function DetailField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1">
+      <dt className="text-muted-foreground text-xs">{label}</dt>
+      <dd className="min-w-0 text-sm">{children}</dd>
+    </div>
+  );
+}
+
+/** Key/value rows (headers, environments) in a bordered list. */
+export function KeyValueList({ entries, mask }: { entries: [string, unknown][]; mask?: boolean }) {
+  return (
+    <dl className="divide-y overflow-hidden rounded-lg border">
+      {entries.map(([key, value]) => {
+        const text = String(value);
+        return (
+          <div key={key} className="flex items-center justify-between gap-4 px-3 py-2">
+            <dt className="truncate font-medium text-sm">{key}</dt>
+            <dd
+              className="max-w-[60%] truncate font-mono text-muted-foreground text-xs"
+              title={mask ? undefined : text}
+            >
+              {mask ? '••••••••' : text}
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
+}

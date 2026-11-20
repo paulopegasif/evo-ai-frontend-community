@@ -1,14 +1,14 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
-  Button,
-  Badge,
-  Label,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowRight, ArrowLeft, SkipForward, LogIn, LogOut } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -30,6 +30,10 @@ const MODE_OPTIONS = ['text', 'image', 'audio', 'video', 'json', 'file'] as cons
 
 export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Props) {
   const { t } = useLanguage('customTools');
+  const modeItems = MODE_OPTIONS.map(opt => ({
+    value: opt,
+    label: t(`wizard.step5.modeOptions.${opt}`),
+  }));
 
   return (
     <div className="flex flex-col h-full min-h-0 max-w-4xl mx-auto py-2 px-4">
@@ -43,19 +47,20 @@ export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Pro
                 {t('wizard.step5.input.typeLabel')}
               </Label>
               <Select
-                value={data.input_mode || undefined}
-                onValueChange={value => onChange({ ...data, input_mode: value })}
+                items={modeItems}
+                value={data.input_mode || null}
+                onValueChange={value => onChange({ ...data, input_mode: value ?? '' })}
               >
-                <SelectTrigger className="h-10">
+                <SelectTrigger size="lg">
                   <SelectValue placeholder={t('wizard.step5.selectPlaceholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {MODE_OPTIONS.map(opt => (
                     <SelectItem key={opt} value={opt}>
                       {t(`wizard.step5.modeOptions.${opt}`)}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
 
               <div className="flex items-center gap-2 pt-1">
@@ -68,12 +73,10 @@ export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Pro
               </div>
               <Textarea
                 value={data.input_description}
-                onChange={e =>
-                  onChange({ ...data, input_description: e.target.value })
-                }
+                onChange={e => onChange({ ...data, input_description: e.target.value })}
                 placeholder={t('wizard.step5.input.descriptionPlaceholder')}
                 rows={4}
-                className="text-sm resize-none"
+                className="resize-none"
               />
             </div>
 
@@ -84,19 +87,20 @@ export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Pro
                 {t('wizard.step5.output.typeLabel')}
               </Label>
               <Select
-                value={data.output_mode || undefined}
-                onValueChange={value => onChange({ ...data, output_mode: value })}
+                items={modeItems}
+                value={data.output_mode || null}
+                onValueChange={value => onChange({ ...data, output_mode: value ?? '' })}
               >
-                <SelectTrigger className="h-10">
+                <SelectTrigger size="lg">
                   <SelectValue placeholder={t('wizard.step5.selectPlaceholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {MODE_OPTIONS.map(opt => (
                     <SelectItem key={opt} value={opt}>
                       {t(`wizard.step5.modeOptions.${opt}`)}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
 
               <div className="flex items-center gap-2 pt-1">
@@ -109,12 +113,10 @@ export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Pro
               </div>
               <Textarea
                 value={data.output_description}
-                onChange={e =>
-                  onChange({ ...data, output_description: e.target.value })
-                }
+                onChange={e => onChange({ ...data, output_description: e.target.value })}
                 placeholder={t('wizard.step5.output.descriptionPlaceholder')}
                 rows={4}
-                className="text-sm resize-none"
+                className="resize-none"
               />
             </div>
           </div>
