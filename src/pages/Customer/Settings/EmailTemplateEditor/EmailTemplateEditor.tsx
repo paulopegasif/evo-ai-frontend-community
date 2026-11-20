@@ -328,10 +328,11 @@ const EmailTemplateEditor: React.FC = () => {
               </Field>
 
               <div className="grid grid-cols-2 gap-4">
-                <Field>
+                <Field className="min-w-0">
                   <FieldLabel htmlFor="email-tpl-category">{t('settings.messageTemplates.form.category')}</FieldLabel>
                   <OptionSelect
                     id="email-tpl-category"
+                    className="min-w-0"
                     value={formData.category}
                     onValueChange={value =>
                       setFormData(prev => ({
@@ -346,10 +347,11 @@ const EmailTemplateEditor: React.FC = () => {
                   />
                 </Field>
 
-                <Field>
+                <Field className="min-w-0">
                   <FieldLabel htmlFor="email-tpl-language">{t('settings.messageTemplates.form.language')}</FieldLabel>
                   <OptionSelect
                     id="email-tpl-language"
+                    className="min-w-0"
                     value={formData.language}
                     onValueChange={value => setFormData(prev => ({ ...prev, language: value }))}
                     options={[

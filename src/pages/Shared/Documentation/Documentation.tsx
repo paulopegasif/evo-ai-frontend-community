@@ -93,7 +93,7 @@ const Documentacao = () => {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 md:p-6">
-            <div className="prose prose-gray dark:prose-invert mx-auto max-w-4xl">
+            <div className="mx-auto max-w-3xl text-sm leading-relaxed [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:font-semibold [&_h2]:text-base [&_h2]:text-foreground [&_li]:mt-1.5 [&_ol]:list-decimal [&_ol]:ps-5 [&_p]:text-muted-foreground [&_ul]:list-disc [&_ul]:ps-5">
               <Alert variant="info" className="not-prose mb-8">
                 <Info />
                 <AlertTitle>{t('content.welcome.title')}</AlertTitle>
@@ -147,7 +147,7 @@ const Documentacao = () => {
                 <li>{t('content.support.documentation')}</li>
               </ul>
 
-              <div className="text-center py-8 border-t mt-8">
+              <div className="mt-8 border-t py-8 text-center">
                 <p className="text-muted-foreground">
                   {t('content.demo.message')}
                 </p>
