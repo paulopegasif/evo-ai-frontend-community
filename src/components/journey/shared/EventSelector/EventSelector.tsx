@@ -1,4 +1,4 @@
-import { useMemo, useState, useId } from 'react';
+import { Fragment, useMemo, useState, useId } from 'react';
 import {
   Check,
   ChevronsUpDown,
@@ -11,17 +11,17 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-// cmdk-based Command (typeahead list) — kept from the compat module on purpose:
-// it carries cmdk filtering behavior, not just a re-export.
 import {
   Command,
+  CommandCollection,
   CommandEmpty,
   CommandGroup,
+  CommandGroupLabel,
   CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/compat/command';
+} from '@/components/ui/command';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import {
   EVENT_CATEGORIES,
@@ -82,7 +82,7 @@ export function EventSelector({
     const catalog = getEventCatalog();
     return visibleCategories
       .map((category) => ({
-        category,
+        value: category,
         items: catalog.filter((e) => {
           if (e.category !== category) return false;
           if (filterByEventType && !filterByEventType.includes(e.dtoType)) return false;
@@ -131,22 +131,22 @@ export function EventSelector({
         className="w-(--anchor-width) p-0 **:data-[slot=popover-viewport]:p-0"
         align="start"
       >
-        <Command>
+        <Command items={grouped} itemToStringValue={item => searchText(item as EventCatalogEntry)}>
           <CommandInput placeholder={t('selector.searchPlaceholder')} />
-          <CommandList>
-            <CommandEmpty>{t('selector.noResults')}</CommandEmpty>
-            {grouped.map((group, index) => (
-              <CommandGroupSection
-                key={group.category}
-                category={group.category}
-                items={group.items}
-                value={value}
-                onSelect={handleSelect}
-                showSeparatorBefore={index > 0}
-                currentLanguage={currentLanguage}
-                t={t}
-              />
-            ))}
+          <CommandEmpty>{t('selector.noResults')}</CommandEmpty>
+          <CommandList className="max-h-80 overflow-y-auto">
+            {(group: EventGroup, index: number) => (
+              <Fragment key={group.value}>
+                {index > 0 && <CommandSeparator />}
+                <CommandGroupSection
+                  group={group}
+                  value={value}
+                  onSelect={handleSelect}
+                  currentLanguage={currentLanguage}
+                  t={t}
+                />
+              </Fragment>
+            )}
           </CommandList>
         </Command>
       </PopoverPopup>
@@ -154,43 +154,39 @@ export function EventSelector({
   );
 }
 
+type EventGroup = { value: EventCategory; items: EventCatalogEntry[] };
+
+// What the search box matches against (category, id and both labels).
+function searchText(item: EventCatalogEntry): string {
+  return `${item.category} ${item.eventName} ${item.labelEn} ${item.labelPt}`;
+}
+
 function CommandGroupSection({
-  category,
-  items,
+  group,
   value,
   onSelect,
-  showSeparatorBefore,
   currentLanguage,
   t,
 }: {
-  category: EventCategory;
-  items: EventCatalogEntry[];
+  group: EventGroup;
   value?: string;
   onSelect: (eventName: string) => void;
-  showSeparatorBefore: boolean;
   currentLanguage: string;
   t: (key: string) => string;
 }) {
-  const Icon = CATEGORY_ICON[category];
+  const Icon = CATEGORY_ICON[group.value];
   return (
-    <>
-      {showSeparatorBefore && <CommandSeparator />}
-      <CommandGroup heading={t(`categories.${category}`)}>
-        {items.map((item) => (
-          <CommandItem
-            key={item.eventName}
-            value={`${item.category} ${item.eventName} ${item.labelEn} ${item.labelPt}`}
-            onSelect={() => onSelect(item.eventName)}
-          >
+    <CommandGroup items={group.items}>
+      <CommandGroupLabel>{t(`categories.${group.value}`)}</CommandGroupLabel>
+      <CommandCollection>
+        {(item: EventCatalogEntry) => (
+          <CommandItem key={item.eventName} value={item} onClick={() => onSelect(item.eventName)}>
             <Check
-              className={cn(
-                'me-2 size-4',
-                value === item.eventName ? 'opacity-100' : 'opacity-0',
-              )}
+              className={cn('size-4', value === item.eventName ? 'opacity-100' : 'opacity-0')}
               aria-hidden="true"
             />
-            <Icon className="me-2 size-4 text-muted-foreground" aria-hidden="true" />
-            <div className="flex flex-col">
+            <Icon className="size-4 text-muted-foreground" aria-hidden="true" />
+            <div className="flex min-w-0 flex-col">
               <span className="flex items-center gap-2">
                 {selectedLabel(item, currentLanguage)}
                 {item.category === 'custom' && (
@@ -199,12 +195,12 @@ function CommandGroupSection({
                   </Badge>
                 )}
               </span>
-              <span className="text-xs text-muted-foreground">{item.description}</span>
+              <span className="text-muted-foreground text-xs">{item.description}</span>
             </div>
           </CommandItem>
-        ))}
-      </CommandGroup>
-    </>
+        )}
+      </CommandCollection>
+    </CommandGroup>
   );
 }
 
