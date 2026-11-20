@@ -1,6 +1,14 @@
 import React from 'react';
-import { MessageCircle, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/compat';
+import { MessageCircle, Plus, SearchX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface NoConversationsProps {
@@ -13,30 +21,30 @@ const NoConversations: React.FC<NoConversationsProps> = ({ onCreateNew, searchTe
   const isSearchResult = searchTerm && searchTerm.trim().length > 0;
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center">
-      <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-        <MessageCircle className="w-8 h-8 text-muted-foreground" />
-      </div>
-
-      <h3 className="text-lg font-semibold mb-2">
-        {isSearchResult
-          ? t('emptyStates.noConversations.title.search')
-          : t('emptyStates.noConversations.title.default')}
-      </h3>
-
-      <p className="text-muted-foreground mb-6 max-w-sm">
-        {isSearchResult
-          ? t('emptyStates.noConversations.description.search', { searchTerm: searchTerm || '' })
-          : t('emptyStates.noConversations.description.default')}
-      </p>
+    <Empty className="md:py-12">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">{isSearchResult ? <SearchX /> : <MessageCircle />}</EmptyMedia>
+        <EmptyTitle>
+          {isSearchResult
+            ? t('emptyStates.noConversations.title.search')
+            : t('emptyStates.noConversations.title.default')}
+        </EmptyTitle>
+        <EmptyDescription>
+          {isSearchResult
+            ? t('emptyStates.noConversations.description.search', { searchTerm: searchTerm || '' })
+            : t('emptyStates.noConversations.description.default')}
+        </EmptyDescription>
+      </EmptyHeader>
 
       {!isSearchResult && onCreateNew && (
-        <Button onClick={onCreateNew} className="gap-2">
-          <Plus className="w-4 h-4" />
-          {t('emptyStates.noConversations.createNew')}
-        </Button>
+        <EmptyContent>
+          <Button onClick={onCreateNew}>
+            <Plus />
+            {t('emptyStates.noConversations.createNew')}
+          </Button>
+        </EmptyContent>
       )}
-    </div>
+    </Empty>
   );
 };
 

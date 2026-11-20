@@ -1,23 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import {
   ContextMenu,
   ContextMenuTrigger,
-  ContextMenuContent,
+  ContextMenuPopup,
   ContextMenuItem,
   ContextMenuSeparator,
-} from '@/components/ui/compat';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/compat';
-import { LockIcon, Reply, Copy, Trash2, AlertTriangle, Shield, Ban, Pencil } from 'lucide-react';
+} from '@/components/ui/context-menu';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { LockIcon, Reply, Copy, Trash2, Shield, Ban, Pencil } from 'lucide-react';
 import { Message, MESSAGE_TYPE } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import MessageText from '@/components/chat/messages/MessageText';
@@ -161,34 +152,33 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
     return (
       <ContextMenu>
-        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-        <ContextMenuContent className="w-48">
+        <ContextMenuTrigger render={children as React.ReactElement} />
+        <ContextMenuPopup className="w-48">
           {canReply && (
-            <ContextMenuItem onClick={handleReplyMessage} className="flex items-center gap-2">
-              <Reply className="h-4 w-4" />
+            <ContextMenuItem onClick={handleReplyMessage}>
+              <Reply />
               {t('messages.messageBubble.contextMenu.reply')}
             </ContextMenuItem>
           )}
-          <ContextMenuItem onClick={handleCopyMessage} className="flex items-center gap-2">
-            <Copy className="h-4 w-4" />
+          <ContextMenuItem onClick={handleCopyMessage}>
+            <Copy />
             {t('messages.messageBubble.contextMenu.copy')}
           </ContextMenuItem>
           {canEdit && (
-            <ContextMenuItem onClick={() => setShowEditDialog(true)} className="flex items-center gap-2">
-              <Pencil className="h-4 w-4" />
+            <ContextMenuItem onClick={() => setShowEditDialog(true)}>
+              <Pencil />
               {t('messages.messageBubble.contextMenu.edit')}
             </ContextMenuItem>
           )}
           <ContextMenuSeparator />
           <ContextMenuItem
             onClick={handleDeleteMessage}
-            className="flex items-center gap-2"
             variant="destructive"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 />
             {t('messages.messageBubble.contextMenu.delete')}
           </ContextMenuItem>
-        </ContextMenuContent>
+        </ContextMenuPopup>
       </ContextMenu>
     );
   };
@@ -362,16 +352,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         <div className="mb-1">
           {renderContextMenu(
             <div
-              className={`rounded-lg px-3 py-1.5 ${isDeleted ? 'cursor-default' : 'cursor-pointer'} ${isPrivate
-                ? 'bg-orange-50 border border-orange-200 dark:bg-orange-950/20 dark:border-orange-800/50'
-                : 'bg-muted/50 hover:bg-muted/70 border border-border/50'
+              className={`rounded-xl border px-3 py-1.5 ${isDeleted ? 'cursor-default' : 'cursor-pointer'} ${isPrivate
+                ? 'border-warning/32 bg-warning/8'
+                : 'bg-card hover:bg-accent/40'
                 }`}
             >
               {/* Indicador de mensagem privada */}
               {isPrivate && (
-                <div className="flex items-center gap-1.5 mb-2 text-muted-foreground">
-                  <LockIcon className="h-3 w-3" />
-                  <Badge variant="outline" className="h-5 px-1.5 text-xs font-medium bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700">
+                <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
+                  <LockIcon className="size-3 text-warning-foreground" />
+                  <Badge variant="warning" size="sm">
                     {t('messages.messageBubble.privateNote.badge')}
                   </Badge>
                 </div>
@@ -379,18 +369,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
               {/* Moderation indicators */}
               {hasPendingModeration && !isPendingResponse && (
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Shield className="h-3 w-3 text-warning" />
-                  <Badge variant="outline" className="h-5 px-1.5 text-xs border-warning text-warning bg-warning/10">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <Shield className="size-3 text-warning-foreground" />
+                  <Badge variant="warning" size="sm">
                     {t('messages.messageBubble.moderation.pending')}
                   </Badge>
                 </div>
               )}
 
               {isBlocked && (
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Ban className="h-3 w-3 text-destructive" />
-                  <Badge variant="outline" className="h-5 px-1.5 text-xs border-destructive text-destructive bg-destructive/10">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <Ban className="size-3 text-destructive-foreground" />
+                  <Badge variant="error" size="sm">
                     {t('messages.messageBubble.moderation.blocked')}
                   </Badge>
                 </div>
@@ -433,44 +423,22 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           />
         )}
 
-        {/* Alert Dialog para confirmação de exclusão */}
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent className="max-w-md">
-            <AlertDialogHeader className="text-left space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="h-6 w-6 text-destructive" />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <AlertDialogTitle className="text-lg font-semibold">
-                    {t('messages.messageBubble.deleteDialog.title')}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                    {t('messages.messageBubble.deleteDialog.description')}
-                  </AlertDialogDescription>
-                </div>
-              </div>
-            </AlertDialogHeader>
-
-            <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-3">
-              <AlertDialogCancel className="w-full sm:w-auto">{t('messages.messageBubble.deleteDialog.cancel')}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={confirmDeleteMessage}
-                className="w-full sm:w-auto bg-destructive text-white hover:bg-destructive/90 focus:ring-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('messages.messageBubble.deleteDialog.confirm')}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          title={t('messages.messageBubble.deleteDialog.title')}
+          description={t('messages.messageBubble.deleteDialog.description')}
+          cancelLabel={t('messages.messageBubble.deleteDialog.cancel')}
+          confirmLabel={t('messages.messageBubble.deleteDialog.confirm')}
+          onConfirm={confirmDeleteMessage}
+        />
       </>
     );
   }
 
   // Regular messages (incoming/outgoing/bot) - estilo padrão
   return (
-    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${isThreadReply ? 'mb-1' : 'mb-4'}`}>
+    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${isThreadReply ? 'mb-1' : 'mb-2.5'}`}>
       {/* 👤 Avatar: REMOVIDO - não mostrar avatar nas mensagens */}
       {/* {!isOwn && showAvatar && !isThreadReply && (
         <Avatar className="w-8 h-8 mr-2 flex-shrink-0">
@@ -493,12 +461,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         </div>
       )}
 
-      <div className={`${isThreadReply ? 'max-w-[calc(70%-2rem)]' : 'max-w-[70%]'} ${isOwn ? 'ml-auto' : ''}`}>
+      <div
+        className={`min-w-0 ${isThreadReply ? 'max-w-[min(calc(75%-2rem),40rem)]' : 'max-w-[min(75%,40rem)]'} ${isOwn ? 'ml-auto' : ''}`}
+      >
         {/* Em conversa de grupo o backend anexa content_attributes.sender_name por mensagem;
             destaca o participante acima da bolha. Em 1:1, mantém o comportamento antigo. */}
         {!isOwn && (message.content_attributes?.sender_name || isThreadReply || !showAvatar) && (
           <div
-            className={`text-xs mb-1 flex items-center gap-1.5 ${
+            className={`mb-1 flex items-center gap-1.5 px-1 text-xs ${
               message.content_attributes?.sender_name
                 ? 'font-medium text-primary'
                 : 'text-muted-foreground'
@@ -512,25 +482,24 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
         {renderContextMenu(
           <div
-            className={`rounded-lg px-3 py-2 ${isDeleted ? 'cursor-default' : 'cursor-pointer'} ${
-              isOwn ? 'rounded-tr-[4px]' : isThreadReply ? 'rounded-tl-md' : ''
+            data-slot="message-bubble"
+            className={`rounded-2xl border px-3 py-2 text-foreground text-sm shadow-xs/5 transition-colors ${isDeleted ? 'cursor-default' : 'cursor-pointer'} ${
+              isOwn ? 'rounded-br-md' : 'rounded-bl-md'
             } ${isPrivate
-                ? 'bg-orange-50 border-2 border-orange-200 border-l-4 border-l-orange-400 dark:bg-orange-950/20 dark:border-orange-800/50 dark:border-l-orange-600'
-                : isFromAgent
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/85'
-                  : isFromBot
-                    ? 'bg-purple-600 text-white dark:bg-purple-700'
-                    : isOwn
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/85'
-                      : isThreadReply
-                        ? 'bg-muted/70 border border-l-2 border-l-primary/40 dark:bg-muted/50' // Estilo mais sutil para replies
-                        : 'bg-muted border'
+                ? 'border-warning/32 border-s-2 border-s-warning bg-warning/8'
+                : isFromBot
+                  ? 'border-info/20 bg-info/8 hover:bg-info/12'
+                  : isFromAgent || isOwn
+                    ? 'border-primary/20 bg-primary/10 hover:bg-primary/14 dark:bg-primary/14 dark:hover:bg-primary/18'
+                    : isThreadReply
+                      ? 'border-s-2 border-s-primary/40 bg-card' // Estilo mais sutil para replies
+                      : 'bg-card hover:bg-accent/40'
               }`}
           >
             {/* Nome do remetente DENTRO da bolha (não como badge externo) — estilo do
                 protótipo: nome em destaque no topo, cor clara sobre o fundo colorido. */}
             {isOwn && (isFromAgent || isFromBot) && (
-              <div className="text-xs font-bold mb-1 opacity-90">
+              <div className={`mb-0.5 font-semibold text-xs ${isFromBot ? 'text-info-foreground' : 'text-foreground/80'}`}>
                 {message.sender?.name ||
                   (isFromBot ? t('messages.messageBubble.bot.fallback') : t('messages.messageBubble.agent.fallback'))}
               </div>
@@ -538,9 +507,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
             {/* Indicador de mensagem privada */}
             {isPrivate && (
-              <div className="flex items-center gap-1.5 mb-2 text-muted-foreground">
-                <LockIcon className="h-3 w-3" />
-                <Badge variant="outline" className="h-5 px-1.5 text-xs font-medium bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700">
+              <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
+                <LockIcon className="size-3 text-warning-foreground" />
+                <Badge variant="warning" size="sm">
                   {t('messages.messageBubble.privateNote.badge')}
                 </Badge>
                 <span className="text-xs">{t('messages.messageBubble.privateNote.description')}</span>
@@ -549,18 +518,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
             {/* Moderation indicators */}
             {hasPendingModeration && !isPendingResponse && (
-              <div className="flex items-center gap-1.5 mb-2">
-                <Shield className="h-3 w-3 text-warning" />
-                <Badge variant="outline" className="h-5 px-1.5 text-xs border-warning text-warning bg-warning/10">
+              <div className="mb-1.5 flex items-center gap-1.5">
+                <Shield className="size-3 text-warning-foreground" />
+                <Badge variant="warning" size="sm">
                   {t('messages.messageBubble.moderation.pending')}
                 </Badge>
               </div>
             )}
 
             {isBlocked && (
-              <div className="flex items-center gap-1.5 mb-2">
-                <Ban className="h-3 w-3 text-destructive" />
-                <Badge variant="outline" className="h-5 px-1.5 text-xs border-destructive text-destructive bg-destructive/10">
+              <div className="mb-1.5 flex items-center gap-1.5">
+                <Ban className="size-3 text-destructive-foreground" />
+                <Badge variant="error" size="sm">
                   {t('messages.messageBubble.moderation.blocked')}
                 </Badge>
               </div>
@@ -603,37 +572,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         />
       )}
 
-      {/* Alert Dialog para confirmação de exclusão */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader className="text-left space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-              </div>
-              <div className="flex-1 space-y-2">
-                <AlertDialogTitle className="text-lg font-semibold">
-                  {t('messages.messageBubble.deleteDialog.title')}
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                  {t('messages.messageBubble.deleteDialog.description')}
-                </AlertDialogDescription>
-              </div>
-            </div>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-3">
-            <AlertDialogCancel className="w-full sm:w-auto">{t('messages.messageBubble.deleteDialog.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDeleteMessage}
-              className="w-full sm:w-auto bg-destructive text-white hover:bg-destructive/90 focus:ring-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t('messages.messageBubble.deleteDialog.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title={t('messages.messageBubble.deleteDialog.title')}
+        description={t('messages.messageBubble.deleteDialog.description')}
+        cancelLabel={t('messages.messageBubble.deleteDialog.cancel')}
+        confirmLabel={t('messages.messageBubble.deleteDialog.confirm')}
+        onConfirm={confirmDeleteMessage}
+      />
     </div>
   );
 };

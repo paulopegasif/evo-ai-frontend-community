@@ -80,7 +80,8 @@
       "downloadFallbackReason": {
         "serverError": "Le serveur a renvoyé {{status}} — impossible de télécharger directement.",
         "network": "Erreur réseau ou blocage CORS — impossible de télécharger directement."
-      }
+      },
+      "download": "Télécharger"
     },
     "messageImage": {
       "downloadStarted": "Téléchargement démarré",
@@ -283,7 +284,8 @@
       "whatsappMessage": "Vous ne pouvez répondre à cette conversation qu'en utilisant un modèle de message en raison de",
       "cannotReply": "Vous ne pouvez pas répondre car",
       "linkText": "Restrictions de fenêtre de messagerie de 24 heures",
-      "zapiDisconnected": "WhatsApp déconnecté. Connectez le numéro pour envoyer des messages."
+      "zapiDisconnected": "WhatsApp déconnecté. Connectez le numéro pour envoyer des messages.",
+      "readOnlyMirror": "Copie en lecture seule des conversations Bitrix24. Répondez depuis Bitrix24 jusqu’à ce que WhatsApp soit connecté ici."
     },
     "noteBanner": {
       "title": "Note de suivi",
