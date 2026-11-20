@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { LucideIcon } from 'lucide-react';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
@@ -31,8 +32,6 @@ const DonutChartCard = ({
   description,
   data,
   icon: Icon,
-  gradientFrom = '#3b82f6',
-  gradientTo = '#8b5cf6',
   showLegend = true,
   centerLabel,
   centerValue,
@@ -76,13 +75,10 @@ const DonutChartCard = ({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
+        <CardTitle className="flex items-center gap-2 font-semibold text-base">
           {Icon && (
-            <div
-              className="h-7 w-7 rounded-md flex items-center justify-center"
-              style={{ background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})` }}
-            >
-              <Icon className="h-4 w-4 text-white" />
+            <div className="flex size-7 items-center justify-center rounded-md bg-muted">
+              <Icon className="size-4 text-muted-foreground" />
             </div>
           )}
           {title}
@@ -92,7 +88,7 @@ const DonutChartCard = ({
           <CardDescription className="mt-1">{description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pt-4">
+      <CardPanel className="pt-4">
         <div className="relative">
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
@@ -142,7 +138,7 @@ const DonutChartCard = ({
             </div>
           )}
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

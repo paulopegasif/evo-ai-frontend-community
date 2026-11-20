@@ -1,4 +1,5 @@
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { Bot, Layers, TrendingUp, Users } from 'lucide-react';
 import { OperationHeatmapCard } from '@/components/charts';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
@@ -22,9 +23,9 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
   const topValueChannels = [...data.channels].sort((a, b) => b.value - a.value).slice(0, 3);
 
   return (
-    <section className="space-y-4">
+    <section className="flex flex-col gap-4">
       <div>
-        <h2 className="text-lg font-semibold">{tx('dashboard.sections.optimization', 'Diagnóstico e otimização')}</h2>
+        <h2 className="font-semibold text-lg">{tx('dashboard.sections.optimization', 'Diagnóstico e otimização')}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {tx('dashboard.sections.optimizationSubtitle', 'Onde estão os gargalos e oportunidades de ganho na operação')}
         </p>
@@ -57,16 +58,16 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               <TooltipInfo title={tTours('dashboard.step14.title')} content={tTours('dashboard.step14.content')} />
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardPanel className="space-y-2">
             {data.csat.total_responses < 5 && (
-              <div className="rounded-md border border-dashed border-muted-foreground/30 bg-muted/10 p-3 text-sm text-muted-foreground">
+              <div className="rounded-lg border border-dashed bg-muted/40 p-3 text-muted-foreground text-sm">
                 {tx('dashboard.csat.lowSampleHint', 'Ainda sem avaliações suficientes para uma leitura estatística confiável.')}
               </div>
             )}
             {data.csat.rating_breakdown.map(item => (
               <div key={`csat-${item.rating}`} className="flex items-center gap-3">
                 <div className="w-10 text-sm font-medium">{item.rating}★</div>
-                <div className="flex-1 h-2 rounded bg-muted overflow-hidden">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                   <div className="h-2 bg-primary" style={{ width: `${item.percentage}%` }} />
                 </div>
                 <div className="w-24 text-right text-sm text-muted-foreground">
@@ -74,15 +75,15 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                 </div>
               </div>
             ))}
-          </CardContent>
+          </CardPanel>
         </Card>
 
         <Card data-tour="dashboard-funnel">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center">
+                <CardTitle className="flex items-center gap-2 font-semibold text-base">
+                  <div className="flex size-7 items-center justify-center rounded-md bg-muted">
                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
                   </div>
                   {t('dashboard.pipeline.title')}
@@ -95,7 +96,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               </Badge>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardPanel>
           {data.pipeline.stages.length === 0 ? (
             <div className="text-sm text-muted-foreground">
               {tx('dashboard.empty.pipelineInactive', 'Funil inativo no período selecionado.')}
@@ -117,17 +118,17 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                             {stage.count} {t('dashboard.pipeline.opportunities')}
                           </Badge>
                         </div>
-                        <span className="text-lg font-semibold">{formatCurrency(stage.value)}</span>
+                        <span className="font-semibold text-base tabular-nums">{formatCurrency(stage.value)}</span>
                       </div>
-                      <div className="relative w-full bg-secondary/50 rounded-full h-3 overflow-hidden">
-                        <div className="h-3 rounded-full bg-[var(--chart-1)] transition-all duration-500" style={{ width: `${percentage}%`, opacity }} />
+                      <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div className="h-2.5 rounded-full bg-[var(--chart-1)] transition-all duration-500" style={{ width: `${percentage}%`, opacity }} />
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
 
@@ -139,26 +140,26 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               <TooltipInfo title={tTours('dashboard.step16.title')} content={tTours('dashboard.step16.content')} />
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="rounded-md border p-3 bg-muted/10">
+          <CardPanel className="space-y-3">
+            <div className="rounded-lg border bg-muted/40 p-3">
               <div className="text-sm text-muted-foreground">{tx('dashboard.pipeline.openOpportunities', 'Oportunidades no funil')}</div>
-              <div className="text-xl font-semibold">{formatInteger(data.pipeline.total)}</div>
+              <div className="font-semibold text-xl tabular-nums">{formatInteger(data.pipeline.total)}</div>
             </div>
-            <div className="rounded-md border p-3 bg-muted/10">
+            <div className="rounded-lg border bg-muted/40 p-3">
               <div className="text-sm text-muted-foreground">{tx('dashboard.pipeline.avgTicket', 'Ticket médio no funil')}</div>
-              <div className="text-xl font-semibold">{formatCurrency(avgTicketValue)}</div>
+              <div className="font-semibold text-xl tabular-nums">{formatCurrency(avgTicketValue)}</div>
             </div>
-            <div className="rounded-md border p-3 bg-muted/10">
+            <div className="rounded-lg border bg-muted/40 p-3">
               <div className="text-sm text-muted-foreground">{tx('dashboard.pipeline.totalValue', 'Valor total do funil')}</div>
-              <div className="text-xl font-semibold">{formatCurrency(data.pipeline.total_value)}</div>
+              <div className="font-semibold text-xl tabular-nums">{formatCurrency(data.pipeline.total_value)}</div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
 
         <Card className="xl:col-span-2" data-tour="dashboard-channel-performance">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center">
+            <CardTitle className="flex items-center gap-2 font-semibold text-base">
+              <div className="flex size-7 items-center justify-center rounded-md bg-muted">
                 <Layers className="h-4 w-4 text-muted-foreground" />
               </div>
               {t('dashboard.channels.title')}
@@ -166,7 +167,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
             </CardTitle>
             <CardDescription className="mt-1">{t('dashboard.channels.subtitle')}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardPanel>
             {data.channels.length === 0 ? (
               <div className="text-sm text-muted-foreground">
                 {tx('dashboard.empty.channels', 'Sem dados de canal no período selecionado.')}
@@ -174,7 +175,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {data.channels.map(channel => (
-                  <div key={channel.id || channel.name} className="flex items-center justify-between p-3 rounded-md border bg-muted/20">
+                  <div key={channel.id || channel.name} className="flex items-center justify-between rounded-lg border bg-muted/40 p-3">
                     <div>
                       <div className="font-semibold">{channel.name}</div>
                       <div className="text-sm text-muted-foreground">
@@ -182,13 +183,13 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold">{formatCurrency(channel.value)}</div>
+                      <div className="font-semibold tabular-nums">{formatCurrency(channel.value)}</div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
 
@@ -200,12 +201,12 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               <TooltipInfo title={tTours('dashboard.step18.title')} content={tTours('dashboard.step18.content')} />
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardPanel className="space-y-2">
             {topValueChannels.length === 0 ? (
               <div className="text-sm text-muted-foreground">-</div>
             ) : (
               topValueChannels.map(channel => (
-                <div key={`value-${channel.id || channel.name}`} className="flex items-center justify-between rounded-md border p-3 bg-muted/10">
+                <div key={`value-${channel.id || channel.name}`} className="flex items-center justify-between rounded-lg border bg-muted/40 p-3">
                   <div>
                     <div className="font-medium">{channel.name}</div>
                     <div className="text-xs text-muted-foreground">{channel.percentage}% do volume</div>
@@ -214,14 +215,14 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                 </div>
               ))
             )}
-          </CardContent>
+          </CardPanel>
         </Card>
 
         <div className="grid grid-cols-1 gap-4">
           <Card data-tour="dashboard-agents-performance">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center">
+              <CardTitle className="flex items-center gap-2 font-semibold text-base">
+                <div className="flex size-7 items-center justify-center rounded-md bg-muted">
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </div>
                 {tx('dashboard.agents.humanTitle', 'Desempenho dos Atendentes')}
@@ -231,7 +232,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                 {tx('dashboard.agents.humanSubtitle', 'Performance do time humano no período filtrado')}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardPanel>
               {data.agents.length === 0 ? (
                 <div className="text-sm text-muted-foreground">
                   {tx('dashboard.empty.agents', 'Sem dados de atendentes para o período selecionado.')}
@@ -239,7 +240,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               ) : (
                 <div className="space-y-3">
                   {data.agents.slice(0, 5).map(agent => (
-                    <div key={agent.id} className="flex items-center justify-between p-3 rounded-md border bg-muted/20">
+                    <div key={agent.id} className="flex items-center justify-between rounded-lg border bg-muted/40 p-3">
                       <div>
                         <div className="font-semibold">{agent.name}</div>
                         <div className="text-sm text-muted-foreground">
@@ -254,13 +255,13 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                   ))}
                 </div>
               )}
-            </CardContent>
+            </CardPanel>
           </Card>
 
           <Card data-tour="dashboard-ai-agents-performance">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center">
+              <CardTitle className="flex items-center gap-2 font-semibold text-base">
+                <div className="flex size-7 items-center justify-center rounded-md bg-muted">
                   <Bot className="h-4 w-4 text-muted-foreground" />
                 </div>
                 {tx('dashboard.agents.aiTitle', 'Desempenho dos Agentes de IA')}
@@ -270,7 +271,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                 {tx('dashboard.agents.aiSubtitle', 'Volume e participação dos agentes IA nas respostas')}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardPanel>
               {data.ai_agents.length === 0 ? (
                 <div className="text-sm text-muted-foreground">
                   {tx('dashboard.agents.aiEmpty', 'Sem mensagens de IA no período selecionado.')}
@@ -278,7 +279,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
               ) : (
                 <div className="space-y-3">
                   {data.ai_agents.slice(0, 5).map(agent => (
-                    <div key={agent.id} className="flex items-center justify-between p-3 rounded-md border bg-muted/20">
+                    <div key={agent.id} className="flex items-center justify-between rounded-lg border bg-muted/40 p-3">
                       <div>
                         <div className="font-semibold">{agent.name}</div>
                         <div className="text-sm text-muted-foreground">
@@ -294,7 +295,7 @@ const DashboardPerformanceSection = ({ data, t }: DashboardPerformanceSectionPro
                   ))}
                 </div>
               )}
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
       </div>

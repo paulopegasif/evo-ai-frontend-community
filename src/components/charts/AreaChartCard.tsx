@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/compat';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { LucideIcon } from 'lucide-react';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
@@ -31,9 +31,9 @@ const AreaChartCard = ({
   description,
   data,
   icon: Icon,
-  color = '#3b82f6',
-  gradientFrom = '#3b82f6',
-  gradientTo = '#8b5cf6',
+  color = 'var(--chart-1)',
+  gradientFrom = 'var(--chart-1)',
+  gradientTo = 'var(--chart-1)',
   valueFormatter = (value) => value.toLocaleString(),
   tooltip,
 }: AreaChartCardProps) => {
@@ -43,9 +43,9 @@ const AreaChartCard = ({
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background/95 backdrop-blur-sm border-2 border-primary/20 rounded-lg p-3 shadow-xl">
+        <div className="rounded-lg border bg-popover px-3 py-2 text-popover-foreground shadow-lg/5">
           <p className="text-sm font-medium text-foreground">{payload[0].payload.name}</p>
-          <p className="text-lg font-bold" style={{ color }}>
+          <p className="font-semibold text-base tabular-nums" style={{ color }}>
             {valueFormatter(payload[0].value)}
           </p>
         </div>
@@ -57,7 +57,7 @@ const AreaChartCard = ({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
+        <CardTitle className="flex items-center gap-2 font-semibold text-base">
           {Icon && (
             <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center">
               <Icon className="h-4 w-4 text-muted-foreground" />
@@ -70,7 +70,7 @@ const AreaChartCard = ({
           <CardDescription className="mt-1">{description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pt-4">
+      <CardPanel className="pt-4">
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
             <defs>
@@ -79,15 +79,17 @@ const AreaChartCard = ({
                 <stop offset="95%" stopColor={gradientTo} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#333" opacity={0.1} />
+            <CartesianGrid vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="name"
-              stroke="#888"
+              stroke="var(--muted-foreground)"
+              axisLine={false}
               fontSize={12}
               tickLine={false}
             />
             <YAxis
-              stroke="#888"
+              stroke="var(--muted-foreground)"
+              axisLine={false}
               fontSize={12}
               tickLine={false}
               tickFormatter={valueFormatter}
@@ -103,7 +105,7 @@ const AreaChartCard = ({
             />
           </AreaChart>
         </ResponsiveContainer>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
