@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { surveyService } from '@/services/public/surveyService';
 import { SurveyDetails } from '@/types/core/survey';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 
 const getEmojiRatings = (t: any) => [
   { value: 1, icon: Frown, labelKey: t('survey.rating.veryDissatisfied'), color: 'text-destructive' },

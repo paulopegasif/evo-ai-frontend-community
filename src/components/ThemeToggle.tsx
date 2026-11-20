@@ -14,7 +14,7 @@ export function ThemeToggle() {
           variant="ghost"
           size="sm"
           onClick={toggleTheme}
-          className="h-8 w-8 p-0 hover:bg-neutral-surface-highlight cursor-pointer"
+          className="h-8 w-8 p-0 cursor-pointer"
           aria-label={t('base.theme.toggle')}
         >
           {/* Mostra lua no light */}

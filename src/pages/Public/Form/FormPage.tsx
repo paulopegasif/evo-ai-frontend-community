@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   formsService,
