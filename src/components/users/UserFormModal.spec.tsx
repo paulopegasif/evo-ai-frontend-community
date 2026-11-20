@@ -47,32 +47,31 @@ vi.mock('@/hooks/useRoles', () => ({
   },
 }));
 
-// Stub the design-system Select so every SelectItem renders inline (Radix only
-// mounts items when the dropdown is open, which is unreliable in jsdom).
-vi.mock('@/components/ui/compat', () => {
-  const Passthrough = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>;
-  return {
-    Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) =>
-      open ? <div>{children}</div> : null,
-    DialogContent: Passthrough,
-    DialogHeader: Passthrough,
-    DialogTitle: Passthrough,
-    Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
-    Label: Passthrough,
-    Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-      <button {...props}>{children}</button>
-    ),
-    Select: Passthrough,
-    SelectContent: Passthrough,
-    SelectItem: ({ children, value }: { children?: React.ReactNode; value?: string }) => (
-      <div data-testid="select-item" data-value={value}>
-        {children}
-      </div>
-    ),
-    SelectTrigger: Passthrough,
-    SelectValue: Passthrough,
-  };
-});
+// Stub the coss Select so every SelectItem renders inline (Base UI only
+// mounts items when the popup is open, which is unreliable in jsdom).
+const { Passthrough } = vi.hoisted(() => ({
+  Passthrough: ({ children }: { children?: React.ReactNode }) => React.createElement('div', null, children),
+}));
+vi.mock('@/components/ui/dialog', () => ({
+  Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) =>
+    open ? <div>{children}</div> : null,
+  DialogPopup: Passthrough,
+  DialogHeader: Passthrough,
+  DialogPanel: Passthrough,
+  DialogFooter: Passthrough,
+  DialogTitle: Passthrough,
+}));
+vi.mock('@/components/ui/select', () => ({
+  Select: Passthrough,
+  SelectPopup: Passthrough,
+  SelectItem: ({ children, value }: { children?: React.ReactNode; value?: string }) => (
+    <div data-testid="select-item" data-value={value}>
+      {children}
+    </div>
+  ),
+  SelectTrigger: Passthrough,
+  SelectValue: Passthrough,
+}));
 
 import UserFormModal from './UserFormModal';
 

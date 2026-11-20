@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Input,
-  Label,
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import usersService from '@/services/users/usersService';
 import useRoles from '@/hooks/useRoles';
 import type { User, UserFormData, UserUpdateData } from '@/types/users';
-import { Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
 
@@ -211,165 +208,132 @@ export default function UserFormModal({ isOpen, onClose, user, onSuccess }: User
     }
   };
 
+  const roleItems = uniqueRoles.map(role => ({ value: role.key as string, label: role.name as string }));
+  const availabilityItems = [
+    { value: 'online', label: t('form.fields.availability.online') },
+    { value: 'busy', label: t('form.fields.availability.busy') },
+    { value: 'offline', label: t('form.fields.availability.offline') },
+  ];
+
+  const textField = (
+    field: 'name' | 'email' | 'password' | 'confirmPassword',
+    label: string,
+    placeholder: string,
+    opts: { type?: string; disabled?: boolean; description?: string } = {},
+  ) => (
+    <Field invalid={Boolean(errors[field])}>
+      <FieldLabel htmlFor={field}>{label}</FieldLabel>
+      <Input
+        id={field}
+        type={opts.type}
+        value={formData[field] ?? ''}
+        onChange={e => handleFieldChange(field, e.target.value)}
+        placeholder={placeholder}
+        aria-invalid={errors[field] ? true : undefined}
+        disabled={loading || opts.disabled}
+      />
+      {errors[field] ? (
+        <FieldError match>{errors[field]}</FieldError>
+      ) : (
+        opts.description && <FieldDescription>{opts.description}</FieldDescription>
+      )}
+    </Field>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-sidebar border-sidebar-border max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-sidebar-foreground">
-            {user ? t('form.title.edit') : t('form.title.create')}
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+      <DialogPopup className="sm:max-w-md">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-col">
+          <DialogHeader>
+            <DialogTitle>{user ? t('form.title.edit') : t('form.title.create')}</DialogTitle>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">{t('form.fields.name.label')}</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={e => handleFieldChange('name', e.target.value)}
-              placeholder={t('form.fields.name.placeholder')}
-              className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                errors.name ? 'border-destructive' : ''
-              }`}
-              disabled={loading}
-            />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-          </div>
+          <DialogPanel className="flex flex-col gap-5">
+            {textField('name', t('form.fields.name.label'), t('form.fields.name.placeholder'))}
+            {textField('email', t('form.fields.email.label'), t('form.fields.email.placeholder'), {
+              type: 'email',
+              disabled: !!user,
+              description: user ? t('form.fields.email.cannotChange') : undefined,
+            })}
 
-          <div className="space-y-2">
-            <Label htmlFor="email">{t('form.fields.email.label')}</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={e => handleFieldChange('email', e.target.value)}
-              placeholder={t('form.fields.email.placeholder')}
-              className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                errors.email ? 'border-destructive' : ''
-              }`}
-              disabled={loading || !!user}
-            />
-            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-            {user && (
-              <p className="text-xs text-sidebar-foreground/60">
-                {t('form.fields.email.cannotChange')}
-              </p>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field invalid={Boolean(errors.role)}>
+                <FieldLabel htmlFor="role">{t('form.fields.role.label')}</FieldLabel>
+                <Select
+                  items={roleItems}
+                  value={formData.role}
+                  onValueChange={value => value && handleFieldChange('role', value as string)}
+                  disabled={loading}
+                >
+                  <SelectTrigger id="role">
+                    <SelectValue placeholder={t('form.fields.role.placeholder')} />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {uniqueRoles.length === 0 && (
+                      <div className="px-2 py-4 text-center text-muted-foreground text-sm">
+                        {rolesError ? rolesError : t('form.messages.loading')}
+                      </div>
+                    )}
+                    {uniqueRoles.map(role => (
+                      <SelectItem key={role.id} value={role.key}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+                {errors.role && <FieldError match>{errors.role}</FieldError>}
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="availability">{t('form.fields.availability.label')}</FieldLabel>
+                <Select
+                  items={availabilityItems}
+                  value={formData.availability}
+                  onValueChange={value => value && handleFieldChange('availability', value as string)}
+                  disabled={loading}
+                >
+                  <SelectTrigger id="availability">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {availabilityItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
+            </div>
+
+            {(!user || formData.password) && (
+              <div className="grid gap-5 sm:grid-cols-2">
+                {textField(
+                  'password',
+                  user ? t('form.fields.password.labelOptional') : t('form.fields.password.label'),
+                  t('form.fields.password.placeholder'),
+                  { type: 'password' },
+                )}
+                {textField(
+                  'confirmPassword',
+                  user ? t('form.fields.confirmPassword.labelOptional') : t('form.fields.confirmPassword.label'),
+                  t('form.fields.confirmPassword.placeholder'),
+                  { type: 'password' },
+                )}
+              </div>
             )}
-          </div>
+          </DialogPanel>
 
-          <div className="space-y-2">
-            <Label htmlFor="role">{t('form.fields.role.label')}</Label>
-            <Select
-              value={formData.role}
-              onValueChange={value => handleFieldChange('role', value)}
-              disabled={loading}
-            >
-              <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
-                <SelectValue placeholder={t('form.fields.role.placeholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                {uniqueRoles.length === 0 && (
-                  <div className="px-2 py-4 text-sm text-center text-sidebar-foreground/60">
-                    {rolesError ? rolesError : t('form.messages.loading')}
-                  </div>
-                )}
-                {uniqueRoles.map(role => (
-                  <SelectItem key={role.id} value={role.key}>
-                    {role.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.role && <p className="text-sm text-destructive">{errors.role}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="availability">{t('form.fields.availability.label')}</Label>
-            <Select
-              value={formData.availability}
-              onValueChange={value => handleFieldChange('availability', value)}
-              disabled={loading}
-            >
-              <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="online">{t('form.fields.availability.online')}</SelectItem>
-                <SelectItem value="busy">{t('form.fields.availability.busy')}</SelectItem>
-                <SelectItem value="offline">{t('form.fields.availability.offline')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {(!user || formData.password) && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="password">
-                  {user ? t('form.fields.password.labelOptional') : t('form.fields.password.label')}
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={e => handleFieldChange('password', e.target.value)}
-                  placeholder={t('form.fields.password.placeholder')}
-                  className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                    errors.password ? 'border-destructive' : ''
-                  }`}
-                  disabled={loading}
-                />
-                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">
-                  {user
-                    ? t('form.fields.confirmPassword.labelOptional')
-                    : t('form.fields.confirmPassword.label')}
-                </Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={e => handleFieldChange('confirmPassword', e.target.value)}
-                  placeholder={t('form.fields.confirmPassword.placeholder')}
-                  className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                    errors.confirmPassword ? 'border-destructive' : ''
-                  }`}
-                  disabled={loading}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-                )}
-              </div>
-            </>
-          )}
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-              className="bg-sidebar hover:bg-sidebar-accent border-sidebar-border"
-            >
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
               {t('form.actions.cancel')}
             </Button>
-            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/85 text-primary-foreground border-0 font-semibold">
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('form.actions.saving')}
-                </>
-              ) : user ? (
-                t('form.actions.save')
-              ) : (
-                t('form.actions.create')
-              )}
+            <Button type="submit" loading={loading}>
+              {loading ? t('form.actions.saving') : user ? t('form.actions.save') : t('form.actions.create')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

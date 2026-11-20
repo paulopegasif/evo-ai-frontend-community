@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
-} from '@/components/ui/compat';
-import { Plus } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import { Plus, Users } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 
   Segment, 
@@ -158,83 +161,72 @@ export default function SegmentModal({
     setNodes(nodes.filter((_, i) => i !== index));
   };
 
+  const combinationOptions = [
+    { value: 'Everyone', label: t('modal.combinationTypes.everyone') },
+    { value: 'And', label: t('modal.combinationTypes.and') },
+    { value: 'Or', label: t('modal.combinationTypes.or') },
+  ] as const;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <form onSubmit={handleSubmit}>
+      <DialogPopup className="sm:max-w-2xl">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-col">
           <DialogHeader>
-            <DialogTitle>
-              {isNew ? t('modal.createTitle') : t('modal.editTitle')}
-            </DialogTitle>
+            <DialogTitle>{isNew ? t('modal.createTitle') : t('modal.editTitle')}</DialogTitle>
             <DialogDescription>
-              {isNew
-                ? t('modal.createDescription')
-                : t('modal.editDescription')}
+              {isNew ? t('modal.createDescription') : t('modal.editDescription')}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-6 py-4 max-h-[60vh] overflow-y-auto">
-            {/* Nome do Segmento */}
-            <div className="bg-muted/48 p-4 rounded-lg">
-              <Label htmlFor="name" className="text-sm font-medium mb-2">
-                {t('modal.segmentName')} <span className="text-destructive">*</span>
-              </Label>
+          <DialogPanel className="flex flex-col gap-6">
+            <Field invalid={Boolean(errors.name)}>
+              <FieldLabel htmlFor="name">
+                {t('modal.segmentName')} <span className="text-destructive-foreground">*</span>
+              </FieldLabel>
               <Input
                 id="name"
                 placeholder={t('modal.segmentNamePlaceholder')}
                 value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                className={errors.name ? 'border-destructive' : ''}
+                onChange={e => handleInputChange('name', e.target.value)}
+                aria-invalid={errors.name ? true : undefined}
               />
-              {errors.name && (
-                <span className="text-sm text-destructive mt-1">{errors.name}</span>
-              )}
-            </div>
+              {errors.name && <FieldError match>{errors.name}</FieldError>}
+            </Field>
 
-            {/* Tipo de Combinação */}
-            <div className="bg-muted/48 p-4 rounded-lg">
-              <Label className="text-sm font-medium mb-3">{t('modal.combinationType')}</Label>
-              <RadioGroup value={definitionType} onValueChange={handleDefinitionTypeChange}>
-                <div className="flex items-center space-x-2 mb-2">
-                  <RadioGroupItem value="Everyone" id="everyone" />
-                  <label htmlFor="everyone" className="text-sm cursor-pointer">
-                    {t('modal.combinationTypes.everyone')}
-                  </label>
-                </div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <RadioGroupItem value="And" id="and" />
-                  <label htmlFor="and" className="text-sm cursor-pointer">
-                    {t('modal.combinationTypes.and')}
-                  </label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Or" id="or" />
-                  <label htmlFor="or" className="text-sm cursor-pointer">
-                    {t('modal.combinationTypes.or')}
-                  </label>
-                </div>
+            <div className="flex flex-col gap-2">
+              <span className="font-medium text-sm" id="segment-combination-label">
+                {t('modal.combinationType')}
+              </span>
+              <RadioGroup
+                aria-labelledby="segment-combination-label"
+                value={definitionType}
+                onValueChange={value => handleDefinitionTypeChange(value as 'Everyone' | 'And' | 'Or')}
+                className="grid gap-2 sm:grid-cols-3"
+              >
+                {combinationOptions.map(opt => (
+                  <Label
+                    key={opt.value}
+                    htmlFor={`segment-${opt.value}`}
+                    className={`flex cursor-pointer items-start gap-2 rounded-xl border p-3 font-normal transition-colors ${
+                      definitionType === opt.value ? 'border-primary/48 bg-primary/4' : 'hover:bg-accent/50'
+                    }`}
+                  >
+                    <Radio value={opt.value} id={`segment-${opt.value}`} className="mt-0.5" />
+                    <span className="text-sm">{opt.label}</span>
+                  </Label>
+                ))}
               </RadioGroup>
             </div>
 
-            {/* Mensagem para Everyone */}
-            {definitionType === 'Everyone' && (
-              <div className="bg-info/8 border border-info/24 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-info-foreground mb-1">
-                  {t('modal.universalSegment.title')}
-                </h4>
-                <p className="text-sm text-info-foreground">
-                  {t('modal.universalSegment.description')}
-                </p>
-              </div>
-            )}
-
-            {/* Lista de Condições */}
-            {definitionType !== 'Everyone' && (
-              <div className="space-y-4">
-                <Label className="text-sm font-medium">
-                  {t('modal.segmentConditions')}
-                </Label>
-                
+            {definitionType === 'Everyone' ? (
+              <Alert variant="info">
+                <Users />
+                <AlertTitle>{t('modal.universalSegment.title')}</AlertTitle>
+                <AlertDescription>{t('modal.universalSegment.description')}</AlertDescription>
+              </Alert>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <span className="font-medium text-sm">{t('modal.segmentConditions')}</span>
                 {nodes.map((node, index) => (
                   <SegmentConditionEditor
                     key={node.id}
@@ -244,42 +236,30 @@ export default function SegmentModal({
                     onRemove={removeCondition}
                   />
                 ))}
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addCondition}
-                  className="w-full border-dashed"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button type="button" variant="outline" onClick={addCondition} className="w-full border-dashed">
+                  <Plus />
                   {t('modal.addCondition')}
                 </Button>
               </div>
             )}
-          </div>
+          </DialogPanel>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={loading}
-            >
+            <DialogClose render={<Button type="button" variant="ghost" />} disabled={loading}>
               {t('modal.cancel')}
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {isNew ? t('modal.creating') : t('modal.saving')}
-                </>
-              ) : (
-                isNew ? t('modal.createButton') : t('modal.saveButton')
-              )}
+            </DialogClose>
+            <Button type="submit" loading={loading}>
+              {loading
+                ? isNew
+                  ? t('modal.creating')
+                  : t('modal.saving')
+                : isNew
+                  ? t('modal.createButton')
+                  : t('modal.saveButton')}
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

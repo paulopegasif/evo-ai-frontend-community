@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Input, Label, Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -39,27 +41,29 @@ export default function CopyCallbackUrl({ url, label, hint, copiedMessage, copyL
   };
 
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <div className="flex items-center gap-2">
-        <Input
+    <Field>
+      <FieldLabel>{label}</FieldLabel>
+      <InputGroup>
+        <InputGroupInput
           readOnly
           value={url}
           className="font-mono text-xs"
           onFocus={(e) => e.currentTarget.select()}
         />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleCopy}
-          aria-label={copyLabel}
-          title={copyLabel}
-          className="shrink-0"
-        >
-          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        </Button>
-      </div>
-      {hint && <p className="text-xs text-sidebar-foreground/60">{hint}</p>}
-    </div>
+        <InputGroupAddon align="inline-end">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            onClick={handleCopy}
+            aria-label={copyLabel}
+            title={copyLabel}
+          >
+            {copied ? <Check className="text-success" /> : <Copy />}
+          </Button>
+        </InputGroupAddon>
+      </InputGroup>
+      {hint && <FieldDescription>{hint}</FieldDescription>}
+    </Field>
   );
 }
