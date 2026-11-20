@@ -248,7 +248,8 @@
     "detail": {
       "timeline": "Chronologie",
       "payload": "Charge utile"
-    }
+    },
+    "statusFilter": "Filtrer par statut"
   },
   "messages": {
     "loadError": "Échec du chargement des automatisations",

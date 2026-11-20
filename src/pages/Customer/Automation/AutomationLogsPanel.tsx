@@ -1,13 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react';
 import { automationService } from '@/services/automation/automationService';
 import type {
@@ -99,20 +93,24 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
           <p className="text-sm text-muted-foreground">{t('logs.description')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
+          <Select
+            items={STATUS_FILTERS.map(opt => ({ value: opt.value, label: t(opt.labelKey) }))}
+            value={statusFilter}
+            onValueChange={value => value && setStatusFilter(value as string)}
+          >
+            <SelectTrigger className="w-44" aria-label={t('logs.statusFilter')}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {STATUS_FILTERS.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {t(opt.labelKey)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={loading ? 'animate-spin' : undefined} />
             {t('logs.refresh')}
           </Button>
         </div>

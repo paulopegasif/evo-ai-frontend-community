@@ -248,7 +248,8 @@
     "detail": {
       "timeline": "Cronologia",
       "payload": "Payload"
-    }
+    },
+    "statusFilter": "Filtra per stato"
   },
   "messages": {
     "loadError": "Impossibile caricare le automazioni",

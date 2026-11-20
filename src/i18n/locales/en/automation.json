@@ -248,7 +248,8 @@
     "detail": {
       "timeline": "Timeline",
       "payload": "Payload"
-    }
+    },
+    "statusFilter": "Filter by status"
   },
   "messages": {
     "loadError": "Failed to load automations",

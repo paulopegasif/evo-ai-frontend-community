@@ -248,7 +248,8 @@
     "detail": {
       "timeline": "Cronología",
       "payload": "Carga útil"
-    }
+    },
+    "statusFilter": "Filtrar por estado"
   },
   "messages": {
     "loadError": "Error al cargar las automatizaciones",

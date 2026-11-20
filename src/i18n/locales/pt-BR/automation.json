@@ -248,7 +248,8 @@
     "detail": {
       "timeline": "Linha do tempo",
       "payload": "Payload"
-    }
+    },
+    "statusFilter": "Filtrar por status"
   },
   "messages": {
     "loadError": "Falha ao carregar automações",
