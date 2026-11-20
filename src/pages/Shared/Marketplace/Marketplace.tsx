@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card, CardContent, Badge, Input } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Toggle } from '@/components/ui/toggle';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import EmptyState from '@/components/base/EmptyState';
 import {
   Package,
   Search,
@@ -146,160 +153,150 @@ const Marketplace = () => {
   };
 
   const ProductCard = ({ product }: { product: MarketplaceProduct }) => (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+    <Card className="overflow-hidden">
+      <div className="relative h-40 w-full border-b bg-muted/48">
         {product.thumbnail ? (
-          <img src={product.thumbnail} alt={product.name} className="w-full h-full object-cover" />
+          <img src={product.thumbnail} alt={product.name} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <ImageIcon className="h-16 w-16 text-muted-foreground" />
+          <div className="flex h-full items-center justify-center">
+            <ImageIcon className="size-12 text-muted-foreground/48" />
           </div>
         )}
       </div>
 
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          <div>
-            <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <User className="h-4 w-4" />
-            <span>{product.author}</span>
-            <span>•</span>
-            <span>v{product.version}</span>
-          </div>
-
-          <div className="flex flex-wrap gap-1">
-            {product.tags.slice(0, 3).map(tag => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {product.tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{product.tags.length - 3}
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-warning text-warning" />
-                <span className="text-sm font-medium">{product.rating}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Download className="h-4 w-4" />
-                <span className="text-sm">{product.downloads}</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="font-semibold">{formatPrice(product.price, product.currency)}</div>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button className="flex-1" size="sm">
-              {t('product.install')}
-            </Button>
-            {product.external_url && (
-              <Button variant="outline" size="sm">
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
+      <CardPanel className="flex flex-1 flex-col gap-3">
+        <div>
+          <h3 className="line-clamp-1 font-semibold">{product.name}</h3>
+          <p className="mt-1 line-clamp-2 text-muted-foreground text-sm">{product.description}</p>
         </div>
-      </CardContent>
+
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <User className="size-4" />
+          <span>{product.author}</span>
+          <span aria-hidden="true">·</span>
+          <span>v{product.version}</span>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          {product.tags.slice(0, 3).map(tag => (
+            <Badge key={tag} variant="secondary">
+              {tag}
+            </Badge>
+          ))}
+          {product.tags.length > 3 && <Badge variant="outline">+{product.tags.length - 3}</Badge>}
+        </div>
+
+        <div className="mt-auto flex items-center justify-between">
+          <div className="flex items-center gap-3 text-muted-foreground text-sm">
+            <span className="flex items-center gap-1">
+              <Star className="size-4 fill-warning text-warning" />
+              <span className="font-medium text-foreground">{product.rating}</span>
+            </span>
+            <span className="flex items-center gap-1 tabular-nums">
+              <Download className="size-4" />
+              {product.downloads}
+            </span>
+          </div>
+          <span className="font-semibold">{formatPrice(product.price, product.currency)}</span>
+        </div>
+
+        <div className="flex gap-2">
+          <Button className="flex-1" size="sm">
+            {t('product.install')}
+          </Button>
+          {product.external_url && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label={t('product.openExternal')}
+                  />
+                }
+              >
+                <ExternalLink />
+              </TooltipTrigger>
+              <TooltipPopup>{t('product.openExternal')}</TooltipPopup>
+            </Tooltip>
+          )}
+        </div>
+      </CardPanel>
     </Card>
   );
 
+  const hasFilters = !!searchQuery || selectedTags.length > 0;
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <h1 className="text-3xl font-bold">{t('header.title')}</h1>
-          <Badge variant="secondary" className="gap-1">
-            <Package className="h-4 w-4" />
+    <div className="flex h-full flex-col">
+      <div className="border-b p-4 md:p-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="font-semibold text-xl md:text-2xl">{t('header.title')}</h1>
+          <Badge variant="secondary">
+            <Package />
             {t('header.productsCount', { count: filteredProducts.length })}
           </Badge>
         </div>
-        <p className="text-muted-foreground text-lg">
-          {t('header.subtitle')}
-        </p>
+        <p className="mt-1 text-muted-foreground text-sm">{t('header.subtitle')}</p>
       </div>
 
-      {/* Search and Filters */}
-      <div className="p-6 border-b">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{t('search.title')}</h3>
-              {(searchQuery || selectedTags.length > 0) && (
-                <Button variant="outline" size="sm" onClick={clearFilters} className="gap-2">
-                  <X className="h-4 w-4" />
-                  {t('search.clearFilters')}
-                </Button>
-              )}
-            </div>
+      <div className="flex flex-col gap-4 border-b p-4 md:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <InputGroup className="sm:max-w-md">
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
+            <InputGroupInput
+              type="search"
+              placeholder={t('search.placeholder')}
+              aria-label={t('search.title')}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </InputGroup>
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="sm:ms-auto">
+              <X />
+              {t('search.clearFilters')}
+            </Button>
+          )}
+        </div>
 
-            <div className="space-y-4">
-              {/* Search Input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('search.placeholder')}
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* Tags Filter */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Filter className="h-4 w-4" />
-                  <span className="text-sm font-medium">{t('search.tagsLabel')}</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {availableTags.map(tag => (
-                    <Badge
-                      key={tag}
-                      variant={selectedTags.includes(tag) ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => handleTagToggle(tag)}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('search.tagsLabel')}>
+          <span className="me-1 flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
+            <Filter className="size-4" />
+            {t('search.tagsLabel')}
+          </span>
+          {availableTags.map(tag => (
+            <Toggle
+              key={tag}
+              variant="outline"
+              size="sm"
+              pressed={selectedTags.includes(tag)}
+              onPressedChange={() => handleTagToggle(tag)}
+            >
+              {tag}
+            </Toggle>
+          ))}
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 p-6 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6">
         {loading ? (
-          <div className="flex items-center justify-center h-32">
-            <Package className="h-8 w-8 animate-pulse" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+            {[0, 1, 2].map(i => (
+              <Skeleton key={i} className="h-96 rounded-2xl" />
+            ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center h-48 text-center">
-              <Package className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">{t('empty.title')}</h3>
-              <p className="text-muted-foreground mb-4">
-                {t('empty.description')}
-              </p>
-              <Button onClick={clearFilters}>{t('empty.action')}</Button>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Package}
+            title={t('empty.title')}
+            description={t('empty.description')}
+            action={{ label: t('empty.action'), onClick: clearFilters }}
+          />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -307,31 +304,32 @@ const Marketplace = () => {
         )}
       </div>
 
-      {/* Pagination (if needed) */}
       {pagination && pagination.total_pages > 1 && (
-        <div className="p-6 border-t">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              {t('pagination.pageInfo', { current: pagination.current_page, total: pagination.total_pages, count: pagination.total })}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              >
-                {t('pagination.previous')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === pagination.total_pages}
-                onClick={() => setCurrentPage(prev => Math.min(pagination.total_pages, prev + 1))}
-              >
-                {t('pagination.next')}
-              </Button>
-            </div>
+        <div className="flex items-center justify-between border-t p-4 md:px-6">
+          <div className="text-muted-foreground text-sm">
+            {t('pagination.pageInfo', {
+              current: pagination.current_page,
+              total: pagination.total_pages,
+              count: pagination.total,
+            })}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            >
+              {t('pagination.previous')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === pagination.total_pages}
+              onClick={() => setCurrentPage(prev => Math.min(pagination.total_pages, prev + 1))}
+            >
+              {t('pagination.next')}
+            </Button>
           </div>
         </div>
       )}
