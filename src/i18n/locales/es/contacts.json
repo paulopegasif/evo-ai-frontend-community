@@ -660,6 +660,13 @@
       "description": "La acción no se ejecutará. Esta operación no se puede deshacer.",
       "confirm": "Cancelar acción",
       "keep": "Mantener"
+    },
+    "statusLabels": {
+      "scheduled": "Programada",
+      "executing": "En ejecución",
+      "completed": "Completada",
+      "failed": "Fallida",
+      "cancelled": "Cancelada"
     }
   },
   "events": {

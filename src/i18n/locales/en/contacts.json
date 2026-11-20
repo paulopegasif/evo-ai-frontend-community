@@ -668,6 +668,13 @@
       "description": "The action will not run. This cannot be undone.",
       "confirm": "Cancel action",
       "keep": "Keep"
+    },
+    "statusLabels": {
+      "scheduled": "Scheduled",
+      "executing": "Running",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
     }
   },
   "events": {

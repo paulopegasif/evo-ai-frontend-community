@@ -660,6 +660,13 @@
       "description": "L’action ne sera pas exécutée. Cette opération est irréversible.",
       "confirm": "Annuler l’action",
       "keep": "Conserver"
+    },
+    "statusLabels": {
+      "scheduled": "Planifiée",
+      "executing": "En cours",
+      "completed": "Terminée",
+      "failed": "Échouée",
+      "cancelled": "Annulée"
     }
   },
   "events": {

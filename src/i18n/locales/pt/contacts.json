@@ -668,6 +668,13 @@
       "description": "A ação não será executada. Esta operação não pode ser desfeita.",
       "confirm": "Cancelar ação",
       "keep": "Manter"
+    },
+    "statusLabels": {
+      "scheduled": "Agendada",
+      "executing": "Em execução",
+      "completed": "Concluída",
+      "failed": "Falhou",
+      "cancelled": "Cancelada"
     }
   },
   "events": {

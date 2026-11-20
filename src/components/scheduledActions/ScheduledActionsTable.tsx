@@ -2,7 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Edit, X, Clock, AlertCircle } from 'lucide-react';
 import { ScheduledAction } from '@/types/automation';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 
 interface ScheduledActionsTableProps {
   actions: ScheduledAction[];
@@ -30,14 +30,18 @@ export default function ScheduledActionsTable({
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-      scheduled: 'default',
-      executing: 'secondary',
-      completed: 'outline',
-      failed: 'destructive',
-      cancelled: 'outline',
+    const variants: Record<string, 'info' | 'warning' | 'success' | 'error' | 'secondary'> = {
+      scheduled: 'info',
+      executing: 'warning',
+      completed: 'success',
+      failed: 'error',
+      cancelled: 'secondary',
     };
-    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
+    return (
+      <Badge variant={variants[status] ?? 'secondary'}>
+        {t(`scheduledActions.statusLabels.${status}`, { defaultValue: status })}
+      </Badge>
+    );
   };
 
   const getTimeUntilExecution = (scheduledFor: string) => {

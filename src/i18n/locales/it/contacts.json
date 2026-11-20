@@ -660,6 +660,13 @@
       "description": "L’azione non verrà eseguita. L’operazione non può essere annullata.",
       "confirm": "Annulla azione",
       "keep": "Mantieni"
+    },
+    "statusLabels": {
+      "scheduled": "Pianificata",
+      "executing": "In esecuzione",
+      "completed": "Completata",
+      "failed": "Non riuscita",
+      "cancelled": "Annullata"
     }
   },
   "events": {
