@@ -204,7 +204,10 @@
       "health": "santé",
       "templatesLabel": "Modèles",
       "templatesSelected": "{{count}} sélectionné(s)",
-      "noContentPreview": "Aucun aperçu du contenu"
+      "noContentPreview": "Aucun aperçu du contenu",
+      "noInboxes": "Aucune boîte de réception disponible pour ce canal",
+      "selectInboxFirst": "Sélectionnez d'abord une boîte de réception",
+      "noTemplates": "Aucun modèle disponible pour cette boîte de réception"
     },
     "step4": {
       "title": "Configuration",

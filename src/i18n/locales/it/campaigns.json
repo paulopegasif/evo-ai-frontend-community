@@ -204,7 +204,10 @@
       "health": "salute",
       "templatesLabel": "Modelli",
       "templatesSelected": "{{count}} selezionato/i",
-      "noContentPreview": "Nessuna anteprima del contenuto"
+      "noContentPreview": "Nessuna anteprima del contenuto",
+      "noInboxes": "Nessuna casella di posta disponibile per questo canale",
+      "selectInboxFirst": "Seleziona prima una casella di posta",
+      "noTemplates": "Nessun modello disponibile per questa casella di posta"
     },
     "step4": {
       "title": "Impostazioni",

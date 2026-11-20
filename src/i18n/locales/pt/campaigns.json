@@ -260,7 +260,10 @@
       "health": "saúde",
       "templatesLabel": "Templates",
       "templatesSelected": "{{count}} selecionado(s)",
-      "noContentPreview": "Sem pré-visualização do conteúdo"
+      "noContentPreview": "Sem pré-visualização do conteúdo",
+      "noInboxes": "Nenhuma caixa de entrada disponível para este canal",
+      "selectInboxFirst": "Selecione primeiro uma caixa de entrada",
+      "noTemplates": "Nenhum modelo disponível para esta caixa de entrada"
     },
     "step4": {
       "title": "Configurações",

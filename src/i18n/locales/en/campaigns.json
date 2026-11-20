@@ -260,7 +260,10 @@
       "health": "health",
       "templatesLabel": "Templates",
       "templatesSelected": "{{count}} selected",
-      "noContentPreview": "No content preview"
+      "noContentPreview": "No content preview",
+      "noInboxes": "No inboxes available for this channel",
+      "selectInboxFirst": "Please select an inbox first",
+      "noTemplates": "No templates available for this inbox"
     },
     "step4": {
       "title": "Settings",

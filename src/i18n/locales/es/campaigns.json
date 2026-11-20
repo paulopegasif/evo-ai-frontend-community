@@ -228,7 +228,10 @@
       "health": "salud",
       "templatesLabel": "Plantillas",
       "templatesSelected": "{{count}} seleccionado(s)",
-      "noContentPreview": "Sin vista previa del contenido"
+      "noContentPreview": "Sin vista previa del contenido",
+      "noInboxes": "No hay bandejas de entrada disponibles para este canal",
+      "selectInboxFirst": "Selecciona primero una bandeja de entrada",
+      "noTemplates": "No hay plantillas disponibles para esta bandeja de entrada"
     },
     "step4": {
       "title": "Configuración",
