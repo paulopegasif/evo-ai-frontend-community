@@ -191,7 +191,7 @@ export default function BaseFilterRow<T extends BaseFilter>({
           }
         >
           <SelectTrigger className="w-full">
-            <SelectValue />
+            <SelectValue placeholder={tCommon('base.filter.selectOption')} />
           </SelectTrigger>
           <SelectPopup alignItemWithTrigger={false}>
             {attributeItems.map(item => (
@@ -207,13 +207,14 @@ export default function BaseFilterRow<T extends BaseFilter>({
       <div className="min-w-0 flex-1">
         <Select
           items={operatorItems}
-          value={filter.filterOperator || null}
+          // Without an attribute there are no operators to label; show the placeholder.
+          value={operatorItems.length ? filter.filterOperator || null : null}
           onValueChange={value =>
             onUpdate(index, 'filterOperator' as keyof T, value == null ? '' : String(value))
           }
         >
           <SelectTrigger className="w-full">
-            <SelectValue />
+            <SelectValue placeholder={tCommon('base.filter.selectOption')} />
           </SelectTrigger>
           <SelectPopup alignItemWithTrigger={false}>
             {operatorItems.map(item => (
