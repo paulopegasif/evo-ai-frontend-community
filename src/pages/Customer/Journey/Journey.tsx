@@ -3,18 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Route, Copy, Trash2, Edit3, GitBranch } from 'lucide-react';
 import BaseHeader from '../../../components/base/BaseHeader';
 import BaseTable, { TableColumn, TableAction } from '../../../components/base/BaseTable';
-import {
-  Badge,
-  Switch,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/compat';
+import ConfirmDialog from '../../../components/base/ConfirmDialog';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { journeyService } from '../../../services';
 import type { Journey } from '@/types/automation';
 import type { Node, Edge } from '@xyflow/react';
@@ -32,6 +23,7 @@ export default function JourneyPage() {
   const [editingJourney, setEditingJourney] = useState<Journey | null>(null);
   const [selectedJourneys, setSelectedJourneys] = useState<Journey[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [journeyToDelete, setJourneyToDelete] = useState<Journey | null>(null);
 
   const navigate = useNavigate();
@@ -123,6 +115,7 @@ export default function JourneyPage() {
   const handleDeleteConfirm = async () => {
     if (!journeyToDelete?.id) return;
 
+    setDeleting(true);
     try {
       await journeyService.deleteJourney(journeyToDelete.id);
       await fetchJourneys();
@@ -132,6 +125,7 @@ export default function JourneyPage() {
       console.error('Erro ao excluir jornada:', error);
       toast.error(t('messages.deleteError'));
     } finally {
+      setDeleting(false);
       setDeleteDialogOpen(false);
       setJourneyToDelete(null);
     }
@@ -192,9 +186,9 @@ export default function JourneyPage() {
       sortable: true,
       render: journey => (
         <div>
-          <div className="font-medium text-sidebar-foreground">{journey.name}</div>
+          <div className="font-medium">{journey.name}</div>
           {journey.description && (
-            <div className="text-sm text-sidebar-foreground/60 mt-1">{journey.description}</div>
+            <div className="mt-0.5 line-clamp-1 text-muted-foreground text-xs">{journey.description}</div>
           )}
         </div>
       ),
@@ -205,12 +199,12 @@ export default function JourneyPage() {
       render: journey => (
         <div className="flex items-center gap-1 flex-wrap">
           {journey.flowTriggers?.slice(0, 2).map((trigger: any) => (
-            <Badge key={trigger.id} variant="outline" className="text-xs">
+            <Badge key={trigger.id} variant="outline">
               {trigger.type}
             </Badge>
           ))}
           {journey.flowTriggers && journey.flowTriggers.length > 2 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary">
               +{journey.flowTriggers.length - 2}
             </Badge>
           )}
@@ -221,12 +215,12 @@ export default function JourneyPage() {
       key: 'isActive',
       label: t('table.columns.status'),
       render: journey => (
-        <div className="flex items-center gap-2">
+        <label className="flex cursor-pointer items-center gap-2">
           <Switch checked={journey.isActive} onCheckedChange={() => handleToggleJourney(journey)} />
-          <span className="text-sm text-sidebar-foreground/70">
+          <span className="text-muted-foreground text-sm">
             {journey.isActive ? t('table.status.active') : t('table.status.inactive')}
           </span>
-        </div>
+        </label>
       ),
     },
     {
@@ -234,7 +228,7 @@ export default function JourneyPage() {
       label: t('table.columns.createdAt'),
       sortable: true,
       render: journey => (
-        <span className="text-sm text-sidebar-foreground/70">
+        <span className="text-muted-foreground text-sm">
           {journey.createdAt
             ? new Date(journey.createdAt).toLocaleDateString('pt-BR')
             : t('table.invalidDate')}
@@ -250,25 +244,25 @@ export default function JourneyPage() {
   const actions: TableAction<Journey>[] = [
     {
       label: t('actions.edit'),
-      icon: <Edit3 className="h-4 w-4" />,
+      icon: <Edit3 />,
       onClick: handleEditJourney,
       show: () => permissionsReady && can('journeys', 'update'),
     },
     {
       label: t('actions.openFlow'),
-      icon: <GitBranch className="h-4 w-4" />,
+      icon: <GitBranch />,
       onClick: handleOpenFlow,
       show: () => permissionsReady && can('journeys', 'update'),
     },
     {
       label: t('actions.duplicate'),
-      icon: <Copy className="h-4 w-4" />,
+      icon: <Copy />,
       onClick: handleDuplicateJourney,
       show: () => permissionsReady && can('journeys', 'create'),
     },
     {
       label: t('actions.delete'),
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 />,
       onClick: handleDeleteClick,
       variant: 'destructive',
       show: () => permissionsReady && can('journeys', 'delete'),
@@ -276,7 +270,7 @@ export default function JourneyPage() {
   ];
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col gap-6 p-4 md:p-6">
       <BaseHeader
         title={t('title')}
         subtitle={t('subtitle')}
@@ -285,7 +279,7 @@ export default function JourneyPage() {
         searchPlaceholder={t('header.searchPlaceholder')}
         primaryAction={permissionsReady && can('journeys', 'create') ? {
           label: t('header.newJourney'),
-          icon: <Plus className="h-4 w-4" />,
+          icon: <Plus />,
           onClick: handleCreateJourney,
         } : undefined}
         selectedCount={selectedJourneys.length}
@@ -293,7 +287,7 @@ export default function JourneyPage() {
         totalCount={journeys.length}
       />
 
-      <div className="mt-6">
+      <div>
         <BaseTable
           data={filteredJourneys}
           columns={columns}
@@ -321,32 +315,16 @@ export default function JourneyPage() {
         onSave={handleJourneySaved}
       />
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-sidebar border-sidebar-border">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-sidebar-foreground">
-              {t('dialog.delete.title')}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-sidebar-foreground/80">
-              {t('dialog.delete.description', { name: journeyToDelete?.name })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              className="bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              {t('dialog.delete.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive hover:bg-destructive/90 text-white"
-              onClick={handleDeleteConfirm}
-            >
-              {t('dialog.delete.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.delete.title')}
+        description={t('dialog.delete.description', { name: journeyToDelete?.name })}
+        cancelLabel={t('dialog.delete.cancel')}
+        confirmLabel={t('dialog.delete.confirm')}
+        onConfirm={handleDeleteConfirm}
+        loading={deleting}
+      />
     </div>
   );
 }

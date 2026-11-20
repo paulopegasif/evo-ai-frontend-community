@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  DialogClose,
   DialogFooter,
-  Button,
-  Input,
-  Textarea,
-  Switch,
-  Label,
-} from '@/components/ui/compat';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { journeyService } from '@/services';
 import { Journey, TriggerType } from '@/types/automation';
 import type { Node, Edge } from '@xyflow/react';
@@ -141,71 +143,55 @@ export default function JourneyModal({ open, onClose, journey, onSave }: Journey
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-sidebar border-sidebar-border max-w-md">
+    <Dialog open={open} onOpenChange={next => !next && onClose()}>
+      <DialogPopup className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-sidebar-foreground">
-            {journey ? t('modal.edit.title') : t('modal.create.title')}
-          </DialogTitle>
+          <DialogTitle>{journey ? t('modal.edit.title') : t('modal.create.title')}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sidebar-foreground">
-              {t('modal.fields.name.label')} *
-            </Label>
+        <DialogPanel className="flex flex-col gap-4">
+          <Field>
+            <FieldLabel htmlFor="name">
+              {t('modal.fields.name.label')}
+              <span className="text-destructive-foreground" aria-hidden="true">*</span>
+            </FieldLabel>
             <Input
               id="name"
+              autoFocus
               value={formData.name}
               onChange={e => handleInputChange('name', e.target.value)}
               placeholder={t('modal.fields.name.placeholder')}
-              className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground"
             />
-          </div>
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-sidebar-foreground">
-              {t('modal.fields.description.label')}
-            </Label>
+          <Field>
+            <FieldLabel htmlFor="description">{t('modal.fields.description.label')}</FieldLabel>
             <Textarea
               id="description"
               value={formData.description}
               onChange={e => handleInputChange('description', e.target.value)}
               placeholder={t('modal.fields.description.placeholder')}
-              className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground"
               rows={3}
             />
-          </div>
+          </Field>
 
-          <div className="flex items-center space-x-2">
+          <label className="flex cursor-pointer items-center gap-3 font-medium text-sm">
             <Switch
               id="isActive"
               checked={formData.isActive}
               onCheckedChange={value => handleInputChange('isActive', value)}
             />
-            <Label htmlFor="isActive" className="text-sidebar-foreground">
-              {t('modal.fields.isActive')}
-            </Label>
-          </div>
-        </div>
+            {t('modal.fields.isActive')}
+          </label>
+        </DialogPanel>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground border-sidebar-border"
-          >
-            {t('modal.actions.cancel')}
-          </Button>
-          <Button onClick={handleSave} disabled={loading}>
-            {loading
-              ? t('modal.actions.saving')
-              : journey
-              ? t('modal.edit.button')
-              : t('modal.create.button')}
+          <DialogClose render={<Button variant="ghost" />}>{t('modal.actions.cancel')}</DialogClose>
+          <Button onClick={handleSave} loading={loading}>
+            {loading ? t('modal.actions.saving') : journey ? t('modal.edit.button') : t('modal.create.button')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }
