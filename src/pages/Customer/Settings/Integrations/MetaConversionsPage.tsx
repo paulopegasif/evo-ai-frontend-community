@@ -32,6 +32,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } f
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { SecretInput } from '@/components/integrations/shared';
 import { Label } from '@/components/ui/label';
 import { Radio, RadioGroup } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
@@ -423,9 +424,7 @@ export default function MetaConversionsPage() {
                 </RadioGroup>
                 {tokenSource === 'own' && (
                   <Field>
-                    <Input
-                      type="password"
-                      autoComplete="off"
+                    <SecretInput
                       aria-label="Token de acesso"
                       value={accessToken}
                       onChange={e => setAccessToken(e.target.value)}

@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { SecretInput } from '@/components/integrations/shared';
 import { Skeleton } from '@/components/ui/skeleton';
 import BrandIcon from '@/components/BrandIcon';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -273,10 +274,8 @@ export default function MetaAdsPage() {
 
               <Field>
                 <FieldLabel>Token de acesso</FieldLabel>
-                <Input
+                <SecretInput
                   id="meta-token"
-                  type="password"
-                  autoComplete="off"
                   value={accessToken}
                   onChange={e => setAccessToken(e.target.value)}
                   placeholder={configured ? `Manter o token atual (${integration?.token_hint || '••••'})` : 'EAAB…'}
