@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -16,7 +15,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import {
-  Search,
   Mail,
   MailOpen,
   MoreVertical,
@@ -58,6 +56,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useConversationDrafts } from '../message-input/useConversationDrafts';
 import { ASSIGNEE_TABS, buildAssigneeTabFilters, getActiveAssigneeTab, type AssigneeTab } from './assigneeTabs';
 import GlobalSearchPanel from '../search/GlobalSearchPanel';
+import GlobalSearchInput from '../search/GlobalSearchInput';
 import { BaseFilter } from '@/types/core';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -659,28 +658,22 @@ const ChatSidebar = ({
       <div className="space-y-3 border-b px-3 pt-3 pb-2.5">
         {/* Search */}
         <div className="relative" data-tour="chat-search">
-          <InputGroup>
-            <InputGroupAddon>
-              <Search aria-hidden="true" />
-            </InputGroupAddon>
-            <InputGroupInput
-              type="search"
-              placeholder={t('chatSidebar.searchPlaceholder')}
-              aria-label={t('chatSidebar.searchPlaceholder')}
-              value={searchInput}
-              onChange={e => handleSearchChange(e.target.value)}
-              onFocus={handleSearchFocus}
-            />
-          </InputGroup>
           <GlobalSearchPanel
             isOpen={isSearchPanelOpen && searchInput.trim().length > 0}
             searchTerm={debouncedSearchTerm}
             rawInputValue={searchInput}
+            onInputValueChange={handleSearchChange}
             onClose={() => setIsSearchPanelOpen(false)}
             onSelectConversation={handleSelectConversation}
             onSelectContact={handleSelectContact}
             onSelectMessage={handleSelectMessage}
-          />
+          >
+            <GlobalSearchInput
+              placeholder={t('chatSidebar.searchPlaceholder')}
+              aria-label={t('chatSidebar.searchPlaceholder')}
+              onFocus={handleSearchFocus}
+            />
+          </GlobalSearchPanel>
         </div>
 
         {/* Chips de segmento (Abertas/Pendentes/Concluídas/Agente/Grupos) — SÓ

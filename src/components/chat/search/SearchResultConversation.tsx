@@ -1,7 +1,7 @@
-import { CommandItem } from '@/components/ui/compat';
 import { MessageSquare } from 'lucide-react';
 import type { SearchConversationResult } from '@/types/chat/search';
 import { highlightMatch } from './searchHighlight';
+import SearchResultItem from './SearchResultItem';
 
 interface Props {
   item: SearchConversationResult;
@@ -15,26 +15,21 @@ export default function SearchResultConversation({ item, query, onSelect }: Prop
   const inboxName = item.inbox?.name;
 
   return (
-    <CommandItem
+    <SearchResultItem
       value={`conversation-${item.id}`}
+      icon={<MessageSquare />}
       onSelect={() => onSelect(item)}
-      className="flex items-start gap-3 py-2 cursor-pointer"
     >
-      <MessageSquare className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium truncate">{highlightMatch(contactName, query)}</span>
-          <span className="text-xs text-muted-foreground shrink-0">#{item.display_id}</span>
-        </div>
-        {snippet && (
-          <p className="text-xs text-muted-foreground truncate">{highlightMatch(snippet, query)}</p>
-        )}
+      <div className="flex items-center gap-2">
+        <span className="truncate font-medium text-sm">{highlightMatch(contactName, query)}</span>
+        <span className="shrink-0 text-muted-foreground text-xs tabular-nums">#{item.display_id}</span>
         {inboxName && (
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            {inboxName}
-          </span>
+          <span className="ms-auto truncate text-muted-foreground text-xs">{inboxName}</span>
         )}
       </div>
-    </CommandItem>
+      {snippet && (
+        <p className="truncate text-muted-foreground text-xs">{highlightMatch(snippet, query)}</p>
+      )}
+    </SearchResultItem>
   );
 }
