@@ -399,7 +399,8 @@
       "all": "All",
       "chipCleared": "Unread/Groups can’t be combined with this tab and were removed"
     },
-    "draftPrefix": "Draft:"
+    "draftPrefix": "Draft:",
+    "loadMore": "Load more"
   },
   "chatTabs": {
     "chat": "Chat"

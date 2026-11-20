@@ -394,7 +394,8 @@
       "all": "Toutes",
       "chipCleared": "Non lues/Groupes ne se combinent pas avec cet onglet et ont été retirés"
     },
-    "draftPrefix": "Brouillon :"
+    "draftPrefix": "Brouillon :",
+    "loadMore": "Charger plus"
   },
   "chatTabs": {
     "chat": "Chat"

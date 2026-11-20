@@ -17,16 +17,8 @@ import { loadConversationFilters, getDefaultFilter } from '@/utils/storage/filte
 
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/compat';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import { ChatTour } from '@/tours';
@@ -37,7 +29,7 @@ import ChatHeader from '@/components/chat/chat-header/ChatHeader';
 import ChatArea from '@/components/chat/chat-area/ChatArea';
 import ChatTabs from '@/components/chat/chat-tabs/ChatTabs';
 
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { MessagesSquare } from 'lucide-react';
 
 import { Conversation } from '@/types/chat/api';
 import { BaseFilter } from '@/types/core';
@@ -168,6 +160,7 @@ const Chat = () => {
 
   // Modal states
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeletingConversation, setIsDeletingConversation] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<Conversation | null>(null);
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [assignmentType, setAssignmentType] = useState<AssignmentType>('agent');
@@ -651,6 +644,7 @@ const Chat = () => {
   const confirmDeleteConversation = async () => {
     if (!conversationToDelete) return;
 
+    setIsDeletingConversation(true);
     try {
       await conversations.deleteConversation(String(conversationToDelete.id));
       setShowDeleteDialog(false);
@@ -659,6 +653,8 @@ const Chat = () => {
     } catch (error) {
       console.error('Error deleting conversation:', error);
       // Error is already handled in the context with toast
+    } finally {
+      setIsDeletingConversation(false);
     }
   };
 
@@ -968,13 +964,15 @@ const Chat = () => {
               )}
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <div className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t('empty.title')}</h3>
-                <p className="text-muted-foreground">{t('empty.description')}</p>
-              </div>
-            </div>
+            <Empty className="bg-muted/24">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <MessagesSquare />
+                </EmptyMedia>
+                <EmptyTitle>{t('empty.title')}</EmptyTitle>
+                <EmptyDescription>{t('empty.description')}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           )}
         </div>
 
@@ -1015,50 +1013,28 @@ const Chat = () => {
         </Suspense>
 
         {/* Delete Conversation Confirmation Dialog */}
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent className="max-w-md">
-            <AlertDialogHeader className="text-left space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="h-6 w-6 text-destructive" />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <AlertDialogTitle className="text-lg font-semibold">
-                    {t('deleteDialog.title')}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                    {(() => {
-                      const contactName =
-                        conversationToDelete?.assignee?.name || t('deleteDialog.contactFallback');
-                      const description = t('deleteDialog.description', { name: contactName });
-                      const parts = description.split(contactName);
-                      return (
-                        <>
-                          {parts[0]}
-                          <strong>{contactName}</strong>
-                          {parts[1]}
-                        </>
-                      );
-                    })()}
-                  </AlertDialogDescription>
-                </div>
-              </div>
-            </AlertDialogHeader>
-
-            <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-3">
-              <AlertDialogCancel className="w-full sm:w-auto">
-                {t('deleteDialog.cancel')}
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={confirmDeleteConversation}
-                className="w-full sm:w-auto bg-destructive text-white hover:bg-destructive/90 focus:ring-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('deleteDialog.confirm')}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          title={t('deleteDialog.title')}
+          description={(() => {
+            const contactName =
+              conversationToDelete?.assignee?.name || t('deleteDialog.contactFallback');
+            const description = t('deleteDialog.description', { name: contactName });
+            const parts = description.split(contactName);
+            return (
+              <>
+                {parts[0]}
+                <strong className="font-medium text-foreground">{contactName}</strong>
+                {parts[1]}
+              </>
+            );
+          })()}
+          cancelLabel={t('deleteDialog.cancel')}
+          confirmLabel={t('deleteDialog.confirm')}
+          onConfirm={confirmDeleteConversation}
+          loading={isDeletingConversation}
+        />
       </div>
     </ErrorBoundary>
   );

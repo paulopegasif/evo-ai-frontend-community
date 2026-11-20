@@ -399,7 +399,8 @@
       "all": "Todas",
       "chipCleared": "Não lidas/Grupos não combinam com esta aba e foram removidos"
     },
-    "draftPrefix": "Rascunho:"
+    "draftPrefix": "Rascunho:",
+    "loadMore": "Carregar mais"
   },
   "chatTabs": {
     "chat": "Chat"

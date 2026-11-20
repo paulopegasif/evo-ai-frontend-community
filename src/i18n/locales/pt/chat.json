@@ -394,7 +394,8 @@
       "all": "Todas",
       "chipCleared": "Não lidas/Grupos não combinam com este separador e foram removidos"
     },
-    "draftPrefix": "Rascunho:"
+    "draftPrefix": "Rascunho:",
+    "loadMore": "Carregar mais"
   },
   "chatTabs": {
     "chat": "Chat"

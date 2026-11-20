@@ -394,7 +394,8 @@
       "all": "Tutte",
       "chipCleared": "Non lette/Gruppi non si combinano con questa scheda e sono stati rimossi"
     },
-    "draftPrefix": "Bozza:"
+    "draftPrefix": "Bozza:",
+    "loadMore": "Carica altro"
   },
   "chatTabs": {
     "chat": "Chat"
