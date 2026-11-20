@@ -6,26 +6,12 @@ vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string, fallback?: string) => fallback || key }),
 }));
 
-vi.mock('@/components/ui/compat', () => ({
-  Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button type="button" {...props}>{children}</button>
-  ),
-  Badge: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-    <span {...props}>{children}</span>
-  ),
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  DropdownMenuContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DropdownMenuItem: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
-    <button type="button" onClick={onClick}>{children}</button>
-  ),
-  DropdownMenuSeparator: () => <hr />,
-}));
-
 vi.mock('lucide-react', () => ({
   Edit: () => <span data-testid="icon-edit" />,
   Trash2: () => <span data-testid="icon-trash" />,
-  MoreVertical: () => <span data-testid="icon-more" />,
+  MoreHorizontal: () => <span data-testid="icon-more" />,
+  Inbox: () => <span data-testid="icon-inbox" />,
+  CircleDollarSign: () => <span data-testid="icon-dollar" />,
   Phone: () => <span data-testid="icon-phone" />,
   Mail: () => <span data-testid="icon-mail" />,
   MessageSquare: () => <span data-testid="icon-message" />,
