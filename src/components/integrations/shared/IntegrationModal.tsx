@@ -1,11 +1,7 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/compat';
+import type { ReactNode } from 'react';
 import { Integration } from '@/types/integrations';
 import BrandIcon from '@/components/BrandIcon';
+import { AgentIntegrationDialog } from '../agentConfig/AgentIntegrationDialog';
 
 interface IntegrationModalProps {
   integration: Integration | null;
@@ -13,39 +9,46 @@ interface IntegrationModalProps {
   onClose: () => void;
   onSave: (data: Record<string, unknown>) => Promise<void>;
   title?: string;
-  children?: React.ReactNode;
+  description?: ReactNode;
+  /** Shows a form-shaped skeleton instead of the body. */
+  loading?: boolean;
+  /** Primary actions at the end of the sticky footer. */
+  footer?: ReactNode;
+  /** Secondary action at the start of the footer (e.g. docs link). */
+  footerStart?: ReactNode;
+  children?: ReactNode;
 }
 
+/** Dialog shell for an integration: brand tile, title, scrollable body, sticky footer. */
 export default function IntegrationModal({
   integration,
   open,
   onClose,
   onSave: _,
   title,
-  children
+  description,
+  loading,
+  footer,
+  footerStart,
+  children,
 }: IntegrationModalProps) {
   const modalTitle = title || (integration ? `Configurar ${integration.name}` : 'Nova Integração');
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {integration && (
-              <div className="w-6 h-6 rounded overflow-hidden bg-muted flex items-center justify-center">
-                <BrandIcon
-                  id={integration.id}
-                  size={20}
-                  className="w-5 h-5"
-                />
-              </div>
-            )}
-            {modalTitle}
-          </DialogTitle>
-        </DialogHeader>
-
-        {children}
-      </DialogContent>
-    </Dialog>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={next => {
+        if (!next) onClose();
+      }}
+      icon={integration ? <BrandIcon id={integration.id} size={20} /> : undefined}
+      title={modalTitle}
+      description={description}
+      loading={loading}
+      footer={footer}
+      footerStart={footerStart}
+      className="sm:max-w-2xl"
+    >
+      {children}
+    </AgentIntegrationDialog>
   );
 }
