@@ -135,15 +135,15 @@ export default function UserDetails({
         <div className="flex-1 overflow-auto">
           <Tabs defaultValue="overview" className="h-full">
             <TabsList className="w-full justify-start px-6 py-0 h-12 bg-transparent border-b rounded-none">
-              <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="overview" className="data-active:border-b-2 data-active:border-primary rounded-none">
                 <UserIcon className="h-4 w-4 mr-2" />
                 {t('details.tabs.overview')}
               </TabsTrigger>
-              <TabsTrigger value="activity" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="activity" className="data-active:border-b-2 data-active:border-primary rounded-none">
                 <History className="h-4 w-4 mr-2" />
                 {t('details.tabs.activity')}
               </TabsTrigger>
-              <TabsTrigger value="settings" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="settings" className="data-active:border-b-2 data-active:border-primary rounded-none">
                 <Settings className="h-4 w-4 mr-2" />
                 {t('details.tabs.settings')}
               </TabsTrigger>

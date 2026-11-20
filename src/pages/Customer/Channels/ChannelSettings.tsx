@@ -652,7 +652,7 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   <TabsTrigger
                     key={tab.key}
                     value={tab.key}
-                    className="flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap text-sm text-muted-foreground hover:bg-muted data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                    className="flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap text-sm text-muted-foreground hover:bg-muted data-active:bg-primary/10 data-active:text-primary"
                   >
                     <Icon className="h-4 w-4" />
                     <span className="text-sm">{tab.name}</span>

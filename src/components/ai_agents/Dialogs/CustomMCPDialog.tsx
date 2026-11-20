@@ -157,7 +157,7 @@ const CustomMCPDialog = ({
                       <Checkbox
                         checked={selectedServerIds.includes(server.id)}
                         onCheckedChange={() => toggleServer(server.id)}
-                        className="mt-1 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+                        className="mt-1 data-checked:bg-emerald-500 data-checked:border-emerald-500"
                         onClick={e => e.stopPropagation()}
                       />
 

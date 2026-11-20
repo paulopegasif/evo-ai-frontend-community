@@ -1041,7 +1041,7 @@ const ChatSidebar = ({
                           }
                         }}
                         aria-label={t('chatSidebar.selectConversation')}
-                        className="border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        className="border-muted-foreground/40 data-checked:bg-primary data-checked:border-primary"
                       />
                     </div>
                   )}

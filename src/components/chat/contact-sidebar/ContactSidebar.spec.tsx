@@ -16,13 +16,17 @@ vi.mock('./ContactDetails', () => ({ default: () => null }));
 vi.mock('./EditableContactCustomAttributes', () => ({ default: () => null }));
 vi.mock('./EditableConversationCustomAttributes', () => ({ default: () => null }));
 type WithChildren = { children?: React.ReactNode; onClick?: () => void };
-vi.mock('@/components/ui/compat', () => ({ Button: ({ children, onClick }: WithChildren) => <button onClick={onClick}>{children}</button> }));
 vi.mock('@/components/ui/compat', () => ({
+  ...(() => ({ Button: ({ children, onClick }: WithChildren) => <button onClick={onClick}>{children}</button> }))(),
+  ...(() => ({
   Card: ({ children }: WithChildren) => <div>{children}</div>,
   CardHeader: ({ children }: WithChildren) => <div>{children}</div>,
   CardContent: ({ children }: WithChildren) => <div>{children}</div>,
+}))(),
+  ...(() => ({ Badge: ({ children }: WithChildren) => <span>{children}</span> }))(),
 }));
-vi.mock('@/components/ui/compat', () => ({ Badge: ({ children }: WithChildren) => <span>{children}</span> }));
+
+
 vi.mock('lucide-react', () => ({
   X: () => null, User: () => null, FileText: () => null, MessageSquare: () => null,
   Clock: () => null, ChevronDown: () => null, Zap: () => null, GitBranch: () => null,

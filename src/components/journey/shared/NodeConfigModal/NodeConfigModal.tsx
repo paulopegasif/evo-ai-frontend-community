@@ -176,7 +176,7 @@ export function NodeConfigModal(props: NodeConfigModalProps) {
                   // its content leaks into other tabs — hide it with Tailwind
                   // (the design-system TabsContent has no inactive-hide rule). See EVO-1276.
                   {...(tab.forceMount
-                    ? { forceMount: true, className: 'data-[state=inactive]:hidden' }
+                    ? { forceMount: true, className: 'data-hidden:hidden' }
                     : {})}
                 >
                   {tab.content}
@@ -194,7 +194,7 @@ export function NodeConfigModal(props: NodeConfigModalProps) {
               >
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="-ml-3 gap-2 group">
-                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    <ChevronDown className="h-4 w-4 transition-transform group-data-panel-open:rotate-180" />
                     {props.advancedLabel ?? 'Advanced settings'}
                   </Button>
                 </CollapsibleTrigger>

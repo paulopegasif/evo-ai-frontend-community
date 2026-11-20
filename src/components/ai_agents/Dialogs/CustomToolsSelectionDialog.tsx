@@ -210,7 +210,7 @@ const CustomToolsSelectionDialog = ({
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={() => toggleTool(tool)}
-                            className="mt-1 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                            className="mt-1 data-checked:bg-purple-500 data-checked:border-purple-500"
                             onClick={e => e.stopPropagation()}
                           />
 

@@ -240,7 +240,7 @@ export default function BaseTable<T extends Record<string, any>>({
                   checked={isAllSelected}
                   onCheckedChange={handleSelectAll}
                   aria-label={t('base.table.selectAll')}
-                  className="border-sidebar-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  className="border-sidebar-border data-checked:bg-primary data-checked:border-primary"
                 />
               </TableHead>
             )}
@@ -285,7 +285,7 @@ export default function BaseTable<T extends Record<string, any>>({
                       checked={isSelected}
                       onCheckedChange={() => handleSelectItem(item)}
                       aria-label={t('base.table.selectItem', { key: getRowLabel?.(item) ?? key })}
-                      className="border-sidebar-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      className="border-sidebar-border data-checked:bg-primary data-checked:border-primary"
                     />
                   </TableCell>
                 )}

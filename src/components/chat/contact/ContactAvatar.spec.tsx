@@ -19,6 +19,7 @@ vi.mock('@/components/channels/ChannelIcon', () => ({
 // regression-pin (a rename like `thumbnail` → `avatar_thumb` in the API would
 // silently break the conversation list, header, sidebar, and /contacts pages).
 vi.mock('@/components/ui/compat', () => ({
+  ...(() => ({
   Avatar: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div data-testid="avatar-root" className={className}>
       {children}
@@ -31,14 +32,16 @@ vi.mock('@/components/ui/compat', () => ({
       {children}
     </div>
   ),
-}));
-
-vi.mock('@/components/ui/compat', () => ({
+}))(),
+  ...(() => ({
   TooltipProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   TooltipTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   TooltipContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))(),
 }));
+
+
 
 describe('ContactAvatar (EVO-1012)', () => {
   it('renders avatar_url when present (priority 1)', () => {
