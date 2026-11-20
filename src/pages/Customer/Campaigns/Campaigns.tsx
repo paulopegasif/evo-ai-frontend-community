@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/compat';
 import { Megaphone } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { campaignsService } from '@/services/campaigns';
@@ -448,57 +449,27 @@ export default function Campaigns() {
       )}
 
       {/* Delete Campaign Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.deleteCampaign.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.deleteCampaign.description', { name: campaignToDelete?.title })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.deleteCampaign.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteCampaign}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('dialog.deleteCampaign.deleting')
-                : t('dialog.deleteCampaign.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.deleteCampaign.title')}
+        description={t('dialog.deleteCampaign.description', { name: campaignToDelete?.title })}
+        cancelLabel={t('dialog.deleteCampaign.cancel')}
+        confirmLabel={t('dialog.deleteCampaign.confirm')}
+        onConfirm={confirmDeleteCampaign}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedCampaignIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete}>
-              {t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedCampaignIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+      />
 
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
         <DialogContent>

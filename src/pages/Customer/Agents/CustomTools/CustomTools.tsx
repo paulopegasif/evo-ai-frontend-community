@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useLanguage } from '@/hooks/useLanguage';
 import { AgentsCustomToolsTour } from '@/tours';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/compat';
 import { Grid3X3, List, Wand } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import { CustomTool, CustomToolsState, CustomToolFormData, CustomToolsListParams, CustomToolTestResponse } from '@/types/ai';
@@ -31,6 +31,7 @@ import {
   getErrorMessage,
 } from '@/services/agents/customToolsService';
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 const INITIAL_STATE: CustomToolsState = initialCustomToolsState;
 
@@ -503,32 +504,16 @@ export default function CustomTools() {
       )}
 
       {/* Delete Tool Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: toolToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteTool}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('loading.deleting') : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: toolToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDeleteTool}
+        loading={state.loading.delete}
+      />
 
       {/* Tool Details Modal */}
       <CustomToolDetails

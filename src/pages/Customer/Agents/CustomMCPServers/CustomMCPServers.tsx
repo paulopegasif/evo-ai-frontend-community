@@ -4,15 +4,7 @@ import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useLanguage } from '@/hooks/useLanguage';
 import { AgentsCustomMCPsTour } from '@/tours';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/compat';
 import { Grid3X3, List, TestTube } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import {
@@ -24,6 +16,7 @@ import {
 import { BaseFilter, AppliedFilter, CUSTOM_MCP_SERVER_FILTER_TYPES } from '@/types/core';
 import { buildAppliedFilterChips } from '@/utils/appliedFilterChips';
 import { CustomMCPServerCard } from '@/components/customMcpServers';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import CustomMCPServersHeader from '@/components/customMcpServers/CustomMCPServersHeader';
 import CustomMCPServersTable from '@/components/customMcpServers/CustomMCPServersTable';
@@ -536,32 +529,16 @@ export default function CustomMCPServers() {
       )}
 
       {/* Delete Server Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: serverToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteServer}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('loading.deleting') : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: serverToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDeleteServer}
+        loading={state.loading.delete}
+      />
 
       {/* Server Details Modal */}
       <CustomMCPServerDetails

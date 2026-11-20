@@ -2,17 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsAgentsTour } from '@/tours';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/compat';
 import { Grid3X3, List, Users as UsersIcon } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useAuthStore } from '@/store/authStore';
@@ -494,58 +487,28 @@ export default function Users() {
       )}
 
       {/* Delete User Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.delete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.delete.description', { name: userToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.delete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteUser}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('dialog.delete.deleting') : t('dialog.delete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.delete.title')}
+        description={t('dialog.delete.description', { name: userToDelete?.name })}
+        cancelLabel={t('dialog.delete.cancel')}
+        confirmLabel={t('dialog.delete.confirm')}
+        onConfirm={confirmDeleteUser}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedUserIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('dialog.bulkDelete.deleting')
-                : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedUserIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* User Modal */}
       <UserFormModal

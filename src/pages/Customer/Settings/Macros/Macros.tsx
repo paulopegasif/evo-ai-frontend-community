@@ -2,17 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsMacrosTour } from '@/tours';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 import { Settings } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { macrosService } from '@/services/macros';
@@ -365,62 +357,28 @@ export default function Macros() {
       )}
 
       {/* Delete Macro Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.delete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.delete.description', { name: macroToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.delete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteMacro}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('dialog.delete.deleting') : t('dialog.delete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.delete.title')}
+        description={t('dialog.delete.description', { name: macroToDelete?.name })}
+        cancelLabel={t('dialog.delete.cancel')}
+        confirmLabel={t('dialog.delete.confirm')}
+        onConfirm={confirmDeleteMacro}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedMacroIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmBulkDelete}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('dialog.bulkDelete.deleting')
-                : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedMacroIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.delete}
+      />
 
       {/* Macro Modal */}
       <MacroFormModal

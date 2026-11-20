@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/compat';
 import { Users } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { contactsService } from '@/services/contacts';
@@ -940,30 +941,16 @@ export default function Contacts() {
       )}
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedContactIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('dialog.bulkDelete.deleting')
-                : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedContactIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* Single Contact Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={open => {

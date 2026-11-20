@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/compat';
 import { AgentsTable, AgentsHeader, AgentsPagination, AgentWizardModal, AgentsFilter } from '@/components/agents';
 import { EmptyState } from '@/components/base';
 import { Bot, Search } from 'lucide-react';
@@ -16,6 +15,7 @@ import { AgentsTour } from '@/tours';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import type { PaginationMeta } from '@/types/core';
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 interface AgentsState {
   agents: Agent[];
@@ -379,28 +379,16 @@ const Agentes = () => {
 
       <ApiKeysModal open={isApiKeysModalOpen} onOpenChange={setIsApiKeysModalOpen} />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: agentToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={isDeleting}
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDeleteAgent} disabled={isDeleting}>
-              {isDeleting ? t('deleteDialog.deleting') : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: agentToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDeleteAgent}
+        loading={isDeleting}
+      />
     </div>
   );
 };

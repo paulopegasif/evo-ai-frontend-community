@@ -1,18 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { SettingsAccessTokensTour } from '@/tours';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 import { Key } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import { useTranslation } from '@/hooks/useTranslation';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import {
   getAccessTokens,
@@ -467,56 +459,28 @@ export default function AccessTokens() {
       )}
 
       {/* Delete Token Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: tokenToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteToken}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('actions.deleting') : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: tokenToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDeleteToken}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('bulkDeleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('bulkDeleteDialog.description', { count: state.selectedTokenIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('bulkDeleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk ? t('actions.deleting') : t('bulkDeleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('bulkDeleteDialog.title')}
+        description={t('bulkDeleteDialog.description', { count: state.selectedTokenIds.length })}
+        cancelLabel={t('bulkDeleteDialog.cancel')}
+        confirmLabel={t('bulkDeleteDialog.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* Token Modal */}
       <AccessTokenModal

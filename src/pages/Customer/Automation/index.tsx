@@ -2,20 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { automationService } from '@/services/automation/automationService';
 import type { AutomationRule } from '@/types/automation';
 import { AutomationsHeader, AutomationsTable, AutomationsPagination } from '@/components/automation';
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 interface Pagination {
   page: number;
@@ -269,61 +261,27 @@ export default function AutomationsListPage() {
         </div>
       )}
 
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.delete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.delete.description', { name: ruleToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.delete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDelete}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('dialog.delete.deleting') : t('dialog.delete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={t('dialog.delete.title')}
+        description={t('dialog.delete.description', { name: ruleToDelete?.name })}
+        cancelLabel={t('dialog.delete.cancel')}
+        confirmLabel={t('dialog.delete.confirm')}
+        onConfirm={confirmDelete}
+        loading={state.loading.delete}
+      />
 
-      <Dialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmBulkDelete}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('dialog.bulkDelete.deleting')
-                : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.delete}
+      />
     </div>
   );
 }

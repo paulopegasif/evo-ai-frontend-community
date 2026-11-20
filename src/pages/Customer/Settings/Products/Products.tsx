@@ -1,3 +1,4 @@
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -14,15 +15,6 @@ import ProductsHeader from '@/components/products/ProductsHeader';
 import ProductsTable from '@/components/products/ProductsTable';
 import ProductsPagination from '@/components/products/ProductsPagination';
 import ProductModal from '@/components/products/ProductModal';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 
 const DEFAULT_PAGE_SIZE = 25;
 
@@ -191,28 +183,16 @@ export default function Products() {
         onSubmit={handleSubmit}
       />
 
-      <Dialog open={Boolean(confirmDelete)} onOpenChange={(open) => !open && setConfirmDelete(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('confirmDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('confirmDelete.description', { name: confirmDelete?.name ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(null)} disabled={deleting}>
-              {t('actions.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleConfirmDelete}
-              disabled={deleting}
-            >
-              {deleting ? t('actions.deleting') : t('actions.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={Boolean(confirmDelete)}
+        onOpenChange={(open) => !open && setConfirmDelete(null)}
+        title={t('confirmDelete.title')}
+        description={t('confirmDelete.description', { name: confirmDelete?.name ?? '' })}
+        cancelLabel={t('actions.cancel')}
+        confirmLabel={t('actions.delete')}
+        onConfirm={handleConfirmDelete}
+        loading={deleting}
+      />
     </div>
   );
 }

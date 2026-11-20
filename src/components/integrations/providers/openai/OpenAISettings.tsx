@@ -1,18 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@/components/ui/compat';
+import { Button, Card } from '@/components/ui/compat';
 import { Brain, Settings, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { OpenAIConfig, OpenAIHook } from '@/types/integrations';
@@ -291,28 +283,16 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
       </div>
 
       {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('openai.settings.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>{t('openai.settings.deleteDialog.description')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={loading.delete}
-            >
-              {t('openai.settings.deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={loading.delete}>
-              {loading.delete
-                ? t('openai.settings.deleteDialog.removing')
-                : t('openai.settings.deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('openai.settings.deleteDialog.title')}
+        description={t('openai.settings.deleteDialog.description')}
+        cancelLabel={t('openai.settings.deleteDialog.cancel')}
+        confirmLabel={t('openai.settings.deleteDialog.confirm')}
+        onConfirm={confirmDelete}
+        loading={loading.delete}
+      />
 
       {/* Config Modal */}
       <OpenAIModal

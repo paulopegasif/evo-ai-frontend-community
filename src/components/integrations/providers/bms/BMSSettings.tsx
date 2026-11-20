@@ -1,18 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@/components/ui/compat';
+import { Button, Card } from '@/components/ui/compat';
 import { MessageSquare, Settings, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { BMSHook } from '@/types/integrations';
@@ -305,26 +297,16 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
       </div>
 
       {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('bms.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>{t('bms.deleteDialog.description')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={loading.delete}
-            >
-              {t('bms.deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={loading.delete}>
-              {loading.delete ? t('bms.deleteDialog.removing') : t('bms.deleteDialog.remove')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('bms.deleteDialog.title')}
+        description={t('bms.deleteDialog.description')}
+        cancelLabel={t('bms.deleteDialog.cancel')}
+        confirmLabel={t('bms.deleteDialog.remove')}
+        onConfirm={confirmDelete}
+        loading={loading.delete}
+      />
 
       {/* Config Modal */}
       <BMSModal

@@ -2,15 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { pipelinesService } from '@/services/pipelines';
 import {
@@ -20,6 +11,7 @@ import {
   UpdatePipelineData,
 } from '@/types/analytics';
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import {
   PipelinesHeader,
@@ -313,32 +305,16 @@ export default function Pipelines() {
       </div>
 
       {/* Delete Pipeline Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.deletePipeline.title')}</DialogTitle>
-            <DialogDescription>{t('dialog.deletePipeline.description')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.deletePipeline.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeletePipeline}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('dialog.deletePipeline.deleting')
-                : t('dialog.deletePipeline.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.deletePipeline.title')}
+        description={t('dialog.deletePipeline.description')}
+        cancelLabel={t('dialog.deletePipeline.cancel')}
+        confirmLabel={t('dialog.deletePipeline.delete')}
+        onConfirm={confirmDeletePipeline}
+        loading={state.loading.delete}
+      />
 
       {/* Edit Pipeline Modal */}
       {editingPipeline && (
