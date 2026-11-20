@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
-import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
+import OptionSelect from '@/components/automation/OptionSelect';
+import { RefreshCw, ChevronDown, ChevronRight, ScrollText } from 'lucide-react';
 import { automationService } from '@/services/automation/automationService';
 import type {
   AutomationRuleRun,
@@ -28,18 +26,18 @@ const STATUS_FILTERS: { value: string; labelKey: string }[] = [
   { value: 'error', labelKey: 'logs.filters.error' },
 ];
 
-const STATUS_STYLES: Record<AutomationRuleRunStatus, string> = {
-  matched: 'bg-success/15 text-success border border-success/30',
-  no_match: 'bg-muted/40 text-muted-foreground border border-border',
-  skipped: 'bg-warning/15 text-warning border border-warning/30',
-  error: 'bg-destructive/15 text-destructive border border-destructive/30',
+const STATUS_VARIANTS: Record<AutomationRuleRunStatus, 'success' | 'secondary' | 'warning' | 'error'> = {
+  matched: 'success',
+  no_match: 'secondary',
+  skipped: 'warning',
+  error: 'error',
 };
 
 const STEP_LEVEL_STYLES: Record<AutomationRuleRunStep['level'], string> = {
   info: 'text-foreground',
-  success: 'text-success',
-  warn: 'text-warning',
-  error: 'text-destructive',
+  success: 'text-success-foreground',
+  warn: 'text-warning-foreground',
+  error: 'text-destructive-foreground',
 };
 
 function formatDateTime(iso?: string) {
@@ -92,53 +90,62 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-lg font-semibold">{t('logs.title')}</h2>
           <p className="text-sm text-muted-foreground">{t('logs.description')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_FILTERS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {t(opt.labelKey)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <OptionSelect
+            items={STATUS_FILTERS.map((opt) => ({ value: opt.value, label: t(opt.labelKey) }))}
+            value={statusFilter}
+            onValueChange={setStatusFilter}
+            className="w-44"
+            aria-label={t('logs.title')}
+          />
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={loading ? 'animate-spin' : undefined} />
             {t('logs.refresh')}
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="p-3 rounded-md border border-destructive/30 bg-destructive/10 text-sm text-destructive">
-          {error}
-        </div>
+        <Alert variant="error">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       {!loading && runs.length === 0 && (
-        <div className="p-6 text-center text-sm text-muted-foreground border border-dashed rounded-md">
-          {t('logs.empty')}
+        <Empty className="rounded-xl border border-dashed py-8">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ScrollText />
+            </EmptyMedia>
+            <EmptyDescription>{t('logs.empty')}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      )}
+
+      {loading && runs.length === 0 && (
+        <div className="flex flex-col gap-2" aria-busy="true">
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-11 w-full rounded-xl" />
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {runs.map((run) => {
           const isOpen = expanded.has(run.id);
           return (
-            <div key={run.id} className="border rounded-md bg-muted/20">
+            <div key={run.id} className="overflow-hidden rounded-xl border bg-muted/24">
               <button
                 type="button"
                 onClick={() => toggleExpanded(run.id)}
-                className="w-full flex items-center justify-between gap-3 px-3 py-2 text-left hover:bg-muted/40"
+                aria-expanded={isOpen}
+                className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div className="flex items-center gap-3">
                   {isOpen ? (
@@ -146,23 +153,23 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
                   ) : (
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   )}
-                  <span className={`text-xs px-2 py-0.5 rounded ${STATUS_STYLES[run.status]}`}>
+                  <Badge variant={STATUS_VARIANTS[run.status]} size="sm">
                     {t(`logs.status.${run.status}`)}
-                  </span>
+                  </Badge>
                   <span className="text-sm">{run.event_name}</span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-4 text-muted-foreground text-xs tabular-nums">
                   <span>{formatDuration(run.duration_ms)}</span>
                   <span>{formatDateTime(run.started_at)}</span>
                 </div>
               </button>
 
               {isOpen && (
-                <div className="border-t px-4 py-3 space-y-3 text-sm">
+                <div className="flex flex-col gap-3 border-t bg-background px-4 py-3 text-sm">
                   {run.error_message && (
-                    <div className="p-2 rounded border border-destructive/30 bg-destructive/10 text-destructive text-xs">
-                      {run.error_message}
-                    </div>
+                    <Alert variant="error">
+                      <AlertDescription>{run.error_message}</AlertDescription>
+                    </Alert>
                   )}
 
                   <div>
@@ -180,7 +187,7 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
                               {step.label}
                             </div>
                             {step.data && Object.keys(step.data).length > 0 && (
-                              <pre className="mt-1 text-xs bg-background/50 border rounded p-2 overflow-x-auto">
+                              <pre className="mt-1 text-xs rounded-lg border bg-muted/24 p-2 overflow-x-auto">
                                 {JSON.stringify(step.data, null, 2)}
                               </pre>
                             )}
@@ -195,7 +202,7 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
                       <h4 className="text-xs font-medium uppercase text-muted-foreground mb-1">
                         {t('logs.detail.payload')}
                       </h4>
-                      <pre className="text-xs bg-background/50 border rounded p-2 overflow-x-auto">
+                      <pre className="text-xs rounded-lg border bg-muted/24 p-2 overflow-x-auto">
                         {JSON.stringify(run.payload, null, 2)}
                       </pre>
                     </div>
