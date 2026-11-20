@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldX, ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, ShieldX } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const Unauthorized: React.FC = () => {
@@ -8,61 +11,37 @@ const Unauthorized: React.FC = () => {
   const { t } = useLanguage('unauthorized');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/48 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 text-center">
-        {/* Ícone */}
-        <div className="flex justify-center">
-          <div className="rounded-full bg-destructive/12 p-6">
-            <ShieldX className="h-16 w-16 text-destructive-foreground" />
-          </div>
+    <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+      <div className="w-full max-w-md space-y-6 text-center">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-destructive/8 text-destructive">
+          <ShieldX className="size-7" />
         </div>
-
-        {/* Título */}
-        <div className="space-y-2">
-          <h1 className="text-4xl font-extrabold text-foreground">{t('title')}</h1>
-          <p className="text-lg text-muted-foreground">{t('subtitle')}</p>
+        <div className="space-y-1.5">
+          <h1 className="font-semibold text-2xl">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
-
-        {/* Descrição */}
-        <div className="bg-white shadow rounded-lg p-6 text-left space-y-4">
-          <p className="text-sm text-foreground">
-            {t('description')}
-          </p>
-
-          <div className="border-l-4 border-warning bg-warning/8 p-4">
-            <p className="text-sm text-warning-foreground">
-              <strong className="font-semibold">{t('contactAdmin.title')}</strong>
-              <br />
-              {t('contactAdmin.message')}
-            </p>
-          </div>
-        </div>
-
-        {/* Botões de Ação */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center justify-center px-6 py-3 border border-border shadow-sm text-base font-medium rounded-md text-foreground bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
+        <Card className="text-left">
+          <CardPanel className="space-y-4">
+            <p className="text-sm">{t('description')}</p>
+            <Alert variant="warning">
+              <AlertTitle>{t('contactAdmin.title')}</AlertTitle>
+              <AlertDescription>{t('contactAdmin.message')}</AlertDescription>
+            </Alert>
+          </CardPanel>
+        </Card>
+        <div className="flex flex-col justify-center gap-2 sm:flex-row">
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            <ArrowLeft />
             {t('buttons.back')}
-          </button>
-
-          <button
-            onClick={() => navigate('/')}
-            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
-          >
-            <Home className="h-5 w-5 mr-2" />
+          </Button>
+          <Button onClick={() => navigate('/')}>
+            <Home />
             {t('buttons.goHome')}
-          </button>
+          </Button>
         </div>
-
-        {/* Informações Adicionais */}
-        <div className="text-xs text-muted-foreground">
-          <p>{t('errorCode')}</p>
-        </div>
+        <p className="text-muted-foreground text-xs">{t('errorCode')}</p>
       </div>
-    </div>
+    </main>
   );
 };
 

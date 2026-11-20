@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Alert,
-  AlertDescription,
-} from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { OTPField, OTPFieldInput, OTPFieldSeparator } from '@/components/ui/otp-field';
 import { Shield, Smartphone, Mail, RefreshCw, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -103,127 +100,93 @@ const MfaVerification = ({
   const isTotpMethod = method === 'totp';
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
-      <div className="w-full max-w-md space-y-6">
-        {/* Logo */}
-        <div className="text-center">
-          <AppLogo className="h-10 mx-auto" />
-        </div>
-
-        {/* Formulário */}
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
-          <div className="text-center mb-6">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mb-4">
-              {isTotpMethod ? (
-                <Smartphone className="h-6 w-6 text-primary" />
-              ) : (
-                <Mail className="h-6 w-6 text-primary" />
+    <div className="relative flex min-h-screen flex-col bg-muted/40">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-primary)_16%,transparent),transparent_70%)]"
+      />
+      <main className="relative flex flex-1 items-start justify-center px-4 pt-[10vh] pb-12 sm:items-center sm:pt-0">
+        <div className="w-full max-w-sm space-y-6">
+          <AppLogo className="mx-auto h-9" />
+          <Card>
+            <CardPanel className="space-y-5 p-6 sm:p-8">
+              {onBack && (
+                <Button variant="ghost" size="sm" className="-ms-2 w-fit text-muted-foreground" onClick={onBack} disabled={isLoading}>
+                  <ArrowLeft />
+                  {t('auth.mfa.backToLogin')}
+                </Button>
               )}
-            </div>
-            <h2 className="text-2xl font-bold">
-              {t('auth.mfa.title')}
-            </h2>
-            <p className="text-muted-foreground mt-2">
-              {isTotpMethod ? (
-                t('auth.mfa.totp.description')
-              ) : (
-                <>
-                  {t('auth.mfa.email.description')} <strong>{email}</strong>
-                </>
-              )}
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            {/* Alert for remaining attempts */}
-            {attemptCount > 0 && remainingAttempts > 0 && (
-              <Alert variant="destructive">
-                <Shield className="h-4 w-4" />
-                <AlertDescription>
-                  {t('auth.mfa.remainingAttempts', { count: remainingAttempts })}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="verification-code">
-                  {t('auth.mfa.code.label')}
-                </Label>
-                <Input
-                  id="verification-code"
-                  type="text"
-                  value={code}
-                  onChange={(e) => handleCodeChange(e.target.value)}
-                  placeholder={t('auth.mfa.code.placeholder')}
-                  className="text-center text-2xl font-mono tracking-widest"
-                  maxLength={6}
-                  autoComplete="one-time-code"
-                  autoFocus
-                />
-                <p className="text-sm text-muted-foreground text-center">
-                  {t('auth.mfa.code.hint')}
+              <div className="space-y-1.5 text-center">
+                <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-primary/12 text-primary">
+                  {isTotpMethod ? <Smartphone className="size-6" /> : <Mail className="size-6" />}
+                </div>
+                <h1 className="font-semibold text-xl">{t('auth.mfa.title')}</h1>
+                <p className="text-muted-foreground text-sm">
+                  {isTotpMethod ? (
+                    t('auth.mfa.totp.description')
+                  ) : (
+                    <>
+                      {t('auth.mfa.email.description')} <strong className="font-medium text-foreground">{email}</strong>
+                    </>
+                  )}
                 </p>
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading || code.length !== 6}
-                className="w-full"
-                size="lg"
-              >
-                {isLoading ? t('auth.mfa.verifying') : t('auth.mfa.verify')}
-              </Button>
-            </form>
+              {attemptCount > 0 && remainingAttempts > 0 && (
+                <Alert variant="error">
+                  <Shield />
+                  <AlertDescription>{t('auth.mfa.remainingAttempts', { count: remainingAttempts })}</AlertDescription>
+                </Alert>
+              )}
 
-            {/* Email-specific actions */}
-            {isEmailMethod && (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <Button
-                    variant="link"
-                    onClick={handleResendCode}
-                    disabled={!canResend || isLoading}
-                    className="text-sm"
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="flex flex-col items-center gap-2">
+                  <span id="verification-code-label" className="sr-only">
+                    {t('auth.mfa.code.label')}
+                  </span>
+                  <OTPField
+                    length={6}
+                    size="lg"
+                    value={code}
+                    onValueChange={handleCodeChange}
+                    validationType="numeric"
+                    autoComplete="one-time-code"
+                    aria-labelledby="verification-code-label"
+                    disabled={isLoading}
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <OTPFieldInput autoFocus />
+                    <OTPFieldInput />
+                    <OTPFieldInput />
+                    <OTPFieldSeparator />
+                    <OTPFieldInput />
+                    <OTPFieldInput />
+                    <OTPFieldInput />
+                  </OTPField>
+                  <p className="text-center text-muted-foreground text-xs">{t('auth.mfa.code.hint')}</p>
+                </div>
+                <Button type="submit" size="lg" loading={isLoading} disabled={code.length !== 6} className="w-full">
+                  {isLoading ? t('auth.mfa.verifying') : t('auth.mfa.verify')}
+                </Button>
+              </form>
+
+              {isEmailMethod && (
+                <div className="text-center">
+                  <Button variant="ghost" size="sm" onClick={handleResendCode} disabled={!canResend || isLoading}>
+                    <RefreshCw />
                     {resendCooldown > 0
                       ? t('auth.mfa.email.resendIn', { seconds: resendCooldown })
-                      : t('auth.mfa.email.resendButton')
-                    }
+                      : t('auth.mfa.email.resendButton')}
                   </Button>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Back button */}
-            {onBack && (
-              <div className="text-center">
-                <Button
-                  variant="ghost"
-                  onClick={onBack}
-                  disabled={isLoading}
-                  className="text-sm"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  {t('auth.mfa.backToLogin')}
-                </Button>
-              </div>
-            )}
-
-            {/* Help text */}
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                {isTotpMethod ? (
-                  t('auth.mfa.help.totp')
-                ) : (
-                  t('auth.mfa.help.email')
-                )}
+              <p className="text-center text-muted-foreground text-xs">
+                {isTotpMethod ? t('auth.mfa.help.totp') : t('auth.mfa.help.email')}
               </p>
-            </div>
-          </div>
+            </CardPanel>
+          </Card>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
