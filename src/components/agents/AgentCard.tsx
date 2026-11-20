@@ -1,8 +1,11 @@
-import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card, CardContent, Badge } from '@/components/ui/compat';
 import { MoreHorizontal } from 'lucide-react';
+import { useLanguage } from '@/hooks/useLanguage';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Agent } from '@/types/agents';
 import AgentActionsDropdown from './AgentActionsDropdown';
+import { getAgentTypeMeta } from './agentTypeMeta';
 
 type AgentCardProps = {
   agent: Agent;
@@ -12,111 +15,72 @@ type AgentCardProps = {
   onShare?: (agent: Agent) => void;
 };
 
-export default function AgentCard({
-  agent,
-  onEdit,
-  onDelete,
-  onExportAsJSON,
-  onShare,
-}: AgentCardProps) {
-  const { t } = useLanguage('agents');
-  const typeStyles: Record<string, { badge: string; ring: string; accent: string }> = {
-    llm: {
-      badge: 'border-success text-success bg-success/10',
-      ring: 'ring-1 ring-success/40',
-      accent: 'from-green-500/10 to-transparent',
-    },
-    a2a: {
-      badge: 'border-info text-info bg-info/10',
-      ring: 'ring-1 ring-info/40',
-      accent: 'from-blue-500/10 to-transparent',
-    },
-    sequential: {
-      badge: 'border-warning text-warning bg-warning/10',
-      ring: 'ring-1 ring-warning/40',
-      accent: 'from-amber-500/10 to-transparent',
-    },
-    parallel: {
-      badge: 'border-violet-500 text-violet-400 bg-violet-500/10',
-      ring: 'ring-1 ring-violet-500/40',
-      accent: 'from-violet-500/10 to-transparent',
-    },
-    loop: {
-      badge: 'border-indigo-500 text-indigo-400 bg-indigo-500/10',
-      ring: 'ring-1 ring-indigo-500/40',
-      accent: 'from-indigo-500/10 to-transparent',
-    },
-    default: {
-      badge: 'border-slate-500 text-slate-300 bg-slate-500/10',
-      ring: 'ring-1 ring-slate-500/40',
-      accent: 'from-slate-500/10 to-transparent',
-    },
-  };
+/** Initial-letter tile with the agent type icon badge. */
+export function AgentAvatar({ agent, size = 'default' }: { agent: Pick<Agent, 'name' | 'type'>; size?: 'sm' | 'default' }) {
+  const meta = getAgentTypeMeta(agent.type);
+  const Icon = meta.icon;
+  return (
+    <span
+      className={
+        size === 'sm'
+          ? 'relative flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/8 font-semibold text-primary text-xs'
+          : 'relative flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/8 font-semibold text-primary text-sm'
+      }
+    >
+      {agent.name?.charAt(0).toUpperCase()}
+      <span className="absolute -end-1 -bottom-1 flex size-4.5 items-center justify-center rounded-full border bg-background text-muted-foreground">
+        <Icon className="size-2.5" />
+      </span>
+    </span>
+  );
+}
 
-  const style = typeStyles[agent.type as keyof typeof typeStyles] || typeStyles.default;
+export default function AgentCard({ agent, onEdit, onDelete, onExportAsJSON, onShare }: AgentCardProps) {
+  const { t } = useLanguage('agents');
+  const meta = getAgentTypeMeta(agent.type);
 
   return (
-    <Card className="group relative bg-sidebar border-sidebar-border hover:bg-sidebar-accent/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/10 overflow-hidden">
-      <CardContent className="p-0">
-        {/* Header with avatar, name and type badge */}
-        <div className="flex items-center gap-3 p-4 border-b border-sidebar-border">
-          <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center bg-sidebar-accent/50 ${style.ring} relative overflow-hidden flex-shrink-0`}
-          >
-            <span className="text-sm font-semibold z-10">
-              {agent.name?.charAt(0).toUpperCase()}
-            </span>
-            <span className={`absolute inset-0 bg-gradient-to-br ${style.accent}`} />
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base truncate text-sidebar-foreground">
-              {agent.name}
-            </h3>
-            {agent.description && (
-              <p className="text-xs text-sidebar-foreground/60 truncate">{agent.description}</p>
-            )}
-          </div>
-
-          {agent.type && (
-            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${style.badge}`}>
-              {agent.type}
-            </Badge>
-          )}
+    <Card className="group relative flex flex-col gap-4 p-4 transition-colors hover:border-primary/40">
+      <button
+        type="button"
+        className="absolute inset-0 rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`${t('dropdown.edit')} ${agent.name}`}
+        onClick={() => onEdit(agent)}
+      />
+      <div className="pointer-events-none flex items-start gap-3">
+        <AgentAvatar agent={agent} />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h3 className="truncate font-semibold text-sm">{agent.name}</h3>
+          <p className="line-clamp-2 min-h-8 text-muted-foreground text-xs">
+            {agent.description || t('fields.noDescription')}
+          </p>
         </div>
-
-        {/* Details section */}
-        <div className="px-4 py-3 text-xs text-sidebar-foreground/70">
-          <div className="flex items-center justify-between">
-            <span>{t('card.model')}</span>
-            <span className="font-mono">{agent.model}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>{t('card.type')}</span>
-            <span className="font-mono">{agent.type || 'N/A'}</span>
-          </div>
-        </div>
-
-        {/* Action buttons - hover effect like other cards */}
-        <div className="flex border-t border-sidebar-border opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <AgentActionsDropdown
-            agent={agent}
-            trigger={
-              <Button
-                variant="ghost"
-                className="flex-1 rounded-none h-12 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
-              >
-                <MoreHorizontal className="h-4 w-4 mr-2" />
-                {t('card.actions')}
-              </Button>
-            }
-            onEdit={onEdit}
-            onExportAsJSON={onExportAsJSON}
-            onShare={onShare}
-            onDelete={onDelete}
-          />
-        </div>
-      </CardContent>
+        <AgentActionsDropdown
+          agent={agent}
+          trigger={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="pointer-events-auto relative -me-1.5 -mt-1"
+              aria-label={t('card.actions')}
+            >
+              <MoreHorizontal />
+            </Button>
+          }
+          onEdit={onEdit}
+          onExportAsJSON={onExportAsJSON}
+          onShare={onShare}
+          onDelete={onDelete}
+        />
+      </div>
+      <div className="pointer-events-none mt-auto flex flex-wrap items-center gap-1.5">
+        <Badge variant={meta.badge}>{meta.label}</Badge>
+        {agent.model && (
+          <Badge variant="outline" className="max-w-full truncate font-mono">
+            {agent.model}
+          </Badge>
+        )}
+      </div>
     </Card>
   );
 }

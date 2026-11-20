@@ -175,5 +175,9 @@
         "disconnect": "Déconnecter"
       }
     }
+  },
+  "view": {
+    "grid": "Vue en cartes",
+    "table": "Vue en tableau"
   }
 }

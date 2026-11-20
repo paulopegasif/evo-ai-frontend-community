@@ -1,19 +1,14 @@
-import { useLanguage } from '@/hooks/useLanguage';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/compat';
+import type { ReactElement } from 'react';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLanguage } from '@/hooks/useLanguage';
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import { Agent } from '@/types/agents';
 import { usePermissions } from '@/contexts/PermissionsContext';
 
 interface AgentActionsDropdownProps {
   agent: Agent;
-  trigger: React.ReactNode;
+  trigger: ReactElement;
   onEdit: (agent: Agent) => void;
   onMoveToFolder?: (agent: Agent) => void;
   onExportAsJSON?: (agent: Agent) => void;
@@ -32,49 +27,34 @@ export default function AgentActionsDropdown({
   const { t } = useLanguage('agents');
   const { can, isReady } = usePermissions();
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="w-48">
+    <Menu>
+      <MenuTrigger render={trigger} />
+      <MenuPopup align={align} className="min-w-48">
         {isReady && can('ai_agents', 'update') && (
-          <DropdownMenuItem onClick={() => onEdit(agent)}>
-            <Edit className="h-4 w-4 mr-2" />
+          <MenuItem onClick={() => onEdit(agent)}>
+            <Edit />
             {t('dropdown.edit')}
-          </DropdownMenuItem>
+          </MenuItem>
         )}
-        <DropdownMenuItem
+        <MenuItem
           onClick={async () => {
             await navigator.clipboard.writeText(agent.id);
             toast.success(t('dropdown.idCopied'));
           }}
         >
-          <Copy className="h-4 w-4 mr-2" />
+          <Copy />
           {t('dropdown.copyId')}
-        </DropdownMenuItem>
-        {/* {onExportAsJSON && (
-          <DropdownMenuItem onClick={() => onExportAsJSON(agent)}>
-            <Download className="h-4 w-4 mr-2 text-purple-500" />
-            {t('dropdown.exportJSON')}
-          </DropdownMenuItem>
-        )} */}
-        {/* {onShare && (
-          <DropdownMenuItem onClick={() => onShare(agent)}>
-            <Share2 className="h-4 w-4 mr-2 text-info" />
-            {t('dropdown.share')}
-          </DropdownMenuItem>
-        )} */}
+        </MenuItem>
         {isReady && can('ai_agents', 'delete') && (
           <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onDelete(agent)}
-              className="text-destructive focus:text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
+            <MenuSeparator />
+            <MenuItem variant="destructive" onClick={() => onDelete(agent)}>
+              <Trash2 />
               {t('dropdown.delete')}
-            </DropdownMenuItem>
+            </MenuItem>
           </>
         )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </MenuPopup>
+    </Menu>
   );
 }
