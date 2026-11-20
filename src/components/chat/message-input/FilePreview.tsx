@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { X, Send, File, FileText, Image, Music, Video, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 

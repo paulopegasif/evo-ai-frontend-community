@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/compat';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface PostData {
   id?: string;
