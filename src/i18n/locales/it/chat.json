@@ -1052,5 +1052,12 @@
     "recordAudio": "Registra audio",
     "moreActions": "Altre azioni",
     "back": "Indietro"
+  },
+  "globalSearch": {
+    "hints": {
+      "navigate": "naviga",
+      "open": "apri",
+      "close": "chiudi"
+    }
   }
 }

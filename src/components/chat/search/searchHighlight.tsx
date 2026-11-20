@@ -11,7 +11,7 @@ export const highlightMatch = (text: string | null | undefined, query: string): 
 
   return parts.map((part, index) =>
     regex.test(part) ? (
-      <mark key={index} className="bg-primary/20 text-inherit rounded px-0.5">
+      <mark key={index} className="rounded-sm bg-primary/20 px-0.5 text-inherit">
         {part}
       </mark>
     ) : (

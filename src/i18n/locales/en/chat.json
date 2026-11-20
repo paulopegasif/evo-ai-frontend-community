@@ -1073,6 +1073,11 @@
       "conversationsEmpty": "No conversations found",
       "contactsEmpty": "No contacts found",
       "messagesEmpty": "No messages found"
+    },
+    "hints": {
+      "navigate": "navigate",
+      "open": "open",
+      "close": "close"
     }
   },
   "pipeline": {

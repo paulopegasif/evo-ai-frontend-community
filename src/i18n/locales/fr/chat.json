@@ -1052,5 +1052,12 @@
     "recordAudio": "Enregistrer un audio",
     "moreActions": "Plus d’actions",
     "back": "Retour"
+  },
+  "globalSearch": {
+    "hints": {
+      "navigate": "naviguer",
+      "open": "ouvrir",
+      "close": "fermer"
+    }
   }
 }

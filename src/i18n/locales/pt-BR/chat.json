@@ -1076,6 +1076,11 @@
       "conversationsEmpty": "Nenhuma conversa encontrada",
       "contactsEmpty": "Nenhum contato encontrado",
       "messagesEmpty": "Nenhuma mensagem encontrada"
+    },
+    "hints": {
+      "navigate": "navegar",
+      "open": "abrir",
+      "close": "fechar"
     }
   },
   "pipeline": {

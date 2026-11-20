@@ -1,7 +1,7 @@
-import { CommandItem } from '@/components/ui/compat';
 import { MessageCircle } from 'lucide-react';
 import type { SearchMessageResult } from '@/types/chat/search';
 import { highlightMatch } from './searchHighlight';
+import SearchResultItem from './SearchResultItem';
 
 interface Props {
   item: SearchMessageResult;
@@ -15,22 +15,13 @@ export default function SearchResultMessage({ item, query, onSelect }: Props) {
   const content = item.content ?? '';
 
   return (
-    <CommandItem
-      value={`message-${item.id}`}
-      onSelect={() => onSelect(item)}
-      className="flex items-start gap-3 py-2 cursor-pointer"
-    >
-      <MessageCircle className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-      <div className="min-w-0 flex-1">
-        {content && (
-          <p className="text-sm line-clamp-2">{highlightMatch(content, query)}</p>
-        )}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="truncate">{senderName}</span>
-          {item.conversation_id != null && <span>· #{item.conversation_id}</span>}
-          {inboxName && <span className="truncate">· {inboxName}</span>}
-        </div>
+    <SearchResultItem value={`message-${item.id}`} icon={<MessageCircle />} onSelect={() => onSelect(item)}>
+      {content && <p className="line-clamp-2 text-sm">{highlightMatch(content, query)}</p>}
+      <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+        <span className="truncate">{senderName}</span>
+        {item.conversation_id != null && <span className="tabular-nums">· #{item.conversation_id}</span>}
+        {inboxName && <span className="truncate">· {inboxName}</span>}
       </div>
-    </CommandItem>
+    </SearchResultItem>
   );
 }
