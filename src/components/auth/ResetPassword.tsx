@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Alert,
-  AlertDescription,
-} from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { resetPassword } from '@/services/auth/authService';
@@ -17,22 +15,23 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AppLogo } from '@/components/AppLogo';
 
-const resetPasswordSchema = (t: any) => z
-  .object({
-    password: z
-      .string()
-      .min(8, t('auth.errors.password.minLength'))
-      .max(128, t('auth.errors.password.maxLength'))
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,128}$/,
-        t('auth.errors.password.pattern')
-      ),
-    password_confirmation: z.string().min(1, t('auth.errors.confirmPassword.required')),
-  })
-  .refine(data => data.password === data.password_confirmation, {
-    message: t('auth.errors.confirmPassword.mismatch'),
-    path: ['password_confirmation'],
-  });
+const resetPasswordSchema = (t: any) =>
+  z
+    .object({
+      password: z
+        .string()
+        .min(8, t('auth.errors.password.minLength'))
+        .max(128, t('auth.errors.password.maxLength'))
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,128}$/,
+          t('auth.errors.password.pattern'),
+        ),
+      password_confirmation: z.string().min(1, t('auth.errors.confirmPassword.required')),
+    })
+    .refine(data => data.password === data.password_confirmation, {
+      message: t('auth.errors.confirmPassword.mismatch'),
+      path: ['password_confirmation'],
+    });
 
 type ResetPasswordFormData = {
   password: string;
@@ -85,9 +84,7 @@ const ResetPassword = () => {
     } catch (error: any) {
       const apiError = error?.response?.data?.error;
       const detailMessages = Array.isArray(apiError?.details)
-        ? apiError.details
-            .map((detail: { message?: string }) => detail?.message)
-            .filter(Boolean)
+        ? apiError.details.map((detail: { message?: string }) => detail?.message).filter(Boolean)
         : [];
       const errorMessage =
         detailMessages.join(', ') ||
@@ -109,30 +106,29 @@ const ResetPassword = () => {
             <AppLogo className="h-9 mx-auto" />
           </div>
 
-          <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
-            <div className="text-center mb-6">
-              <Lock className="h-12 w-12 text-destructive mx-auto mb-4" />
-              <h2 className="font-semibold text-xl">{t('auth.resetPassword.tokenInvalid.title')}</h2>
-              <p className="text-muted-foreground mt-2">
-                {t('auth.resetPassword.tokenInvalid.description')}
-              </p>
-            </div>
+          <Card>
+            <CardPanel className="p-6 sm:p-8">
+              <div className="text-center mb-6">
+                <Lock className="size-12 text-destructive mx-auto mb-4" />
+                <h2 className="font-semibold text-xl">
+                  {t('auth.resetPassword.tokenInvalid.title')}
+                </h2>
+                <p className="text-muted-foreground mt-2">
+                  {t('auth.resetPassword.tokenInvalid.description')}
+                </p>
+              </div>
 
-            <div className="space-y-4">
-              <Alert variant="error">
-                <AlertDescription>
-                  {t('auth.resetPassword.tokenInvalid.alert')}
-                </AlertDescription>
-              </Alert>
+              <div className="space-y-4">
+                <Alert variant="error">
+                  <AlertDescription>{t('auth.resetPassword.tokenInvalid.alert')}</AlertDescription>
+                </Alert>
 
-              <Button
-                onClick={() => navigate('/login')}
-                className="w-full"
-              >
-                {t('auth.resetPassword.tokenInvalid.button')}
-              </Button>
-            </div>
-          </div>
+                <Button type="button" onClick={() => navigate('/login')} className="w-full">
+                  {t('auth.resetPassword.tokenInvalid.button')}
+                </Button>
+              </div>
+            </CardPanel>
+          </Card>
         </div>
       </div>
     );
@@ -147,100 +143,106 @@ const ResetPassword = () => {
         </div>
 
         {/* Form */}
-        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
-          <div className="text-center mb-6">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mb-4">
-              <Lock className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="font-semibold text-xl">
-              {t('auth.resetPassword.title')}
-            </h2>
-            <p className="text-muted-foreground mt-2">
-              {t('auth.resetPassword.subtitle')}
-            </p>
-          </div>
-
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {error && (
-              <Alert variant="error">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="password">{t('auth.resetPassword.newPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder={t('auth.resetPassword.passwordPlaceholder')}
-                  disabled={isLoading}
-                  {...form.register('password')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
+        <Card>
+          <CardPanel className="p-6 sm:p-8">
+            <div className="text-center mb-6">
+              <div className="mx-auto flex items-center justify-center size-12 rounded-full bg-primary/10 mb-4">
+                <Lock className="size-6 text-primary" />
               </div>
-              {form.formState.errors.password && (
-                <p className="text-destructive text-xs">
-                  {form.formState.errors.password.message}
-                </p>
-              )}
+              <h2 className="font-semibold text-xl">{t('auth.resetPassword.title')}</h2>
+              <p className="text-muted-foreground mt-2">{t('auth.resetPassword.subtitle')}</p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password_confirmation">{t('auth.resetPassword.confirmPassword')}</Label>
-              <div className="relative">
-                <Input
-                  id="password_confirmation"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder={t('auth.resetPassword.confirmPlaceholder')}
-                  disabled={isLoading}
-                  {...form.register('password_confirmation')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {form.formState.errors.password_confirmation && (
-                <p className="text-destructive text-xs">
-                  {form.formState.errors.password_confirmation.message}
-                </p>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
+              {error && (
+                <Alert variant="error">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-            </div>
 
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? t('auth.resetPassword.resetting') : t('auth.resetPassword.button')}
-            </Button>
+              <Field invalid={!!form.formState.errors.password}>
+                <FieldLabel htmlFor="password">{t('auth.resetPassword.newPassword')}</FieldLabel>
+                <InputGroup>
+                  <InputGroupInput
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    placeholder={t('auth.resetPassword.passwordPlaceholder')}
+                    disabled={isLoading}
+                    {...form.register('password')}
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={
+                        showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')
+                      }
+                      aria-pressed={showPassword}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+                <FieldError match={!!form.formState.errors.password}>
+                  {form.formState.errors.password?.message}
+                </FieldError>
+              </Field>
 
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="link"
-                onClick={() => navigate('/login')}
-                className="text-sm"
-              >
-                {t('auth.resetPassword.backToLogin')}
+              <Field invalid={!!form.formState.errors.password_confirmation}>
+                <FieldLabel htmlFor="password_confirmation">
+                  {t('auth.resetPassword.confirmPassword')}
+                </FieldLabel>
+                <InputGroup>
+                  <InputGroupInput
+                    id="password_confirmation"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    placeholder={t('auth.resetPassword.confirmPlaceholder')}
+                    disabled={isLoading}
+                    {...form.register('password_confirmation')}
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      aria-label={
+                        showConfirmPassword
+                          ? t('auth.login.hidePassword')
+                          : t('auth.login.showPassword')
+                      }
+                      aria-pressed={showConfirmPassword}
+                    >
+                      {showConfirmPassword ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+                <FieldError match={!!form.formState.errors.password_confirmation}>
+                  {form.formState.errors.password_confirmation?.message}
+                </FieldError>
+              </Field>
+
+              <Button type="submit" loading={isLoading} className="w-full">
+                {isLoading ? t('auth.resetPassword.resetting') : t('auth.resetPassword.button')}
               </Button>
-            </div>
-          </form>
-        </div>
+
+              <div className="text-center">
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => navigate('/login')}
+                  className="text-sm"
+                >
+                  {t('auth.resetPassword.backToLogin')}
+                </Button>
+              </div>
+            </form>
+          </CardPanel>
+        </Card>
       </div>
     </div>
   );
