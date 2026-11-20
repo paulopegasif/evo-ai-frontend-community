@@ -1,16 +1,12 @@
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import {
-  Label,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { Plug } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -58,44 +54,60 @@ interface ProviderSelectorProps {
 
 export const ProviderSelector = ({ value, onChange, disabled }: ProviderSelectorProps) => {
   const { t } = useLanguage('aiAgents');
-  
+
   const getProviderLabel = (providerValue: ProviderType) => {
-    return t(`edit.configuration.sections.externalIntegration.providerSelector.providers.${providerValue}.label`);
+    return t(
+      `edit.configuration.sections.externalIntegration.providerSelector.providers.${providerValue}.label`,
+    );
   };
-  
+
   const getProviderDescription = (providerValue: ProviderType) => {
-    return t(`edit.configuration.sections.externalIntegration.providerSelector.providers.${providerValue}.description`);
+    return t(
+      `edit.configuration.sections.externalIntegration.providerSelector.providers.${providerValue}.description`,
+    );
   };
-  
+
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-purple-500/10">
-            <Plug className="h-5 w-5 text-purple-500" />
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Plug className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <CardTitle>{t('edit.configuration.sections.externalIntegration.providerSelector.title')}</CardTitle>
+            <CardTitle>
+              {t('edit.configuration.sections.externalIntegration.providerSelector.title')}
+            </CardTitle>
             <CardDescription>
               {t('edit.configuration.sections.externalIntegration.providerSelector.subtitle')}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardPanel>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="provider">{t('edit.configuration.sections.externalIntegration.providerSelector.label')}</Label>
+            <Label htmlFor="provider">
+              {t('edit.configuration.sections.externalIntegration.providerSelector.label')}
+            </Label>
             <Select
+              items={PROVIDERS.map(provider => ({
+                value: provider.value,
+                label: getProviderLabel(provider.value),
+              }))}
               value={value}
-              onValueChange={(val) => onChange(val as ProviderType)}
+              onValueChange={val => onChange(val as ProviderType)}
               disabled={disabled}
             >
               <SelectTrigger id="provider">
-                <SelectValue placeholder={t('edit.configuration.sections.externalIntegration.providerSelector.placeholder')} />
+                <SelectValue
+                  placeholder={t(
+                    'edit.configuration.sections.externalIntegration.providerSelector.placeholder',
+                  )}
+                />
               </SelectTrigger>
-              <SelectContent>
-                {PROVIDERS.map((provider) => (
+              <SelectPopup>
+                {PROVIDERS.map(provider => (
                   <SelectItem key={provider.value} value={provider.value}>
                     <div className="flex flex-col">
                       <span className="font-medium">{getProviderLabel(provider.value)}</span>
@@ -105,11 +117,11 @@ export const ProviderSelector = ({ value, onChange, disabled }: ProviderSelector
                     </div>
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

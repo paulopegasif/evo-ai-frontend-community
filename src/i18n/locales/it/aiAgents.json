@@ -823,7 +823,11 @@
         "addTask": "Aggiungi Attività",
         "removeTask": "Rimuovi Attività",
         "notifyTeam": "Notifica il team quando arriva a questa fase",
-        "removeStageAutomation": "Rimuovi Fase"
+        "removeStageAutomation": "Rimuovi Fase",
+        "modalTitle": "Automazione delle pipeline"
+      },
+      "contactEdit": {
+        "modalTitle": "Modifica dei contatti"
       }
     },
     "knowledge": {
@@ -1458,7 +1462,10 @@
     "typeMessage": "Digita il tuo messaggio...",
     "deleteSession": "Elimina Sessione",
     "deleteSessionConfirm": "Sei sicuro di voler eliminare questa sessione? Questa azione non può essere annullata.",
-    "session": "Sessione"
+    "session": "Sessione",
+    "attachFile": "Allega file",
+    "removeFile": "Rimuovi {{name}}",
+    "send": "Invia messaggio"
   },
   "mcpServers": {
     "title": "Server MCP",

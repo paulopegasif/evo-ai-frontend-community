@@ -814,7 +814,11 @@
         "addTask": "Add",
         "noTasks": "No tasks configured",
         "taskTitle": "Task title",
-        "noStagesConfigured": "No stages configured. Add stages to create automations."
+        "noStagesConfigured": "No stages configured. Add stages to create automations.",
+        "modalTitle": "Pipeline automation"
+      },
+      "contactEdit": {
+        "modalTitle": "Contact editing"
       }
     },
     "knowledge": {
@@ -1528,7 +1532,10 @@
     "typeMessage": "Type your message...",
     "deleteSession": "Delete Session",
     "deleteSessionConfirm": "Are you sure you want to delete this session? This action cannot be undone.",
-    "session": "Session"
+    "session": "Session",
+    "attachFile": "Attach file",
+    "removeFile": "Remove {{name}}",
+    "send": "Send message"
   },
   "mcpServers": {
     "title": "MCP Servers",

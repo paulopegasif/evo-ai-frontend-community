@@ -2,11 +2,12 @@ import { useLanguage } from '@/hooks/useLanguage';
 import TransferRules, { TransferRule } from '@/pages/Customer/Agents/Agent/sections/TransferRules';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
-} from '@/components/ui/compat';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface TransferRulesModalProps {
   open: boolean;
@@ -29,7 +30,7 @@ export const TransferRulesModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogPopup className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
             {t('edit.configuration.transferRules.modalTitle') || 'Regras de Transferência'}
@@ -39,15 +40,15 @@ export const TransferRulesModal = ({
               'Configure quando e como o agente deve transferir conversas para humanos ou times.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
+        <DialogPanel>
           <TransferRules
             rules={rules}
             onChange={onChange}
             availableUsers={availableUsers}
             availableTeams={availableTeams}
           />
-        </div>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 };
