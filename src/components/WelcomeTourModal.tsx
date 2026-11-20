@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Map } from 'lucide-react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { tourRegistry } from '@/tours/tourRegistry';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuthStore } from '@/store/authStore';
@@ -51,31 +52,26 @@ export function WelcomeTourModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-background rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 flex flex-col items-center gap-6 text-center">
-        <div className="flex items-center justify-center rounded-full w-16 h-16 bg-primary">
-          <Map className="h-8 w-8 text-primary-foreground" />
+    <Dialog open onOpenChange={open => !open && handleDismiss()}>
+      <DialogPopup showCloseButton={false} bottomStickOnMobile={false} className="max-w-sm">
+        <div className="flex flex-col items-center gap-5 p-6 pt-8 text-center">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+            <Map className="size-7" />
+          </div>
+          <div className="space-y-1.5">
+            <DialogTitle className="text-lg">{t('welcome.title')}</DialogTitle>
+            <DialogDescription>{t('welcome.description')}</DialogDescription>
+          </div>
+          <div className="flex w-full flex-col gap-2">
+            <Button size="lg" onClick={handleStartTour} className="w-full">
+              {t('welcome.startButton')}
+            </Button>
+            <Button variant="ghost" onClick={handleDismiss} className="w-full text-muted-foreground">
+              {t('welcome.skipButton')}
+            </Button>
+          </div>
         </div>
-
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold">{t('welcome.title')}</h2>
-          <p className="text-muted-foreground text-sm">
-            {t('welcome.description')}
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3 w-full">
-          <Button
-            onClick={handleStartTour}
-            className="w-full"
-          >
-            {t('welcome.startButton')}
-          </Button>
-          <Button variant="ghost" onClick={handleDismiss} className="w-full text-muted-foreground">
-            {t('welcome.skipButton')}
-          </Button>
-        </div>
-      </div>
-    </div>
+      </DialogPopup>
+    </Dialog>
   );
 }

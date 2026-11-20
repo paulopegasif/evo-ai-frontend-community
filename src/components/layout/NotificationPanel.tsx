@@ -1,19 +1,16 @@
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@/components/ui/compat';
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  ListCheck,
-  Settings,
-  X,
-} from 'lucide-react';
-import NotificationItem from './NotificationItem';
+import { BellOff, ChevronLeft, ChevronRight, ListCheck, Settings, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNotifications } from '@/contexts/NotificationsContext';
 import { Notification } from '@/services/notifications/NotificationsService';
+import NotificationItem from './NotificationItem';
 
 interface NotificationPanelProps {
   onClose: () => void;
@@ -21,9 +18,7 @@ interface NotificationPanelProps {
 
 const PAGE_SIZE = 15;
 
-export default function NotificationPanel({
-  onClose,
-}: NotificationPanelProps) {
+export default function NotificationPanel({ onClose }: NotificationPanelProps) {
   const { t } = useLanguage('layout');
   const navigate = useNavigate();
   const { state, actions } = useNotifications();
@@ -32,16 +27,13 @@ export default function NotificationPanel({
   const totalUnreadCount = state.meta.unreadCount;
   const totalCount = state.meta.count;
 
-  // Show all notifications (read + unread); the visual unread indicator is
-  // rendered by NotificationItem so the user can see history after marking
-  // everything as read (EVO-977 AC2).
+  // Show all notifications (read + unread); the unread dot is rendered by
+  // NotificationItem so history stays visible after "mark all" (EVO-977 AC2).
   const paginatedNotifications = useMemo(() => {
     const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = startIndex + PAGE_SIZE;
-    return state.notifications.slice(startIndex, endIndex);
+    return state.notifications.slice(startIndex, startIndex + PAGE_SIZE);
   }, [state.notifications, currentPage]);
 
-  // Pagination helpers
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage >= totalPages;
@@ -54,10 +46,7 @@ export default function NotificationPanel({
 
   const handleOpenNotification = async (notification: Notification) => {
     try {
-      // Mark as read
       await actions.markAsRead(notification);
-
-      // Navigate to conversation
       if (notification.primary_actor?.id) {
         navigate(`/conversations/${notification.primary_actor.id}`);
         onClose();
@@ -83,143 +72,110 @@ export default function NotificationPanel({
   const getNotificationTypeLabel = (type: string) => {
     const key = `notifications.panel.types.${type}`;
     const translated = t(key);
-    // Se a tradução não existir, retornar o tipo original
     return translated !== key ? translated : type;
   };
 
+  const iconAction = (label: string, icon: React.ReactNode, onClick: () => void) => (
+    <Tooltip>
+      <TooltipTrigger render={<Button variant="ghost" size="icon-sm" onClick={onClick} aria-label={label} />}>
+        {icon}
+      </TooltipTrigger>
+      <TooltipPopup>{label}</TooltipPopup>
+    </Tooltip>
+  );
+
+  const isInitialLoad = state.uiFlags.isFetching && paginatedNotifications.length === 0;
+
   return (
-    <div className="flex flex-col h-[90vh] max-h-[600px]">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-border">
+    <div className="flex max-h-[min(36rem,80vh)] min-h-72 flex-col">
+      <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold">{t('notifications.panel.title')}</span>
-          {totalUnreadCount > 0 && (
-            <span className="px-2 py-1 text-xs font-semibold rounded-md bg-muted text-muted-foreground">
-              {totalUnreadCount}
-            </span>
+          <h2 className="font-semibold text-base">{t('notifications.panel.title')}</h2>
+          {totalUnreadCount > 0 && <Badge variant="secondary">{totalUnreadCount}</Badge>}
+          {state.uiFlags.isFetching && paginatedNotifications.length > 0 && (
+            <Spinner className="size-3.5 text-muted-foreground" aria-label={t('notifications.panel.loading')} />
           )}
         </div>
-
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {totalUnreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={state.uiFlags.isUpdating}
-              className="text-muted-foreground hover:text-foreground"
             >
-              <ListCheck className="h-4 w-4 mr-2" />
+              <ListCheck />
               {t('notifications.panel.markAllAsRead')}
             </Button>
           )}
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleOpenSettings}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {iconAction(t('notifications.panel.settings'), <Settings />, handleOpenSettings)}
+          {iconAction(t('notifications.panel.close'), <X />, onClose)}
         </div>
       </div>
 
-      {/* Notifications List */}
-      <div className="flex-1 overflow-y-auto relative">
-        {/* Stale-while-revalidate: keep showing the cached list while refetch
-            happens in the background. Only show full-screen loader when there
-            is no cached data yet. */}
-        {state.uiFlags.isFetching && paginatedNotifications.length > 0 && (
-          <div
-            className="absolute top-2 right-3 w-4 h-4 animate-spin rounded-full border-2 border-primary border-t-transparent z-10"
-            aria-label={t('notifications.panel.loading')}
-          />
-        )}
-        {state.uiFlags.isFetching && paginatedNotifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <div className="w-8 h-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4" />
-            <p className="text-muted-foreground">{t('notifications.panel.loading')}</p>
+      <div className="flex-1 overflow-y-auto">
+        {isInitialLoad ? (
+          <div className="space-y-1 p-2" aria-label={t('notifications.panel.loading')}>
+            {Array.from({ length: 5 }, (_, i) => (
+              <div key={i} className="flex items-start gap-3 p-3">
+                <Skeleton className="size-8 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-3.5 w-1/3" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : paginatedNotifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-              <ListCheck className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-medium mb-2">{t('notifications.panel.emptyTitle')}</h3>
-            <p className="text-muted-foreground">
-              {t('notifications.panel.emptyDescription')}
-            </p>
-          </div>
+          <Empty className="h-full">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <BellOff />
+              </EmptyMedia>
+              <EmptyTitle>{t('notifications.panel.emptyTitle')}</EmptyTitle>
+              <EmptyDescription>{t('notifications.panel.emptyDescription')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
-          paginatedNotifications.map(notification => (
-            <NotificationItem
-              key={notification.id}
-              notification={notification}
-              onOpen={handleOpenNotification}
-              getTypeLabel={getNotificationTypeLabel}
-            />
-          ))
+          <ul className="divide-y p-1">
+            {paginatedNotifications.map(notification => (
+              <li key={notification.id}>
+                <NotificationItem
+                  notification={notification}
+                  onOpen={handleOpenNotification}
+                  getTypeLabel={getNotificationTypeLabel}
+                />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
-      {/* Pagination */}
       {totalCount > 0 && totalPages > 1 && (
-        <div className="flex items-center justify-between p-4 border-t border-border">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePageChange(1)}
-              disabled={isFirstPage}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={isFirstPage}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <span className="text-sm font-semibold text-muted-foreground">
-            {currentPage}{t('notifications.panel.pagination.separator')}{totalPages}
+        <div className="flex items-center justify-between border-t px-3 py-2">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={isFirstPage}
+            aria-label={t('notifications.panel.previousPage')}
+          >
+            <ChevronLeft />
+          </Button>
+          <span className="text-muted-foreground text-sm tabular-nums">
+            {currentPage}
+            {t('notifications.panel.pagination.separator')}
+            {totalPages}
           </span>
-
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={isLastPage}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePageChange(totalPages)}
-              disabled={isLastPage}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={isLastPage}
+            aria-label={t('notifications.panel.nextPage')}
+          >
+            <ChevronRight />
+          </Button>
         </div>
       )}
     </div>

@@ -1,7 +1,8 @@
 import { useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CircleHelp } from 'lucide-react';
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { tourRegistry, matchTourRoute } from '@/tours/tourRegistry';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useAuthStore } from '@/store/authStore';
@@ -21,25 +22,32 @@ export function TourFab() {
   const tourKey = matchedRoute.slice(1);
   const tourSeen = tours[tourKey] === 'completed' || tours[tourKey] === 'skipped';
 
+  const button = (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => tourRegistry.start(matchedRoute)}
+      aria-label={t('viewPageTour')}
+      data-tour="nav-tour-icon"
+      className="text-sidebar-foreground hover:bg-sidebar-accent"
+    />
+  );
+
+  // First visit: no tooltip, so the icon reads as an invitation rather than a hint.
+  if (!tourSeen) {
+    return (
+      <Button {...button.props}>
+        <CircleHelp className="size-5" />
+      </Button>
+    );
+  }
+
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => tourRegistry.start(matchedRoute)}
-          aria-label={t('viewPageTour')}
-          data-tour="nav-tour-icon"
-          className="h-10 w-10 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground cursor-pointer"
-        >
-          <CircleHelp className="h-5 w-5" />
-        </Button>
+      <TooltipTrigger render={button}>
+        <CircleHelp className="size-5" />
       </TooltipTrigger>
-      {tourSeen && (
-        <TooltipContent>
-          <p>{t('viewPageTour')}</p>
-        </TooltipContent>
-      )}
+      <TooltipPopup>{t('viewPageTour')}</TooltipPopup>
     </Tooltip>
   );
 }

@@ -1,17 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Button,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuLabel
-} from '@/components/ui/compat';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getProfileMenuItems } from '../config/menuItems';
 import { Role } from '@/types/auth';
@@ -146,43 +136,33 @@ export default function ProfileMenu({
     );
   }
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="h-10 w-auto px-2 py-2 gap-2 text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer"
-        >
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={avatarSrc} alt={userName} />
-            <AvatarFallback className="bg-sidebar-primary/20 text-sidebar-primary font-medium">
-              {userInitials}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={avatarSrc} alt={userName} />
-              <AvatarFallback className="bg-primary/20 text-primary font-medium">
-                {userInitials}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{userName}</span>
-              <span className="text-xs text-muted-foreground">{userEmail}</span>
-              {user.role && (
-                <span className="text-xs text-primary font-medium">{user.role.name}</span>
-              )}
-            </div>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+  const avatar = (size: string) => (
+    <Avatar className={size}>
+      <AvatarImage src={avatarSrc} alt={userName} />
+      <AvatarFallback className="bg-primary/12 font-medium text-primary text-xs">{userInitials}</AvatarFallback>
+    </Avatar>
+  );
 
+  return (
+    <Menu>
+      <MenuTrigger
+        aria-label={userName}
+        className="ms-1 rounded-full outline-none ring-offset-2 ring-offset-sidebar transition-shadow hover:ring-2 hover:ring-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring data-popup-open:ring-2 data-popup-open:ring-sidebar-accent"
+      >
+        {avatar('size-8')}
+      </MenuTrigger>
+      <MenuPopup align="end" sideOffset={8} className="w-64">
+        <div className="flex items-center gap-3 px-2 py-2">
+          {avatar('size-9')}
+          <div className="min-w-0 flex-1">
+            <div className="truncate font-medium text-sm">{userName}</div>
+            <div className="truncate text-muted-foreground text-xs">{userEmail}</div>
+            {user.role && <div className="mt-0.5 truncate font-medium text-primary text-xs">{user.role.name}</div>}
+          </div>
+        </div>
+        <MenuSeparator />
         {profileMenuItems.map(item => (
-          <DropdownMenuItem
+          <MenuItem
             key={item.href}
             onClick={() => {
               if (item.onClick) {
@@ -191,13 +171,12 @@ export default function ProfileMenu({
                 navigate(item.href);
               }
             }}
-            className="cursor-pointer"
           >
-            <item.icon className="h-4 w-4" />
-            <span>{item.name}</span>
-          </DropdownMenuItem>
+            <item.icon />
+            {item.name}
+          </MenuItem>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </MenuPopup>
+    </Menu>
   );
 }
