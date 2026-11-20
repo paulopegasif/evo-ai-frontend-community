@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Button, Card, CardContent, Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
   AlertTriangle,
   RefreshCw,
@@ -40,7 +42,7 @@ const FacebookReauthorizeBanner: React.FC<{
 
   return (
     <Card className="border-destructive/24 bg-destructive/8">
-      <CardContent className="p-4">
+      <CardPanel className="p-4">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-destructive-foreground mt-0.5" />
           <div className="flex-1">
@@ -57,14 +59,14 @@ const FacebookReauthorizeBanner: React.FC<{
               onClick={handleReauthorize}
               loading={isReauthorizing}
               size="sm"
-              className="bg-destructive hover:bg-red-700 text-white"
+              variant="destructive"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw />
               {t('settings.authorizationBanners.facebook.button')}
             </Button>
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
@@ -85,7 +87,7 @@ const GoogleReauthorizeBanner: React.FC<{
 
   return (
     <Card className="border-warning/24 bg-warning/8">
-      <CardContent className="p-4">
+      <CardPanel className="p-4">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-warning-foreground mt-0.5" />
           <div className="flex-1">
@@ -102,14 +104,14 @@ const GoogleReauthorizeBanner: React.FC<{
               onClick={handleReauthorize}
               loading={isReauthorizing}
               size="sm"
-              className="bg-warning hover:bg-yellow-700 text-white"
+              className="border-warning bg-warning text-white hover:bg-warning/90"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw />
               {t('settings.authorizationBanners.google.button')}
             </Button>
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
@@ -130,7 +132,7 @@ const MicrosoftReauthorizeBanner: React.FC<{
 
   return (
     <Card className="border-info/24 bg-info/8">
-      <CardContent className="p-4">
+      <CardPanel className="p-4">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-info-foreground mt-0.5" />
           <div className="flex-1">
@@ -147,14 +149,14 @@ const MicrosoftReauthorizeBanner: React.FC<{
               onClick={handleReauthorize}
               loading={isReauthorizing}
               size="sm"
-              className="bg-info hover:bg-blue-700 text-white"
+              className="border-info bg-info text-white hover:bg-info/90"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw />
               {t('settings.authorizationBanners.microsoft.button')}
             </Button>
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
@@ -166,39 +168,39 @@ const InstagramDuplicateBanner: React.FC<{
 }> = ({ onResolve }) => {
   const { t } = useLanguage('channels');
   return (
-    <Card className="border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/10">
-      <CardContent className="p-4">
+    <Card className="border-warning/24 bg-warning/8">
+      <CardPanel className="p-4">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-orange-700 dark:text-orange-400 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-warning-foreground mt-0.5" />
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <MessageSquare className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-              <h3 className="font-semibold text-orange-900 dark:text-orange-200">
+              <h3 className="font-semibold text-warning-foreground">
                 {t('settings.authorizationBanners.instagram.duplicate.title')}
               </h3>
             </div>
-            <p className="text-sm text-orange-800 dark:text-orange-300 mb-3">
+            <p className="text-sm text-warning-foreground mb-3">
               {t('settings.authorizationBanners.instagram.duplicate.description')}
             </p>
             <div className="flex gap-2">
               <Button
                 onClick={onResolve}
                 size="sm"
-                className="bg-orange-600 hover:bg-orange-700 text-white"
+                className="border-warning bg-warning text-white hover:bg-warning/90"
               >
                 {t('settings.authorizationBanners.instagram.duplicate.resolveButton')}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                className="border-warning/32 text-warning-foreground hover:bg-warning/8"
               >
                 {t('settings.authorizationBanners.instagram.duplicate.detailsButton')}
               </Button>
             </div>
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
@@ -632,8 +634,8 @@ const AuthorizationSuccessBanner: React.FC<{
     isWhatsAppCloud;
 
   return (
-    <Card className="border-primary/20 dark:border-primary/30 bg-primary/5 dark:bg-primary/10">
-      <CardContent className="p-4">
+    <Card className="border-primary/24 bg-primary/8">
+      <CardPanel className="p-4">
         <div className="flex items-center gap-3">
           <CheckCircle className="w-5 h-5 text-primary" />
           <div className="flex-1">
@@ -663,7 +665,7 @@ const AuthorizationSuccessBanner: React.FC<{
                     variant="outline"
                     className="border-primary/30 text-primary hover:bg-primary/10"
                   >
-                    <RefreshCw className="w-4 h-4 mr-2" />
+                    <RefreshCw />
                     {t('settings.authorizationBanners.success.syncSubscription')}
                   </Button>
                 )}
@@ -679,7 +681,7 @@ const AuthorizationSuccessBanner: React.FC<{
                     variant="outline"
                     className="border-primary/30 text-primary hover:bg-primary/10"
                   >
-                    <RefreshCw className="w-4 h-4 mr-2" />
+                    <RefreshCw />
                     {t('settings.authorizationBanners.success.reconnect')}
                   </Button>
                 )}
@@ -692,7 +694,7 @@ const AuthorizationSuccessBanner: React.FC<{
             )}
           </div>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

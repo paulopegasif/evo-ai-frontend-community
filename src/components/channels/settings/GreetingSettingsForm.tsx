@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Switch } from '@/components/ui/compat';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import GlobalTemplateSelect from './GlobalTemplateSelect';
 

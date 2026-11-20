@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Button, Input } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import ChannelsService from '@/services/channels/channelsService';
 import { toast } from 'sonner';
@@ -406,7 +408,7 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
       {isLoading && !hasError && (
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
-            <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            <Spinner className="size-6 text-primary" />
             <span className="text-foreground">{loadingMessage}</span>
           </div>
         </div>
@@ -510,7 +512,7 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
                 value={inboxName}
                 onChange={e => setInboxName(e.target.value)}
                 placeholder={t('channelNamePlaceholder', { platform: 'Messenger' })}
-                className="h-11"
+                size="lg"
               />
             </div>
           </div>
@@ -523,10 +525,10 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
               </Button>
               <Button onClick={handleCreate} disabled={!canProceed || isLoading} className="min-w-32">
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <>
+                    <Spinner />
                     {t('creating')}
-                  </div>
+                  </>
                 ) : (
                   t('createChannel')
                 )}

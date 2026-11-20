@@ -1,17 +1,16 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  Button,
-  Switch,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Badge,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Star, Info, X, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -30,7 +29,7 @@ import { labelsService } from '@/services/contacts/labelsService';
 import { Label } from '@/types/settings';
 import { pipelinesService } from '@/services/pipelines';
 import type { Pipeline, PipelineStage } from '@/types/analytics/pipelines';
-import { Input } from '@/components/ui/compat';
+import { Input } from '@/components/ui/input';
 
 // API response type
 export interface APICSATConfig {
@@ -75,15 +74,18 @@ function normalizeCSATConfig(config?: APICSATConfig): CSATConfig {
     const normalized: any = {
       type: trigger.type,
     };
-    
+
     if (trigger.operator) normalized.operator = trigger.operator;
-    if (trigger.values !== undefined) normalized.values = Array.isArray(trigger.values) ? trigger.values : [];
-    if (trigger.stage_ids !== undefined) normalized.stage_ids = Array.isArray(trigger.stage_ids) ? trigger.stage_ids : [];
-    if (trigger.stage_names !== undefined) normalized.stage_names = Array.isArray(trigger.stage_names) ? trigger.stage_names : [];
+    if (trigger.values !== undefined)
+      normalized.values = Array.isArray(trigger.values) ? trigger.values : [];
+    if (trigger.stage_ids !== undefined)
+      normalized.stage_ids = Array.isArray(trigger.stage_ids) ? trigger.stage_ids : [];
+    if (trigger.stage_names !== undefined)
+      normalized.stage_names = Array.isArray(trigger.stage_names) ? trigger.stage_names : [];
     if (trigger.pattern !== undefined) normalized.pattern = trigger.pattern;
     if (trigger.field !== undefined) normalized.field = trigger.field;
     if (trigger.minutes !== undefined) normalized.minutes = trigger.minutes;
-    
+
     return normalized as CSATTrigger;
   });
 
@@ -114,13 +116,11 @@ export default function CSATForm({
   const normalizedConfig = normalizeCSATConfig(csatConfig);
 
   const [isSurveyEnabled, setIsSurveyEnabled] = useState(csatSurveyEnabled);
-  const [displayType, setDisplayType] = useState<CSATDisplayType>(
-    normalizedConfig.display_type,
-  );
+  const [displayType, setDisplayType] = useState<CSATDisplayType>(normalizedConfig.display_type);
   const [message, setMessage] = useState(normalizedConfig.message || '');
   const [triggers, setTriggers] = useState<TriggerItem[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  
+
   // Data sources
   const [labels, setLabels] = useState<Label[]>([]);
   const [pipelines, setPipelines] = useState<Pipeline[]>([]);
@@ -160,20 +160,25 @@ export default function CSATForm({
   }, []);
 
   // Load stages for a specific pipeline
-  const loadStagesForPipeline = useCallback(async (pipelineId: string): Promise<void> => {
-    if (!pipelineId) return;
-    
-    // Always load, even if already cached, to ensure fresh data
-    try {
-      const response = await pipelinesService.getPipelineStages(pipelineId);
-      const stagesData = response.data || [];
-      setAvailableStages(prev => ({ ...prev, [pipelineId]: stagesData }));
-    } catch (error) {
-      console.error('Error loading stages:', error);
-      toast.error(t('settings.csat.errors.loadStagesError', { default: 'Error loading pipeline stages' }));
-      throw error;
-    }
-  }, [t]);
+  const loadStagesForPipeline = useCallback(
+    async (pipelineId: string): Promise<void> => {
+      if (!pipelineId) return;
+
+      // Always load, even if already cached, to ensure fresh data
+      try {
+        const response = await pipelinesService.getPipelineStages(pipelineId);
+        const stagesData = response.data || [];
+        setAvailableStages(prev => ({ ...prev, [pipelineId]: stagesData }));
+      } catch (error) {
+        console.error('Error loading stages:', error);
+        toast.error(
+          t('settings.csat.errors.loadStagesError', { default: 'Error loading pipeline stages' }),
+        );
+        throw error;
+      }
+    },
+    [t],
+  );
 
   // Initialize triggers from config
   useEffect(() => {
@@ -200,8 +205,8 @@ export default function CSATForm({
     // Preload stages for stage triggers
     triggerItems.forEach(trigger => {
       if (trigger.type === 'stage' && trigger.stage_ids && trigger.stage_ids.length > 0) {
-        const pipeline = pipelines.find(p => 
-          p.stages?.some(s => s.id.toString() === trigger.stage_ids?.[0])
+        const pipeline = pipelines.find(p =>
+          p.stages?.some(s => s.id.toString() === trigger.stage_ids?.[0]),
         );
         if (pipeline) {
           loadStagesForPipeline(pipeline.id);
@@ -230,18 +235,25 @@ export default function CSATForm({
 
   // Update trigger
   const handleUpdateTrigger = (id: string, updates: Partial<TriggerItem>) => {
-    setTriggers(prev =>
-      prev.map(t => (t.id === id ? { ...t, ...updates } : t))
-    );
+    setTriggers(prev => prev.map(t => (t.id === id ? { ...t, ...updates } : t)));
   };
 
   // Get all trigger types with labels
   const getAllTriggerTypes = (): Array<{ value: TriggerItem['type']; label: string }> => {
     return [
       { value: 'label', label: t('settings.csat.triggerTypes.label', { default: 'Label' }) },
-      { value: 'stage', label: t('settings.csat.triggerTypes.stage', { default: 'Pipeline Stage' }) },
-      { value: 'regex', label: t('settings.csat.triggerTypes.regex', { default: 'Regex Pattern' }) },
-      { value: 'inactivity', label: t('settings.csat.triggerTypes.inactivity', { default: 'Inactivity' }) },
+      {
+        value: 'stage',
+        label: t('settings.csat.triggerTypes.stage', { default: 'Pipeline Stage' }),
+      },
+      {
+        value: 'regex',
+        label: t('settings.csat.triggerTypes.regex', { default: 'Regex Pattern' }),
+      },
+      {
+        value: 'inactivity',
+        label: t('settings.csat.triggerTypes.inactivity', { default: 'Inactivity' }),
+      },
     ];
   };
 
@@ -253,10 +265,10 @@ export default function CSATForm({
   // Get available trigger types (excluding already added ones)
   const getAvailableTriggerTypes = (): Array<{ value: TriggerItem['type']; label: string }> => {
     const allTypes = getAllTriggerTypes();
-    
+
     // Get types that are already in use
     const usedTypes = new Set(triggers.map(t => t.type));
-    
+
     // Filter out types that are already used
     return allTypes.filter(type => !usedTypes.has(type.value));
   };
@@ -265,35 +277,39 @@ export default function CSATForm({
   const handleSaveSettings = async () => {
     setIsUpdating(true);
     try {
-      const triggerData: CSATTrigger[] = triggers.map(trigger => {
-        const base: any = { type: trigger.type };
-        
-        // Always include operator for label and stage triggers
-        if (trigger.type === 'label' || trigger.type === 'stage') {
-          base.operator = trigger.operator || (trigger.type === 'label' ? 'contains' : 'equals');
-        }
-        
-        if (trigger.values && trigger.values.length > 0) base.values = trigger.values;
-        if (trigger.stage_ids && trigger.stage_ids.length > 0) {
-          base.stage_ids = trigger.stage_ids;
-          // Ensure operator is set for stage triggers
-          if (trigger.type === 'stage' && !base.operator) {
-            base.operator = 'equals';
+      const triggerData: CSATTrigger[] = triggers
+        .map(trigger => {
+          const base: any = { type: trigger.type };
+
+          // Always include operator for label and stage triggers
+          if (trigger.type === 'label' || trigger.type === 'stage') {
+            base.operator = trigger.operator || (trigger.type === 'label' ? 'contains' : 'equals');
           }
-        }
-        if (trigger.pattern) base.pattern = trigger.pattern;
-        if (trigger.field) base.field = trigger.field;
-        if (trigger.minutes) base.minutes = trigger.minutes;
-        
-        return base;
-      }).filter(trigger => {
-        // Filter out incomplete triggers
-        if (trigger.type === 'label' && (!trigger.values || trigger.values.length === 0)) return false;
-        if (trigger.type === 'stage' && (!trigger.stage_ids || trigger.stage_ids.length === 0)) return false;
-        if (trigger.type === 'regex' && !trigger.pattern) return false;
-        if (trigger.type === 'inactivity' && !trigger.minutes) return false;
-        return true;
-      });
+
+          if (trigger.values && trigger.values.length > 0) base.values = trigger.values;
+          if (trigger.stage_ids && trigger.stage_ids.length > 0) {
+            base.stage_ids = trigger.stage_ids;
+            // Ensure operator is set for stage triggers
+            if (trigger.type === 'stage' && !base.operator) {
+              base.operator = 'equals';
+            }
+          }
+          if (trigger.pattern) base.pattern = trigger.pattern;
+          if (trigger.field) base.field = trigger.field;
+          if (trigger.minutes) base.minutes = trigger.minutes;
+
+          return base;
+        })
+        .filter(trigger => {
+          // Filter out incomplete triggers
+          if (trigger.type === 'label' && (!trigger.values || trigger.values.length === 0))
+            return false;
+          if (trigger.type === 'stage' && (!trigger.stage_ids || trigger.stage_ids.length === 0))
+            return false;
+          if (trigger.type === 'regex' && !trigger.pattern) return false;
+          if (trigger.type === 'inactivity' && !trigger.minutes) return false;
+          return true;
+        });
 
       const csatConfigData: CSATConfig = {
         display_type: displayType,
@@ -340,7 +356,7 @@ export default function CSATForm({
           <LabelTriggerForm
             trigger={trigger}
             labels={labels}
-            onUpdate={(updates) => handleUpdateTrigger(trigger.id, updates)}
+            onUpdate={updates => handleUpdateTrigger(trigger.id, updates)}
           />
         );
       case 'stage':
@@ -350,21 +366,21 @@ export default function CSATForm({
             pipelines={pipelines}
             availableStages={availableStages}
             onLoadStages={loadStagesForPipeline}
-            onUpdate={(updates) => handleUpdateTrigger(trigger.id, updates)}
+            onUpdate={updates => handleUpdateTrigger(trigger.id, updates)}
           />
         );
       case 'regex':
         return (
           <RegexTriggerForm
             trigger={trigger}
-            onUpdate={(updates) => handleUpdateTrigger(trigger.id, updates)}
+            onUpdate={updates => handleUpdateTrigger(trigger.id, updates)}
           />
         );
       case 'inactivity':
         return (
           <InactivityTriggerForm
             trigger={trigger}
-            onUpdate={(updates) => handleUpdateTrigger(trigger.id, updates)}
+            onUpdate={updates => handleUpdateTrigger(trigger.id, updates)}
           />
         );
       default:
@@ -375,7 +391,7 @@ export default function CSATForm({
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-border">
             <div className="flex items-center gap-3">
@@ -429,20 +445,28 @@ export default function CSATForm({
                     {t('settings.csat.surveyRules.label')}
                   </label>
                   <Select
-                    value=""
-                    onValueChange={(value) => handleAddTrigger(value as TriggerItem['type'])}
+                    items={getAvailableTriggerTypes()}
+                    value={null}
+                    onValueChange={value => {
+                      if (value != null) handleAddTrigger(value as TriggerItem['type']);
+                    }}
                     disabled={getAvailableTriggerTypes().length === 0}
                   >
-                    <SelectTrigger className="w-auto" disabled={getAvailableTriggerTypes().length === 0}>
-                      <SelectValue 
+                    <SelectTrigger
+                      className="w-auto"
+                      disabled={getAvailableTriggerTypes().length === 0}
+                    >
+                      <SelectValue
                         placeholder={
                           getAvailableTriggerTypes().length === 0
-                            ? t('settings.csat.allTriggersAdded', { default: 'All trigger types have been added' })
+                            ? t('settings.csat.allTriggersAdded', {
+                                default: 'All trigger types have been added',
+                              })
                             : t('settings.csat.addTrigger', { default: 'Add Trigger' })
-                        } 
+                        }
                       />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectPopup alignItemWithTrigger={false}>
                       {getAvailableTriggerTypes().map(type => (
                         <SelectItem key={type.value} value={type.value}>
                           <div className="flex items-center gap-2">
@@ -451,21 +475,23 @@ export default function CSATForm({
                           </div>
                         </SelectItem>
                       ))}
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
 
                 {triggers.length === 0 ? (
                   <div className="p-6 border border-dashed rounded-lg text-center">
                     <p className="text-sm text-muted-foreground">
-                      {t('settings.csat.noTriggers', { default: 'No triggers configured. Add a trigger to get started.' })}
+                      {t('settings.csat.noTriggers', {
+                        default: 'No triggers configured. Add a trigger to get started.',
+                      })}
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {triggers.map(trigger => (
                       <Card key={trigger.id} className="border">
-                        <CardContent className="p-4">
+                        <CardPanel className="p-4">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex flex-col gap-1">
                               <h5 className="text-sm font-semibold text-foreground">
@@ -477,15 +503,15 @@ export default function CSATForm({
                             </div>
                             <Button
                               variant="ghost"
-                              size="sm"
                               onClick={() => handleRemoveTrigger(trigger.id)}
-                              className="h-8 w-8 p-0"
+                              size="icon-sm"
+                              aria-label={t('actions.delete')}
                             >
-                              <Trash2 className="h-4 w-4 text-destructive" />
+                              <Trash2 className="text-destructive-foreground" />
                             </Button>
                           </div>
                           {renderTriggerForm(trigger)}
-                        </CardContent>
+                        </CardPanel>
                       </Card>
                     ))}
                   </div>
@@ -507,7 +533,6 @@ export default function CSATForm({
                   </div>
                 </div>
               </div>
-
             </div>
           )}
 
@@ -523,7 +548,7 @@ export default function CSATForm({
               </p>
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );
@@ -555,19 +580,20 @@ function LabelTriggerForm({ trigger, labels, onUpdate }: LabelTriggerFormProps) 
       <div className="flex flex-wrap items-center gap-2 text-sm text-foreground">
         <span>{t('settings.csat.surveyRules.description1')}</span>
         <Select
+          items={getSurveyRuleOperators()}
           value={trigger.operator || 'contains'}
-          onValueChange={(value) => onUpdate({ operator: value })}
+          onValueChange={value => onUpdate({ operator: String(value ?? '') })}
         >
           <SelectTrigger className="w-auto min-w-32">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {getSurveyRuleOperators().map(operator => (
               <SelectItem key={operator.value} value={operator.value}>
                 {operator.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
         <span>{t('settings.csat.surveyRules.description2')}</span>
       </div>
@@ -587,8 +613,10 @@ function LabelTriggerForm({ trigger, labels, onUpdate }: LabelTriggerFormProps) 
             >
               {labelTitle}
               <button
+                type="button"
                 onClick={() => handleLabelRemove(labelTitle)}
-                className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                className="ml-1 hover:bg-foreground/10 rounded-full p-0.5"
+                aria-label={t('settings.a11y.remove')}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -597,11 +625,15 @@ function LabelTriggerForm({ trigger, labels, onUpdate }: LabelTriggerFormProps) 
         })}
 
         {availableLabels.length > 0 && (
-          <Select value="" onValueChange={handleLabelSelect}>
+          <Select
+            items={availableLabels.map(label => ({ value: label.title, label: label.title }))}
+            value={null}
+            onValueChange={value => handleLabelSelect(String(value ?? ''))}
+          >
             <SelectTrigger className="w-auto min-w-32">
               <SelectValue placeholder={t('settings.csat.surveyRules.addLabel')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup alignItemWithTrigger={false}>
               {availableLabels.map(label => (
                 <SelectItem key={label.id} value={label.title}>
                   <div className="flex items-center gap-2">
@@ -613,7 +645,7 @@ function LabelTriggerForm({ trigger, labels, onUpdate }: LabelTriggerFormProps) 
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         )}
       </div>
@@ -646,7 +678,7 @@ function StageTriggerForm({
   const { t } = useLanguage('channels');
   const [selectedPipelineId, setSelectedPipelineId] = useState<string>('');
   const [isLoadingStages, setIsLoadingStages] = useState(false);
-  
+
   // Find pipeline that contains the selected stages on mount or when stage_ids change
   useEffect(() => {
     if (trigger.stage_ids && trigger.stage_ids.length > 0) {
@@ -654,12 +686,12 @@ function StageTriggerForm({
       const pipeline = pipelines.find(p => {
         if (p.stages && p.stages.length > 0) {
           return trigger.stage_ids?.some(stageId =>
-            p.stages?.some(s => s.id.toString() === stageId)
+            p.stages?.some(s => s.id.toString() === stageId),
           );
         }
         return false;
       });
-      
+
       if (pipeline) {
         setSelectedPipelineId(pipeline.id);
         // Load stages if not already loaded
@@ -676,7 +708,7 @@ function StageTriggerForm({
       }
     }
   }, [trigger.stage_ids, pipelines, availableStages, onLoadStages]);
-  
+
   const stages = selectedPipelineId ? availableStages[selectedPipelineId] || [] : [];
   const selectedStageIds = trigger.stage_ids || [];
 
@@ -707,17 +739,22 @@ function StageTriggerForm({
         <label className="text-xs text-muted-foreground">
           {t('settings.csat.stageTrigger.selectPipeline')}
         </label>
-        <Select value={selectedPipelineId} onValueChange={handlePipelineChange} disabled={isLoadingStages}>
+        <Select
+          items={pipelines.map(pipeline => ({ value: pipeline.id, label: pipeline.name }))}
+          value={selectedPipelineId || null}
+          onValueChange={value => handlePipelineChange(String(value ?? ''))}
+          disabled={isLoadingStages}
+        >
           <SelectTrigger>
             <SelectValue placeholder={t('settings.csat.stageTrigger.selectPipeline')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {pipelines.map(pipeline => (
               <SelectItem key={pipeline.id} value={pipeline.id}>
                 {pipeline.name}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -743,7 +780,7 @@ function StageTriggerForm({
                   className="cursor-pointer"
                   onClick={() => handleStageToggle(stageIdStr)}
                   style={{
-                    backgroundColor: isSelected ? (stage.color || '#6366F1') : undefined,
+                    backgroundColor: isSelected ? stage.color || '#6366F1' : undefined,
                     color: isSelected ? '#fff' : undefined,
                   }}
                 >
@@ -768,7 +805,9 @@ function StageTriggerForm({
 
       {selectedPipelineId && !isLoadingStages && stages.length === 0 && (
         <p className="text-xs text-muted-foreground">
-          {t('settings.csat.stageTrigger.noStagesAvailable', { default: 'No stages available for this pipeline' })}
+          {t('settings.csat.stageTrigger.noStagesAvailable', {
+            default: 'No stages available for this pipeline',
+          })}
         </p>
       )}
     </div>
@@ -791,17 +830,23 @@ function RegexTriggerForm({ trigger, onUpdate }: RegexTriggerFormProps) {
           {t('settings.csat.regexTrigger.field')}
         </label>
         <Select
+          items={[
+            {
+              value: 'message_content',
+              label: t('settings.csat.regexTrigger.fieldMessageContent'),
+            },
+          ]}
           value={trigger.field || 'message_content'}
-          onValueChange={(value) => onUpdate({ field: value })}
+          onValueChange={value => onUpdate({ field: String(value ?? '') })}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             <SelectItem value="message_content">
               {t('settings.csat.regexTrigger.fieldMessageContent')}
             </SelectItem>
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
       <div className="space-y-2">
@@ -810,13 +855,11 @@ function RegexTriggerForm({ trigger, onUpdate }: RegexTriggerFormProps) {
         </label>
         <Input
           value={trigger.pattern || ''}
-          onChange={(e) => onUpdate({ pattern: e.target.value })}
+          onChange={e => onUpdate({ pattern: e.target.value })}
           placeholder={t('settings.csat.regexTrigger.patternPlaceholder')}
           maxLength={200}
         />
-        <p className="text-xs text-muted-foreground">
-          {t('settings.csat.regexTrigger.help')}
-        </p>
+        <p className="text-xs text-muted-foreground">{t('settings.csat.regexTrigger.help')}</p>
       </div>
     </div>
   );
@@ -840,16 +883,14 @@ function InactivityTriggerForm({ trigger, onUpdate }: InactivityTriggerFormProps
         <Input
           type="number"
           value={trigger.minutes || ''}
-          onChange={(e) => {
+          onChange={e => {
             const value = e.target.value;
             onUpdate({ minutes: value === '' ? undefined : Number(value) });
           }}
           placeholder={t('settings.csat.inactivityTrigger.placeholder')}
           min={1}
         />
-        <p className="text-xs text-muted-foreground">
-          {t('settings.csat.inactivityTrigger.help')}
-        </p>
+        <p className="text-xs text-muted-foreground">{t('settings.csat.inactivityTrigger.help')}</p>
       </div>
     </div>
   );

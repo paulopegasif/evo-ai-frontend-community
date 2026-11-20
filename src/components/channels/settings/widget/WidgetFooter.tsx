@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Avatar, AvatarFallback, Input } from '@/components/ui/compat';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 import { ArrowRight, Smile, Send } from 'lucide-react';
 import { WidgetConfig } from '../helpers/widgetHelpers';
 import { getReplyTimeDisplayText } from '../helpers/widgetHelpers';
@@ -71,16 +72,20 @@ export default function WidgetFooter({ config }: WidgetFooterProps) {
           <Input
             id="chat-input"
             placeholder={t('settings.widget.footer.messagePlaceholder')}
-            className="flex-1 border-0 bg-transparent focus:ring-0 focus:border-0 text-sm h-8 px-3"
+            unstyled
+            className="flex-1 text-sm"
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => setIsInputFocused(false)}
           />
 
           <div className="flex items-center gap-2 px-2">
-            <button className="p-1 hover:bg-accent rounded">
+            <button type="button" tabIndex={-1} aria-hidden="true" className="p-1 hover:bg-accent rounded">
               <Smile className="w-4 h-4 text-muted-foreground" />
             </button>
             <button
+              type="button"
+              tabIndex={-1}
+              aria-hidden="true"
               className="p-1 hover:bg-accent rounded"
               style={{ color: config.widgetColor }}
             >

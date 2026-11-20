@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { Card, CardContent, Button, Input, Skeleton } from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { Mail, AlertTriangle } from 'lucide-react';
 import EmailOauthService from '@/services/channels/emailOauthService';
 import { EmailChannelPayload } from '@/types/channels/inbox';
@@ -150,20 +154,16 @@ const EmailForm: React.FC<EmailFormProps> = ({ provider, onSuccess, onBack }) =>
       </div>
 
       {authError && (
-        <Card className="border-destructive">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2 text-destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <span>{authError}</span>
-            </div>
-          </CardContent>
-        </Card>
+        <Alert variant="error">
+          <AlertTriangle />
+          <AlertDescription>{authError}</AlertDescription>
+        </Alert>
       )}
 
       {/* OAuth Providers */}
       {(provider === 'google' || provider === 'microsoft') && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="space-y-6">
               <div className="text-center">
                 <div className="flex justify-center mb-4">
@@ -194,14 +194,14 @@ const EmailForm: React.FC<EmailFormProps> = ({ provider, onSuccess, onBack }) =>
                 </div>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Simple Email Channel (Forward-to) */}
       {provider === 'other_provider' && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="text-center mb-6">
               <div className="flex justify-center mb-4">
                 <div className="p-3 bg-primary/10 rounded-full">
@@ -234,7 +234,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ provider, onSuccess, onBack }) =>
                 <p className="text-xs text-muted-foreground mt-1">{t('forwardDescription')}</p>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
@@ -248,7 +248,7 @@ const EmailForm: React.FC<EmailFormProps> = ({ provider, onSuccess, onBack }) =>
             <Button onClick={handleCreateChannel} disabled={isLoading} className="min-w-32">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-4 w-4 mr-2" />
+                  <Spinner />
                   {t('creating')}
                 </>
               ) : (
@@ -259,11 +259,11 @@ const EmailForm: React.FC<EmailFormProps> = ({ provider, onSuccess, onBack }) =>
             <Button
               onClick={handleOAuthLogin}
               disabled={isRequestingAuthorization}
-              className="min-w-[200px] bg-success hover:bg-success text-white"
+              className="min-w-[200px] border-success bg-success text-white hover:bg-success/90"
             >
               {isRequestingAuthorization ? (
                 <>
-                  <Skeleton className="h-4 w-4 mr-2" />
+                  <Spinner />
                   {t('connecting')}
                 </>
               ) : (

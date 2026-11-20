@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/compat';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { WidgetConfig } from '../helpers/widgetHelpers';
 import { getReplyTimeDisplayText } from '../helpers/widgetHelpers';
 

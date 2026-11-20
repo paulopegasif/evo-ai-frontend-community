@@ -8,8 +8,8 @@ vi.mock('@/services/messageTemplates/globalMessageTemplatesService', () => ({
   default: { getTemplates: h.getTemplates },
 }));
 
-// Render the design-system Select as a native <select> so options are assertable.
-vi.mock('@/components/ui/compat', () => ({
+// Render the coss Select as a native <select> so options are assertable.
+vi.mock('@/components/ui/select', () => ({
   Select: ({
     children,
     value,
@@ -33,7 +33,7 @@ vi.mock('@/components/ui/compat', () => ({
   ),
   SelectTrigger: () => null,
   SelectValue: () => null,
-  SelectContent: ({ children }: { children: ReactNode }) => <>{children}</>,
+  SelectPopup: ({ children }: { children: ReactNode }) => <>{children}</>,
   SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
     <option value={value}>{children}</option>
   ),

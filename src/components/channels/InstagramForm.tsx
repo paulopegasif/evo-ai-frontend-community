@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Button, Input } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
@@ -124,16 +126,16 @@ export default function InstagramForm({ onCancel }: InstagramFormProps) {
           <Button
             onClick={handleInstagramConnect}
             disabled={!isInstagramConfigured || isConnecting}
-            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white min-w-[200px] disabled:from-gray-400 disabled:via-gray-400 disabled:to-gray-400"
+            className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white min-w-[200px]"
           >
             {isConnecting ? (
               <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                <Spinner />
                 {t('connecting')}
               </>
             ) : (
               <>
-                <Instagram className="w-4 h-4 mr-2" />
+                <Instagram />
                 {t('connectButton')}
               </>
             )}

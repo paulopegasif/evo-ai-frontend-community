@@ -1344,7 +1344,8 @@
       "avatar": {
         "label": "Avatar du Widget",
         "upload": "Télécharger un Avatar",
-        "change": "Modifier l'Avatar"
+        "change": "Modifier l'Avatar",
+        "remove": "Retirer l'avatar"
       },
       "websiteName": {
         "label": "Nom du Site Web",
@@ -1674,6 +1675,10 @@
       "success": {
         "channelCreated": "Canal créé avec succès"
       }
+    },
+    "a11y": {
+      "copy": "Copier",
+      "remove": "Retirer"
     }
   },
   "deleteDialog": {

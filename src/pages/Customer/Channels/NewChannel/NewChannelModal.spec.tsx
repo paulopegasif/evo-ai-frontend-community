@@ -12,11 +12,11 @@ vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key, currentLanguage: 'en' }),
 }));
 
-vi.mock('@/components/ui/compat', () => ({
-  // Controlled Dialog: render nothing when closed, mirroring Radix behavior.
+vi.mock('@/components/ui/dialog', () => ({
+  // Controlled Dialog: render nothing when closed, mirroring Base UI's unmount-on-close.
   Dialog: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
     open ? <div data-testid="dialog">{children}</div> : null,
-  DialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DialogPopup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogTitle: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
 }));
 

@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import {
-  Card,
-  CardContent,
-  Button,
-  Badge,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Textarea,
-  Label,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Shield,
   CheckCircle2,
@@ -212,7 +211,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
 
       {/* Filters */}
       <Card>
-        <CardContent className="p-4">
+        <CardPanel className="p-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
@@ -220,11 +219,20 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                 {t('settings.moderation.filters.status')}
               </Label>
             </div>
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+            <Select
+              items={[
+                { value: 'all', label: t('settings.moderation.filters.all') },
+                { value: 'pending', label: t('settings.moderation.filters.pending') },
+                { value: 'approved', label: t('settings.moderation.filters.approved') },
+                { value: 'rejected', label: t('settings.moderation.filters.rejected') },
+              ]}
+              value={selectedStatus}
+              onValueChange={v => setSelectedStatus(String(v ?? ''))}
+            >
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 <SelectItem value="all">{t('settings.moderation.filters.all')}</SelectItem>
                 <SelectItem value="pending">{t('settings.moderation.filters.pending')}</SelectItem>
                 <SelectItem value="approved">
@@ -233,17 +241,26 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                 <SelectItem value="rejected">
                   {t('settings.moderation.filters.rejected')}
                 </SelectItem>
-              </SelectContent>
+              </SelectPopup>
             </Select>
 
             <div className="flex items-center gap-2">
               <Label className="text-sm font-medium">{t('settings.moderation.filters.type')}</Label>
             </div>
-            <Select value={selectedType} onValueChange={setSelectedType}>
+            <Select
+              items={[
+                { value: 'all', label: t('settings.moderation.filters.allTypes') },
+                { value: 'explicit_words', label: t('settings.moderation.types.explicitWords') },
+                { value: 'offensive_sentiment', label: t('settings.moderation.types.offensiveSentiment') },
+                { value: 'response_approval', label: t('settings.moderation.types.responseApproval') },
+              ]}
+              value={selectedType}
+              onValueChange={v => setSelectedType(String(v ?? ''))}
+            >
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 <SelectItem value="all">{t('settings.moderation.filters.allTypes')}</SelectItem>
                 <SelectItem value="explicit_words">
                   {t('settings.moderation.types.explicitWords')}
@@ -254,14 +271,14 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                 <SelectItem value="response_approval">
                   {t('settings.moderation.types.responseApproval')}
                 </SelectItem>
-              </SelectContent>
+              </SelectPopup>
             </Select>
 
             <div className="ml-auto text-sm text-muted-foreground">
               {t('settings.moderation.totalCount', { count: meta.total })}
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Moderations List */}
@@ -274,7 +291,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
           </div>
         ) : moderations.length === 0 ? (
           <Card>
-            <CardContent className="p-12 text-center">
+            <CardPanel className="p-12 text-center">
               <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-lg font-medium text-foreground mb-2">
                 {t('settings.moderation.empty.title')}
@@ -282,7 +299,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
               <p className="text-sm text-muted-foreground">
                 {t('settings.moderation.empty.description')}
               </p>
-            </CardContent>
+            </CardPanel>
           </Card>
         ) : (
           moderations.map(moderation => {
@@ -292,7 +309,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
 
             return (
               <Card key={moderation.id}>
-                <CardContent className="p-6">
+                <CardPanel className="p-6">
                   <div className="space-y-4">
                     {/* Header */}
                     <div className="flex items-start justify-between">
@@ -310,15 +327,15 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                                 isPending
                                   ? 'default'
                                   : moderation.status === 'approved'
-                                  ? 'default'
-                                  : 'destructive'
+                                    ? 'default'
+                                    : 'destructive'
                               }
                             >
                               {moderation.status === 'pending'
                                 ? t('settings.moderation.status.pending')
                                 : moderation.status === 'approved'
-                                ? t('settings.moderation.status.approved')
-                                : t('settings.moderation.status.rejected')}
+                                  ? t('settings.moderation.status.approved')
+                                  : t('settings.moderation.status.rejected')}
                             </Badge>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <ActionIcon className="h-3 w-3" />
@@ -427,7 +444,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                             onClick={() => handleReject(moderation)}
                             disabled={isProcessingThis}
                           >
-                            <XCircle className="h-4 w-4 mr-2" />
+                            <XCircle />
                             {t('settings.moderation.actions.reject')}
                           </Button>
 
@@ -436,7 +453,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                             onClick={() => handleApprove(moderation)}
                             disabled={isProcessingThis}
                           >
-                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                            <CheckCircle2 />
                             {t('settings.moderation.actions.approve')}
                           </Button>
                         </div>
@@ -458,7 +475,7 @@ export default function ModerationDashboard({ conversationId }: ModerationDashbo
                       </div>
                     )}
                   </div>
-                </CardContent>
+                </CardPanel>
               </Card>
             );
           })

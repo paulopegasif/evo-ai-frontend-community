@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/compat';
+import { Dialog, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import NewChannel from './index';
 
@@ -31,7 +31,10 @@ export default function NewChannelModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 max-h-[90vh] overflow-hidden flex flex-col gap-0">
+      <DialogPopup
+        bottomStickOnMobile={false}
+        className="flex max-h-[90vh] max-w-3xl flex-col gap-0 overflow-hidden p-0"
+      >
         <DialogTitle className="sr-only">{t('newChannel.configureTitle')}</DialogTitle>
         {open && (
           <div className="flex-1 min-h-0 overflow-hidden">
@@ -41,7 +44,7 @@ export default function NewChannelModal({
             />
           </div>
         )}
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }
