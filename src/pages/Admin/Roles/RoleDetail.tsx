@@ -2,16 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import {
-  Badge,
-  Button,
-  Checkbox,
-  Input,
-  Label,
-  Textarea,
-} from '@/components/ui/compat';
-import { ArrowLeft, ChevronDown, ChevronRight, Loader2, Pencil, Save, X } from 'lucide-react';
-import BaseHeader from '@/components/base/BaseHeader';
+import { ArrowLeft, ChevronDown, Lock, Pencil, Save, Search, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
+import { Textarea } from '@/components/ui/textarea';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 import { rolesService, type Role } from '@/services/roles/rolesService';
 import { permissionsService } from '@/services/permissions';
@@ -42,6 +44,8 @@ export default function RoleDetail() {
   const [role, setRole] = useState<Role | null>(null);
   const [resourceActions, setResourceActions] = useState<ResourceActionsData | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Snapshot of the persisted selection, to tell the admin when there are unsaved edits.
+  const [savedSelection, setSavedSelection] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState('');
   // Collapsed domains. Sections start open; a search forces them open anyway.
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -67,6 +71,7 @@ export default function RoleDetail() {
         (actions as string[]).forEach(action => initialSelected.add(`${resource}.${action}`));
       });
       setSelected(initialSelected);
+      setSavedSelection(new Set(initialSelected));
     } catch {
       toast.error(t('messages.loadError'));
       navigate('/settings/roles');
@@ -208,6 +213,7 @@ export default function RoleDetail() {
       );
       const updated = await rolesService.bulkUpdatePermissions(role.id, payload);
       setRole(updated);
+      setSavedSelection(new Set(selected));
       permissionsService.clearPermissionsCache();
       toast.success(t('messages.permissionsSuccess'));
     } catch (err: unknown) {
@@ -249,8 +255,24 @@ export default function RoleDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex h-full flex-col gap-6 p-4 md:p-6" aria-busy="true">
+        <div className="flex items-center gap-2">
+          <Spinner className="size-4 text-muted-foreground" />
+          <Skeleton className="h-7 w-56" />
+        </div>
+        <Skeleton className="h-4 w-96 max-w-full" />
+        {[0, 1].map(i => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-5 w-40" />
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-3">
+              {[0, 1, 2, 3].map(j => (
+                <Skeleton key={j} className="h-6 w-full" />
+              ))}
+            </CardPanel>
+          </Card>
+        ))}
       </div>
     );
   }
@@ -329,7 +351,7 @@ export default function RoleDetail() {
   const renderGroupCell = (resourceKey: string, group: ActionGroup | undefined) => {
     if (!group) {
       // The resource has no key of this kind — an empty cell, not a missing column.
-      return <span className="text-center text-sidebar-foreground/20">–</span>;
+      return <span className="text-center text-muted-foreground/40">–</span>;
     }
     const keys = groupKeys(resourceKey, group.actions);
     const id = `group-${resourceKey}-${group.key}`;
@@ -341,7 +363,7 @@ export default function RoleDetail() {
           id={id}
           aria-label={t(group.labelKey)}
           checked={allChecked}
-          data-indeterminate={someChecked}
+          indeterminate={someChecked}
           onCheckedChange={canEdit ? () => toggleGroup(resourceKey, group.actions) : undefined}
           disabled={!canEdit}
         />
@@ -382,12 +404,13 @@ export default function RoleDetail() {
         />
         <Label
           htmlFor={key}
-          className={`text-sm font-normal text-sidebar-foreground/80 ${canEdit && !locked ? 'cursor-pointer' : ''}`}
+          className={`font-normal text-foreground/80 text-sm ${canEdit && !locked ? 'cursor-pointer' : ''}`}
         >
           {actionConfig.name}
         </Label>
         {locked && (
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4" title={lockLabel}>
+          <Badge variant="secondary" size="sm" title={lockLabel}>
+            <Lock />
             {actionConfig.basic ? t('detail.lock.basicBadge') : t('detail.lock.impliedBadge')}
           </Badge>
         )}
@@ -441,19 +464,20 @@ export default function RoleDetail() {
     const groupBy = (k: ActionGroup['key']) => visibleGroups.find(g => g.key === k);
 
     return (
-      <div key={resourceKey} className="border-b border-sidebar-border/30 last:border-0">
-        <div className={`${ROW_GRID} py-1`}>
+      <div key={resourceKey} className="border-b px-4 transition-colors last:border-0 hover:bg-accent/32">
+        <div className={`${ROW_GRID} min-h-10 py-1.5`}>
           <div className="flex items-center gap-2">
             {canEdit && manageableKeys.length > 0 && (
               <Checkbox
                 id={`resource-${resourceKey}`}
                 checked={allChecked}
-                data-indeterminate={!allChecked && someChecked}
+                indeterminate={!allChecked && someChecked}
                 onCheckedChange={() => toggleResource(resourceKey)}
+                aria-label={resourceConfig.name}
                 className="shrink-0"
               />
             )}
-            <span className="truncate text-sm text-sidebar-foreground">{resourceConfig.name}</span>
+            <span className="truncate font-medium text-sm">{resourceConfig.name}</span>
           </div>
           {renderGroupCell(resourceKey, groupBy('read'))}
           {renderGroupCell(resourceKey, groupBy('write'))}
@@ -465,8 +489,8 @@ export default function RoleDetail() {
         {visibleNested.map(({ child, groups, standalone }) => {
           const childBy = (k: ActionGroup['key']) => groups.find(g => g.key === k);
           return (
-            <div key={child} className={`${ROW_GRID} pb-1`}>
-              <span className="truncate pl-8 text-xs text-sidebar-foreground/50">
+            <div key={child} className={`${ROW_GRID} pb-1.5`}>
+              <span className="truncate ps-6 text-muted-foreground text-xs">
                 {t(NESTED_LABEL_KEYS[child])}
               </span>
               {renderGroupCell(child, childBy('read'))}
@@ -498,115 +522,132 @@ export default function RoleDetail() {
     renderedDomains.flatMap(({ items }) => items.map(i => i.resourceKey)),
   );
 
+  const dirtyCount =
+    [...selected].filter(k => !savedSelection.has(k)).length +
+    [...savedSelection].filter(k => !selected.has(k)).length;
+  const globalState = bulkState(allVisibleKeys);
+
   return (
-    <div className="h-full flex flex-col p-4">
-      <BaseHeader
-        title={role.name}
-        subtitle={role.description ?? undefined}
-        primaryAction={
-          canEdit
-            ? {
-                label: saving ? t('saving') : t('savePermissions'),
-                icon: saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />,
-                onClick: handleSave,
-                disabled: saving,
-              }
-            : undefined
-        }
-        secondaryActions={[
-          {
-            label: t('backToList'),
-            icon: <ArrowLeft className="h-4 w-4" />,
-            onClick: () => navigate('/settings/roles'),
-            variant: 'outline',
-          },
-        ]}
-      >
-        <div className="flex items-center gap-2 -mt-2">
-          {role.system && <Badge variant="secondary">{t('badges.system')}</Badge>}
-          <Badge variant="outline">{t(`type.${role.type}`)}</Badge>
-          <span className="text-sm text-sidebar-foreground/60">
-            {selected.size} {t('detail.permissionsSelected')}
-          </span>
-          {canUpdate && !role.system && !editingMeta && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground"
-              onClick={startEditMeta}
-            >
-              <Pencil className="h-3.5 w-3.5 mr-1" />
-              {t('editRole')}
-            </Button>
-          )}
+    <div className="flex h-full flex-col overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 md:p-6">
+        <div>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/settings/roles')}>
+            <ArrowLeft />
+            {t('backToList')}
+          </Button>
         </div>
-      </BaseHeader>
 
-      {editingMeta && (
-        <div className="mt-4 mb-2 rounded-md border border-sidebar-border bg-sidebar p-4 space-y-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="meta-name">{t('createModal.nameLabel')}</Label>
-            <Input
-              id="meta-name"
-              value={metaForm.name}
-              onChange={e => setMetaForm(prev => ({ ...prev, name: e.target.value }))}
-              disabled={savingMeta}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="meta-description">{t('createModal.descriptionLabel')}</Label>
-            <Textarea
-              id="meta-description"
-              value={metaForm.description}
-              onChange={e => setMetaForm(prev => ({ ...prev, description: e.target.value }))}
-              rows={2}
-              disabled={savingMeta}
-            />
-          </div>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={handleSaveMeta} disabled={savingMeta || !metaForm.name.trim()}>
-              {savingMeta ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Save className="h-3.5 w-3.5 mr-1" />}
-              {t('saveChanges')}
-            </Button>
-            <Button variant="outline" size="sm" onClick={cancelEditMeta} disabled={savingMeta}>
-              <X className="h-3.5 w-3.5 mr-1" />
-              {t('createModal.cancel')}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <div className="flex-1 overflow-auto mt-6">
-        {Object.keys(resources).length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t('detail.noPermissions')}</p>
-        ) : (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <Input
-                value={filter}
-                onChange={e => setFilter(e.target.value)}
-                placeholder={t('detail.filterPlaceholder')}
-                className="max-w-sm"
-              />
-              {canEdit &&
-                (() => {
-                  const keys = allVisibleKeys;
-                  const { all, some } = bulkState(keys);
-                  return (
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="select-all-everything"
-                        checked={all}
-                        data-indeterminate={!all && some}
-                        onCheckedChange={() => toggleKeys(keys)}
-                      />
-                      <Label htmlFor="select-all-everything" className="cursor-pointer text-sm font-normal">
-                        {all ? t('detail.deselectAll') : t('detail.selectAll')}
-                      </Label>
-                    </div>
-                  );
-                })()}
+        {/* Header */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex min-w-0 items-start gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-card shadow-xs/5">
+              <ShieldCheck className="size-6 text-primary" />
+            </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-semibold text-xl tracking-tight md:text-2xl">{role.name}</h1>
+                {role.system && <Badge variant="secondary">{t('badges.system')}</Badge>}
+                <Badge variant="outline">{t(`type.${role.type}`)}</Badge>
+              </div>
+              {role.description && (
+                <p className="mt-1 max-w-2xl text-muted-foreground text-sm">{role.description}</p>
+              )}
+              <p className="mt-2 text-muted-foreground text-sm">
+                <span className="font-medium text-foreground tabular-nums">{selected.size}</span>{' '}
+                {t('detail.permissionsSelected')}
+              </p>
             </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {canUpdate && !role.system && !editingMeta && (
+              <Button variant="outline" onClick={startEditMeta}>
+                <Pencil />
+                {t('editRole')}
+              </Button>
+            )}
+            {canEdit && (
+              <Button onClick={handleSave} loading={saving}>
+                <Save />
+                {saving ? t('saving') : t('savePermissions')}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {editingMeta && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">{t('editRole')}</CardTitle>
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel htmlFor="meta-name">{t('createModal.nameLabel')}</FieldLabel>
+                <Input
+                  id="meta-name"
+                  value={metaForm.name}
+                  onChange={e => setMetaForm(prev => ({ ...prev, name: e.target.value }))}
+                  disabled={savingMeta}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="meta-description">{t('createModal.descriptionLabel')}</FieldLabel>
+                <Textarea
+                  id="meta-description"
+                  value={metaForm.description}
+                  onChange={e => setMetaForm(prev => ({ ...prev, description: e.target.value }))}
+                  rows={2}
+                  disabled={savingMeta}
+                />
+              </Field>
+            </CardPanel>
+            <CardFooter className="justify-end gap-2 border-t">
+              <Button variant="ghost" onClick={cancelEditMeta} disabled={savingMeta}>
+                {t('createModal.cancel')}
+              </Button>
+              <Button onClick={handleSaveMeta} disabled={!metaForm.name.trim()} loading={savingMeta}>
+                {t('saveChanges')}
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
+        {Object.keys(resources).length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('detail.noPermissions')}</p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {/* Toolbar: search + global select-all; sticks while scrolling the matrix */}
+            <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center gap-3 bg-background/92 px-1 py-2 backdrop-blur">
+              <InputGroup className="max-w-sm">
+                <InputGroupAddon>
+                  <Search />
+                </InputGroupAddon>
+                <InputGroupInput
+                  value={filter}
+                  onChange={e => setFilter(e.target.value)}
+                  placeholder={t('detail.filterPlaceholder')}
+                />
+              </InputGroup>
+              {canEdit && (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="select-all-everything"
+                    checked={globalState.all}
+                    indeterminate={!globalState.all && globalState.some}
+                    onCheckedChange={() => toggleKeys(allVisibleKeys)}
+                  />
+                  <Label htmlFor="select-all-everything" className="cursor-pointer font-normal text-sm">
+                    {globalState.all ? t('detail.deselectAll') : t('detail.selectAll')}
+                  </Label>
+                </div>
+              )}
+              {canEdit && dirtyCount > 0 && (
+                <span className="ms-auto flex items-center gap-2 text-muted-foreground text-sm">
+                  <span className="size-2 rounded-full bg-warning" aria-hidden="true" />
+                  {t('detail.unsavedChanges', { count: dirtyCount })}
+                </span>
+              )}
+            </div>
+
             {renderedDomains.map(({ domain, items }) => {
               const cards = items.map(i => i.node);
               // A search must never hide its own results behind a collapsed section.
@@ -614,14 +655,14 @@ export default function RoleDetail() {
               const domainKeys = keysOfResources(items.map(i => i.resourceKey));
               const domainState = bulkState(domainKeys);
               return (
-                <div key={domain.key} className="space-y-2">
-                  <div className="flex items-center gap-2 py-1">
+                <Card key={domain.key} className="overflow-hidden">
+                  <div className="flex items-center gap-3 px-4 py-3">
                     {canEdit && domainKeys.length > 0 && (
                       <Checkbox
                         id={`select-all-${domain.key}`}
                         aria-label={t('detail.selectAll')}
                         checked={domainState.all}
-                        data-indeterminate={!domainState.all && domainState.some}
+                        indeterminate={!domainState.all && domainState.some}
                         onCheckedChange={() => toggleKeys(domainKeys)}
                         className="shrink-0"
                       />
@@ -630,42 +671,40 @@ export default function RoleDetail() {
                       type="button"
                       onClick={() => toggleDomain(domain.key)}
                       aria-expanded={open}
-                      className="flex flex-1 items-center gap-2 text-left text-sm font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                      className="flex flex-1 items-center gap-2 rounded-md text-start font-semibold text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      {open ? (
-                        <ChevronDown className="h-4 w-4 shrink-0" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 shrink-0" />
-                      )}
                       {t(domain.labelKey)}
-                      <span className="text-xs font-normal text-sidebar-foreground/40">
-                        {cards.length}
-                      </span>
+                      <Badge variant="secondary">{cards.length}</Badge>
+                      <ChevronDown
+                        className={`ms-auto size-4 shrink-0 text-muted-foreground transition-transform ${open ? '' : '-rotate-90'}`}
+                      />
                     </button>
                   </div>
                   {open && (
-                    <div className="rounded-md border border-sidebar-border/40 bg-sidebar px-3">
-                      {/* Column labels and their tooltips live here, once per section,
-                          instead of being repeated on every row. */}
-                      <div
-                        className={`${ROW_GRID} border-b border-sidebar-border/40 py-1.5 text-[11px] font-medium uppercase tracking-wide text-sidebar-foreground/40`}
-                      >
-                        <span />
-                        {(['read', 'write', 'delete'] as const).map(key => (
-                          <div key={key} className="flex items-center justify-center gap-1">
-                            <span>{t(`detail.actionGroups.${key}`)}</span>
-                            <TooltipInfo
-                              title={t(`detail.actionGroups.${key}`)}
-                              content={t(`detail.actionGroups.${key}Description`)}
-                            />
-                          </div>
-                        ))}
-                        <span />
+                    <div className="overflow-x-auto border-t">
+                      <div className="min-w-[40rem]">
+                        {/* Column labels and their tooltips live here, once per section,
+                            instead of being repeated on every row. */}
+                        <div
+                          className={`${ROW_GRID} border-b bg-muted/40 px-4 py-2 font-medium text-[11px] text-muted-foreground uppercase tracking-wide`}
+                        >
+                          <span />
+                          {(['read', 'write', 'delete'] as const).map(key => (
+                            <div key={key} className="flex items-center justify-center gap-1">
+                              <span>{t(`detail.actionGroups.${key}`)}</span>
+                              <TooltipInfo
+                                title={t(`detail.actionGroups.${key}`)}
+                                content={t(`detail.actionGroups.${key}Description`)}
+                              />
+                            </div>
+                          ))}
+                          <span />
+                        </div>
+                        {cards}
                       </div>
-                      {cards}
                     </div>
                   )}
-                </div>
+                </Card>
               );
             })}
           </div>
