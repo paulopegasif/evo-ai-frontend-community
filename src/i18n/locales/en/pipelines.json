@@ -438,7 +438,8 @@
       "send_direct_message": "Direct message",
       "send_template": "Send template",
       "finalize": "End conversation"
-    }
+    },
+    "removeRule": "Remove rule"
   },
   "editStage": {
     "title": "Edit Stage",
@@ -476,7 +477,9 @@
     "stageName": "Stage Name",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "save": "Save Changes"
+    "save": "Save Changes",
+    "countsAsQualified": "Counts as a qualified lead",
+    "countsAsQualifiedHint": "In Lead Tracking, anyone who reaches this stage counts as “qualified”, even without a booked evaluation."
   },
   "pipelineCard": {
     "active": "Active",

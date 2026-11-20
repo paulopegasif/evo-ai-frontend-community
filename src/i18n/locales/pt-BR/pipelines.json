@@ -438,7 +438,8 @@
       "send_direct_message": "Mensagem direta",
       "send_template": "Enviar template",
       "finalize": "Finalizar atendimento"
-    }
+    },
+    "removeRule": "Remover regra"
   },
   "editStage": {
     "title": "Editar Etapa",
@@ -476,7 +477,9 @@
     "stageName": "Nome da etapa",
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "save": "Salvar Alterações"
+    "save": "Salvar Alterações",
+    "countsAsQualified": "Conta como lead qualificado",
+    "countsAsQualifiedHint": "No Tracking de Leads, quem chega a esta etapa entra em “qualificados”, mesmo sem avaliação marcada."
   },
   "pipelineCard": {
     "active": "Ativo",

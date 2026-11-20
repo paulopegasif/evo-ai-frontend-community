@@ -379,7 +379,8 @@
       "move_to_pipeline": "Déplacer vers un autre pipeline",
       "assign_agent": "Assigner un agent",
       "apply_label": "Appliquer une étiquette"
-    }
+    },
+    "removeRule": "Supprimer la règle"
   },
   "editStage": {
     "title": "Modifier l'Étape",
@@ -417,7 +418,9 @@
     "stageName": "Nom de l'étape",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Enregistrer les Modifications"
+    "save": "Enregistrer les Modifications",
+    "countsAsQualified": "Compte comme lead qualifié",
+    "countsAsQualifiedHint": "Dans le suivi des leads, toute personne atteignant cette étape est comptée comme « qualifiée », même sans évaluation planifiée."
   },
   "pipelineCard": {
     "active": "Actif",

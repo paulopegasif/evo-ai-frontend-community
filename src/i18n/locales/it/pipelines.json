@@ -378,7 +378,8 @@
       "move_to_pipeline": "Sposta in un'altra pipeline",
       "assign_agent": "Assegna agente",
       "apply_label": "Applica etichetta"
-    }
+    },
+    "removeRule": "Rimuovi regola"
   },
   "editStage": {
     "title": "Modifica Fase",
@@ -416,7 +417,9 @@
     "stageName": "Nome della fase",
     "cancel": "Annulla",
     "saving": "Salvataggio...",
-    "save": "Salva Modifiche"
+    "save": "Salva Modifiche",
+    "countsAsQualified": "Conta come lead qualificato",
+    "countsAsQualifiedHint": "Nel Tracking dei lead, chi raggiunge questa fase conta come “qualificato”, anche senza valutazione prenotata."
   },
   "pipelineCard": {
     "active": "Attiva",
