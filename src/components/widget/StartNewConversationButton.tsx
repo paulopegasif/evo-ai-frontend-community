@@ -23,7 +23,7 @@ const StartNewConversationButton: React.FC<StartNewConversationButtonProps> = ({
   };
 
   return (
-    <div className="border-t border-slate-200 bg-white p-3">
+    <div className="border-t border-border bg-background p-3">
       <button
         onClick={handleClick}
         disabled={isLoading}

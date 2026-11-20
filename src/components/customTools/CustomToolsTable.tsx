@@ -47,7 +47,7 @@ export default function CustomToolsTable({
       case 'PATCH':
         return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
       default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+        return 'bg-gray-500/10 text-muted-foreground border-gray-500/30';
     }
   };
 

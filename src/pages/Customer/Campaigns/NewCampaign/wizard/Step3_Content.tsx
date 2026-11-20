@@ -122,7 +122,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
       feedback: 'text-green-600 bg-green-50 dark:bg-green-950/20',
       informativo: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/20',
     };
-    return colors[category] || 'text-gray-600 bg-gray-50 dark:bg-gray-950/20';
+    return colors[category] || 'text-muted-foreground bg-muted/48';
   };
 
   const getChannelName = (channelType: string) => {

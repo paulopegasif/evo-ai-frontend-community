@@ -514,7 +514,7 @@ export function ScheduleActionModal({
                   </SelectTrigger>
                   <SelectContent>
                     {channelOptions.length === 0 && !loadingInboxes && (
-                      <div className="px-2 py-1.5 text-sm text-gray-500">
+                      <div className="px-2 py-1.5 text-sm text-muted-foreground">
                         No channels configured
                       </div>
                     )}

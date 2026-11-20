@@ -24,13 +24,13 @@ export default function WidgetFooter({ config }: WidgetFooterProps) {
     <div className="relative flex flex-col w-full px-4 pb-4">
       {config.isDefaultScreen ? (
         // Default Screen Footer
-        <div className="p-4 bg-white dark:bg-slate-700 rounded-md shadow-sm border border-slate-200 dark:border-slate-600">
+        <div className="p-4 bg-card rounded-md shadow-sm border border-border">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-slate-700 dark:text-slate-50">
+              <div className="text-sm font-medium text-foreground">
                 {getStatusText()}
               </div>
-              <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <div className="mt-1 text-xs text-muted-foreground">
                 {getReplyTimeDisplayText(config.replyTime)}
               </div>
             </div>
@@ -45,7 +45,7 @@ export default function WidgetFooter({ config }: WidgetFooterProps) {
           </div>
 
           <button
-            className="inline-flex items-center justify-between px-2 py-1 mt-3 -ml-2 font-medium bg-transparent rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="inline-flex items-center justify-between px-2 py-1 mt-3 -ml-2 font-medium bg-transparent rounded-md hover:bg-accent transition-colors"
             style={{ color: config.widgetColor }}
           >
             <span className="pr-2 text-xs">
@@ -58,10 +58,10 @@ export default function WidgetFooter({ config }: WidgetFooterProps) {
         // Chat Screen Footer
         <div
           className={`
-            flex items-center h-10 bg-white dark:bg-slate-700 rounded-md border transition-all
+            flex items-center h-10 bg-card rounded-md border transition-all
             ${isInputFocused
               ? 'ring-2 border-transparent'
-              : 'border-slate-200 dark:border-slate-600'
+              : 'border-border'
             }
           `}
           style={{
@@ -77,11 +77,11 @@ export default function WidgetFooter({ config }: WidgetFooterProps) {
           />
 
           <div className="flex items-center gap-2 px-2">
-            <button className="p-1 hover:bg-slate-100 dark:hover:bg-slate-600 rounded">
-              <Smile className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <button className="p-1 hover:bg-accent rounded">
+              <Smile className="w-4 h-4 text-muted-foreground" />
             </button>
             <button
-              className="p-1 hover:bg-slate-100 dark:hover:bg-slate-600 rounded"
+              className="p-1 hover:bg-accent rounded"
               style={{ color: config.widgetColor }}
             >
               <Send className="w-4 h-4" />

@@ -34,13 +34,13 @@ export const ReplyToMessage: React.FC<ReplyToMessageProps> = ({ replyTo, message
         messageType === 'out' ? 'justify-end' : 'justify-start'
       }`}
     >
-      <Reply size={12} className="text-slate-400" />
-      <div className="bg-slate-100 dark:bg-slate-800 rounded px-2 py-1 border-l-2 border-slate-300 dark:border-slate-600">
+      <Reply size={12} className="text-muted-foreground" />
+      <div className="bg-muted rounded px-2 py-1 border-l-2 border-border">
         {senderName && (
-          <div className="text-slate-600 dark:text-slate-300 font-medium">{senderName}</div>
+          <div className="text-muted-foreground font-medium">{senderName}</div>
         )}
         <div
-          className={`text-slate-500 dark:text-slate-400 ${isUnresolved ? 'italic' : ''}`}
+          className={`text-muted-foreground ${isUnresolved ? 'italic' : ''}`}
         >
           {isUnresolved ? replyTo.text : truncateText(replyTo.text)}
         </div>

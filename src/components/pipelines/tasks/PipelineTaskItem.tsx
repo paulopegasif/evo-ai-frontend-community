@@ -64,9 +64,9 @@ export default function PipelineTaskItem({
       case 'medium':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
       case 'low':
-        return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
+        return 'bg-muted text-muted-foreground';
       default:
-        return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -125,7 +125,7 @@ export default function PipelineTaskItem({
     if (task.status === 'cancelled') {
       return cn(
         baseClasses,
-        'border-slate-300 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-900/20 opacity-60',
+        'border-border bg-muted/48/50 opacity-60',
       );
     }
 

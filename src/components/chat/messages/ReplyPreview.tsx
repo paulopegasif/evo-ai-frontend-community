@@ -70,7 +70,7 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, isOwn }) => {
       } ${
         isOwn
           ? 'bg-primary/20 dark:bg-primary/15 text-white dark:text-white/90 border-l-2 border-primary/40 dark:border-primary/50'
-          : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-l-2 border-slate-300 dark:border-slate-600'
+          : 'bg-muted/48 text-foreground border-l-2 border-border'
       }`}
       onClick={handleClick}
     >
@@ -78,14 +78,14 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, isOwn }) => {
         <Reply className={`h-3 w-3 flex-shrink-0 mt-0.5 ${
           isOwn
             ? 'text-white/80 dark:text-white/70'
-            : 'text-slate-500 dark:text-slate-400'
+            : 'text-muted-foreground'
         }`} />
         <div className="flex-1 min-w-0">
           {isResolved && (
             <div className={`text-xs font-medium mb-0.5 ${
               isOwn
                 ? 'text-white/90 dark:text-white/90'
-                : 'text-slate-700 dark:text-slate-200'
+                : 'text-foreground'
             }`}>
               {senderName}
             </div>
@@ -95,7 +95,7 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, isOwn }) => {
           } ${
             isOwn
               ? 'text-white/80 dark:text-white/80'
-              : 'text-slate-600 dark:text-slate-300'
+              : 'text-muted-foreground'
           }`}>
             {previewContent}
           </div>

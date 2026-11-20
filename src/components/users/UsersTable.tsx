@@ -53,7 +53,7 @@ export default function UsersTable({
         return 'text-yellow-600';
       case 'offline':
       default:
-        return 'text-gray-600';
+        return 'text-muted-foreground';
     }
   };
 

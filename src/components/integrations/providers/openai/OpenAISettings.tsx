@@ -182,7 +182,7 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-slate-500">
+                  <label className="text-xs text-muted-foreground">
                     {t('openai.settings.status.configuredAt')}
                   </label>
                   <p className="text-sm font-medium">
@@ -196,7 +196,7 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500">
+                  <label className="text-xs text-muted-foreground">
                     {t('openai.settings.status.lastUpdate')}
                   </label>
                   <p className="text-sm font-medium">
@@ -232,21 +232,21 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-slate-500">
+                  <label className="text-xs text-muted-foreground">
                     {t('openai.settings.configuration.apiKey')}
                   </label>
-                  <p className="text-sm font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                  <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
                     {hook.settings?.api_key
                       ? '••••••••••••••••'
                       : t('openai.settings.configuration.notConfigured')}
                   </p>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/48">
                   <div>
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <label className="text-sm font-medium text-foreground">
                       {t('openai.modal.fields.enableAudioTranscription.label')}
                     </label>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {t('openai.modal.fields.enableAudioTranscription.description')}
                     </p>
                   </div>
@@ -256,7 +256,7 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
                         {t('openai.settings.status.active')}
                       </span>
                     ) : (
-                      <span className="text-sm text-slate-500">
+                      <span className="text-sm text-muted-foreground">
                         {t('openai.settings.status.inactive')}
                       </span>
                     )}

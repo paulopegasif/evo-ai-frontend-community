@@ -131,7 +131,7 @@ export default function DashboardAppModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1">
                   {t('dashboardApps.modal.fields.title.label')} *
                 </label>
                 <Input
@@ -147,7 +147,7 @@ export default function DashboardAppModal({
               </div>
 
               <div>
-                <label htmlFor="url" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="url" className="block text-sm font-medium text-foreground mb-1">
                   {t('dashboardApps.modal.fields.url.label')} *
                 </label>
                 <Input
@@ -163,7 +163,7 @@ export default function DashboardAppModal({
                 {errors.url && (
                   <p className="text-sm text-red-600 mt-1">{errors.url}</p>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t('dashboardApps.modal.fields.url.hint')}
                 </p>
               </div>
@@ -176,7 +176,7 @@ export default function DashboardAppModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="display_type" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="display_type" className="block text-sm font-medium text-foreground mb-1">
                   {t('dashboardApps.modal.fields.displayType.label')} *
                 </label>
                 <Select
@@ -192,13 +192,13 @@ export default function DashboardAppModal({
                     <SelectItem value="conversation">
                       <div className="flex flex-col">
                         <span className="font-medium">{t('dashboardApps.modal.fields.displayType.conversation')}</span>
-                        <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.displayType.conversationDescription')}</span>
+                        <span className="text-xs text-muted-foreground">{t('dashboardApps.modal.fields.displayType.conversationDescription')}</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="sidebar">
                       <div className="flex flex-col">
                         <span className="font-medium">{t('dashboardApps.modal.fields.displayType.sidebar')}</span>
-                        <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.displayType.sidebarDescription')}</span>
+                        <span className="text-xs text-muted-foreground">{t('dashboardApps.modal.fields.displayType.sidebarDescription')}</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -208,7 +208,7 @@ export default function DashboardAppModal({
               {formData.display_type === 'sidebar' && (
                 <>
                   <div>
-                    <label htmlFor="sidebar_menu" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label htmlFor="sidebar_menu" className="block text-sm font-medium text-foreground mb-1">
                       {t('dashboardApps.modal.fields.sidebarMenu.label')}
                     </label>
                     <Select
@@ -234,7 +234,7 @@ export default function DashboardAppModal({
                   </div>
 
                   <div>
-                    <label htmlFor="sidebar_position" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label htmlFor="sidebar_position" className="block text-sm font-medium text-foreground mb-1">
                       {t('dashboardApps.modal.fields.sidebarPosition.label')}
                     </label>
                     <Select
@@ -250,13 +250,13 @@ export default function DashboardAppModal({
                         <SelectItem value="before">
                           <div className="flex flex-col">
                             <span className="font-medium">{t('dashboardApps.modal.fields.sidebarPosition.before')}</span>
-                            <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.sidebarPosition.beforeDescription')}</span>
+                            <span className="text-xs text-muted-foreground">{t('dashboardApps.modal.fields.sidebarPosition.beforeDescription')}</span>
                           </div>
                         </SelectItem>
                         <SelectItem value="after">
                           <div className="flex flex-col">
                             <span className="font-medium">{t('dashboardApps.modal.fields.sidebarPosition.after')}</span>
-                            <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.sidebarPosition.afterDescription')}</span>
+                            <span className="text-xs text-muted-foreground">{t('dashboardApps.modal.fields.sidebarPosition.afterDescription')}</span>
                           </div>
                         </SelectItem>
                       </SelectContent>

@@ -25,9 +25,9 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = ({
         />
       </div>
       <div className="max-w-[82%]">
-        <div className="bg-white text-slate-900 border border-slate-200 rounded-tl-[2px] rounded-[10px] shadow-sm px-3 py-2">
+        <div className="bg-background text-foreground border border-border rounded-tl-[2px] rounded-[10px] shadow-sm px-3 py-2">
           <div className="flex items-center gap-1">
-            <span className="text-[13px] text-slate-600">{t('typing.typing', { name: agentName })}</span>
+            <span className="text-[13px] text-muted-foreground">{t('typing.typing', { name: agentName })}</span>
             <div className="flex gap-1 ml-2">
               <div
                 className="w-1 h-1 bg-slate-400 rounded-full animate-bounce"
@@ -45,7 +45,7 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = ({
           </div>
         </div>
         <div className="mt-0.5 flex items-center justify-start">
-          <span className="text-[10px] text-slate-400">{t('typing.now')}</span>
+          <span className="text-[10px] text-muted-foreground">{t('typing.now')}</span>
         </div>
       </div>
     </div>

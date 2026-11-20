@@ -482,7 +482,7 @@ export default function CreatePipelineModal({
                                         prev.includes(team.id) ? prev.filter(id => id !== team.id) : [...prev, team.id]
                                       );
                                     }}
-                                    className="rounded border-gray-300"
+                                    className="rounded border-border"
                                   />
                                   <span className="text-sm">{team.name}</span>
                                 </label>

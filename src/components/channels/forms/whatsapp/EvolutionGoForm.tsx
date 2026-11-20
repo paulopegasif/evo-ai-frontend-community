@@ -78,7 +78,7 @@ export const EvolutionGoForm = ({ form, onFormChange, hasEvolutionGoConfig }: Ev
       {/* Advanced Settings - Evolution Go */}
       <FormSection
         title={t('evolutionGoForm.sections.instance.title')}
-        className="bg-gray-50/10 border-gray-200/20"
+        className="bg-muted/48/10 border-border/20"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Always Online */}

@@ -117,7 +117,7 @@ export default function BMSModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="api_key" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="api_key" className="block text-sm font-medium text-foreground mb-1">
                   {t('bms.modal.fields.apiKey.label')} *
                 </label>
                 <Input
@@ -131,7 +131,7 @@ export default function BMSModal({
                 {errors.api_key && (
                   <p className="text-sm text-red-600 mt-1">{errors.api_key}</p>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t('bms.modal.fields.apiKey.hint')}
                 </p>
               </div>

@@ -275,7 +275,7 @@ const IntegrationsSection = ({
                           {/* Credenciais globais não configuradas */}
                           <Button
                             variant="outline"
-                            className="w-full gap-2 border-gray-300 text-gray-500 cursor-not-allowed"
+                            className="w-full gap-2 border-border text-muted-foreground cursor-not-allowed"
                             disabled
                           >
                             <AlertCircle className="h-4 w-4" />

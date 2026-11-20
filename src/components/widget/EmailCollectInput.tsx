@@ -79,7 +79,7 @@ export const EmailCollectInput = ({
           placeholder={t('emailCollect.placeholder')}
           aria-label={t('emailCollect.placeholder')}
           disabled={isSubmitting}
-          className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:border-transparent disabled:opacity-50"
+          className="flex-1 px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:border-transparent disabled:opacity-50"
           style={{ outlineColor: widgetColor }}
         />
         <button

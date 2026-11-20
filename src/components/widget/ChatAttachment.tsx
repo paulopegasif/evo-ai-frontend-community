@@ -129,8 +129,8 @@ export const ChatAttachment: React.FC<ChatAttachmentProps> = ({
           p-2 rounded-lg transition-colors duration-200
           ${
             isDisabled || isUploading
-              ? 'text-gray-400 cursor-not-allowed'
-              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              ? 'text-muted-foreground cursor-not-allowed'
+              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
           }
         `}
         title={t('attachment.attach')}

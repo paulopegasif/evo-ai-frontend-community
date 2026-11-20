@@ -887,7 +887,7 @@ const Profile = () => {
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       uiSettings.editor_message_key === 'enter'
                         ? 'border-green-500 bg-green-500'
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}
                   >
                     {uiSettings.editor_message_key === 'enter' && (
@@ -922,7 +922,7 @@ const Profile = () => {
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       uiSettings.editor_message_key === 'cmd_enter'
                         ? 'border-green-500 bg-green-500'
-                        : 'border-gray-300'
+                        : 'border-border'
                     }`}
                   >
                     {uiSettings.editor_message_key === 'cmd_enter' && (

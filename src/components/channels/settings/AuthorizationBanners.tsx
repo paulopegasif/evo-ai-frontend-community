@@ -686,7 +686,7 @@ const AuthorizationSuccessBanner: React.FC<{
               </div>
             </div>
             {lastConnected && (
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.authorizationBanners.success.lastConnection', { date: lastConnected })}
               </p>
             )}

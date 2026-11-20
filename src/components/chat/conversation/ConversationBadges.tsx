@@ -17,7 +17,7 @@ const PRIORITY_CONFIG: Record<string, { Icon: typeof AlertTriangle; bg: string; 
   urgent: { Icon: AlertTriangle, bg: 'bg-red-100', fg: 'text-red-600' },
   high: { Icon: ArrowUp, bg: 'bg-orange-100', fg: 'text-orange-600' },
   medium: { Icon: Minus, bg: 'bg-blue-100', fg: 'text-blue-600' },
-  low: { Icon: ArrowDown, bg: 'bg-gray-100', fg: 'text-gray-600' },
+  low: { Icon: ArrowDown, bg: 'bg-muted', fg: 'text-muted-foreground' },
 };
 
 // Chip de contorno compacto — tokens semânticos (funciona em tema claro e escuro).

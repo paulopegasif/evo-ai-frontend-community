@@ -169,7 +169,7 @@ export default function OAuthAppModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
                   {t('oauth.modal.fields.name.label')} *
                 </label>
                 <Input
@@ -185,7 +185,7 @@ export default function OAuthAppModal({
               </div>
 
               <div>
-                <label htmlFor="redirect_uri" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="redirect_uri" className="block text-sm font-medium text-foreground mb-1">
                   {t('oauth.modal.fields.redirectUri.label')} *
                 </label>
                 <Input
@@ -198,7 +198,7 @@ export default function OAuthAppModal({
                 {errors.redirect_uri && (
                   <p className="text-sm text-red-600 mt-1">{errors.redirect_uri}</p>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t('oauth.modal.fields.redirectUri.hint')}
                 </p>
               </div>
@@ -212,7 +212,7 @@ export default function OAuthAppModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="scopes" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="scopes" className="block text-sm font-medium text-foreground mb-1">
                   {t('oauth.modal.fields.scopes.label')} *
                 </label>
                 <Textarea
@@ -226,14 +226,14 @@ export default function OAuthAppModal({
                 {errors.scopes && (
                   <p className="text-sm text-red-600 mt-1">{errors.scopes}</p>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t('oauth.modal.fields.scopes.hint')}
                 </p>
               </div>
 
               {/* Scope Presets */}
               <div>
-                <span className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <span className="block text-sm font-medium text-foreground mb-2">
                   {t('oauth.modal.presets.title')}
                 </span>
                 <div className="flex gap-2">

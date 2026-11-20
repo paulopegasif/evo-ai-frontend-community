@@ -502,7 +502,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             <div className="flex justify-between">
               <button
                 onClick={handleBack}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-accent"
               >
                 {t('wizardActions.back')}
               </button>
@@ -595,7 +595,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             <div className="flex justify-between pt-4 border-t">
               <button
                 onClick={handleBack}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-accent"
               >
                 {t('edit.configuration.sections.externalIntegration.wizard.back')}
               </button>

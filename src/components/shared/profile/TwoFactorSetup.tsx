@@ -260,10 +260,10 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
                   />
                 </div>
               ) : (
-                <div className="flex justify-center p-4 bg-gray-100 rounded-lg border">
+                <div className="flex justify-center p-4 bg-muted rounded-lg border">
                   <div className="text-center">
-                    <p className="text-gray-500">{t('twoFactor.configure.qrCodeLoading')}</p>
-                    <p className="text-sm text-gray-400">{t('twoFactor.configure.qrCodeError')}</p>
+                    <p className="text-muted-foreground">{t('twoFactor.configure.qrCodeLoading')}</p>
+                    <p className="text-sm text-muted-foreground">{t('twoFactor.configure.qrCodeError')}</p>
                   </div>
                 </div>
               )}

@@ -146,7 +146,7 @@ export default function ContactExportModal({
 
           {/* Filter Option */}
           {activeFilters.length > 0 && (
-            <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-2 p-3 bg-muted/48 rounded-lg">
               <Checkbox
                 id="include-filters"
                 checked={includeFilters}
@@ -176,7 +176,7 @@ export default function ContactExportModal({
                   <Label
                     htmlFor={field.id}
                     className={`text-sm font-normal cursor-pointer ${
-                      field.required ? 'text-gray-500' : ''
+                      field.required ? 'text-muted-foreground' : ''
                     }`}
                   >
                     {field.label}

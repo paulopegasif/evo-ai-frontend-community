@@ -156,19 +156,19 @@ const MessageList: React.FC<MessageListProps> = ({
   }, [items]);
 
   return (
-    <div ref={scrollContainerRef} className="p-3 flex-1 overflow-y-auto bg-slate-50 min-h-0">
+    <div ref={scrollContainerRef} className="p-3 flex-1 overflow-y-auto bg-muted/48 min-h-0">
       {/* Load More Button / Loading Indicator */}
       {(hasMore || isLoadingMore) && (
         <div className="flex justify-center py-3 mb-2">
           {isLoadingMore ? (
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-4 h-4 border-2 border-border border-t-slate-600 rounded-full animate-spin"></div>
               {t('messageList.loadingOld')}
             </div>
           ) : hasMore ? (
             <button
               onClick={onLoadMore}
-              className="px-4 py-2 text-sm text-slate-600 bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 text-sm text-muted-foreground bg-background border border-border rounded-md hover:bg-accent transition-colors"
             >
               {t('messageList.loadOldMessages')}
             </button>
@@ -189,9 +189,9 @@ const MessageList: React.FC<MessageListProps> = ({
           return (
             <div key={m.id} className="mb-2 flex justify-center animate-fadeIn">
               <div className="max-w-[90%] w-full mx-auto">
-                <div className="text-[13px] leading-tight rounded-[10px] shadow-sm bg-white border border-slate-200 px-3 py-3">
+                <div className="text-[13px] leading-tight rounded-[10px] shadow-sm bg-background border border-border px-3 py-3">
                   {m.text && (
-                    <div className="whitespace-pre-wrap break-words text-slate-700 mb-2">{m.text}</div>
+                    <div className="whitespace-pre-wrap break-words text-foreground mb-2">{m.text}</div>
                   )}
                   <EmailCollectInput
                     messageId={m.originalId || m.id}
@@ -238,7 +238,7 @@ const MessageList: React.FC<MessageListProps> = ({
                     ? 'text-white rounded-tr-[2px]'
                     : m.isSystem || m.type === 'system'
                       ? 'bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-center italic'
-                      : 'bg-white text-slate-900 border border-slate-200 rounded-tl-[2px]'
+                      : 'bg-background text-foreground border border-border rounded-tl-[2px]'
                   } ${m.attachments?.length ? 'p-2' : 'px-3 py-2'}`}
                 style={m.type === 'out' ? { backgroundColor: widgetColor } : undefined}
               >
@@ -367,8 +367,8 @@ const MessageList: React.FC<MessageListProps> = ({
                           onClick={() => onSelectOption?.(m, item)}
                           className={`px-3 py-2 rounded-md border text-[13px] leading-tight transition-colors ${
                             selectDisabled || !onSelectOption
-                              ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                              ? 'bg-muted border-border text-muted-foreground cursor-not-allowed'
+                              : 'bg-background border-border text-foreground hover:bg-accent'
                           }`}
                         >
                           {title}
@@ -382,7 +382,7 @@ const MessageList: React.FC<MessageListProps> = ({
                 className={`mt-0.5 flex items-center gap-2 ${m.type === 'out' ? 'justify-end' : 'justify-start'
                   }`}
               >
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-muted-foreground">
                   {m.ts
                     ? formatDistanceToNow(new Date(m.ts), { addSuffix: true, locale: dateLocale })
                     : ''}
@@ -400,7 +400,7 @@ const MessageList: React.FC<MessageListProps> = ({
                 )}
                 {m.type === 'in' && !m.isSystem && onReply && (
                   <button
-                    className="text-[10px] text-slate-500 underline hover:text-slate-700"
+                    className="text-[10px] text-muted-foreground underline hover:text-foreground"
                     onClick={() => onReply(m)}
                   >
                     {t('messageList.reply')}

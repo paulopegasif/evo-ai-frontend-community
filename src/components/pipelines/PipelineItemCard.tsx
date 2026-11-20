@@ -232,7 +232,7 @@ export default function PipelineItemCard({
                   ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                   : item.conversation?.status === 'resolved'
                   ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
-                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                  : 'bg-muted text-foreground'
               }`}
             >
               {item.conversation?.status === 'open'

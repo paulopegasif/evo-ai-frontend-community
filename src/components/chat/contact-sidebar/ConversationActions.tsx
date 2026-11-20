@@ -277,7 +277,7 @@ const StatusButton: React.FC<StatusButtonProps> = ({ status, current, onClick, d
     return (
       configs[status as keyof typeof configs] || {
         label: status,
-        color: 'text-gray-600 bg-gray-50 border-gray-200',
+        color: 'text-muted-foreground bg-muted/48 border-border',
       }
     );
   };
@@ -319,7 +319,7 @@ const PriorityButton: React.FC<PriorityButtonProps> = ({
     const configs = {
       low: {
         label: t('contactSidebar.conversationActions.priority.low'),
-        color: 'text-gray-600 bg-gray-50 border-gray-200',
+        color: 'text-muted-foreground bg-muted/48 border-border',
       },
       medium: {
         label: t('contactSidebar.conversationActions.priority.medium'),
@@ -338,7 +338,7 @@ const PriorityButton: React.FC<PriorityButtonProps> = ({
     return (
       configs[priority as keyof typeof configs] || {
         label: priority,
-        color: 'text-gray-600 bg-gray-50 border-gray-200',
+        color: 'text-muted-foreground bg-muted/48 border-border',
       }
     );
   };

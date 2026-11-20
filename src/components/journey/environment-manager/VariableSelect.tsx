@@ -185,7 +185,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
             {/* Variáveis do Sistema */}
             {showSystemVariables && (
               <>
-                <div className="px-2 py-1 text-xs font-medium text-gray-500">
+                <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
                   {t('environmentManager.tabs.system')}
                 </div>
                 {[
@@ -229,7 +229,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                 {showSystemVariables && variables.length === 0 && (
                   <Separator className="my-2" />
                 )}
-                <div className="px-2 py-1 text-xs font-medium text-gray-500">
+                <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
                   {t('environmentManager.categories.contactAttributes')}
                 </div>
                 {contactAttributes
@@ -258,7 +258,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
             {/* Variáveis Personalizadas */}
             {variables.length > 0 && (
               <>
-                <div className="px-2 py-1 text-xs font-medium text-gray-500">
+                <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
                   {t('environmentManager.tabs.custom', { count: variables.length })}
                 </div>
                 {variables.map(variable => (
@@ -277,7 +277,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
 
             {/* Estado vazio */}
             {variables.length === 0 && !showSystemVariables && !showCreateOption && (
-              <div className="px-2 py-4 text-center text-sm text-gray-500">
+              <div className="px-2 py-4 text-center text-sm text-muted-foreground">
                 {t('environmentManager.customVariables.empty.title')}
               </div>
             )}
@@ -307,7 +307,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                   placeholder={t('environmentManager.form.fields.name.placeholder')}
                   className="mt-1"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t('environmentManager.form.fields.name.help')}
                 </p>
               </div>

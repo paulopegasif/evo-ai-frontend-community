@@ -105,7 +105,7 @@ const SharedImageBubble: React.FC<SharedImageBubbleProps> = ({
               className="relative group"
             >
               <div
-                className="relative bg-slate-100 rounded-lg overflow-hidden"
+                className="relative bg-muted rounded-lg overflow-hidden"
                 style={{
                   minWidth: '200px',
                   maxWidth: 'min(280px, calc(100vw - 120px))',
@@ -138,7 +138,7 @@ const SharedImageBubble: React.FC<SharedImageBubbleProps> = ({
                     }}
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 px-3 text-center">
+                  <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground px-3 text-center">
                     {attachment.fallback_title || t('attachments.image.title')}
                   </div>
                 )}
@@ -155,7 +155,7 @@ const SharedImageBubble: React.FC<SharedImageBubbleProps> = ({
                       className="p-2 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all duration-200"
                       title={t('attachments.image.view')}
                     >
-                      <ZoomIn className="w-4 h-4 text-gray-700" />
+                      <ZoomIn className="w-4 h-4 text-foreground" />
                     </button>
                     <button
                       onClick={(e) => {
@@ -166,7 +166,7 @@ const SharedImageBubble: React.FC<SharedImageBubbleProps> = ({
                       className="p-2 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all duration-200"
                       title={t('attachments.image.download')}
                     >
-                      <Download className="w-4 h-4 text-gray-700" />
+                      <Download className="w-4 h-4 text-foreground" />
                     </button>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ const SharedImageBubble: React.FC<SharedImageBubbleProps> = ({
               {/* Image info */}
               {attachment.file_size && (
                 <p className={`text-xs mt-1 ${
-                  messageType === 'out' ? 'text-white/70' : 'text-gray-500'
+                  messageType === 'out' ? 'text-white/70' : 'text-muted-foreground'
                 }`}>
                   {Math.round(attachment.file_size / 1024)} KB
                 </p>

@@ -60,7 +60,7 @@ export default function UserDetails({
         return 'text-yellow-600';
       case 'offline':
       default:
-        return 'text-gray-600';
+        return 'text-muted-foreground';
     }
   };
 

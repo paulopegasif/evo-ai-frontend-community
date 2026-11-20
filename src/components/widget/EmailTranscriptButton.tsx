@@ -45,8 +45,8 @@ const EmailTranscriptButton: React.FC<EmailTranscriptButtonProps> = ({
         rounded-md transition-all duration-200 border
         ${
           disabled || isLoading
-            ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500 border-gray-200'
-            : 'hover:opacity-80 bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+            ? 'opacity-50 cursor-not-allowed bg-muted text-muted-foreground border-border'
+            : 'hover:opacity-80 bg-background text-foreground border-border hover:border-border'
         }
       `}
       style={

@@ -468,11 +468,11 @@ export default function WidgetBuilderForm({
 
               {/* Preview/Script Content */}
               {viewMode === 'preview' ? (
-                <div className="flex flex-col items-center justify-end min-h-[650px] mx-5 mb-5 p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                <div className="flex flex-col items-center justify-end min-h-[650px] mx-5 mb-5 p-2.5 bg-muted/48 rounded-lg">
                   <WidgetPreview config={config} websiteToken={previewWebsiteToken} />
                 </div>
               ) : (
-                <div className="mx-5 p-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                <div className="mx-5 p-2.5 bg-muted rounded-lg">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Code2 className="w-5 h-5" />

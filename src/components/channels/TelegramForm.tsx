@@ -166,13 +166,13 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
             </div>
 
             {/* Bot Commands */}
-            <div className="bg-gray-50 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-800 rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <div className="bg-muted/48 border border-border rounded-lg p-4">
+              <h4 className="font-semibold text-foreground mb-2">
                 {t('newChannel.forms.telegramForm.commands.title')}
               </h4>
-              <div className="text-sm text-gray-800 dark:text-gray-200 space-y-1">
+              <div className="text-sm text-foreground space-y-1">
                 <p>{t('newChannel.forms.telegramForm.commands.description')}</p>
-                <code className="block bg-gray-100 dark:bg-gray-900/50 p-2 rounded mt-1 whitespace-pre-line">
+                <code className="block bg-muted p-2 rounded mt-1 whitespace-pre-line">
                   {t('newChannel.forms.telegramForm.commands.list')}
                 </code>
               </div>

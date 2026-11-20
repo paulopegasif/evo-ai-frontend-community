@@ -417,11 +417,11 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
                           </div>
                           <div className="space-y-3">
                             <div>
-                              <label className="text-xs text-slate-500">
+                              <label className="text-xs text-muted-foreground">
                                 {t('oauth.credentials.clientId')}
                               </label>
                               <div className="flex items-center gap-2">
-                                <code className="text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded flex-1 min-w-0 truncate">
+                                <code className="text-sm bg-muted px-2 py-1 rounded flex-1 min-w-0 truncate">
                                   {app.uid}
                                 </code>
                                 <Button
@@ -436,11 +436,11 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
                             </div>
                             {app.secret && (
                               <div>
-                                <label className="text-xs text-slate-500">
+                                <label className="text-xs text-muted-foreground">
                                   {t('oauth.credentials.clientSecret')}
                                 </label>
                                 <div className="flex items-center gap-2">
-                                  <code className="text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded flex-1 min-w-0 truncate">
+                                  <code className="text-sm bg-muted px-2 py-1 rounded flex-1 min-w-0 truncate">
                                     {app.secret}
                                   </code>
                                   <Button

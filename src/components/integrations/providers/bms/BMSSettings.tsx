@@ -174,7 +174,7 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-slate-500">{t('bms.status.configuredAt')}</label>
+                  <label className="text-xs text-muted-foreground">{t('bms.status.configuredAt')}</label>
                   <p className="text-sm font-medium">
                     {new Date(hook.created_at).toLocaleDateString('pt-BR', {
                       day: '2-digit',
@@ -186,7 +186,7 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500">{t('bms.status.lastUpdate')}</label>
+                  <label className="text-xs text-muted-foreground">{t('bms.status.lastUpdate')}</label>
                   <p className="text-sm font-medium">
                     {new Date(hook.updated_at).toLocaleDateString('pt-BR', {
                       day: '2-digit',
@@ -218,8 +218,8 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-slate-500">{t('bms.configuration.apiKey')}</label>
-                  <p className="text-sm font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                  <label className="text-xs text-muted-foreground">{t('bms.configuration.apiKey')}</label>
+                  <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
                     {hook.settings?.api_key
                       ? '••••••••••••••••'
                       : t('bms.configuration.notConfigured')}
@@ -228,7 +228,7 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-slate-500">
+                    <label className="text-xs text-muted-foreground">
                       {t('bms.configuration.contactSync')}
                     </label>
                     <p className="text-sm">
@@ -240,7 +240,7 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500">
+                    <label className="text-xs text-muted-foreground">
                       {t('bms.configuration.labelSync')}
                     </label>
                     <p className="text-sm">
@@ -252,7 +252,7 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500">
+                    <label className="text-xs text-muted-foreground">
                       {t('bms.configuration.customAttributes')}
                     </label>
                     <p className="text-sm">
@@ -264,7 +264,7 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </p>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500">
+                    <label className="text-xs text-muted-foreground">
                       {t('bms.configuration.campaignSync')}
                     </label>
                     <p className="text-sm">

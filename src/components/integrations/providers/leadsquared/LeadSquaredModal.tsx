@@ -169,7 +169,7 @@ export default function LeadSquaredModal({
                 <div>
                   <label
                     htmlFor="access_key"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     {t('leadSquared.modal.fields.accessKey.label')} *
                   </label>
@@ -189,7 +189,7 @@ export default function LeadSquaredModal({
                 <div>
                   <label
                     htmlFor="secret_key"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     {t('leadSquared.modal.fields.secretKey.label')} *
                   </label>
@@ -211,7 +211,7 @@ export default function LeadSquaredModal({
                 <div>
                   <label
                     htmlFor="endpoint_url"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     {t('leadSquared.modal.fields.endpointUrl.label')}
                   </label>
@@ -226,7 +226,7 @@ export default function LeadSquaredModal({
                 <div>
                   <label
                     htmlFor="app_url"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-sm font-medium text-foreground mb-1"
                   >
                     {t('leadSquared.modal.fields.appUrl.label')}
                   </label>
@@ -242,7 +242,7 @@ export default function LeadSquaredModal({
               <div>
                 <label
                   htmlFor="timezone"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-sm font-medium text-foreground mb-1"
                 >
                   {t('leadSquared.modal.fields.timezone.label')}
                 </label>

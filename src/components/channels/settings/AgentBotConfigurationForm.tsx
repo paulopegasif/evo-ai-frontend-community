@@ -427,7 +427,7 @@ export default function AgentBotConfigurationForm({
                 {isConnected ? (
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-slate-500" />
+                  <AlertCircle className="w-5 h-5 text-muted-foreground" />
                 )}
                 <span className={`text-sm font-medium ${getBotStatusColor(isConnected)}`}>
                   {isConnected

@@ -562,11 +562,11 @@ const MessageAudio: React.FC<MessageAudioProps> = ({ attachments }) => {
 
                 {/* Transcription Text */}
                 {transcribedText && (
-                  <div className="px-2 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium">
+                  <div className="px-2 py-2 rounded-lg bg-muted/48 border border-border">
+                    <p className="text-xs text-muted-foreground mb-1 font-medium">
                       {t('messages.messageAudio.transcription')}
                     </p>
-                    <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <p className="text-sm text-foreground leading-relaxed">
                       {transcribedText}
                     </p>
                   </div>

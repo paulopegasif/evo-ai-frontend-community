@@ -89,7 +89,7 @@ const getAgentTypeInfo = (type: string, t: (key: string) => string) => {
 
   const typeInfo = types[type] || {
     label: type,
-    color: 'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600',
+    color: 'bg-muted text-foreground border-border',
   };
 
   return {

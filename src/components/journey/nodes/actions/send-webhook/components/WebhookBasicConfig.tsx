@@ -59,7 +59,7 @@ export function WebhookBasicConfig({ data, onChange, journeyId }: WebhookBasicCo
           className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
           journeyId={journeyId}
         />
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-muted-foreground">
           {t('panels.sendWebhook.basic.urlDescription')}
         </p>
       </div>
@@ -100,7 +100,7 @@ export function WebhookBasicConfig({ data, onChange, journeyId }: WebhookBasicCo
             onChange={e => handleTimeoutChange(e.target.value)}
             className="bg-sidebar border-sidebar-border text-sidebar-foreground"
           />
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {t('panels.sendWebhook.basic.timeoutDescription')}
           </p>
         </div>
@@ -115,7 +115,7 @@ export function WebhookBasicConfig({ data, onChange, journeyId }: WebhookBasicCo
             onChange={e => handleRetryChange(e.target.value)}
             className="bg-sidebar border-sidebar-border text-sidebar-foreground"
           />
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {t('panels.sendWebhook.basic.retryDescription')}
           </p>
         </div>

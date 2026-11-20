@@ -176,12 +176,12 @@ const ConversationActionsDropdown: React.FC<ConversationActionsDropdownProps> = 
 
   const getPriorityColor = (priority: string) => {
     const colors = {
-      low: 'text-gray-500',
+      low: 'text-muted-foreground',
       medium: 'text-blue-500',
       high: 'text-orange-500',
       urgent: 'text-red-500',
     };
-    return colors[priority as keyof typeof colors] || 'text-gray-500';
+    return colors[priority as keyof typeof colors] || 'text-muted-foreground';
   };
 
   const getPriorityLabel = (priority: string) => {
@@ -315,7 +315,7 @@ const ConversationActionsDropdown: React.FC<ConversationActionsDropdownProps> = 
             disabled={isUpdatingPriority}
             className="flex items-center gap-2"
           >
-            <Zap className="h-4 w-4 text-gray-500" />
+            <Zap className="h-4 w-4 text-muted-foreground" />
             {t('conversationActionsDropdown.lowPriority')}
           </DropdownMenuItem>
         )}

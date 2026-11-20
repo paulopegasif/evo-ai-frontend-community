@@ -415,7 +415,7 @@ const ChatHeader = ({
             onClick={() => onSetPriority(conversation, 'low')}
             className="flex items-center gap-2"
           >
-            <ArrowDown className="h-4 w-4 text-gray-600" />
+            <ArrowDown className="h-4 w-4 text-muted-foreground" />
             {t('chatHeader.actions.priorityLow')}
           </DropdownMenuItem>
 

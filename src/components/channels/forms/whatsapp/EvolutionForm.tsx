@@ -56,7 +56,7 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
       {/* Proxy Configuration */}
       <FormSection
         title={t('evolutionForm.sections.proxy.title')}
-        className="bg-gray-50/10 border-gray-200/20"
+        className="bg-muted/48/10 border-border/20"
       >
         <div className="mb-4">
           <FormCheckbox
@@ -87,7 +87,7 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
               <select
                 value={getStr('proxy_protocol', 'http')}
                 onChange={e => onFormChange('proxy_protocol', e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                className="mt-1 block w-full rounded-md border-border shadow-sm"
               >
                 <option value="http">HTTP</option>
                 <option value="https">HTTPS</option>
@@ -117,7 +117,7 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
       {/* Instance Settings */}
       <FormSection
         title={t('evolutionForm.sections.instance.title')}
-        className="bg-gray-50/10 border-gray-200/20"
+        className="bg-muted/48/10 border-border/20"
         data-tour="whatsapp-help"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -339,7 +339,7 @@ export default function CannedResponseModal({
                       {attachment.file_type === 'image' && <ImageIcon className="h-4 w-4 text-blue-500" />}
                       {attachment.file_type === 'audio' && <Music className="h-4 w-4 text-purple-500" />}
                       {attachment.file_type === 'video' && <Film className="h-4 w-4 text-red-500" />}
-                      {attachment.file_type === 'file' && <FileText className="h-4 w-4 text-gray-500" />}
+                      {attachment.file_type === 'file' && <FileText className="h-4 w-4 text-muted-foreground" />}
                       <div className="flex-1 min-w-0">
                         {/* não temos file_name; usa fallback_title ou o final da URL */}
                         <p className="text-sm font-medium truncate">

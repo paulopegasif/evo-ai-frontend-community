@@ -62,7 +62,7 @@ const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
       >
         <Icon />
         <span className="text-sm font-medium flex-1">{message}</span>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"

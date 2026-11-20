@@ -18,8 +18,8 @@ export default function WidgetHead({ config }: WidgetHeadProps) {
       className={`
         rounded-t-lg flex-shrink-0 transition-all duration-300
         ${isDefaultScreen
-          ? 'bg-slate-50 dark:bg-slate-800 px-4 py-5'
-          : 'bg-white dark:bg-slate-900 p-4'
+          ? 'bg-muted/48 px-4 py-5'
+          : 'bg-card p-4'
         }
       `}
     >
@@ -31,7 +31,7 @@ export default function WidgetHead({ config }: WidgetHeadProps) {
               className={`mr-3 ${!isDefaultScreen ? 'w-8 h-8 mb-1' : 'w-12 h-12 mb-2'}`}
             >
               <AvatarImage src={config.avatarUrl} alt="Avatar" />
-              <AvatarFallback className="bg-slate-200 dark:bg-slate-700">
+              <AvatarFallback className="bg-muted">
                 {config.websiteName?.charAt(0) || 'W'}
               </AvatarFallback>
             </Avatar>
@@ -41,14 +41,14 @@ export default function WidgetHead({ config }: WidgetHeadProps) {
           {!isDefaultScreen && (
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-medium text-slate-900 dark:text-white">
+                <span className="text-base font-medium text-foreground">
                   {config.websiteName}
                 </span>
                 {config.isOnline && (
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 )}
               </div>
-              <span className="text-xs text-slate-600 dark:text-slate-400">
+              <span className="text-xs text-muted-foreground">
                 {getReplyTimeDisplayText(config.replyTime)}
               </span>
             </div>
@@ -59,13 +59,13 @@ export default function WidgetHead({ config }: WidgetHeadProps) {
         {isDefaultScreen && (
           <div className="overflow-auto max-h-60 mt-2">
             {config.welcomeHeading && (
-              <h2 className="mb-2 text-2xl font-bold break-words text-slate-900 dark:text-white">
+              <h2 className="mb-2 text-2xl font-bold break-words text-foreground">
                 {config.welcomeHeading}
               </h2>
             )}
             {config.welcomeTagline && (
               <div
-                className="text-sm break-words text-slate-700 dark:text-slate-300"
+                className="text-sm break-words text-foreground"
                 dangerouslySetInnerHTML={{ __html: config.welcomeTagline }}
               />
             )}

@@ -22,7 +22,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     {
       value: 'all',
       label: t('filters.status.options.all'),
-      color: 'text-gray-700',
+      color: 'text-foreground',
       count: null, // Será implementado depois
     },
     {
@@ -46,7 +46,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     {
       value: 'snoozed',
       label: t('filters.status.options.snoozed'),
-      color: 'text-gray-700',
+      color: 'text-foreground',
       count: null,
     },
   ];

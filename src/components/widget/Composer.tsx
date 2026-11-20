@@ -89,7 +89,7 @@ const Composer: React.FC<ComposerProps> = ({
   };
 
   return (
-    <div className="flex gap-2 p-2 border-t border-slate-200 bg-white">
+    <div className="flex gap-2 p-2 border-t border-border bg-background">
       {/* Show attachment button only when input is empty (like Vue widget) */}
       {text.length === 0 && (
         <ChatAttachment

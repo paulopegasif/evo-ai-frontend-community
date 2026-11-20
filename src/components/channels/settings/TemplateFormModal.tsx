@@ -439,7 +439,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                   </SelectContent>
                 </Select>
                 {categoryHelp && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{categoryHelp}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{categoryHelp}</p>
                 )}
               </div>
             </div>
@@ -566,7 +566,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                     variableHelpText={variableHelpText}
                     variableSampleName={variableSampleName}
                   />
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {t('settings.messageTemplates.form.variablesHelp')}
                   </p>
                 </div>
@@ -695,7 +695,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                   variableSampleName={variableSampleName}
                 />
                 {channelConfig.usesLiquid && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {t('settings.messageTemplates.form.liquidHelp')}
                   </p>
                 )}
@@ -740,12 +740,12 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
             )}
 
             {/* Active toggle */}
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted/48 rounded-lg">
               <div>
                 <label className="block text-sm font-medium">
                   {t('settings.messageTemplates.form.active')}
                 </label>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {t('settings.messageTemplates.form.activeHelp')}
                 </p>
               </div>

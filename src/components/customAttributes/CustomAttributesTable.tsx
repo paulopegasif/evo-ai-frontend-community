@@ -71,7 +71,7 @@ export default function CustomAttributesTable({
       key: 'attribute_key',
       label: t('table.columns.key'),
       render: (attribute: CustomAttributeDefinition) => (
-        <div className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded border">
+        <div className="font-mono text-sm bg-muted px-2 py-1 rounded border">
           {attribute.attribute_key}
         </div>
       ),
@@ -86,13 +86,13 @@ export default function CustomAttributesTable({
               {attribute.attribute_values.slice(0, 2).map((value, index) => (
                 <span
                   key={index}
-                  className="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 rounded truncate"
+                  className="px-1.5 py-0.5 text-xs bg-muted rounded truncate"
                 >
                   {value}
                 </span>
               ))}
               {attribute.attribute_values.length > 2 && (
-                <span className="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 rounded">
+                <span className="px-1.5 py-0.5 text-xs bg-muted rounded">
                   {t('table.moreValues', { count: attribute.attribute_values.length - 2 })}
                 </span>
               )}

@@ -558,7 +558,7 @@ export default function PipelineCustomAttributesForm({
                         <span
                           className={`text-xs px-2 py-0.5 rounded ${isGlobalAttribute
                             ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
-                            : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'}`}
+                            : 'bg-muted text-foreground'}`}
                         >
                           {isGlobalAttribute ? 'Global' : 'Local'}
                         </span>
@@ -630,7 +630,7 @@ export default function PipelineCustomAttributesForm({
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Label className="text-sm font-medium">{displayName}</Label>
-                          <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                          <span className="text-xs px-2 py-0.5 rounded bg-muted text-foreground">
                             Local
                           </span>
                           {localType && (

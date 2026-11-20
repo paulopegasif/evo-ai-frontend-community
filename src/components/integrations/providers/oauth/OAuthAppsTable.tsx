@@ -87,7 +87,7 @@ export default function OAuthAppsTable({
       sortable: false,
       render: app => (
         <div className="flex items-center gap-2">
-          <div className="font-mono text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded max-w-xs truncate">
+          <div className="font-mono text-sm bg-muted px-2 py-1 rounded max-w-xs truncate">
             {app.uid}
           </div>
         </div>

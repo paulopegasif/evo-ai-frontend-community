@@ -29,7 +29,7 @@ const FooterReplyTo: React.FC<FooterReplyToProps> = ({
   };
 
   return (
-    <div className="border-t border-slate-200 bg-white">
+    <div className="border-t border-border bg-background">
       {replyToMessage && replyToMessage.type !== 'system' && (
         <ReplyToChip
           replyToMessage={replyToMessage as MessageItem & { type: 'in' | 'out' }}

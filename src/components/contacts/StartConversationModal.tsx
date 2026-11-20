@@ -203,7 +203,7 @@ export default function StartConversationModal({
       case 'Channel::Sms':
         return <Phone className="h-4 w-4 text-purple-600" />;
       default:
-        return <MessageSquare className="h-4 w-4 text-gray-600" />;
+        return <MessageSquare className="h-4 w-4 text-muted-foreground" />;
     }
   };
 

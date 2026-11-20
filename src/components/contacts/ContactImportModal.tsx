@@ -117,9 +117,9 @@ export default function ContactImportModal({
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                <FileText className="h-5 w-5 text-gray-500" />
-                <span className="flex-1 text-sm text-gray-700">
+              <div className="flex items-center gap-2 p-3 bg-muted/48 rounded-lg">
+                <FileText className="h-5 w-5 text-muted-foreground" />
+                <span className="flex-1 text-sm text-foreground">
                   {processFileName(selectedFile.name)}
                 </span>
                 <div className="flex items-center gap-1">

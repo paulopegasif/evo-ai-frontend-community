@@ -78,10 +78,10 @@ const APIChannelConfig: React.FC<{
           <div className="flex items-start gap-4">
             <Shield className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.api.hmac.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.api.hmac.description')}
               </p>
 
@@ -171,15 +171,15 @@ const WhatsAppChannelConfig: React.FC<{
             <div className="flex items-start gap-4">
               <Key className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.api.keys.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.api.keys.description')}
                 </p>
 
                 <div className="flex items-center gap-2 mt-4">
-                  <div className="flex-1 p-3 bg-slate-100 dark:bg-slate-800 rounded-lg font-mono text-sm">
+                  <div className="flex-1 p-3 bg-muted rounded-lg font-mono text-sm">
                     {showApiKey
                       ? inbox.provider_config.api_key
                       : '••••••••••••••••••••••••••••••••'}
@@ -205,10 +205,10 @@ const WhatsAppChannelConfig: React.FC<{
           <div className="flex items-start gap-4">
             <CheckCircle className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.api.markAsRead.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.api.markAsRead.description')}
               </p>
 
@@ -1023,10 +1023,10 @@ const EvolutionWhatsAppConfig: React.FC<{
           <div className="flex items-start gap-4">
             <Smartphone className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.whatsapp.instance.statusTitle')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {inbox.name} - {inbox.phone_number || getIdentifier() || '-'}
               </p>
 
@@ -1073,10 +1073,10 @@ const EvolutionWhatsAppConfig: React.FC<{
                 <div className="bg-white p-4 rounded-lg border">
                   <img src={qrCode} alt="QR Code" className="w-64 h-64" />
                 </div>
-                <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">
+                <p className="text-center text-sm text-muted-foreground mt-4">
                   {t('settings.configuration.whatsapp.instance.qrCodeInstructions')}
                 </p>
-                <div className="flex items-center gap-2 mt-4 text-sm text-slate-500">
+                <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
                   <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span>{t('settings.configuration.whatsapp.instance.waitingConnection')}</span>
                 </div>
@@ -1084,7 +1084,7 @@ const EvolutionWhatsAppConfig: React.FC<{
             ) : (
               <div className="flex items-center gap-2">
                 <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <span className="text-sm text-slate-600">
+                <span className="text-sm text-muted-foreground">
                   {t('settings.configuration.whatsapp.instance.generatingQrCode')}
                 </span>
               </div>
@@ -1100,10 +1100,10 @@ const EvolutionWhatsAppConfig: React.FC<{
             <div className="flex items-start gap-4">
               <Settings className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.profile.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.profile.description')}
                 </p>
 
@@ -1189,7 +1189,7 @@ const EvolutionWhatsAppConfig: React.FC<{
                         {t('settings.configuration.whatsapp.instance.profile.remove')}
                       </Button>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {t('settings.configuration.whatsapp.instance.profile.pictureHelp')}
                     </p>
                   </div>
@@ -1207,10 +1207,10 @@ const EvolutionWhatsAppConfig: React.FC<{
             <div className="flex items-start gap-4">
               <Shield className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.privacy.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.privacy.description')}
                 </p>
                 <div className="mt-6">
@@ -1234,10 +1234,10 @@ const EvolutionWhatsAppConfig: React.FC<{
             <div className="flex items-start gap-4">
               <Settings className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.settingsTitle')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.settingsDescription')}
                 </p>
 
@@ -1362,10 +1362,10 @@ const EvolutionWhatsAppConfig: React.FC<{
             <Key className="w-5 h-5 text-primary mt-1 shrink-0" />
             <div className="flex-1 space-y-4">
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.connection.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.connection.description')}
                 </p>
               </div>
@@ -1436,7 +1436,7 @@ const EvolutionWhatsAppConfig: React.FC<{
       {/* Instance Actions */}
       <Card>
         <CardContent className="p-6">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+          <h3 className="font-semibold text-foreground mb-4">
             {t('settings.configuration.whatsapp.instance.actions.title')}
           </h3>
           <div className="flex gap-2">
@@ -1681,7 +1681,7 @@ const PrivacySettings: React.FC<{
             Atualizar
           </Button>
         </div>
-        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Configure quanto tempo as mensagens ficam visíveis (0 = desabilitado)
         </p>
       </div>
@@ -2169,7 +2169,7 @@ const ZapiWhatsAppConfig: React.FC<{
       <div className="space-y-6">
         <Card>
           <CardContent className="p-6">
-            <p className="text-slate-600 dark:text-slate-400">Instance ID não encontrado</p>
+            <p className="text-muted-foreground">Instance ID não encontrado</p>
           </CardContent>
         </Card>
       </div>
@@ -2184,10 +2184,10 @@ const ZapiWhatsAppConfig: React.FC<{
           <div className="flex items-center gap-4 mb-4">
             <QrCode className="w-8 h-8 text-primary" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 QR Code para Conexão
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Escaneie o QR code com seu WhatsApp para conectar a instância
               </p>
             </div>
@@ -2209,7 +2209,7 @@ const ZapiWhatsAppConfig: React.FC<{
       {instanceStatus === 'connected' && (
         <Card>
           <CardContent className="p-6">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            <h3 className="font-semibold text-foreground mb-4">
               Configurações de Perfil
             </h3>
             <div className="space-y-4">
@@ -2257,7 +2257,7 @@ const ZapiWhatsAppConfig: React.FC<{
       {instanceStatus === 'connected' && (
         <Card>
           <CardContent className="p-6">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            <h3 className="font-semibold text-foreground mb-4">
               Configurações de Chamadas
             </h3>
             <div className="space-y-4">
@@ -2266,7 +2266,7 @@ const ZapiWhatsAppConfig: React.FC<{
                   <label className="block text-sm font-medium">
                     Rejeitar Chamadas Automaticamente
                   </label>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Rejeita automaticamente todas as chamadas recebidas
                   </p>
                 </div>
@@ -2312,10 +2312,10 @@ const ZapiWhatsAppConfig: React.FC<{
             <div className="flex items-center gap-4 mb-4">
               <Shield className="w-8 h-8 text-primary" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   Configurações de Privacidade
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   Configure as configurações de privacidade do WhatsApp
                 </p>
               </div>
@@ -2328,7 +2328,7 @@ const ZapiWhatsAppConfig: React.FC<{
       {/* Instance Actions */}
       <Card>
         <CardContent className="p-6">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+          <h3 className="font-semibold text-foreground mb-4">
             Ações da Instância
           </h3>
           <div className="flex gap-2">
@@ -2352,7 +2352,7 @@ const ZapiWhatsAppConfig: React.FC<{
             {isLoading ? (
               <div className="flex flex-col items-center gap-2">
                 <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
+                <span className="text-sm text-muted-foreground">
                   Gerando QR Code...
                 </span>
               </div>
@@ -2361,19 +2361,19 @@ const ZapiWhatsAppConfig: React.FC<{
                 <img
                   src={qrCode.startsWith('data:') ? qrCode : `data:image/png;base64,${qrCode}`}
                   alt="QR Code"
-                  className="w-64 h-64 border border-slate-200 dark:border-slate-700 rounded-lg bg-white p-2"
+                  className="w-64 h-64 border border-border rounded-lg bg-background p-2"
                   onError={e => {
                     console.error('Erro ao carregar QR code:', e);
                     toast.error('Erro ao exibir QR code');
                   }}
                 />
-                <p className="text-sm text-center text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-center text-muted-foreground">
                   Escaneie este QR code com seu WhatsApp para conectar a instância
                 </p>
               </>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-center text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-center text-muted-foreground">
                   QR Code não disponível. Clique em "Atualizar QR Code" para gerar um novo.
                 </p>
               </div>
@@ -2457,10 +2457,10 @@ const EmailChannelConfig: React.FC<{
           <div className="flex items-start gap-4">
             <Mail className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.email.imap.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.email.imap.description')}
               </p>
 
@@ -2536,10 +2536,10 @@ const EmailChannelConfig: React.FC<{
           <div className="flex items-start gap-4">
             <Mail className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.email.smtp.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.email.smtp.description')}
               </p>
 
@@ -2713,10 +2713,10 @@ const ConfigurationForm: React.FC<ConfigurationFormProps> = ({ inbox, onUpdate }
             <div className="flex items-center gap-4">
               <Phone className="w-8 h-8 text-primary" />
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.twilio.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {t('settings.configuration.twilio.description')}
                 </p>
               </div>
@@ -2733,12 +2733,12 @@ const ConfigurationForm: React.FC<ConfigurationFormProps> = ({ inbox, onUpdate }
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
-            <Settings className="w-8 h-8 text-slate-400" />
+            <Settings className="w-8 h-8 text-muted-foreground" />
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.fallback.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 {t('settings.configuration.fallback.description', { channelType })}
               </p>
             </div>

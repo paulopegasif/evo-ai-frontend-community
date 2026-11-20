@@ -167,7 +167,7 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="url" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="url" className="block text-sm font-medium text-foreground mb-1">
                     {t('webhooks.modal.fields.url.label')} *
                   </label>
                   <Input
@@ -180,13 +180,13 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
                   {errors.url && (
                     <p className="text-sm text-red-600 mt-1">{errors.url}</p>
                   )}
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {t('webhooks.modal.fields.url.hint')}
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
                     {t('webhooks.modal.fields.description.label')}
                   </label>
                   <Textarea
@@ -200,10 +200,10 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <span className="block text-sm font-medium text-foreground">
                       {t('webhooks.modal.fields.enabled.label')}
                     </span>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {t('webhooks.modal.fields.enabled.description')}
                     </p>
                   </div>
@@ -244,7 +244,7 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
 
               <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                 {AVAILABLE_EVENTS.map((event) => (
-                  <div key={event.id} className="flex items-start gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-lg">
+                  <div key={event.id} className="flex items-start gap-3 p-3 border border-border rounded-lg">
                     <Checkbox
                       id={event.id}
                       checked={formData.subscriptions.includes(event.id)}
@@ -255,7 +255,7 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
                       <label htmlFor={event.id} className="font-medium cursor-pointer block">
                         {event.name}
                       </label>
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {event.description}
                       </p>
                     </div>

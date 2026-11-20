@@ -105,7 +105,7 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 {t('panels.sendWebhook.auth.bearerDescription')}
               </p>
             </div>
@@ -152,7 +152,7 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-muted-foreground">
               {t('panels.sendWebhook.auth.basicDescription')}
             </p>
           </div>
@@ -170,7 +170,7 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
                 className="bg-sidebar border-sidebar-border text-sidebar-foreground"
                 journeyId={journeyId}
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-muted-foreground">
                 {t('panels.sendWebhook.auth.headerNameDescription')}
               </p>
             </div>

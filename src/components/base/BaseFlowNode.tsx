@@ -108,7 +108,7 @@ const colorStyles = {
     handle: "bg-yellow-500 border-yellow-400"
   },
   slate: {
-    border: "border-slate-300 hover:border-slate-500 dark:border-slate-700/70 dark:hover:border-slate-500",
+    border: "border-border hover:border-slate-500 dark:hover:border-slate-500",
     gradient: "bg-gradient-to-br from-slate-50 to-card dark:from-slate-800/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(100,116,139,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(100,116,139,0.3)]",

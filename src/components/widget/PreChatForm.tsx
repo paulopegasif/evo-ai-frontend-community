@@ -260,7 +260,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-slate-700'
+                    hasError ? 'text-red-500' : 'text-foreground'
                   }`}
                 >
                   {field.label}
@@ -269,7 +269,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                   value={formField.value || ''}
                   onChange={e => formField.onChange(e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    hasError ? 'border-red-500' : 'border-slate-300'
+                    hasError ? 'border-red-500' : 'border-border'
                   }`}
                 >
                   <option value="" disabled>
@@ -322,7 +322,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-slate-700'
+                    hasError ? 'text-red-500' : 'text-foreground'
                   }`}
                 >
                   {field.label}
@@ -350,7 +350,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-slate-700'
+                    hasError ? 'text-red-500' : 'text-foreground'
                   }`}
                 >
                   {field.label}
@@ -390,7 +390,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
     <div className="flex flex-col flex-1 w-full p-6 overflow-y-auto">
       {shouldShowHeaderMessage && (
         <div
-          className="mb-4 text-base leading-5 text-slate-700"
+          className="mb-4 text-base leading-5 text-foreground"
           dangerouslySetInnerHTML={{ __html: headerMessage || '' }}
         />
       )}
@@ -406,7 +406,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    errors.message ? 'text-red-500' : 'text-slate-700'
+                    errors.message ? 'text-red-500' : 'text-foreground'
                   }`}
                 >
                   {t('preChatForm.message')}

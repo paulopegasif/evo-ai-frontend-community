@@ -136,7 +136,7 @@ const CustomToolsSelectionDialog = ({
       PATCH: 'bg-orange-500/10 text-orange-600 border-orange-500/30',
       DELETE: 'bg-red-500/10 text-red-600 border-red-500/30',
     };
-    return colors[method.toUpperCase()] || 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+    return colors[method.toUpperCase()] || 'bg-gray-500/10 text-muted-foreground border-gray-500/30';
   };
 
   const filteredTools = customTools.filter(tool => {

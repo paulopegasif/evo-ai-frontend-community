@@ -32,7 +32,7 @@ export default function IntegrationModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {integration && (
-              <div className="w-6 h-6 rounded overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+              <div className="w-6 h-6 rounded overflow-hidden bg-muted flex items-center justify-center">
                 <BrandIcon
                   id={integration.id}
                   size={20}

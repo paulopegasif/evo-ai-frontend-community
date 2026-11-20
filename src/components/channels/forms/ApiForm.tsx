@@ -27,7 +27,7 @@ export const ApiForm = ({ form, onFormChange }: ApiFormProps) => {
 
       <FormSection
         title={t('info.title')}
-        className="bg-gray-50/10 border-gray-200/20"
+        className="bg-muted/48/10 border-border/20"
         data-tour="api-info"
       >
         <div className="text-sm text-sidebar-foreground/70 space-y-2">

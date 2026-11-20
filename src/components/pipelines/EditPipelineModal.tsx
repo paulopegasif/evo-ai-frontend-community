@@ -280,7 +280,7 @@ export default function EditPipelineModal({
                               );
                             }}
                             disabled={loading}
-                            className="rounded border-gray-300"
+                            className="rounded border-border"
                           />
                           <span className="text-sm">{team.name}</span>
                         </label>
@@ -302,7 +302,7 @@ export default function EditPipelineModal({
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                 disabled={loading}
-                className="rounded border-gray-300"
+                className="rounded border-border"
               />
               <Label htmlFor="edit-is_active" className="cursor-pointer">
                 {t('editPipeline.pipelineActive')}

@@ -270,7 +270,7 @@ const SenderSettingsForm: React.FC<SenderSettingsFormProps> = ({
         </div>
 
         {businessName && !showBusinessNameInput && (
-          <div className="text-sm text-slate-600 dark:text-slate-400">
+          <div className="text-sm text-muted-foreground">
             {t('settings.senderSettings.businessName.current', { businessName })}
           </div>
         )}

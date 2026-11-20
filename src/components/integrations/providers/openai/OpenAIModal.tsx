@@ -107,7 +107,7 @@ export default function OpenAIModal({
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="api_key" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="api_key" className="block text-sm font-medium text-foreground mb-1">
                   {t('openai.modal.fields.apiKey.label')} *
                 </label>
                 <Input
@@ -121,18 +121,18 @@ export default function OpenAIModal({
                 {errors.api_key && (
                   <p className="text-sm text-red-600 mt-1">{errors.api_key}</p>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t('openai.modal.fields.apiKey.hint')}
                 </p>
               </div>
 
               {/* Audio Transcription Toggle */}
-              <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/48">
                 <div className="flex-1">
-                  <Label htmlFor="enable_audio_transcription" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <Label htmlFor="enable_audio_transcription" className="text-sm font-medium text-foreground">
                     {t('openai.modal.fields.enableAudioTranscription.label')}
                   </Label>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {t('openai.modal.fields.enableAudioTranscription.description')}
                   </p>
                 </div>

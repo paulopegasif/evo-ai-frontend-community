@@ -54,7 +54,7 @@ export const EmojiPickerComponent: React.FC<EmojiPickerComponentProps> = ({
         ref={buttonRef}
         onClick={togglePicker}
         className={`p-2 rounded-full transition-colors duration-200 hover:bg-slate-100 ${
-          isOpen ? 'bg-slate-100' : ''
+          isOpen ? 'bg-muted' : ''
         }`}
         title={t('emoji.addEmoji')}
         type="button"
@@ -62,7 +62,7 @@ export const EmojiPickerComponent: React.FC<EmojiPickerComponentProps> = ({
         <Smile
           size={20}
           className={`transition-colors duration-200 ${
-            isOpen ? 'text-amber-500' : 'text-slate-500 hover:text-slate-700'
+            isOpen ? 'text-amber-500' : 'text-muted-foreground hover:text-foreground'
           }`}
         />
       </button>

@@ -8,7 +8,7 @@ const Unauthorized: React.FC = () => {
   const { t } = useLanguage('unauthorized');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-muted/48 px-4 py-12 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 text-center">
         {/* Ícone */}
         <div className="flex justify-center">
@@ -19,13 +19,13 @@ const Unauthorized: React.FC = () => {
 
         {/* Título */}
         <div className="space-y-2">
-          <h1 className="text-4xl font-extrabold text-gray-900">{t('title')}</h1>
-          <p className="text-lg text-gray-600">{t('subtitle')}</p>
+          <h1 className="text-4xl font-extrabold text-foreground">{t('title')}</h1>
+          <p className="text-lg text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         {/* Descrição */}
         <div className="bg-white shadow rounded-lg p-6 text-left space-y-4">
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-foreground">
             {t('description')}
           </p>
 
@@ -42,7 +42,7 @@ const Unauthorized: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 border border-border shadow-sm text-base font-medium rounded-md text-foreground bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             {t('buttons.back')}
@@ -58,7 +58,7 @@ const Unauthorized: React.FC = () => {
         </div>
 
         {/* Informações Adicionais */}
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-muted-foreground">
           <p>{t('errorCode')}</p>
         </div>
       </div>

@@ -396,12 +396,12 @@ const EmailTemplateEditor: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-muted/48 rounded-lg">
                 <div>
                   <label className="block text-sm font-medium">
                     {t('settings.messageTemplates.form.active')}
                   </label>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {t('settings.messageTemplates.form.activeHelp')}
                   </p>
                 </div>
@@ -466,28 +466,28 @@ const EmailTemplateEditor: React.FC = () => {
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto p-4">
-                <div className="email-preview-container border border-border rounded-lg overflow-hidden bg-white dark:bg-slate-800 max-w-2xl mx-auto">
+                <div className="email-preview-container border border-border rounded-lg overflow-hidden bg-card max-w-2xl mx-auto">
                   {/* Email header */}
-                  <div className="email-header bg-gray-50 dark:bg-slate-700 p-4 border-b border-gray-200 dark:border-gray-600">
+                  <div className="email-header bg-muted/48 p-4 border-b border-border">
                     <div className="mb-2">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Subject:</span>
-                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100 mt-1">
+                      <span className="text-xs text-muted-foreground">Subject:</span>
+                      <div className="text-sm font-medium text-foreground mt-1">
                         {formData.subject || 'Email Subject'}
                       </div>
                     </div>
                     <div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">From:</span>
-                      <div className="text-sm text-slate-700 dark:text-slate-300 mt-1">
+                      <span className="text-xs text-muted-foreground">From:</span>
+                      <div className="text-sm text-foreground mt-1">
                         noreply@example.com
                       </div>
                     </div>
                   </div>
 
                   {/* Email body with HTML content */}
-                  <div className="email-body p-4 bg-white dark:bg-slate-800">
+                  <div className="email-body p-4 bg-card">
                     <div
                       dangerouslySetInnerHTML={{ __html: formData.content }}
-                      className="text-sm text-slate-900 dark:text-slate-100"
+                      className="text-sm text-foreground"
                       style={{
                         maxWidth: '100%',
                         wordBreak: 'break-word',

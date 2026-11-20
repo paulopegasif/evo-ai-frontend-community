@@ -152,7 +152,7 @@ const Marketplace = () => {
           <img src={product.thumbnail} alt={product.name} className="w-full h-full object-cover" />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <ImageIcon className="h-16 w-16 text-gray-400" />
+            <ImageIcon className="h-16 w-16 text-muted-foreground" />
           </div>
         )}
       </div>

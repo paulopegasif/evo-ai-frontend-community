@@ -118,7 +118,7 @@ export const ResizableTextarea = forwardRef<ResizableTextareaRef, ResizableTexta
           transition-all
           duration-200
           overflow-y-auto
-          ${disabled ? 'bg-slate-50 cursor-not-allowed' : 'bg-white border-slate-200'}
+          ${disabled ? 'bg-muted/48 cursor-not-allowed' : 'bg-background border-border'}
           ${className}
         `}
         rows={minRows}
