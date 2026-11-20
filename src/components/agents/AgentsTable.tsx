@@ -1,9 +1,11 @@
-import { Badge, Button } from '@/components/ui/compat';
-import { Bot, ExternalLink, ArrowRight, GitBranch, RefreshCw, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Agent } from '@/types/agents';
 import { BaseTable, TableColumn } from '@/components/base';
-import { cn } from '@/utils/cn';
 import AgentActionsDropdown from './AgentActionsDropdown';
+import { AgentAvatar } from './AgentCard';
+import { getAgentTypeMeta } from './agentTypeMeta';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface AgentsTableProps {
@@ -31,82 +33,27 @@ export default function AgentsTable({
 }: AgentsTableProps) {
   const { t } = useLanguage('agents');
 
-  const getAgentTypeInfo = (type: string) => {
-    const types: Record<string, { label: string; color: string }> = {
-      llm: {
-        label: 'Nativo',
-        color: 'bg-success/12 text-success-foreground border-success/24',
-      },
-      external: {
-        label: 'Externo',
-        color: 'bg-info/12 text-info-foreground border-info/24',
-      },
-      a2a: {
-        label: 'A2A',
-        color: 'bg-info/12 text-info-foreground border-info/24',
-      },
-      sequential: {
-        label: 'Agente Sequencial',
-        color: 'bg-warning/12 text-warning-foreground border-warning/24',
-      },
-      parallel: {
-        label: 'Agente Paralelo',
-        color: 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900 dark:text-violet-200 dark:border-violet-700',
-      },
-      loop: {
-        label: 'Agente Loop',
-        color: 'bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-900 dark:text-indigo-200 dark:border-indigo-700',
-      },
-    };
-
-    const typeInfo = types[type] || {
-      label: type,
-      color: 'bg-muted text-foreground border-border',
-    };
-
-    return {
-      label: typeInfo.label,
-      color: typeInfo.color,
-    };
-  };
-
-  const getAgentTypeIcon = (type: string) => {
-    switch (type) {
-      case 'llm':
-        return <Bot className="h-4 w-4" />;
-      case 'a2a':
-        return <ExternalLink className="h-4 w-4" />;
-      case 'sequential':
-        return <ArrowRight className="h-4 w-4" />;
-      case 'parallel':
-        return <GitBranch className="h-4 w-4" />;
-      case 'loop':
-        return <RefreshCw className="h-4 w-4" />;
-      default:
-        return <Bot className="h-4 w-4" />;
-    }
-  };
-
   const columns: TableColumn<Agent>[] = [
     {
       key: 'name',
       label: t('fields.name'),
       sortable: true,
       render: agent => (
-        <div
-          className="flex items-center gap-3 cursor-pointer hover:opacity-80 py-2"
+        <button
+          type="button"
+          className="flex items-center gap-3 rounded-md py-1 text-left outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
           onClick={() => onEditAgent(agent)}
         >
-          <div className="flex-shrink-0">{getAgentTypeIcon(agent.type)}</div>
+          <AgentAvatar agent={agent} size="sm" />
           <span className="font-medium">{agent.name}</span>
-        </div>
+        </button>
       ),
     },
     {
       key: 'description',
       label: t('fields.description'),
       render: agent => (
-        <div className="max-w-[200px] truncate">
+        <div className="max-w-[260px] truncate text-muted-foreground">
           {agent.description || t('fields.noDescription')}
         </div>
       ),
@@ -116,8 +63,8 @@ export default function AgentsTable({
       label: t('fields.type'),
       sortable: true,
       render: agent => {
-        const typeInfo = getAgentTypeInfo(agent.type);
-        return <Badge className={cn(typeInfo.color, 'border')}>{typeInfo.label}</Badge>;
+        const meta = getAgentTypeMeta(agent.type);
+        return <Badge variant={meta.badge}>{meta.label}</Badge>;
       },
     },
     {
@@ -125,7 +72,7 @@ export default function AgentsTable({
       label: t('fields.model'),
       render: agent =>
         agent.model ? (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="font-mono">
             {agent.model}
           </Badge>
         ) : (
@@ -149,8 +96,8 @@ export default function AgentsTable({
         <AgentActionsDropdown
           agent={agent}
           trigger={
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button variant="ghost" size="icon-sm" aria-label={t('table.actions')}>
+              <MoreHorizontal />
             </Button>
           }
           onEdit={onEditAgent}
@@ -179,7 +126,6 @@ export default function AgentsTable({
       loading={loading}
       emptyMessage={t('table.emptyMessage')}
       getRowKey={agent => agent.id}
-      className="border rounded-lg"
     />
   );
 }

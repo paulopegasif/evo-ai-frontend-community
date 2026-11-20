@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react';
+import { Library, RefreshCw } from 'lucide-react';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Label,
-  Button,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/compat';
-import { Loader2, RefreshCw } from 'lucide-react';
+} from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { AgentIntegrationDialog } from './agentConfig/AgentIntegrationDialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { KnowledgeNexusConfig } from '@/hooks/useIntegrations';
 import {
@@ -51,6 +49,7 @@ const KnowledgeNexusConfigDialog = ({
   initialConfig,
 }: KnowledgeNexusConfigDialogProps) => {
   const { t } = useLanguage('aiAgents');
+  const [confirmDeactivate, setConfirmDeactivate] = useState(false);
 
   // Backend strips `nexus_api_key` before returning the config (defense-in-depth
   // in useIntegrations.sanitizeConfig). When `connected === true` but the key
@@ -96,7 +95,7 @@ const KnowledgeNexusConfigDialog = ({
     if (!baseUrl || !apiKey) {
       setSpacesError(
         t('edit.integrations.knowledgeNexus.spacesNeedCreds') ||
-          'Enter the base URL and API key first.'
+          'Enter the base URL and API key first.',
       );
       return;
     }
@@ -107,8 +106,7 @@ const KnowledgeNexusConfigDialog = ({
       setSpaces(list);
       if (list.length === 0) {
         setSpacesError(
-          t('edit.integrations.knowledgeNexus.spacesEmpty') ||
-            'No spaces found for this API key.'
+          t('edit.integrations.knowledgeNexus.spacesEmpty') || 'No spaces found for this API key.',
         );
       }
     } catch (error: unknown) {
@@ -121,7 +119,7 @@ const KnowledgeNexusConfigDialog = ({
       setSpacesError(
         apiMsg ||
           t('edit.integrations.knowledgeNexus.spacesError') ||
-          'Could not load spaces. Check the URL and API key, or paste the Space ID manually.'
+          'Could not load spaces. Check the URL and API key, or paste the Space ID manually.',
       );
     } finally {
       setLoadingSpaces(false);
@@ -146,8 +144,7 @@ const KnowledgeNexusConfigDialog = ({
   }, [open, config.nexus_base_url, config.nexus_api_key, manualSpaceMode]);
 
   const apiKeyOk = config.nexus_api_key.trim() !== '' || hasSavedApiKey;
-  const isValid =
-    config.nexus_base_url.trim() !== '' && apiKeyOk && config.space_id.trim() !== '';
+  const isValid = config.nexus_base_url.trim() !== '' && apiKeyOk && config.space_id.trim() !== '';
 
   const handleSave = () => {
     const payload: KnowledgeNexusConfig = {
@@ -172,24 +169,40 @@ const KnowledgeNexusConfigDialog = ({
     onOpenChange(false);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
-            {t('edit.integrations.knowledgeNexus.configTitle') || 'Configurar Knowledge Nexus'}
-          </DialogTitle>
-          <DialogDescription>
-            {t('edit.integrations.knowledgeNexus.intro') ||
-              'Conecte este agente a uma base de conhecimento do EvoNexus para que ele possa buscar informações curadas antes de responder.'}
-          </DialogDescription>
-        </DialogHeader>
+  const spaceItems = (spaces || []).map(space => ({
+    value: space.id,
+    label: `${space.name || space.slug || space.id}${space.slug && space.name ? ` (${space.slug})` : ''}`,
+  }));
 
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="nexus_base_url">
+  return (
+    <>
+      <AgentIntegrationDialog
+        open={open}
+        onOpenChange={onOpenChange}
+        icon={<Library className="text-primary" />}
+        title={t('edit.integrations.knowledgeNexus.configTitle') || 'Configurar Knowledge Nexus'}
+        description={
+          t('edit.integrations.knowledgeNexus.intro') ||
+          'Conecte este agente a uma base de conhecimento do EvoNexus para que ele possa buscar informações curadas antes de responder.'
+        }
+        footerStart={
+          onDeactivate ? (
+            <Button variant="destructive-outline" onClick={() => setConfirmDeactivate(true)}>
+              {t('edit.integrations.knowledgeNexus.deactivate') || 'Desativar integração'}
+            </Button>
+          ) : undefined
+        }
+        footer={
+          <Button onClick={handleSave} disabled={!isValid}>
+            {t('edit.integrations.knowledgeNexus.apply') || 'APLICAR CONFIGURAÇÕES'}
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-5">
+          <Field>
+            <FieldLabel>
               {t('edit.integrations.knowledgeNexus.baseUrl') || 'URL base do Nexus'}
-            </Label>
+            </FieldLabel>
             <Input
               id="nexus_base_url"
               type="text"
@@ -197,19 +210,18 @@ const KnowledgeNexusConfigDialog = ({
               value={config.nexus_base_url}
               onChange={e => setConfig({ ...config, nexus_base_url: e.target.value })}
             />
-            <p className="text-xs text-muted-foreground">
+            <FieldDescription>
               {t('edit.integrations.knowledgeNexus.baseUrlHint') ||
                 'Endereço do dashboard EvoNexus (sem barra no final).'}
-            </p>
-          </div>
+            </FieldDescription>
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="nexus_api_key">
-              {t('edit.integrations.knowledgeNexus.apiKey') || 'API Key'}
-            </Label>
+          <Field>
+            <FieldLabel>{t('edit.integrations.knowledgeNexus.apiKey') || 'API Key'}</FieldLabel>
             <Input
               id="nexus_api_key"
               type="password"
+              autoComplete="off"
               placeholder={
                 hasSavedApiKey
                   ? t('edit.integrations.knowledgeNexus.apiKeySavedPlaceholder') ||
@@ -220,41 +232,33 @@ const KnowledgeNexusConfigDialog = ({
               onChange={e => setConfig({ ...config, nexus_api_key: e.target.value })}
             />
             {hasSavedApiKey ? (
-              <p className="text-xs text-success-foreground">
+              <FieldDescription className="flex items-center gap-1 text-success-foreground">
                 {t('edit.integrations.knowledgeNexus.apiKeySaved') ||
                   '✓ Chave já configurada — deixe em branco para manter, redigite para substituir.'}
-              </p>
+              </FieldDescription>
             ) : (
-              <p className="text-xs text-muted-foreground">
+              <FieldDescription>
                 {t('edit.integrations.knowledgeNexus.apiKeyHint') ||
                   'Chave de API gerada no Nexus em Knowledge → API Keys. Formato evo_k_<prefix>.<secret>.'}
-              </p>
+              </FieldDescription>
             )}
-          </div>
+          </Field>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="space_id">
+          <Field>
+            <div className="flex w-full items-center justify-between gap-2">
+              <FieldLabel>
                 {t('edit.integrations.knowledgeNexus.space') || 'Knowledge space'}
-              </Label>
+              </FieldLabel>
               {!manualSpaceMode && (
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 gap-1 text-xs"
+                  size="xs"
                   onClick={fetchSpaces}
-                  disabled={
-                    loadingSpaces ||
-                    !config.nexus_base_url.trim() ||
-                    !config.nexus_api_key.trim()
-                  }
+                  loading={loadingSpaces}
+                  disabled={!config.nexus_base_url.trim() || !config.nexus_api_key.trim()}
                 >
-                  {loadingSpaces ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <RefreshCw className="h-3 w-3" />
-                  )}
+                  {!loadingSpaces && <RefreshCw />}
                   {t('edit.integrations.knowledgeNexus.reloadSpaces') || 'Reload'}
                 </Button>
               )}
@@ -262,8 +266,9 @@ const KnowledgeNexusConfigDialog = ({
 
             {!manualSpaceMode && spaces && spaces.length > 0 ? (
               <Select
-                value={config.space_id}
-                onValueChange={value => setConfig({ ...config, space_id: value })}
+                items={spaceItems}
+                value={config.space_id || null}
+                onValueChange={value => setConfig({ ...config, space_id: (value as string) || '' })}
               >
                 <SelectTrigger id="space_id">
                   <SelectValue
@@ -273,19 +278,19 @@ const KnowledgeNexusConfigDialog = ({
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
-                  {spaces.map(space => (
-                    <SelectItem key={space.id} value={space.id}>
-                      {space.name || space.slug || space.id}
-                      {space.slug && space.name ? ` (${space.slug})` : ''}
+                <SelectPopup>
+                  {spaceItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             ) : (
               <Input
                 id="space_id"
                 type="text"
+                className="font-mono"
                 placeholder="00000000-0000-0000-0000-000000000000"
                 value={config.space_id}
                 onChange={e => setConfig({ ...config, space_id: e.target.value })}
@@ -293,47 +298,45 @@ const KnowledgeNexusConfigDialog = ({
             )}
 
             {loadingSpaces && !spaces && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Loader2 className="h-3 w-3 animate-spin" />
+              <FieldDescription className="flex items-center gap-1.5">
+                <Spinner className="size-3" />
                 {t('edit.integrations.knowledgeNexus.loadingSpaces') ||
                   'Loading spaces from Nexus...'}
-              </p>
+              </FieldDescription>
             )}
-            {spacesError && (
-              <p className="text-xs text-destructive">{spacesError}</p>
+            {spacesError && <p className="text-destructive-foreground text-xs">{spacesError}</p>}
+            {!spacesError && !loadingSpaces && (
+              <FieldDescription>
+                {manualSpaceMode
+                  ? t('edit.integrations.knowledgeNexus.spaceIdHint') ||
+                    'UUID of the knowledge space this agent will query.'
+                  : t('edit.integrations.knowledgeNexus.spaceHint') ||
+                    'Spaces are fetched from your Nexus instance once URL + API key are filled.'}
+              </FieldDescription>
             )}
             {!loadingSpaces && (
-              <button
+              <Button
                 type="button"
-                className="text-xs text-muted-foreground hover:text-foreground underline"
+                variant="link"
+                size="xs"
+                className="h-auto px-0 text-muted-foreground"
                 onClick={() => {
                   setManualSpaceMode(!manualSpaceMode);
                   setSpacesError(null);
                 }}
               >
                 {manualSpaceMode
-                  ? t('edit.integrations.knowledgeNexus.useDropdown') ||
-                    'Pick from the list'
-                  : t('edit.integrations.knowledgeNexus.useManual') ||
-                    'Paste Space ID manually'}
-              </button>
+                  ? t('edit.integrations.knowledgeNexus.useDropdown') || 'Pick from the list'
+                  : t('edit.integrations.knowledgeNexus.useManual') || 'Paste Space ID manually'}
+              </Button>
             )}
-            {!spacesError && !loadingSpaces && (
-              <p className="text-xs text-muted-foreground">
-                {manualSpaceMode
-                  ? t('edit.integrations.knowledgeNexus.spaceIdHint') ||
-                    'UUID of the knowledge space this agent will query.'
-                  : t('edit.integrations.knowledgeNexus.spaceHint') ||
-                    'Spaces are fetched from your Nexus instance once URL + API key are filled.'}
-              </p>
-            )}
-          </div>
+          </Field>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="default_top_k">
+            <Field>
+              <FieldLabel>
                 {t('edit.integrations.knowledgeNexus.topK') || 'Top K (padrão)'}
-              </Label>
+              </FieldLabel>
               <Input
                 id="default_top_k"
                 type="number"
@@ -343,16 +346,18 @@ const KnowledgeNexusConfigDialog = ({
                 onChange={e =>
                   setConfig({
                     ...config,
-                    default_top_k: Math.max(1, Math.min(50, Number(e.target.value) || DEFAULT_TOP_K)),
+                    default_top_k: Math.max(
+                      1,
+                      Math.min(50, Number(e.target.value) || DEFAULT_TOP_K),
+                    ),
                   })
                 }
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="timeout_seconds">
+            </Field>
+            <Field>
+              <FieldLabel>
                 {t('edit.integrations.knowledgeNexus.timeout') || 'Timeout (s)'}
-              </Label>
+              </FieldLabel>
               <Input
                 id="timeout_seconds"
                 type="number"
@@ -364,32 +369,30 @@ const KnowledgeNexusConfigDialog = ({
                     ...config,
                     timeout_seconds: Math.max(
                       1,
-                      Math.min(60, Number(e.target.value) || DEFAULT_TIMEOUT)
+                      Math.min(60, Number(e.target.value) || DEFAULT_TIMEOUT),
                     ),
                   })
                 }
               />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 pt-4">
-            <Button onClick={handleSave} disabled={!isValid} className="w-full">
-              {t('edit.integrations.knowledgeNexus.apply') || 'APLICAR CONFIGURAÇÕES'}
-            </Button>
-
-            {onDeactivate && (
-              <Button
-                variant="ghost"
-                onClick={handleDeactivate}
-                className="w-full text-destructive hover:text-destructive/80"
-              >
-                {t('edit.integrations.knowledgeNexus.deactivate') || 'Desativar integração'}
-              </Button>
-            )}
+            </Field>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </AgentIntegrationDialog>
+      <ConfirmDialog
+        open={confirmDeactivate}
+        onOpenChange={setConfirmDeactivate}
+        title={t('edit.integrations.disconnectConfirm.title', { name: 'Knowledge Nexus' })}
+        description={t('edit.integrations.disconnectConfirm.description', {
+          name: 'Knowledge Nexus',
+        })}
+        cancelLabel={t('edit.integrations.disconnectConfirm.cancel')}
+        confirmLabel={t('edit.integrations.knowledgeNexus.deactivate') || 'Desativar integração'}
+        onConfirm={() => {
+          setConfirmDeactivate(false);
+          handleDeactivate();
+        }}
+      />
+    </>
   );
 };
 

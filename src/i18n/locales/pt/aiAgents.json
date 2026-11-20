@@ -1207,6 +1207,11 @@
         "noTools": "Nenhuma ferramenta disponível",
         "saveConfig": "SALVAR CONFIGURAÇÕES",
         "disconnect": "Desconectar"
+      },
+      "disconnectConfirm": {
+        "title": "Desligar {{name}}?",
+        "description": "O agente perderá o acesso às ferramentas do {{name}} até voltar a ligar.",
+        "cancel": "Cancelar"
       }
     },
     "mcpServers": {
@@ -1232,7 +1237,8 @@
       "saving": "A guardar...",
       "saveSuccess": "Produtos atualizados",
       "saveError": "Falha ao atualizar produtos"
-    }
+    },
+    "unsavedChanges": "Alterações por guardar"
   },
   "actions": {
     "save": "Salvar",

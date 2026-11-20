@@ -1232,6 +1232,11 @@
         "noTools": "No tools available",
         "saveConfig": "SAVE SETTINGS",
         "disconnect": "Disconnect"
+      },
+      "disconnectConfirm": {
+        "title": "Disconnect {{name}}?",
+        "description": "The agent will lose access to {{name}} tools until you connect again.",
+        "cancel": "Cancel"
       }
     },
     "mcpServers": {
@@ -1249,7 +1254,8 @@
       "title": "Settings",
       "subtitle": "Advanced agent settings",
       "comingSoon": "Coming soon..."
-    }
+    },
+    "unsavedChanges": "Unsaved changes"
   },
   "actions": {
     "save": "Save",

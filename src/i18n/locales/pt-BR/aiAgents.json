@@ -1232,6 +1232,11 @@
         "noTools": "Nenhuma ferramenta disponível",
         "saveConfig": "SALVAR CONFIGURAÇÕES",
         "disconnect": "Desconectar"
+      },
+      "disconnectConfirm": {
+        "title": "Desconectar {{name}}?",
+        "description": "O agente perderá o acesso às ferramentas do {{name}} até que você conecte novamente.",
+        "cancel": "Cancelar"
       }
     },
     "mcpServers": {
@@ -1249,7 +1254,8 @@
       "title": "Configurações",
       "subtitle": "Configurações avançadas do agente",
       "comingSoon": "Em breve..."
-    }
+    },
+    "unsavedChanges": "Alterações não salvas"
   },
   "actions": {
     "save": "Salvar",

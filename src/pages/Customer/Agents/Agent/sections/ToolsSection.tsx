@@ -4,6 +4,8 @@ import { CustomTool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Users, Code } from 'lucide-react';
 import { Agent } from '@/types';
+import { Separator } from '@/components/ui/separator';
+import SectionHeader from './SectionHeader';
 
 interface ToolsSectionProps {
   agentTools: string[];
@@ -29,63 +31,46 @@ const ToolsSection = ({
   const { t } = useLanguage('aiAgents');
 
   return (
-    <div className="space-y-8">
-      {/* Seção: Agentes como Ferramentas */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 pb-2 border-b">
-          <div className="p-2 rounded-lg bg-info/10">
-            <Users className="h-5 w-5 text-info" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold">
-              {t('tools.agentTools.title') || 'Agentes como Ferramentas'}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {t('tools.agentTools.subtitle') || 'Use outros agentes como ferramentas para expandir as capacidades deste agente'}
-            </p>
-          </div>
-        </div>
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-col gap-4">
+        <SectionHeader
+          icon={Users}
+          title={t('tools.agentTools.title') || 'Agentes como Ferramentas'}
+          description={
+            t('tools.agentTools.subtitle') ||
+            'Use outros agentes como ferramentas para expandir as capacidades deste agente'
+          }
+        />
+        <AgentToolsSection
+          agentTools={agentTools}
+          agentToolsData={agentToolsData}
+          onAgentToolsChange={onAgentToolsChange}
+          clientId="default"
+          folderId={folderId}
+          editingAgentId={editingAgentId}
+          isReadOnly={false}
+        />
+      </section>
 
-        <div className="pl-11">
-          <AgentToolsSection
-            agentTools={agentTools}
-            agentToolsData={agentToolsData}
-            onAgentToolsChange={onAgentToolsChange}
-            clientId="default"
-            folderId={folderId}
-            editingAgentId={editingAgentId}
-            isReadOnly={false}
-          />
-        </div>
-      </div>
+      <Separator />
 
-      {/* Seção: Ferramentas Customizadas */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 pb-2 border-b">
-          <div className="p-2 rounded-lg bg-purple-500/10">
-            <Code className="h-5 w-5 text-purple-500" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold">
-              {t('tools.customTools.title') || 'Ferramentas Customizadas'}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {t('tools.customTools.subtitle') || 'Configure ferramentas HTTP personalizadas para integrar com APIs externas'}
-            </p>
-          </div>
-        </div>
-
-        <div className="pl-11">
-          <CustomToolsSection
-            customTools={customTools}
-            onCustomToolsChange={onCustomToolsChange}
-            isReadOnly={false}
-          />
-        </div>
-      </div>
+      <section className="flex flex-col gap-4">
+        <SectionHeader
+          icon={Code}
+          title={t('tools.customTools.title') || 'Ferramentas Customizadas'}
+          description={
+            t('tools.customTools.subtitle') ||
+            'Configure ferramentas HTTP personalizadas para integrar com APIs externas'
+          }
+        />
+        <CustomToolsSection
+          customTools={customTools}
+          onCustomToolsChange={onCustomToolsChange}
+          isReadOnly={false}
+        />
+      </section>
     </div>
   );
 };
 
 export default ToolsSection;
-

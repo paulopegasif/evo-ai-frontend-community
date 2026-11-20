@@ -1158,6 +1158,11 @@
         "noTools": "Aucun outil disponible",
         "saveConfig": "ENREGISTRER LES CONFIGURATIONS",
         "disconnect": "Déconnecter"
+      },
+      "disconnectConfirm": {
+        "title": "Déconnecter {{name}} ?",
+        "description": "L'agent perdra l'accès aux outils {{name}} jusqu'à ce que vous le reconnectiez.",
+        "cancel": "Annuler"
       }
     },
     "mcpServers": {
@@ -1183,7 +1188,8 @@
       "saving": "Enregistrement...",
       "saveSuccess": "Produits mis à jour",
       "saveError": "Échec de la mise à jour des produits"
-    }
+    },
+    "unsavedChanges": "Modifications non enregistrées"
   },
   "actions": {
     "save": "Enregistrer",

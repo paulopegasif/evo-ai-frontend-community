@@ -1,23 +1,14 @@
 import { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Label,
-  Button,
-  Select,
-} from '@/components/ui/compat';
+import { CheckSquare, Edit3, FilePlus, Settings, Sheet } from 'lucide-react';
 import BrandIcon from '@/components/BrandIcon';
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-} from '@/components/ui/compat';
-import { Sheet, CheckSquare, Edit3, FilePlus, Loader2, Settings } from 'lucide-react';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
+import { AgentIntegrationDialog, SettingRow } from './agentConfig/AgentIntegrationDialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import GoogleSheetsService from '@/services/integrations/googleSheetsService';
@@ -163,205 +154,162 @@ const GoogleSheetsConfigDialog = ({
     }
   };
 
+  const { t: tShared } = useLanguage('aiAgents');
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false);
+  const spreadsheetItems = availableSpreadsheets.map(sheet => ({ value: sheet.id, label: sheet.name }));
+  const setSetting = (key: 'allowRead' | 'allowWrite' | 'allowCreate', checked: boolean) =>
+    setConfig({ ...config, settings: { ...config.settings, [key]: checked } });
+
+  const permissions = [
+    {
+      key: 'allowRead' as const,
+      icon: <CheckSquare />,
+      title: 'Permitir Leitura',
+      description: 'Agente pode consultar dados da planilha',
+    },
+    {
+      key: 'allowWrite' as const,
+      icon: <Edit3 />,
+      title: 'Permitir Escrita',
+      description: 'Agente pode atualizar células da planilha',
+    },
+    {
+      key: 'allowCreate' as const,
+      icon: <FilePlus />,
+      title: 'Permitir Criação',
+      description: 'Agente pode criar novas linhas na planilha',
+    },
+  ];
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BrandIcon id="google-sheets" size={20} className="h-5 w-5" />
-            {t('edit.integrations.googleSheets.configTitle') || 'Configurar Google Sheets'}
-          </DialogTitle>
-        </DialogHeader>
-
+    <>
+      <AgentIntegrationDialog
+        open={open}
+        onOpenChange={onOpenChange}
+        icon={<BrandIcon id="google-sheets" size={20} />}
+        title={t('edit.integrations.googleSheets.configTitle') || 'Configurar Google Sheets'}
+        description={
+          t('edit.integrations.googleSheets.connectDescription') ||
+          'Permita que o agente acesse, crie e gerencie planilhas do Google Sheets'
+        }
+        footerStart={
+          onDisconnect && config.connected ? (
+            <Button variant="destructive-outline" onClick={() => setConfirmDisconnect(true)}>
+              {t('edit.integrations.googleSheets.disconnect') || 'Desconectar'}
+            </Button>
+          ) : undefined
+        }
+        footer={
+          config.connected ? (
+            <Button onClick={handleSave}>
+              {t('edit.integrations.googleSheets.saveConfig') || 'APLICAR CONFIGURAÇÕES'}
+            </Button>
+          ) : (
+            <Button onClick={handleConnectGoogle} loading={isConnecting} className="w-full sm:w-auto">
+              {!isConnecting && <Sheet />}
+              {isConnecting
+                ? t('edit.integrations.googleSheets.connecting') || 'Conectando...'
+                : t('edit.integrations.googleSheets.connectButton') || 'Conectar com Google'}
+            </Button>
+          )
+        }
+      >
         {!config.connected ? (
-          /* Not connected - Show connect screen */
-          <div className="space-y-6 py-4">
-            <div className="text-center space-y-4">
-              <div className="flex justify-center">
-                <div className="p-4 bg-primary/10 rounded-full">
-                  <BrandIcon id="google-sheets" size={48} className="h-12 w-12" />
-                </div>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed bg-muted/40 px-6 py-6 text-center">
+              <div className="flex size-14 items-center justify-center rounded-full border bg-card shadow-xs/5">
+                <BrandIcon id="google-sheets" size={28} />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {t('edit.integrations.googleSheets.connectTitle') || 'Conectar com Google Sheets'}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('edit.integrations.googleSheets.connectDescription') ||
-                    'Permita que o agente acesse, crie e gerencie planilhas do Google Sheets'}
-                </p>
-              </div>
+              <h3 className="font-semibold text-base">
+                {t('edit.integrations.googleSheets.connectTitle') || 'Conectar com Google Sheets'}
+              </h3>
             </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email">
-                  {t('edit.integrations.googleSheets.email') || 'E-mail do Google'}
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seuemail@gmail.com"
-                  value={config.email}
-                  onChange={e => setConfig({ ...config, email: e.target.value })}
-                />
-              </div>
-
-              <Button
-                onClick={handleConnectGoogle}
-                disabled={isConnecting}
-                className="w-full"
-                size="lg"
-              >
-                {isConnecting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('edit.integrations.googleSheets.connecting') || 'Conectando...'}
-                  </>
-                ) : (
-                  <>
-                    <Sheet className="mr-2 h-4 w-4" />
-                    {t('edit.integrations.googleSheets.connectButton') || 'Conectar com Google'}
-                  </>
-                )}
-              </Button>
-            </div>
+            <Field>
+              <FieldLabel>{t('edit.integrations.googleSheets.email') || 'E-mail do Google'}</FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seuemail@gmail.com"
+                value={config.email}
+                onChange={e => setConfig({ ...config, email: e.target.value })}
+              />
+            </Field>
           </div>
         ) : (
-          /* Connected - Show configuration */
-          <div className="space-y-6 py-4">
-            {/* Spreadsheet Selection */}
-            <div className="space-y-3">
-              <Label>{t('edit.integrations.googleSheets.selectSpreadsheet') || 'Planilha'}</Label>
+          <div className="flex flex-col gap-5">
+            <Field>
+              <FieldLabel>{t('edit.integrations.googleSheets.selectSpreadsheet') || 'Planilha'}</FieldLabel>
               <Select
-                value={config.settings?.selectedSpreadsheetId}
+                items={spreadsheetItems}
+                value={config.settings?.selectedSpreadsheetId || null}
                 onValueChange={value =>
                   setConfig({
                     ...config,
-                    settings: { ...config.settings, selectedSpreadsheetId: value },
+                    settings: { ...config.settings, selectedSpreadsheetId: (value as string) || '' },
                   })
                 }
                 disabled={isLoadingSpreadsheets}
               >
                 <SelectTrigger>
                   {isLoadingSpreadsheets ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Spinner className="size-4" />
                       Carregando planilhas...
                     </span>
                   ) : (
                     <SelectValue placeholder="Selecione uma planilha" />
                   )}
                 </SelectTrigger>
-                <SelectContent>
-                  {availableSpreadsheets.map(spreadsheet => (
-                    <SelectItem key={spreadsheet.id} value={spreadsheet.id}>
-                      {spreadsheet.name}
+                <SelectPopup>
+                  {spreadsheetItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                Escolha qual planilha o agente terá acesso
-              </p>
-            </div>
+              <FieldDescription>Escolha qual planilha o agente terá acesso</FieldDescription>
+            </Field>
 
-            {/* Permissions */}
-            <div className="space-y-4">
-              <Label className="flex items-center gap-2">
-                <Settings className="h-4 w-4 text-muted-foreground" />
+            <section className="flex flex-col gap-2">
+              <h4 className="flex items-center gap-2 font-medium text-sm">
+                <Settings className="size-4 text-muted-foreground" />
                 Permissões
-              </Label>
-
-              {/* Allow Read */}
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <CheckSquare className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Permitir Leitura</p>
-                    <p className="text-xs text-muted-foreground">
-                      Agente pode consultar dados da planilha
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={config.settings?.allowRead}
-                  onCheckedChange={checked =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, allowRead: checked },
-                    })
+              </h4>
+              {permissions.map(permission => (
+                <SettingRow
+                  key={permission.key}
+                  icon={permission.icon}
+                  title={permission.title}
+                  description={permission.description}
+                  control={
+                    <Switch
+                      checked={Boolean(config.settings?.[permission.key])}
+                      onCheckedChange={checked => setSetting(permission.key, checked)}
+                    />
                   }
                 />
-              </div>
-
-              {/* Allow Write */}
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Edit3 className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Permitir Escrita</p>
-                    <p className="text-xs text-muted-foreground">
-                      Agente pode atualizar células da planilha
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={config.settings?.allowWrite}
-                  onCheckedChange={checked =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, allowWrite: checked },
-                    })
-                  }
-                />
-              </div>
-
-              {/* Allow Create */}
-              <div className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <FilePlus className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Permitir Criação</p>
-                    <p className="text-xs text-muted-foreground">
-                      Agente pode criar novas linhas na planilha
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={config.settings?.allowCreate}
-                  onCheckedChange={checked =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, allowCreate: checked },
-                    })
-                  }
-                />
-              </div>
-            </div>
+              ))}
+            </section>
           </div>
         )}
+      </AgentIntegrationDialog>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-3 pt-4 border-t">
-          {config.connected && (
-            <Button onClick={handleSave} className="w-full">
-              {t('edit.integrations.googleSheets.saveConfig') || 'APLICAR CONFIGURAÇÕES'}
-            </Button>
-          )}
-
-          {onDisconnect && config.connected && (
-            <Button
-              variant="ghost"
-              onClick={handleDisconnect}
-              className="w-full text-destructive hover:text-destructive/80"
-            >
-              {t('edit.integrations.googleSheets.disconnect') || 'Desconectar'}
-            </Button>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+      <ConfirmDialog
+        open={confirmDisconnect}
+        onOpenChange={setConfirmDisconnect}
+        title={tShared('edit.integrations.disconnectConfirm.title', { name: 'Google Sheets' })}
+        description={tShared('edit.integrations.disconnectConfirm.description', {
+          name: 'Google Sheets',
+        })}
+        cancelLabel={tShared('edit.integrations.disconnectConfirm.cancel')}
+        confirmLabel={t('edit.integrations.googleSheets.disconnect') || 'Desconectar'}
+        onConfirm={async () => {
+          await handleDisconnect();
+          setConfirmDisconnect(false);
+        }}
+      />
+    </>
   );
 };
 
