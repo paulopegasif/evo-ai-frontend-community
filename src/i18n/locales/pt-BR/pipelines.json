@@ -323,7 +323,8 @@
     "saving": "Salvando...",
     "save": "Salvar Alterações",
     "scheduleAction": "Agendar ação",
-    "stageLabel": "Etapa:"
+    "stageLabel": "Etapa:",
+    "removeService": "Remover serviço"
   },
   "editConversation": {
     "title": "Editar Item no Pipeline",

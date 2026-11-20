@@ -290,7 +290,8 @@
     "saving": "Enregistrement...",
     "save": "Enregistrer les Modifications",
     "scheduleAction": "Planifier une action",
-    "stageLabel": "Étape :"
+    "stageLabel": "Étape :",
+    "removeService": "Retirer le service"
   },
   "editConversation": {
     "title": "Modifier la Conversation dans le Pipeline",
