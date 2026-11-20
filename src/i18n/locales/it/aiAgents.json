@@ -1159,6 +1159,11 @@
         "noTools": "Nessuno strumento disponibile",
         "saveConfig": "SALVA CONFIGURAZIONI",
         "disconnect": "Disconnetti"
+      },
+      "disconnectConfirm": {
+        "title": "Disconnettere {{name}}?",
+        "description": "L'agente perderà l'accesso agli strumenti di {{name}} finché non lo ricolleghi.",
+        "cancel": "Annulla"
       }
     },
     "mcpServers": {

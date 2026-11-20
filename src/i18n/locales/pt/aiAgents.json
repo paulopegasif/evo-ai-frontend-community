@@ -1207,6 +1207,11 @@
         "noTools": "Nenhuma ferramenta disponível",
         "saveConfig": "SALVAR CONFIGURAÇÕES",
         "disconnect": "Desconectar"
+      },
+      "disconnectConfirm": {
+        "title": "Desligar {{name}}?",
+        "description": "O agente perderá o acesso às ferramentas do {{name}} até voltar a ligar.",
+        "cancel": "Cancelar"
       }
     },
     "mcpServers": {

@@ -1178,6 +1178,11 @@
         "noTools": "No hay herramientas disponibles",
         "saveConfig": "GUARDAR CONFIGURACIONES",
         "disconnect": "Desconectar"
+      },
+      "disconnectConfirm": {
+        "title": "¿Desconectar {{name}}?",
+        "description": "El agente perderá el acceso a las herramientas de {{name}} hasta que vuelvas a conectar.",
+        "cancel": "Cancelar"
       }
     },
     "mcpServers": {
