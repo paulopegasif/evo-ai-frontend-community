@@ -1,7 +1,7 @@
 import { BarChart3, Megaphone, MessageCircle } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/compat';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import type { TimelineDataPoint, TimelineGranularity } from '@/types/leadTracking';
 import { AXIS_PROPS, COMPARED_OPACITY, SERIES } from './chartConfig';
 import { compactCurrency, compactNumber, formatCurrency } from './format';

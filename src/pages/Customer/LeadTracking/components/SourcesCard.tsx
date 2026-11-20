@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Cell, Pie, PieChart } from 'recharts';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/compat';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import type { LeadSourcePerformance } from '@/types/leadTracking';
 import { CATEGORICAL, OTHER_COLOR } from './chartConfig';
 import { percentOrDash, plural } from './format';

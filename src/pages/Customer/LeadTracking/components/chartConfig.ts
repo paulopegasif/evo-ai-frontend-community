@@ -1,4 +1,4 @@
-import type { ChartConfig } from '@/components/ui/compat';
+import type { ChartConfig } from '@/components/ui/chart';
 
 /**
  * One color per entity across the whole page, in the brand's categorical order
