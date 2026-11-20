@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsCustomAttributesTour } from '@/tours';
 import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/compat';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import ListSkeleton from '@/components/base/ListSkeleton';
 import { Search, Settings } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
@@ -308,7 +309,7 @@ export default function CustomAttributes() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4" data-tour="settings-custom-attributes-page">
+    <div className="flex h-full flex-col p-4 md:p-6" data-tour="settings-custom-attributes-page">
       <SettingsCustomAttributesTour />
       <div data-tour="settings-custom-attributes-header">
         <CustomAttributesHeader
@@ -326,23 +327,24 @@ export default function CustomAttributes() {
 
       {/* Tabs */}
       <div data-tour="settings-custom-attributes-tabs">
-      <Tabs value={state.activeTab} onValueChange={handleTabChange} className="mt-6">
-        <TabsList className="mb-4">
+      <Tabs value={state.activeTab} onValueChange={value => handleTabChange(value as string)} className="mt-6 gap-4">
+        <TabsList variant="underline" className="w-full justify-start overflow-x-auto border-b">
           {ATTRIBUTE_TABS.map(tab => (
-            <TabsTrigger key={tab.key} value={tab.key}>
+            <TabsTab key={tab.key} value={tab.key}>
               {tab.name}
-            </TabsTrigger>
+            </TabsTab>
           ))}
         </TabsList>
 
         {ATTRIBUTE_TABS.map(tab => (
-          <TabsContent key={tab.key} value={tab.key} className="mt-6 flex flex-col flex-1">
+          <TabsPanel key={tab.key} value={tab.key} className="flex flex-1 flex-col">
             {/* Content */}
             <div className="flex-1 overflow-auto">
               {state.loading.list ? (
-                <div className="flex items-center justify-center py-16">
-                  <div className="text-muted-foreground">{t('loading')}</div>
-                </div>
+                <>
+                  <span className="sr-only">{t('loading')}</span>
+                  <ListSkeleton />
+                </>
               ) : sortedAttributes.length === 0 ? (
                 state.searchQuery.trim() ? (
                   <EmptyState
@@ -407,7 +409,7 @@ export default function CustomAttributes() {
                 />
               )}
             </div>
-          </TabsContent>
+          </TabsPanel>
         ))}
       </Tabs>
       </div>
