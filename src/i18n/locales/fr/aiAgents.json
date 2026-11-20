@@ -1188,7 +1188,8 @@
       "saving": "Enregistrement...",
       "saveSuccess": "Produits mis à jour",
       "saveError": "Échec de la mise à jour des produits"
-    }
+    },
+    "unsavedChanges": "Modifications non enregistrées"
   },
   "actions": {
     "save": "Enregistrer",

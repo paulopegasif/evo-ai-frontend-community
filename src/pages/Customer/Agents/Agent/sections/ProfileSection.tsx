@@ -1,6 +1,18 @@
 import { useState } from 'react';
-import { Button, Input, Label, Textarea } from '@/components/ui/compat';
-import { Sparkles, Wand2, Loader2 } from 'lucide-react';
+import { Sparkles, UserRound, Wand2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardPanel,
+  CardTitle,
+} from '@/components/ui/card';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import SectionHeader from './SectionHeader';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { openaiService } from '@/services/integrations/openaiService';
@@ -61,133 +73,123 @@ const ProfileSection = ({ formData, onFormDataChange, agentType }: ProfileSectio
     }
   };
 
+  const requiredMark = <span className="text-destructive-foreground">*</span>;
+
   return (
     <>
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold mb-2">
-            {t('edit.profile.title') || 'Informações pessoais'}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {t('edit.profile.subtitle') || 'Configure as informações básicas do seu agente'}
-          </p>
-        </div>
+      <div className="flex flex-col gap-6">
+        <SectionHeader
+          icon={UserRound}
+          title={t('edit.profile.title') || 'Informações pessoais'}
+          description={t('edit.profile.subtitle') || 'Configure as informações básicas do seu agente'}
+        />
 
-        <div className="space-y-6">
-          {/* Nome do agente */}
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold">
-              {t('edit.profile.name') || 'Nome do agente'} <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              value={formData.name}
-              onChange={e => onFormDataChange('name', e.target.value)}
-              placeholder={t('edit.profile.namePlaceholder') || 'Digite o nome do agente'}
-              className="max-w-md"
-            />
-          </div>
-
-          {/* Papel - Only for non-orchestrator types */}
-          {!isOrchestratorType && (
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">{t('edit.profile.role') || 'Papel'}</Label>
+        <Card>
+          <CardPanel className="flex flex-col gap-5">
+            <Field>
+              <FieldLabel>
+                {t('edit.profile.name') || 'Nome do agente'} {requiredMark}
+              </FieldLabel>
               <Input
-                value={formData.role}
-                onChange={e => onFormDataChange('role', e.target.value)}
-                placeholder={
-                  t('edit.profile.rolePlaceholder') || 'Ex: Especialista em suporte técnico'
-                }
+                value={formData.name}
+                onChange={e => onFormDataChange('name', e.target.value)}
+                placeholder={t('edit.profile.namePlaceholder') || 'Digite o nome do agente'}
                 className="max-w-md"
               />
-              <p className="text-xs text-muted-foreground">
-                {t('edit.profile.roleHelp') || 'O papel que o agente desempenha na conversa'}
-              </p>
-            </div>
-          )}
+            </Field>
 
-          {/* Objetivo - Only for non-orchestrator types */}
-          {!isOrchestratorType && (
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">
-                {t('edit.profile.goal') || 'Objetivo'}
-              </Label>
-              <Input
-                value={formData.goal}
-                onChange={e => onFormDataChange('goal', e.target.value)}
-                placeholder={
-                  t('edit.profile.goalPlaceholder') || 'Ex: Ajudar usuários com dúvidas técnicas'
-                }
-                className="max-w-md"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('edit.profile.goalHelp') || 'O objetivo principal do agente'}
-              </p>
-            </div>
-          )}
+            {!isOrchestratorType && (
+              <div className="grid gap-5 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>{t('edit.profile.role') || 'Papel'}</FieldLabel>
+                  <Input
+                    value={formData.role}
+                    onChange={e => onFormDataChange('role', e.target.value)}
+                    placeholder={
+                      t('edit.profile.rolePlaceholder') || 'Ex: Especialista em suporte técnico'
+                    }
+                  />
+                  <FieldDescription>
+                    {t('edit.profile.roleHelp') || 'O papel que o agente desempenha na conversa'}
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>{t('edit.profile.goal') || 'Objetivo'}</FieldLabel>
+                  <Input
+                    value={formData.goal}
+                    onChange={e => onFormDataChange('goal', e.target.value)}
+                    placeholder={
+                      t('edit.profile.goalPlaceholder') || 'Ex: Ajudar usuários com dúvidas técnicas'
+                    }
+                  />
+                  <FieldDescription>
+                    {t('edit.profile.goalHelp') || 'O objetivo principal do agente'}
+                  </FieldDescription>
+                </Field>
+              </div>
+            )}
+          </CardPanel>
+        </Card>
 
-          {/* Instruções - Only for non-orchestrator types */}
-          {!isOrchestratorType && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-semibold">
-                  {t('edit.profile.instructions') || 'Comportamento'}
-                </Label>
-                {showAIActions && (
-                  <div className="flex gap-2">
-                    {formData.instruction && formData.instruction.trim() && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleReview}
-                        disabled={isReviewing}
-                        className="gap-2"
-                      >
-                        {isReviewing ? (
-                          <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            {t('wizard.promptGenerator.buttons.reviewing')}
-                          </>
-                        ) : (
-                          <>
-                            <Wand2 className="h-4 w-4 text-info" />
-                            {t('wizard.promptGenerator.buttons.review')}
-                          </>
-                        )}
-                      </Button>
-                    )}
+        {!isOrchestratorType && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('edit.profile.instructions') || 'Comportamento'}</CardTitle>
+              <CardDescription>
+                {t('edit.profile.instructionsHelp') ||
+                  'Ex. Seja extrovertido, na primeira interação procure saber o nome do usuário.'}
+              </CardDescription>
+              {showAIActions && (
+                <CardAction className="flex gap-2">
+                  {formData.instruction && formData.instruction.trim() && (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowPromptModal(true)}
-                      className="gap-2"
+                      onClick={handleReview}
+                      loading={isReviewing}
                     >
-                      <Sparkles className="h-4 w-4 text-purple-500" />
-                      {t('wizard.step5.generateWithAI')}
+                      {!isReviewing && <Wand2 />}
+                      {isReviewing
+                        ? t('wizard.promptGenerator.buttons.reviewing')
+                        : t('wizard.promptGenerator.buttons.review')}
                     </Button>
-                  </div>
-                )}
-              </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPromptModal(true)}
+                  >
+                    <Sparkles className="text-primary" />
+                    {t('wizard.step5.generateWithAI')}
+                  </Button>
+                </CardAction>
+              )}
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-2">
               <Textarea
+                aria-label={t('edit.profile.instructions') || 'Comportamento'}
                 value={formData.instruction}
                 onChange={e => onFormDataChange('instruction', e.target.value)}
                 placeholder={
                   t('edit.profile.instructionsPlaceholder') ||
                   'Descreva como o agente deve se comportar durante a conversa...'
                 }
-                className="min-h-[200px]"
+                className="min-h-[280px] font-mono text-sm leading-relaxed"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>
-                  {t('edit.profile.instructionsHelp') ||
-                    'Ex. Seja extrovertido, na primeira interação procure saber o nome do usuário.'}
-                </span>
-                <span>{formData.instruction.length}/3000</span>
-              </div>
-            </div>
-          )}
-        </div>
+              <span
+                className={
+                  formData.instruction.length > 3000
+                    ? 'self-end text-destructive-foreground text-xs tabular-nums'
+                    : 'self-end text-muted-foreground text-xs tabular-nums'
+                }
+              >
+                {formData.instruction.length}/3000
+              </span>
+            </CardPanel>
+          </Card>
+        )}
       </div>
 
       {/* Prompt Generator Modal */}

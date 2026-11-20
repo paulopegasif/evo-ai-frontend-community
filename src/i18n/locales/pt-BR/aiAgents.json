@@ -1254,7 +1254,8 @@
       "title": "Configurações",
       "subtitle": "Configurações avançadas do agente",
       "comingSoon": "Em breve..."
-    }
+    },
+    "unsavedChanges": "Alterações não salvas"
   },
   "actions": {
     "save": "Salvar",

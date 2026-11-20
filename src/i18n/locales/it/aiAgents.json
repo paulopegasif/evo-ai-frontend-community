@@ -1189,7 +1189,8 @@
       "saving": "Salvataggio...",
       "saveSuccess": "Prodotti aggiornati",
       "saveError": "Impossibile aggiornare i prodotti"
-    }
+    },
+    "unsavedChanges": "Modifiche non salvate"
   },
   "actions": {
     "save": "Salva",

@@ -1237,7 +1237,8 @@
       "saving": "A guardar...",
       "saveSuccess": "Produtos atualizados",
       "saveError": "Falha ao atualizar produtos"
-    }
+    },
+    "unsavedChanges": "Alterações por guardar"
   },
   "actions": {
     "save": "Salvar",

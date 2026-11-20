@@ -1208,7 +1208,8 @@
       "saving": "Guardando...",
       "saveSuccess": "Productos actualizados",
       "saveError": "Error al actualizar productos"
-    }
+    },
+    "unsavedChanges": "Cambios sin guardar"
   },
   "actions": {
     "save": "Guardar",

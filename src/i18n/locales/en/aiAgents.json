@@ -1254,7 +1254,8 @@
       "title": "Settings",
       "subtitle": "Advanced agent settings",
       "comingSoon": "Coming soon..."
-    }
+    },
+    "unsavedChanges": "Unsaved changes"
   },
   "actions": {
     "save": "Save",
