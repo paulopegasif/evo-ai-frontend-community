@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/compat';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/compat';
-import { ScrollArea } from '@/components/ui/compat';
-import { Play, Loader2, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Spinner } from '@/components/ui/spinner';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Play, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { macrosService } from '@/services/macros/macrosService';
 import type { Macro } from '@/types/automation';
@@ -97,31 +90,35 @@ const MacrosList: React.FC<MacrosListProps> = ({ conversationId, onMacroExecuted
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <Spinner className="size-5 text-muted-foreground" />
       </div>
     );
   }
 
   if (macros.length === 0) {
     return (
-      <div className="text-center py-6">
-        <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">{t('contactSidebar.macros.noMacros')}</p>
-      </div>
+      <Empty className="py-6">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Zap />
+          </EmptyMedia>
+          <EmptyDescription>{t('contactSidebar.macros.noMacros')}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
   return (
     <ScrollArea className="max-h-[300px]">
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {macros.map(macro => (
           <div
             key={macro.id}
-            className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+            className="flex items-center justify-between gap-2 rounded-lg border bg-card px-3 py-2 transition-colors hover:bg-accent/50"
           >
-            <div className="flex-1 min-w-0 mr-2">
-              <h4 className="text-sm font-medium truncate">{macro.name}</h4>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1">
+              <h4 className="truncate font-medium text-sm">{macro.name}</h4>
+              <p className="text-muted-foreground text-xs">
                 {macro.actions.length}{' '}
                 {macro.actions.length === 1
                   ? t('contactSidebar.macros.action')
@@ -129,62 +126,36 @@ const MacrosList: React.FC<MacrosListProps> = ({ conversationId, onMacroExecuted
               </p>
             </div>
             <Button
-              size="sm"
+              size="icon-sm"
               variant="ghost"
               onClick={() => handleMacroClick(macro)}
               disabled={executingMacro === macro.id}
-              className="h-8 w-8 p-0"
+              loading={executingMacro === macro.id}
+              aria-label={`${t('contactSidebar.macros.dialog.execute')}: ${macro.name}`}
             >
-              {executingMacro === macro.id ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Play className="h-4 w-4" />
-              )}
+              <Play />
             </Button>
           </div>
         ))}
       </div>
 
-      {/* Confirmation Dialog */}
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader className="text-left space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center">
-                <Zap className="h-6 w-6 text-warning" />
-              </div>
-              <div className="flex-1 space-y-2">
-                <AlertDialogTitle className="text-lg font-semibold">
-                  {t('contactSidebar.macros.dialog.title')}
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                  {t('contactSidebar.macros.dialog.description', {
-                    name: selectedMacro?.name || '',
-                    count: selectedMacro?.actions.length || 0,
-                    actionLabel:
-                      (selectedMacro?.actions.length || 0) === 1
-                        ? t('contactSidebar.macros.action')
-                        : t('contactSidebar.macros.actions'),
-                  })}
-                </AlertDialogDescription>
-              </div>
-            </div>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-3 sm:gap-3">
-            <AlertDialogCancel className="w-full sm:w-auto">
-              {t('contactSidebar.macros.dialog.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={executeMacro}
-              className="w-full sm:w-auto bg-warning text-white hover:bg-warning focus:ring-warning"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              {t('contactSidebar.macros.dialog.execute')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        variant="default"
+        title={t('contactSidebar.macros.dialog.title')}
+        description={t('contactSidebar.macros.dialog.description', {
+          name: selectedMacro?.name || '',
+          count: selectedMacro?.actions.length || 0,
+          actionLabel:
+            (selectedMacro?.actions.length || 0) === 1
+              ? t('contactSidebar.macros.action')
+              : t('contactSidebar.macros.actions'),
+        })}
+        cancelLabel={t('contactSidebar.macros.dialog.cancel')}
+        confirmLabel={t('contactSidebar.macros.dialog.execute')}
+        onConfirm={executeMacro}
+      />
     </ScrollArea>
   );
 };
