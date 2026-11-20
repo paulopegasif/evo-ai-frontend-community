@@ -21,6 +21,10 @@ interface ConfirmDialogProps {
   loading?: boolean;
   /** Destructive by default: deletes, disconnects, removals. */
   variant?: 'destructive' | 'default';
+  /** Keeps confirm disabled, e.g. until a typed confirmation (rendered as children) matches. */
+  confirmDisabled?: boolean;
+  /** Optional icon tile shown above the title. */
+  icon?: ReactNode;
   children?: ReactNode;
 }
 
@@ -35,12 +39,26 @@ export default function ConfirmDialog({
   onConfirm,
   loading = false,
   variant = 'destructive',
+  confirmDisabled = false,
+  icon,
   children,
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={next => !loading && onOpenChange(next)}>
       <AlertDialogPopup>
         <AlertDialogHeader>
+          {icon && (
+            <div
+              className={
+                variant === 'destructive'
+                  ? 'mb-1 flex size-10 items-center justify-center rounded-lg bg-destructive/8 text-destructive-foreground [&_svg]:size-5'
+                  : 'mb-1 flex size-10 items-center justify-center rounded-lg bg-primary/12 text-primary [&_svg]:size-5'
+              }
+              aria-hidden="true"
+            >
+              {icon}
+            </div>
+          )}
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
         </AlertDialogHeader>
@@ -49,7 +67,7 @@ export default function ConfirmDialog({
           <AlertDialogClose render={<Button variant="ghost" />} disabled={loading}>
             {cancelLabel}
           </AlertDialogClose>
-          <Button variant={variant} onClick={() => void onConfirm()} loading={loading}>
+          <Button variant={variant} onClick={() => void onConfirm()} loading={loading} disabled={confirmDisabled}>
             {confirmLabel}
           </Button>
         </AlertDialogFooter>
