@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { X, Send, File, FileText, Image, Music, Video, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -38,7 +38,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
       return <Music className="h-6 w-6 text-success" />;
     }
     if (type.startsWith('video/')) {
-      return <Video className="h-6 w-6 text-purple-500" />;
+      return <Video className="h-6 w-6 text-info" />;
     }
     if (type === 'application/pdf' || type.includes('document')) {
       return <FileText className="h-6 w-6 text-destructive" />;
@@ -67,7 +67,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
   if (files.length === 0) return null;
 
   return (
-    <div className="border-t bg-muted/30 p-3">
+    <div className="p-3">
       {/* Files Preview - Horizontal Scroll */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {files.map((file, index) => {
@@ -88,13 +88,14 @@ const FilePreview: React.FC<FilePreviewProps> = ({
 
               {/* Remove Button */}
               <Button
-                variant="destructive"
-                size="sm"
+                variant="outline"
+                size="icon-xs"
                 onClick={() => onRemove(index)}
                 disabled={isSending}
-                className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label={t('a11y.remove', 'Remover')}
+                className="absolute -top-2 -right-2 rounded-full opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
               >
-                <X className="h-3 w-3" />
+                <X />
               </Button>
 
               {/* Progress Overlay */}
@@ -125,8 +126,8 @@ const FilePreview: React.FC<FilePreviewProps> = ({
             {t('messageInput.filePreview.sending')}
           </div>
         ) : (
-          <Button size="sm" onClick={() => onSend(files)} className="gap-1 h-7 text-xs">
-            <Send className="h-3 w-3" />
+          <Button size="sm" onClick={() => onSend(files)}>
+            <Send />
             {t('messageInput.filePreview.send')}
           </Button>
         )}

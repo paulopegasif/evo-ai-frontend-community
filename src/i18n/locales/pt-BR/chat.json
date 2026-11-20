@@ -81,7 +81,8 @@
       "downloadFallbackReason": {
         "serverError": "Servidor retornou {{status}} — não foi possível baixar diretamente.",
         "network": "Falha de rede ou bloqueio de CORS — não foi possível baixar diretamente."
-      }
+      },
+      "download": "Baixar"
     },
     "messageImage": {
       "downloadStarted": "Download iniciado",
@@ -284,7 +285,8 @@
       "whatsappMessage": "Você só pode responder a esta conversa usando um modelo de mensagem devido a",
       "cannotReply": "Você não pode responder porque",
       "linkText": "Restrições de janela de mensagem de 24 horas",
-      "zapiDisconnected": "WhatsApp desconectado. Conecte o número para enviar mensagens."
+      "zapiDisconnected": "WhatsApp desconectado. Conecte o número para enviar mensagens.",
+      "readOnlyMirror": "Cópia das conversas do Bitrix24, somente leitura. Responda pelo Bitrix24 até o WhatsApp ser conectado aqui."
     },
     "noteBanner": {
       "title": "Nota do atendimento",
@@ -339,7 +341,8 @@
     "closeConversation": "Fechar conversa",
     "phoneNumber": "Número de telefone",
     "openContactPanel": "Abrir detalhes do contato",
-    "closeContactPanel": "Fechar detalhes do contato"
+    "closeContactPanel": "Fechar detalhes do contato",
+    "openContact": "Ver detalhes do contato"
   },
   "chatSidebar": {
     "segments": {
@@ -399,7 +402,8 @@
       "all": "Todas",
       "chipCleared": "Não lidas/Grupos não combinam com esta aba e foram removidos"
     },
-    "draftPrefix": "Rascunho:"
+    "draftPrefix": "Rascunho:",
+    "loadMore": "Carregar mais"
   },
   "chatTabs": {
     "chat": "Chat"

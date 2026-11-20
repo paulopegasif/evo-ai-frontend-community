@@ -4,11 +4,12 @@ import { FacebookCommentModeration } from '@/types/channels/inbox';
 
 import { useLanguage } from '@/hooks/useLanguage';
 
-import { Button } from '@/components/ui/compat';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/compat';
-import { Badge } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Spinner } from '@/components/ui/spinner';
 
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 import MessageBubble from '@/components/chat/messages/MessageBubble';
 import PostPreview from '@/components/chat/messages/PostPreview';
@@ -316,7 +317,7 @@ const MessageList: React.FC<MessageListProps> = ({
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Spinner className="size-6 text-muted-foreground" />
           <div className="text-sm text-muted-foreground">{t('messages.messageList.loadingConversation')}</div>
         </div>
       </div>
@@ -328,7 +329,7 @@ const MessageList: React.FC<MessageListProps> = ({
       {/* Messages Container */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-scroll overflow-x-hidden p-4"
+        className="flex-1 overflow-y-scroll overflow-x-hidden px-3 py-4 md:px-6"
         onScroll={handleScroll}
         style={{ scrollBehavior: 'auto' }}
       >
@@ -338,9 +339,9 @@ const MessageList: React.FC<MessageListProps> = ({
           {/* Loading mensagens antigas */}
           {isLoadingMore && (
             <div className="flex justify-center py-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">{t('messages.messageList.loadingPrevious')}</span>
+              <div role="status" className="flex items-center gap-2 text-muted-foreground">
+                <Spinner className="size-4" />
+                <span className="text-xs">{t('messages.messageList.loadingPrevious')}</span>
               </div>
             </div>
           )}
@@ -348,8 +349,8 @@ const MessageList: React.FC<MessageListProps> = ({
           {/* Início da conversa */}
           {!hasMoreMessages && messages.length > 0 && (
             <div className="text-center py-4">
-              <div className="inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-                <div className="w-1.5 h-1.5 bg-muted-foreground/50 rounded-full"></div>
+              <div className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-muted-foreground text-xs">
+                <div className="size-1.5 rounded-full bg-muted-foreground/50"></div>
                 {t('messages.messageList.conversationStart')}
               </div>
             </div>
@@ -431,9 +432,9 @@ const MessageList: React.FC<MessageListProps> = ({
                       <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-border/40 dark:bg-border/30" />
 
                       {/* Avatar pequeno para replies */}
-                      <Avatar className="w-6 h-6 flex-shrink-0 ml-2 relative z-10">
+                      <Avatar className="relative z-10 ml-2 size-6 flex-shrink-0">
                         <AvatarImage src={reply.sender?.thumbnail} />
-                        <AvatarFallback className={isFromBotReply ? 'bg-purple-100 text-purple-700 text-xs' : isFromAgentReply ? 'bg-success/12 text-success-foreground text-xs' : 'text-xs'}>
+                        <AvatarFallback className={isFromBotReply ? 'bg-info/12 text-info-foreground text-xs' : isFromAgentReply ? 'bg-success/12 text-success-foreground text-xs' : 'text-xs'}>
                           {isFromBotReply ? '🤖' : reply.sender?.name?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
@@ -445,7 +446,7 @@ const MessageList: React.FC<MessageListProps> = ({
                             {reply.sender?.name || t('messages.messageBubble.userFallback')}
                           </span>
                           {isFromAgentReply && (
-                            <Badge variant="outline" className="h-3 px-1 text-[9px] bg-success/16 text-success-foreground border-success">
+                            <Badge variant="success" size="sm">
                               {t('messages.messageBubble.agent.badge')}
                             </Badge>
                           )}
@@ -511,9 +512,9 @@ const MessageList: React.FC<MessageListProps> = ({
                     {/* Mensagem raiz - estilo Facebook (sempre à esquerda) */}
                     <div data-message-id={rootMessage.id} className="flex items-start gap-2">
                       {/* Avatar sempre visível */}
-                      <Avatar className="w-8 h-8 flex-shrink-0">
+                      <Avatar className="size-8 flex-shrink-0">
                         <AvatarImage src={rootMessage.sender?.thumbnail} />
-                        <AvatarFallback className={isFromBotRoot ? 'bg-purple-100 text-purple-700' : isFromAgentRoot ? 'bg-success/12 text-success-foreground' : ''}>
+                        <AvatarFallback className={isFromBotRoot ? 'bg-info/12 text-info-foreground' : isFromAgentRoot ? 'bg-success/12 text-success-foreground' : ''}>
                           {isFromBotRoot ? '🤖' : rootMessage.sender?.name?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
@@ -525,12 +526,12 @@ const MessageList: React.FC<MessageListProps> = ({
                             {rootMessage.sender?.name || t('messages.messageBubble.userFallback')}
                           </span>
                           {isFromAgentRoot && (
-                            <Badge variant="outline" className="h-4 px-1 text-[10px] bg-success/16 text-success-foreground border-success">
+                            <Badge variant="success" size="sm">
                               {t('messages.messageBubble.agent.badge')}
                             </Badge>
                           )}
                           {isFromBotRoot && (
-                            <Badge variant="outline" className="h-4 px-1 text-[10px] bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-700">
+                            <Badge variant="info" size="sm">
                               {t('messages.messageBubble.bot.badge')}
                             </Badge>
                           )}
@@ -622,13 +623,15 @@ const MessageList: React.FC<MessageListProps> = ({
       {/* Botão voltar ao final */}
       {!isNearBottom && (
         <div className="absolute bottom-4 right-4 z-10">
-          <Button aria-label={t('a11y.scrollToBottom', 'Ir para a última mensagem')} title={t('a11y.scrollToBottom', 'Ir para a última mensagem')}
+          <Button
+            aria-label={t('a11y.scrollToBottom', 'Ir para a última mensagem')}
+            title={t('a11y.scrollToBottom', 'Ir para a última mensagem')}
             size="icon"
-            variant="secondary"
-            className="rounded-full shadow-lg border bg-background/95 backdrop-blur-sm hover:bg-accent"
+            variant="outline"
+            className="rounded-full shadow-md"
             onClick={scrollToBottom}
           >
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown />
           </Button>
         </div>
       )}

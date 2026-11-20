@@ -18,8 +18,7 @@ vi.mock('@/components/channels/ChannelIcon', () => ({
 // field-priority logic in ContactAvatar.tsx, which is what EVO-1012 needs to
 // regression-pin (a rename like `thumbnail` → `avatar_thumb` in the API would
 // silently break the conversation list, header, sidebar, and /contacts pages).
-vi.mock('@/components/ui/compat', () => ({
-  ...(() => ({
+vi.mock('@/components/ui/avatar', () => ({
   Avatar: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div data-testid="avatar-root" className={className}>
       {children}
@@ -32,16 +31,12 @@ vi.mock('@/components/ui/compat', () => ({
       {children}
     </div>
   ),
-}))(),
-  ...(() => ({
-  TooltipProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+vi.mock('@/components/ui/tooltip', () => ({
   Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   TooltipTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  TooltipContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}))(),
+  TooltipPopup: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
-
-
 
 describe('ContactAvatar (EVO-1012)', () => {
   it('renders avatar_url when present (priority 1)', () => {

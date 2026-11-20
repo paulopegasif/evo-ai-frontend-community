@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-} from '@/components/ui/compat';
-import { Button } from '@/components/ui/compat';
-import { Textarea } from '@/components/ui/compat';
-import { Loader2 } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Message } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import { htmlToPlainText } from './messageErrors';
@@ -49,7 +50,7 @@ const EditMessageDialog: React.FC<EditMessageDialogProps> = ({ message, open, on
 
   return (
     <Dialog open={open} onOpenChange={next => !saving && onOpenChange(next)}>
-      <DialogContent className="sm:max-w-md">
+      <DialogPopup className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t('messages.messageBubble.editDialog.title')}</DialogTitle>
           <DialogDescription>
@@ -58,6 +59,7 @@ const EditMessageDialog: React.FC<EditMessageDialogProps> = ({ message, open, on
               : t('messages.messageBubble.editDialog.description')}
           </DialogDescription>
         </DialogHeader>
+        <DialogPanel>
         <Textarea
           value={value}
           onChange={e => setValue(e.target.value)}
@@ -74,16 +76,16 @@ const EditMessageDialog: React.FC<EditMessageDialogProps> = ({ message, open, on
           aria-label={t('messages.messageBubble.editDialog.title')}
           className="resize-none"
         />
+        </DialogPanel>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+          <DialogClose render={<Button variant="ghost" />} disabled={saving}>
             {t('messages.messageBubble.editDialog.cancel')}
-          </Button>
-          <Button onClick={() => void handleSave()} disabled={!canSave}>
-            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          </DialogClose>
+          <Button onClick={() => void handleSave()} disabled={!canSave && !saving} loading={saving}>
             {t('messages.messageBubble.editDialog.save')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 };

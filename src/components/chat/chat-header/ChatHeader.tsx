@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   ArrowLeft,
   X,
@@ -15,16 +16,17 @@ import {
   Check,
 } from 'lucide-react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuLabel,
-} from '@/components/ui/compat';
+  Menu,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuPopup,
+  MenuSeparator,
+  MenuSub,
+  MenuSubPopup,
+  MenuSubTrigger,
+  MenuTrigger,
+} from '@/components/ui/menu';
 import { Conversation } from '@/types/chat/api';
 import type { Pipeline, PipelineStage } from '@/types/analytics';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';
@@ -246,8 +248,9 @@ const ChatHeader = ({
   const renderPipelineSubmenuContent = () => {
     if (pipelinesLoadFailed) {
       return (
-        <DropdownMenuLabel
-          className="text-destructive text-xs cursor-pointer"
+        <MenuItem
+          closeOnClick={false}
+          className="text-destructive-foreground text-xs"
           onClick={async () => {
             setPipelinesLoadFailed(false);
             setIsLoadingPipelines(true);
@@ -263,16 +266,16 @@ const ChatHeader = ({
           }}
         >
           {t('pipeline.loadError')}
-        </DropdownMenuLabel>
+        </MenuItem>
       );
     }
 
     if (isLoadingPipelines || !pipelinesLoaded) {
-      return <DropdownMenuLabel className="text-xs">{t('pipeline.loading')}</DropdownMenuLabel>;
+      return <div className="px-2 py-1.5 text-muted-foreground text-xs">{t('pipeline.loading')}</div>;
     }
 
     if (allPipelines.length === 0) {
-      return <DropdownMenuLabel className="text-xs">{t('pipeline.noPipelines')}</DropdownMenuLabel>;
+      return <div className="px-2 py-1.5 text-muted-foreground text-xs">{t('pipeline.noPipelines')}</div>;
     }
 
     const currentPipelines = convPipelineData?.pipelines ?? [];
@@ -285,47 +288,45 @@ const ChatHeader = ({
             ? findItemInPipeline(convInThisPipeline, String(conversation.id))
             : undefined;
           return (
-            <DropdownMenuSub key={pipeline.id}>
-              <DropdownMenuSubTrigger className="flex items-center gap-2">
-                <GitBranch className="h-4 w-4" />
+            <MenuSub key={pipeline.id}>
+              <MenuSubTrigger>
+                <GitBranch />
                 {pipeline.name}
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
+              </MenuSubTrigger>
+              <MenuSubPopup>
                 {isLoadingConvPipelines ? (
-                  <DropdownMenuLabel className="text-xs">{t('pipeline.loading')}</DropdownMenuLabel>
+                  <div className="px-2 py-1.5 text-muted-foreground text-xs">{t('pipeline.loading')}</div>
                 ) : (
                   <>
                     {(pipeline.stages ?? []).map(stage => {
                       const isCurrentStage = currentItem?.stage_id === stage.id;
 
                       return (
-                        <DropdownMenuItem
+                        <MenuItem
                           key={stage.id}
                           onClick={() => handlePipelineStageSelect(pipeline, stage)}
-                          className="flex items-center gap-2"
                         >
-                          {isCurrentStage && <Check className="h-3 w-3 text-primary" />}
-                          {!isCurrentStage && <span className="w-3" />}
+                          {isCurrentStage ? <Check className="text-primary" /> : <span className="size-4" />}
                           {stage.name}
-                        </DropdownMenuItem>
+                        </MenuItem>
                       );
                     })}
                     {convInThisPipeline && (
                       <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
+                        <MenuSeparator />
+                        <MenuItem
                           onClick={() => handleRemoveFromPipeline(convInThisPipeline)}
-                          className="flex items-center gap-2 text-destructive focus:text-destructive"
+                          variant="destructive"
                         >
-                          <X className="h-4 w-4" />
+                          <X />
                           {t('pipeline.removeFrom')}
-                        </DropdownMenuItem>
+                        </MenuItem>
                       </>
                     )}
                   </>
                 )}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+              </MenuSubPopup>
+            </MenuSub>
           );
         })}
       </>
@@ -339,123 +340,120 @@ const ChatHeader = ({
   // aberta — ver spec-extraida.md.
   const renderConversationStatusDropdown = () => {
     return (
-      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button aria-label={t('a11y.moreActions', 'Mais ações')} title={t('a11y.moreActions', 'Mais ações')} variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <MoreVertical className="h-4 w-4 fill-current text-primary" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+      <Menu open={menuOpen} onOpenChange={setMenuOpen}>
+        <MenuTrigger
+          render={<Button aria-label={t('a11y.moreActions', 'Mais ações')} variant="ghost" size="icon-sm" />}
+        >
+          <MoreVertical />
+        </MenuTrigger>
+        <MenuPopup align="end" className="w-56">
           {/* Pipeline Actions */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="flex items-center gap-2">
-              <GitBranch className="h-4 w-4 text-primary" />
+          <MenuSub>
+            <MenuSubTrigger>
+              <GitBranch className="text-primary" />
               {t('pipeline.addTo')}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-48">
+            </MenuSubTrigger>
+            <MenuSubPopup className="w-48">
               {renderPipelineSubmenuContent()}
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+            </MenuSubPopup>
+          </MenuSub>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onAssignAgent(conversation)}
-            className="flex items-center gap-2"
           >
-            <UserIcon className="h-4 w-4 text-primary" />
+            <UserIcon className="text-primary" />
             {t('chatHeader.actions.assignAgent')}
-          </DropdownMenuItem>
+          </MenuItem>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onAssignTeam(conversation)}
-            className="flex items-center gap-2"
           >
-            <Users className="h-4 w-4 text-primary" />
+            <Users className="text-primary" />
             {t('chatHeader.actions.assignTeam')}
-          </DropdownMenuItem>
+          </MenuItem>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onAssignTag(conversation)}
-            className="flex items-center gap-2"
           >
-            <Tag className="h-4 w-4 text-primary" />
+            <Tag className="text-primary" />
             {t('chatHeader.actions.assignTag')}
-          </DropdownMenuItem>
+          </MenuItem>
 
-          <DropdownMenuSeparator />
+          <MenuSeparator />
 
-          <DropdownMenuLabel className="text-xs uppercase tracking-wide text-muted-foreground">
-            {t('chatHeader.actions.priorityLabel', 'Prioridade')}
-          </DropdownMenuLabel>
+          <MenuGroup>
+          <MenuGroupLabel>{t('chatHeader.actions.priorityLabel', 'Prioridade')}</MenuGroupLabel>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onSetPriority(conversation, 'urgent')}
-            className="flex items-center gap-2"
           >
-            <AlertTriangle className="h-4 w-4 text-destructive-foreground" />
+            <AlertTriangle className="text-destructive-foreground" />
             {t('chatHeader.actions.priorityUrgent')}
-          </DropdownMenuItem>
+          </MenuItem>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onSetPriority(conversation, 'high')}
-            className="flex items-center gap-2"
           >
-            <ArrowUp className="h-4 w-4 text-orange-600" />
+            <ArrowUp className="text-warning-foreground" />
             {t('chatHeader.actions.priorityHigh')}
-          </DropdownMenuItem>
+          </MenuItem>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onSetPriority(conversation, 'medium')}
-            className="flex items-center gap-2"
           >
-            <Minus className="h-4 w-4 text-info-foreground" />
+            <Minus className="text-info-foreground" />
             {t('chatHeader.actions.priorityMedium')}
-          </DropdownMenuItem>
+          </MenuItem>
 
-          <DropdownMenuItem
+          <MenuItem
             onClick={() => onSetPriority(conversation, 'low')}
-            className="flex items-center gap-2"
           >
-            <ArrowDown className="h-4 w-4 text-muted-foreground" />
+            <ArrowDown className="text-muted-foreground" />
             {t('chatHeader.actions.priorityLow')}
-          </DropdownMenuItem>
+          </MenuItem>
 
           {conversation.priority && (
-            <DropdownMenuItem
+            <MenuItem
               onClick={() => onSetPriority(conversation, null)}
-              className="flex items-center gap-2"
             >
-              <X className="h-4 w-4" />
+              <X />
               {t('chatHeader.actions.removePriority')}
-            </DropdownMenuItem>
+            </MenuItem>
           )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </MenuGroup>
+        </MenuPopup>
+      </Menu>
     );
   };
 
   return (
-    <div className="relative z-20 flex-shrink-0 p-3 md:p-4 border-b bg-background/95 backdrop-blur-sm">
+    <div className="relative z-20 flex-shrink-0 border-b bg-background/95 px-3 py-2.5 backdrop-blur-sm md:px-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {/* Back button for mobile */}
-          <Button aria-label={t('a11y.back', 'Voltar')} title={t('a11y.back', 'Voltar')} variant="ghost" size="sm" className="md:hidden" onClick={onBackClick}>
-            <ArrowLeft className="h-4 w-4" />
+          <Button aria-label={t('a11y.back', 'Voltar')} variant="ghost" size="icon-sm" className="md:hidden" onClick={onBackClick}>
+            <ArrowLeft />
           </Button>
-          <div
-            className="shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all rounded-full"
+          <button
+            type="button"
+            aria-label={t('chatHeader.openContact', 'Ver detalhes do contato')}
+            className="shrink-0 cursor-pointer rounded-full outline-none transition-shadow hover:ring-2 hover:ring-primary/20 focus-visible:ring-2 focus-visible:ring-ring"
             onClick={onContactSidebarOpen}
           >
             <ContactAvatar contact={conversation.contact} />
-          </div>
+          </button>
           {/* min-w-0 + truncate keep the header to two lines at ~1024px instead
               of wrapping the name, the status pill and the inbox name. */}
           <div className="min-w-0 overflow-hidden">
             <div className="flex min-w-0 items-baseline gap-2">
-              <h3
-                className="truncate font-semibold cursor-pointer hover:text-primary transition-colors"
-                onClick={onContactSidebarOpen}
-              >
-                {conversation.contact?.name || t('chatHeader.contactNoName')}
+              <h3 className="min-w-0 truncate font-semibold text-base leading-6">
+                <button
+                  type="button"
+                  className="max-w-full cursor-pointer truncate rounded-sm text-left outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                  onClick={onContactSidebarOpen}
+                >
+                  {conversation.contact?.name || t('chatHeader.contactNoName')}
+                </button>
               </h3>
               {phoneDisplay && (
                 <span
@@ -467,7 +465,7 @@ const ChatHeader = ({
                 </span>
               )}
             </div>
-            <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex min-w-0 items-center gap-2 text-muted-foreground text-xs">
               {inboxName && <span className="min-w-0 shrink truncate">{inboxName}</span>}
               {(() => {
                 const dotColor = (STATUS_META[conversation.status] || STATUS_META.snoozed).color;
@@ -484,7 +482,7 @@ const ChatHeader = ({
                 return (
                   <span
                     title={pillLabel}
-                    className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-semibold leading-none text-foreground"
+                    className="inline-flex h-5 min-w-0 items-center gap-1.5 whitespace-nowrap rounded-sm border bg-muted/72 px-1.5 font-medium text-foreground text-xs leading-none"
                   >
                     <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: dotColor }} />
                     <span className="truncate">{pillLabel}</span>
@@ -495,7 +493,7 @@ const ChatHeader = ({
           </div>
         </div>
         {/* Ações do chat */}
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1">
           {/* Botão de status: cor + próxima ação mudam conforme o status atual */}
           <ConversationStatusButton
             status={currentStatus}
@@ -506,18 +504,25 @@ const ChatHeader = ({
           />
 
           {/* Dropdown de ações da conversa */}
-          {renderConversationStatusDropdown()}
+          <span className="ms-1">{renderConversationStatusDropdown()}</span>
 
           {/* Botão fechar conversa */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onCloseConversation}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">{t('chatHeader.closeConversation')}</span>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={onCloseConversation}
+                  aria-label={t('chatHeader.closeConversation')}
+                  className="text-muted-foreground hover:text-foreground"
+                />
+              }
+            >
+              <X />
+            </TooltipTrigger>
+            <TooltipPopup>{t('chatHeader.closeConversation')}</TooltipPopup>
+          </Tooltip>
         </div>
       </div>
     </div>

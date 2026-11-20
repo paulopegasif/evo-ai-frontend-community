@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Clock, MessageCircle, Pause } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/compat';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getStatusConfig } from '@/utils/chat/conversationStatus';
 
@@ -26,30 +26,24 @@ const ConversationStatusIcon: React.FC<ConversationStatusIconProps> = ({ status,
   const containerSize = size === 'xs' ? 'w-4 h-4' : size === 'sm' ? 'w-5 h-5' : 'w-6 h-6';
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            className={`
-              ${containerSize} flex-shrink-0 rounded-full ${config.bgColor}
-              flex items-center justify-center cursor-help
-              hover:scale-110 transition-transform duration-200
-            `}
-          >
-            <Icon className={`${iconSize} ${config.color}`} />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent
-          side="top"
-          className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
-        >
-          <div className="text-center">
-            <div className="text-sm font-semibold text-foreground">{config.label}</div>
-            <div className="text-xs text-muted-foreground mt-1">{config.description}</div>
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <span
+            aria-label={config.label}
+            className={`${containerSize} flex flex-shrink-0 cursor-help items-center justify-center rounded-full ${config.bgColor}`}
+          />
+        }
+      >
+        <Icon aria-hidden="true" className={`${iconSize} ${config.color}`} />
+      </TooltipTrigger>
+      <TooltipPopup side="top" className="px-1 py-1">
+        <div className="text-center">
+          <div className="font-semibold text-foreground text-sm">{config.label}</div>
+          <div className="mt-0.5 text-muted-foreground text-xs">{config.description}</div>
+        </div>
+      </TooltipPopup>
+    </Tooltip>
   );
 };
 

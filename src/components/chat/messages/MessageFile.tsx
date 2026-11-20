@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { Download, FileText, File, Image, Music, Video } from 'lucide-react';
 import { toast } from 'sonner';
 import { Attachment } from '@/types/chat/api';
@@ -68,33 +68,33 @@ const MessageFile: React.FC<MessageFileProps> = ({ attachments }) => {
   const getFileIcon = (extension?: string) => {
     if (!extension)
       return (
-        <File className="h-6 w-6 text-primary-foreground/80 dark:text-primary-foreground/70" />
+        <File className="size-5" />
       );
 
     const ext = extension.toLowerCase();
 
     if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
       return (
-        <Image className="h-6 w-6 text-primary-foreground/80 dark:text-primary-foreground/70" />
+        <Image className="size-5" />
       );
     }
     if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
       return (
-        <Music className="h-6 w-6 text-primary-foreground/80 dark:text-primary-foreground/70" />
+        <Music className="size-5" />
       );
     }
     if (['mp4', 'avi', 'mov', 'wmv'].includes(ext)) {
       return (
-        <Video className="h-6 w-6 text-primary-foreground/80 dark:text-primary-foreground/70" />
+        <Video className="size-5" />
       );
     }
     if (['pdf', 'doc', 'docx', 'txt'].includes(ext)) {
       return (
-        <FileText className="h-6 w-6 text-primary-foreground/80 dark:text-primary-foreground/70" />
+        <FileText className="size-5" />
       );
     }
 
-    return <File className="h-6 w-6 text-primary-foreground/80 dark:text-primary-foreground/70" />;
+    return <File className="size-5" />;
   };
 
   return (
@@ -107,31 +107,34 @@ const MessageFile: React.FC<MessageFileProps> = ({ attachments }) => {
         .map((attachment, index) => (
         <div
           key={attachment.id || index}
-          className="flex items-center gap-3 py-2 transition-colors w-full"
+          className="flex w-full items-center gap-3 rounded-lg border bg-background/64 p-2"
           style={{
             minWidth: '200px',
             maxWidth: 'min(280px, calc(100vw - 120px))',
           }}
         >
-          {getFileIcon(attachment.extension!)}
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+            {getFileIcon(attachment.extension!)}
+          </span>
 
           <div className="flex-1 min-w-0">
             <div className="font-medium truncate text-sm">
               {attachment.fallback_title || t('messages.messageFile.fileFallbackTitle')}
             </div>
-            <div className="text-xs text-primary-foreground/80 dark:text-primary-foreground/70">
+            <div className="text-muted-foreground text-xs">
               {formatFileSize(attachment.file_size)}
               {attachment.extension && ` • ${attachment.extension.toUpperCase()}`}
             </div>
           </div>
 
           <Button
-            size="sm"
+            size="icon-sm"
             variant="ghost"
             onClick={() => downloadFile(attachment)}
-            className="h-8 w-8 rounded-full hover:bg-primary-foreground/20 text-primary-foreground/80 dark:text-primary-foreground/70 flex-shrink-0 p-0"
+            aria-label={t('messages.messageFile.download', 'Baixar')}
+            className="flex-shrink-0 text-muted-foreground"
           >
-            <Download className="h-3 w-3" />
+            <Download />
           </Button>
         </div>
       ))}

@@ -1,5 +1,5 @@
 import { LockIcon, MessageSquareIcon } from 'lucide-react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { ReplyMode } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 

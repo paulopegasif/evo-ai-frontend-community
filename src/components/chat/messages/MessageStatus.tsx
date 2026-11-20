@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { Check, CheckCheck, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Message } from '@/types/chat/api';
@@ -58,9 +58,9 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
         const reason = explained.key ? t(explained.key) : explained.raw;
         return (
           <Button
-            size="sm"
+            size="xs"
             variant="ghost"
-            className="h-auto p-0 text-destructive hover:text-destructive/80"
+            className="h-auto gap-1 px-1 py-0 text-destructive-foreground hover:bg-destructive/8"
             onClick={e => {
               e.preventDefault();
               e.stopPropagation();
@@ -74,8 +74,8 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
             title={reason || t('messages.messageStatus.sendFailed')}
             aria-label={t('messages.messageStatus.sendFailed')}
           >
-            <AlertCircle className="h-3 w-3" />
-            <span className="ml-1 text-xs">{t('messages.messageStatus.failedText')}</span>
+            <AlertCircle className="size-3" />
+            <span className="text-[11px]">{t('messages.messageStatus.failedText')}</span>
           </Button>
         );
       }
@@ -97,7 +97,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
   if (variant === 'tuck') {
     return (
       <span
-        className={`float-right inline-flex items-center gap-1 mt-1.5 ml-3.5 text-[11px] leading-none ${timeTextClass}`}
+        className={`float-right mt-1.5 ml-3 inline-flex items-center gap-1 text-[11px] tabular-nums leading-none ${timeTextClass}`}
       >
         {editedLabel}
         <span>{formatMessageTime(message.created_at)}</span>
@@ -108,7 +108,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
 
   return (
     <div
-      className={`flex items-center gap-1 mt-1.5 text-xs ${isOwn ? 'justify-end' : 'justify-start'}`}
+      className={`mt-1.5 flex items-center gap-1 text-[11px] tabular-nums ${isOwn ? 'justify-end' : 'justify-start'}`}
     >
       {editedLabel}
       <span className={timeTextClass}>{formatMessageTime(message.created_at)}</span>
