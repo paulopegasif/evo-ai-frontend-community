@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Input } from '@/components/ui/compat';
-import { Card } from '@/components/ui/compat';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import type { MessageTemplate } from '@/types/channels/inbox';
 
@@ -43,80 +43,64 @@ const TemplatesPicker: React.FC<TemplatesPickerProps> = ({ isWhatsAppCloud, temp
 
   return (
     <div className="w-full">
-      {/* Campo de busca */}
-      <div className="relative mb-3">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
+      <InputGroup className="mb-3">
+        <InputGroupAddon>
+          <Search aria-hidden="true" />
+        </InputGroupAddon>
+        <InputGroupInput
           type="search"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder={t('messageTemplates.picker.searchPlaceholder')}
-          className="pl-9 bg-muted/50 border-muted-foreground/20 focus:bg-background"
+          aria-label={t('messageTemplates.picker.searchPlaceholder')}
         />
-      </div>
+      </InputGroup>
 
-      {/* Lista de templates */}
-      <Card className="max-h-[300px] overflow-y-auto border border-border">
-        <div className="p-2 space-y-2">
-          {filteredTemplates.length > 0 ? (
-            filteredTemplates.map((template, index) => {
-              const isEnabled = isWhatsAppCloud ? isTemplateSendable(template) : true;
-              const badgeKey = isWhatsAppCloud ? getStatusBadgeKey(template) : null;
-              const showBadge = badgeKey !== null && badgeKey !== 'approved';
+      <div className="max-h-[320px] divide-y overflow-y-auto rounded-xl border bg-card">
+        {filteredTemplates.length > 0 ? (
+          filteredTemplates.map((template, index) => {
+            const isEnabled = isWhatsAppCloud ? isTemplateSendable(template) : true;
+            const badgeKey = isWhatsAppCloud ? getStatusBadgeKey(template) : null;
+            const showBadge = badgeKey !== null && badgeKey !== 'approved';
 
-              return (
-                <div key={template.id || index}>
-                  <button
-                    type="button"
-                    onClick={() => isEnabled && onSelect(template)}
-                    disabled={!isEnabled}
-                    title={
-                      !isEnabled
-                        ? t('messageTemplates.picker.status.disabledTooltip')
-                        : undefined
-                    }
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      isEnabled
-                        ? 'hover:bg-accent cursor-pointer'
-                        : 'opacity-60 cursor-not-allowed'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium">{template.name}</p>
-                        {showBadge && (
-                          <span className="inline-block px-2 py-0.5 text-xs rounded-md bg-warning/12 text-warning-foreground">
-                            {t(`messageTemplates.picker.status.${badgeKey}`)}
-                          </span>
-                        )}
-                      </div>
-                      <span className="inline-block px-2 py-1 text-xs bg-muted rounded-md">
-                        {t('messageTemplates.picker.labels.language')}: {template.language}
-                      </span>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-1">
-                        {t('messageTemplates.picker.labels.category')}
-                      </p>
-                      <p className="text-xs">{template.category}</p>
-                    </div>
-                  </button>
-
-                  {index < filteredTemplates.length - 1 && (
-                    <div className="border-b border-border my-2 mx-3" />
-                  )}
+            return (
+              <button
+                key={template.id || index}
+                type="button"
+                onClick={() => isEnabled && onSelect(template)}
+                disabled={!isEnabled}
+                title={!isEnabled ? t('messageTemplates.picker.status.disabledTooltip') : undefined}
+                className={`block w-full px-3.5 py-2.5 text-left outline-none transition-colors first:rounded-t-xl last:rounded-b-xl focus-visible:bg-accent ${
+                  isEnabled ? 'cursor-pointer hover:bg-accent/60' : 'cursor-not-allowed opacity-60'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="truncate font-medium text-sm">{template.name}</p>
+                    {showBadge && (
+                      <Badge variant="warning" size="sm">
+                        {t(`messageTemplates.picker.status.${badgeKey}`)}
+                      </Badge>
+                    )}
+                  </div>
+                  <Badge variant="outline" size="sm" className="flex-shrink-0">
+                    {t('messageTemplates.picker.labels.language')}: {template.language}
+                  </Badge>
                 </div>
-              );
-            })
-          ) : (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              {t('messageTemplates.picker.noTemplatesFound')}{' '}
-              {searchQuery && <strong>{searchQuery}</strong>}
-            </div>
-          )}
-        </div>
-      </Card>
+                <p className="mt-1 text-muted-foreground text-xs">
+                  {t('messageTemplates.picker.labels.category')}:{' '}
+                  <span className="text-foreground/80">{template.category}</span>
+                </p>
+              </button>
+            );
+          })
+        ) : (
+          <div className="p-6 text-center text-muted-foreground text-sm">
+            {t('messageTemplates.picker.noTemplatesFound')}{' '}
+            {searchQuery && <strong className="text-foreground">{searchQuery}</strong>}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

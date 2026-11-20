@@ -1,14 +1,16 @@
 import React from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-} from '@/components/ui/compat';
-import { Loader2, Copy, Check } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -45,8 +47,8 @@ const AIResultModal: React.FC<AIResultModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
+    <Dialog open={isOpen} onOpenChange={open => { if (!open) onClose(); }}>
+      <DialogPopup className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>{t('aiAssistance.resultModal.title', { actionLabel: displayActionLabel })}</DialogTitle>
           <DialogDescription>
@@ -56,50 +58,42 @@ const AIResultModal: React.FC<AIResultModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-4 py-4">
+        <DialogPanel className="space-y-4">
           {originalMessage && (
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
+            <section>
+              <h4 className="mb-1.5 font-medium text-muted-foreground text-xs">
                 {t('aiAssistance.resultModal.originalMessage')}
               </h4>
-              <div className="p-3 bg-muted/30 rounded-md text-sm whitespace-pre-wrap">
+              <div className="whitespace-pre-wrap rounded-lg border bg-muted/40 px-3 py-2 text-sm">
                 {originalMessage}
               </div>
-            </div>
+            </section>
           )}
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-medium text-muted-foreground">
+          <section>
+            <div className="mb-1.5 flex items-center justify-between">
+              <h4 className="font-medium text-muted-foreground text-xs">
                 {t('aiAssistance.resultModal.generatedResult')}
               </h4>
               {generatedMessage && !isLoading && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopy}
-                  className="h-7 px-2"
-                >
-                  {copied ? (
-                    <Check className="h-3 w-3 text-success" />
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                  <span className="ml-1 text-xs">
-                    {copied
-                      ? t('aiAssistance.resultModal.copy.copied')
-                      : t('aiAssistance.resultModal.copy.label')}
-                  </span>
+                <Button variant="ghost" size="xs" onClick={handleCopy}>
+                  {copied ? <Check className="text-success-foreground" /> : <Copy />}
+                  {copied
+                    ? t('aiAssistance.resultModal.copy.copied')
+                    : t('aiAssistance.resultModal.copy.label')}
                 </Button>
               )}
             </div>
-            <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-sm min-h-[100px] whitespace-pre-wrap">
+            <div
+              aria-live="polite"
+              aria-busy={isLoading || undefined}
+              className="min-h-[100px] whitespace-pre-wrap rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm"
+            >
               {isLoading ? (
-                <div className="flex items-center justify-center h-[100px]">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  <span className="ml-2 text-muted-foreground">
-                    {t('aiAssistance.resultModal.processing')}
-                  </span>
+                <div className="space-y-2 py-1" aria-label={t('aiAssistance.resultModal.processing')}>
+                  <Skeleton className="h-3.5 w-full" />
+                  <Skeleton className="h-3.5 w-11/12" />
+                  <Skeleton className="h-3.5 w-3/5" />
                 </div>
               ) : generatedMessage ? (
                 generatedMessage
@@ -109,18 +103,18 @@ const AIResultModal: React.FC<AIResultModalProps> = ({
                 </span>
               )}
             </div>
-          </div>
-        </div>
+          </section>
+        </DialogPanel>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+          <Button variant="ghost" onClick={onClose} disabled={isLoading}>
             {t('aiAssistance.resultModal.actions.cancel')}
           </Button>
           <Button onClick={onApply} disabled={isLoading || !generatedMessage}>
             {t('aiAssistance.resultModal.actions.apply')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 };

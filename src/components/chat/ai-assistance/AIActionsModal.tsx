@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/compat';
-import { Button } from '@/components/ui/compat';
+import { Dialog, DialogDescription, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Sparkles, FileText, Type, Minimize2, Maximize2, Smile, Briefcase, Lightbulb, Shield } from 'lucide-react';
 import { AIAction, AIActionType } from '@/types/chat/ai-assistance';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -62,11 +55,11 @@ const AIActionsModal: React.FC<AIActionsModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isOpen} onOpenChange={open => { if (!open) onClose(); }}>
+      <DialogPopup className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="size-4.5 text-primary" />
             {t('aiAssistance.title')}
           </DialogTitle>
           <DialogDescription>
@@ -76,32 +69,29 @@ const AIActionsModal: React.FC<AIActionsModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-2 pt-2">
+        <DialogPanel className="grid gap-1.5">
           {actions.map(action => (
-            <Button
+            <button
               key={action.key}
-              variant="outline"
-              className="w-full min-w-0 justify-start h-auto py-3 px-4 hover:bg-primary/5 hover:border-primary/50 transition-colors"
+              type="button"
+              className="flex w-full min-w-0 items-start gap-3 rounded-lg border bg-card px-3.5 py-2.5 text-left outline-none transition-colors hover:border-primary/40 hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => handleActionClick(action.key)}
             >
-              <div className="flex items-start gap-3 w-full min-w-0">
-                <div className="mt-0.5">{getActionIcon(action.key)}</div>
-                {/* min-w-0 + whitespace-normal: sobrepõe o `whitespace-nowrap` herdado do
-                    Button base (@evoapi) — sem isso a descrição longa (ex: "Analisar
-                    sentimento") não quebra e empurra o card p/ fora da borda direita. */}
-                <div className="flex flex-col items-start text-left flex-1 min-w-0 whitespace-normal break-words">
-                  <span className="font-medium">
-                    {t(`aiAssistance.actions.${action.key}.label`)}
-                  </span>
-                  <span className="text-xs text-muted-foreground mt-0.5">
-                    {t(`aiAssistance.actions.${action.key}.description`)}
-                  </span>
-                </div>
-              </div>
-            </Button>
+              <span className="mt-0.5 flex size-7 flex-shrink-0 items-center justify-center rounded-md bg-primary/10 [&_svg]:size-4">
+                {getActionIcon(action.key)}
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col break-words">
+                <span className="font-medium text-sm">
+                  {t(`aiAssistance.actions.${action.key}.label`)}
+                </span>
+                <span className="mt-0.5 text-muted-foreground text-xs">
+                  {t(`aiAssistance.actions.${action.key}.description`)}
+                </span>
+              </span>
+            </button>
           ))}
-        </div>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 };
