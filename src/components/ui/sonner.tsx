@@ -1,7 +1,7 @@
 import type * as React from 'react';
 import { Toaster as Sonner } from 'sonner';
 
-/** Sonner toaster themed with coss tokens (formerly from @evoapi/design-system). */
+/** Sonner toaster themed with coss tokens. The app keeps sonner's toast() API (used in ~190 files). */
 export function Toaster({ theme = 'system', ...props }: React.ComponentProps<typeof Sonner>): React.ReactElement {
   return (
     <Sonner

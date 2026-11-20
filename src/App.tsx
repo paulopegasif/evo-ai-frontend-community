@@ -13,7 +13,7 @@ import { PluginHostProvider, PluginSlot } from '@/plugin-host';
 
 // coss ships its own toast (toastManager), but the app calls sonner's toast() everywhere,
 // so the sonner Toaster themed with coss tokens stays.
-import { Toaster } from '@/components/ui/compat/toaster';
+import { Toaster } from '@/components/ui/sonner';
 
 import { useIsDarkClass } from '@/hooks/chat/useIsDarkClass';
 
