@@ -2,7 +2,7 @@
  * Brand palette overrides.
  *
  * Imported after globals.css, so any variable redefined here wins over the
- * @evoapi/design-system defaults. Leave empty to keep the upstream palette.
+ * defaults in src/styles/base-tokens.css. Leave empty to keep them.
  *
  * Variables most worth overriding (shadcn / Tailwind v4 tokens):
  *   --primary, --primary-foreground, --ring,

@@ -49,7 +49,7 @@ vi.mock('./helpers/businessHours', async () => {
 });
 
 vi.mock('@/components/ui/compat', async () => {
-  const actual = await vi.importActual('@evoapi/design-system');
+  const actual = await vi.importActual('@/components/ui/compat');
   return {
     ...actual,
     Switch: ({ checked }: { checked: boolean }) => (
