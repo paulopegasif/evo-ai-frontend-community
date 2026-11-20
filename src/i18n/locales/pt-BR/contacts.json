@@ -438,7 +438,8 @@
       "cancel": "Cancelar",
       "import": "Importar",
       "importing": "Importando..."
-    }
+    },
+    "removeFile": "Remover arquivo"
   },
   "pagination": {
     "showing": "Mostrando {{from}} a {{to}} de {{total}} contatos",

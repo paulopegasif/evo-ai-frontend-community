@@ -430,7 +430,8 @@
       "cancel": "Annulla",
       "import": "Importa",
       "importing": "Importazione..."
-    }
+    },
+    "removeFile": "Rimuovi file"
   },
   "pagination": {
     "showing": "Visualizzazione da {{from}} a {{to}} di {{total}} contatti",
