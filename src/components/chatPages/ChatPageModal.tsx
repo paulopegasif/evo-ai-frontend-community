@@ -11,7 +11,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
-import { Fieldset, FieldsetLegend } from '@/components/ui/fieldset';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -82,8 +81,8 @@ const ChatPageModal = ({ open, onClose, onSave, saving, initial, widgets }: Chat
         </DialogHeader>
 
         <DialogPanel className="flex flex-col gap-8">
-          <Fieldset className="max-w-none gap-5">
-            <FieldsetLegend className="text-sm">{t('modal.sections.basic')}</FieldsetLegend>
+          <section className="flex flex-col gap-5">
+            <h3 className="font-semibold text-sm">{t('modal.sections.basic')}</h3>
             <Field>
               <FieldLabel htmlFor="chat-page-title">{t('modal.basic.title')}</FieldLabel>
               <Input
@@ -101,10 +100,10 @@ const ChatPageModal = ({ open, onClose, onSave, saving, initial, widgets }: Chat
               <Switch checked={published} onCheckedChange={setPublished} />
               {t('modal.basic.published')}
             </Label>
-          </Fieldset>
+          </section>
 
-          <Fieldset className="max-w-none gap-5">
-            <FieldsetLegend className="text-sm">{t('modal.sections.widget')}</FieldsetLegend>
+          <section className="flex flex-col gap-5">
+            <h3 className="font-semibold text-sm">{t('modal.sections.widget')}</h3>
             <Field>
               <FieldLabel htmlFor="chat-page-widget">{t('modal.widget.label')}</FieldLabel>
               <OptionSelect
@@ -117,10 +116,10 @@ const ChatPageModal = ({ open, onClose, onSave, saving, initial, widgets }: Chat
               />
               {widgets.length === 0 && <FieldDescription>{t('modal.widget.empty')}</FieldDescription>}
             </Field>
-          </Fieldset>
+          </section>
 
-          <Fieldset className="max-w-none gap-5">
-            <FieldsetLegend className="text-sm">{t('modal.sections.appearance')}</FieldsetLegend>
+          <section className="flex flex-col gap-5">
+            <h3 className="font-semibold text-sm">{t('modal.sections.appearance')}</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="chat-page-color">{t('modal.appearance.primaryColor')}</FieldLabel>
@@ -143,7 +142,7 @@ const ChatPageModal = ({ open, onClose, onSave, saving, initial, widgets }: Chat
                 />
               </Field>
             </div>
-          </Fieldset>
+          </section>
 
           {error && (
             <Alert variant="error">

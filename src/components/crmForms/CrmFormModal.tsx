@@ -1,24 +1,22 @@
 import { useEffect, useState } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
+  DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  ScrollArea,
-  Button,
-  Input,
-  Textarea,
-  Label,
-  Switch,
-  Checkbox,
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-  SelectLabel,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
 import { Trash2, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { Pipeline } from '@/types/analytics/pipelines';
@@ -55,20 +53,25 @@ interface ChooseProps {
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  id?: string;
+  'aria-label'?: string;
 }
-const Choose = ({ value, onChange, options, placeholder }: ChooseProps) => (
-  <Select value={value || undefined} onValueChange={onChange}>
-    <SelectTrigger className="w-full">
-      <SelectValue placeholder={placeholder} />
-    </SelectTrigger>
-    <SelectContent>
-      {options.map(o => (
-        <SelectItem key={o.value} value={o.value}>
-          {o.label}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
+const Choose = ({ value, onChange, options, placeholder, id, 'aria-label': ariaLabel }: ChooseProps) => (
+  <OptionSelect
+    id={id}
+    value={value || ''}
+    onValueChange={onChange}
+    options={options}
+    placeholder={placeholder}
+    aria-label={ariaLabel}
+  />
+);
+
+const SectionHeader = ({ title, action }: { title: string; action?: React.ReactNode }) => (
+  <div className="flex items-center justify-between gap-3">
+    <h3 className="font-semibold text-sm">{title}</h3>
+    {action}
+  </div>
 );
 
 const emptyField = (): CrmFormField => ({ key: '', label: '', type: 'text', required: false, maps_to: '' });
@@ -172,237 +175,279 @@ const CrmFormModal = ({ open, onClose, onSave, saving, initial, pipelines, conta
   };
 
   const renderTargetSelect = (f: CrmFormField, idx: number) => (
-    <Select value={encodeTarget(f)} onValueChange={v => applyTarget(idx, v)}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder={t('modal.fields.mapTo')} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={NONE_TARGET}>{t('modal.targets.none')}</SelectItem>
-        {targetGroups.map(g => (
-          <SelectGroup key={g.label}>
-            <SelectLabel>{g.label}</SelectLabel>
-            {g.options.map(o => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        ))}
-      </SelectContent>
-    </Select>
+    <OptionSelect
+      id={`crm-field-${idx}-target`}
+      value={encodeTarget(f)}
+      onValueChange={v => applyTarget(idx, v)}
+      placeholder={t('modal.fields.mapTo')}
+      groups={targetGroups.map(g => ({ key: g.label, label: g.label }))}
+      options={[
+        { value: NONE_TARGET, label: t('modal.targets.none') },
+        ...targetGroups.flatMap(g => g.options.map(o => ({ value: o.value, label: o.label, group: g.label }))),
+      ]}
+    />
   );
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">{initial ? t('modal.editTitle') : t('modal.createTitle')}</DialogTitle>
+      <DialogPopup className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{initial ? t('modal.editTitle') : t('modal.createTitle')}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6 py-4">
-          <div className="space-y-6">
-            {/* Básico */}
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.basic')}</h3>
-              <div className="space-y-2">
-                <Label>{t('modal.basic.name')}</Label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder={t('modal.basic.namePlaceholder')} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('modal.basic.title')}</Label>
-                <Input value={title} onChange={e => setTitle(e.target.value)} placeholder={t('modal.basic.titlePlaceholder')} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('modal.basic.description')}</Label>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} />
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={published} onCheckedChange={setPublished} id="published" />
-                <Label htmlFor="published">{t('modal.basic.published')}</Label>
-              </div>
-            </section>
+        <DialogPanel className="flex flex-col gap-8">
+          <section className="flex flex-col gap-5">
+            <SectionHeader title={t('modal.sections.basic')} />
+            <Field>
+              <FieldLabel htmlFor="crm-form-name">{t('modal.basic.name')}</FieldLabel>
+              <Input
+                id="crm-form-name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder={t('modal.basic.namePlaceholder')}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="crm-form-title">{t('modal.basic.title')}</FieldLabel>
+              <Input
+                id="crm-form-title"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder={t('modal.basic.titlePlaceholder')}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="crm-form-description">{t('modal.basic.description')}</FieldLabel>
+              <Textarea id="crm-form-description" value={description} onChange={e => setDescription(e.target.value)} />
+            </Field>
+            <Label>
+              <Switch checked={published} onCheckedChange={setPublished} />
+              {t('modal.basic.published')}
+            </Label>
+          </section>
 
-            {/* Aparência */}
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.appearance')}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t('modal.appearance.primaryColor')}</Label>
-                  <Input value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} placeholder="#1E40AF" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('modal.appearance.logoUrl')}</Label>
-                  <Input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://…" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>{t('modal.appearance.successMessage')}</Label>
-                <Input value={successMessage} onChange={e => setSuccessMessage(e.target.value)} />
-              </div>
-            </section>
+          <section className="flex flex-col gap-5">
+            <SectionHeader title={t('modal.sections.appearance')} />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="crm-form-color">{t('modal.appearance.primaryColor')}</FieldLabel>
+                <Input
+                  id="crm-form-color"
+                  value={primaryColor}
+                  onChange={e => setPrimaryColor(e.target.value)}
+                  placeholder="#1E40AF"
+                  className="font-mono"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="crm-form-logo">{t('modal.appearance.logoUrl')}</FieldLabel>
+                <Input
+                  id="crm-form-logo"
+                  type="url"
+                  value={logoUrl}
+                  onChange={e => setLogoUrl(e.target.value)}
+                  placeholder="https://…"
+                />
+              </Field>
+            </div>
+            <Field>
+              <FieldLabel htmlFor="crm-form-success">{t('modal.appearance.successMessage')}</FieldLabel>
+              <Input id="crm-form-success" value={successMessage} onChange={e => setSuccessMessage(e.target.value)} />
+            </Field>
+          </section>
 
-            {/* Campos */}
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.fields')}</h3>
+          <section className="flex flex-col gap-3">
+            <SectionHeader
+              title={t('modal.sections.fields')}
+              action={
                 <Button variant="outline" size="sm" onClick={() => setFields(prev => [...prev, emptyField()])}>
-                  <Plus className="w-4 h-4 mr-1" /> {t('modal.fields.add')}
+                  <Plus />
+                  {t('modal.fields.add')}
                 </Button>
-              </div>
-              {fields.map((f, idx) => (
-                <div key={idx} className="space-y-3 rounded-md border border-border p-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">{t('modal.fields.key')}</Label>
-                      <Input value={f.key} onChange={e => updateField(idx, { key: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">{t('modal.fields.label')}</Label>
-                      <Input value={f.label ?? ''} onChange={e => updateField(idx, { label: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">{t('modal.fields.type')}</Label>
-                      <Choose
-                        value={f.type}
-                        onChange={v => updateField(idx, { type: v as CrmFieldType })}
-                        options={FIELD_TYPES.map(ft => ({ value: ft, label: ft }))}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground">{t('modal.fields.mapTo')}</Label>
-                      {renderTargetSelect(f, idx)}
-                    </div>
-                  </div>
-                  {f.type === 'select' && (
+              }
+            />
+            {fields.map((f, idx) => (
+              <div key={idx} className="flex flex-col gap-4 rounded-xl border bg-muted/24 p-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Field>
+                    <FieldLabel htmlFor={`crm-field-${idx}-key`}>{t('modal.fields.key')}</FieldLabel>
                     <Input
-                      placeholder={t('modal.fields.optionsPlaceholder')}
-                      value={(f.options ?? []).join(', ')}
-                      onChange={e =>
-                        updateField(idx, {
-                          options: e.target.value.split(',').map(o => o.trim()).filter(Boolean),
-                        })
-                      }
+                      id={`crm-field-${idx}-key`}
+                      value={f.key}
+                      onChange={e => updateField(idx, { key: e.target.value })}
+                      className="font-mono"
                     />
-                  )}
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 text-sm text-foreground">
-                      <Checkbox checked={!!f.required} onCheckedChange={c => updateField(idx, { required: c === true })} />
-                      {t('modal.fields.required')}
-                    </label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive"
-                      onClick={() => setFields(prev => prev.filter((_, i) => i !== idx))}
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" /> {t('modal.fields.remove')}
-                    </Button>
-                  </div>
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor={`crm-field-${idx}-label`}>{t('modal.fields.label')}</FieldLabel>
+                    <Input
+                      id={`crm-field-${idx}-label`}
+                      value={f.label ?? ''}
+                      onChange={e => updateField(idx, { label: e.target.value })}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor={`crm-field-${idx}-type`}>{t('modal.fields.type')}</FieldLabel>
+                    <Choose
+                      id={`crm-field-${idx}-type`}
+                      value={f.type}
+                      onChange={v => updateField(idx, { type: v as CrmFieldType })}
+                      options={FIELD_TYPES.map(ft => ({ value: ft, label: ft }))}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor={`crm-field-${idx}-target`}>{t('modal.fields.mapTo')}</FieldLabel>
+                    {renderTargetSelect(f, idx)}
+                  </Field>
                 </div>
-              ))}
-            </section>
-
-            {/* Destino padrão */}
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.defaultDestination')}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">{t('modal.destination.pipeline')}</Label>
-                  <Choose
-                    value={defaultPipelineId}
-                    onChange={v => {
-                      setDefaultPipelineId(v);
-                      setDefaultStageId('');
-                    }}
-                    options={pipelineOptions}
-                    placeholder={t('modal.destination.pipeline')}
+                {f.type === 'select' && (
+                  <Input
+                    placeholder={t('modal.fields.optionsPlaceholder')}
+                    aria-label={t('modal.fields.optionsPlaceholder')}
+                    value={(f.options ?? []).join(', ')}
+                    onChange={e =>
+                      updateField(idx, {
+                        options: e.target.value
+                          .split(',')
+                          .map(o => o.trim())
+                          .filter(Boolean),
+                      })
+                    }
                   />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">{t('modal.destination.stage')}</Label>
-                  <Choose
-                    value={defaultStageId || NONE}
-                    onChange={v => setDefaultStageId(v === NONE ? '' : v)}
-                    options={stageOptions(defaultPipelineId)}
-                    placeholder={t('modal.destination.stage')}
-                  />
+                )}
+                <div className="flex items-center justify-between gap-3">
+                  <Label className="font-normal">
+                    <Checkbox checked={!!f.required} onCheckedChange={c => updateField(idx, { required: c === true })} />
+                    {t('modal.fields.required')}
+                  </Label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive-foreground hover:bg-destructive/8"
+                    onClick={() => setFields(prev => prev.filter((_, i) => i !== idx))}
+                  >
+                    <Trash2 />
+                    {t('modal.fields.remove')}
+                  </Button>
                 </div>
               </div>
-            </section>
+            ))}
+          </section>
 
-            {/* Regras de roteamento */}
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.routing')}</h3>
+          <section className="flex flex-col gap-5">
+            <SectionHeader title={t('modal.sections.defaultDestination')} />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="crm-form-pipeline">{t('modal.destination.pipeline')}</FieldLabel>
+                <Choose
+                  id="crm-form-pipeline"
+                  value={defaultPipelineId}
+                  onChange={v => {
+                    setDefaultPipelineId(v);
+                    setDefaultStageId('');
+                  }}
+                  options={pipelineOptions}
+                  placeholder={t('modal.destination.pipeline')}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="crm-form-stage">{t('modal.destination.stage')}</FieldLabel>
+                <Choose
+                  id="crm-form-stage"
+                  value={defaultStageId || NONE}
+                  onChange={v => setDefaultStageId(v === NONE ? '' : v)}
+                  options={stageOptions(defaultPipelineId)}
+                  placeholder={t('modal.destination.stage')}
+                />
+              </Field>
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-3">
+            <SectionHeader
+              title={t('modal.sections.routing')}
+              action={
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setRules(prev => [...prev, { field: '', op: 'equals', value: '', pipeline_id: '', stage_id: '' }])}
+                  onClick={() =>
+                    setRules(prev => [...prev, { field: '', op: 'equals', value: '', pipeline_id: '', stage_id: '' }])
+                  }
                 >
-                  <Plus className="w-4 h-4 mr-1" /> {t('modal.routing.add')}
+                  <Plus />
+                  {t('modal.routing.add')}
                 </Button>
-              </div>
-              {rules.map((r, idx) => (
-                <div key={idx} className="space-y-3 rounded-md border border-border p-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Choose
-                      value={r.field}
-                      onChange={v => updateRule(idx, { field: v })}
-                      options={fields.filter(f => f.key).map(f => ({ value: f.key, label: f.key }))}
-                      placeholder={t('modal.routing.field')}
-                    />
-                    <Choose
-                      value={r.op ?? 'equals'}
-                      onChange={v => updateRule(idx, { op: v as RoutingOp })}
-                      options={ROUTING_OPS.map(o => ({ value: o, label: o }))}
-                    />
-                    <Input
-                      placeholder={t('modal.routing.value')}
-                      value={r.value ?? ''}
-                      onChange={e => updateRule(idx, { value: e.target.value })}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Choose
-                      value={r.pipeline_id}
-                      onChange={v => updateRule(idx, { pipeline_id: v, stage_id: '' })}
-                      options={pipelineOptions}
-                      placeholder={t('modal.routing.pipeline')}
-                    />
-                    <Choose
-                      value={r.stage_id || NONE}
-                      onChange={v => updateRule(idx, { stage_id: v === NONE ? '' : v })}
-                      options={stageOptions(r.pipeline_id)}
-                      placeholder={t('modal.routing.stage')}
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive"
-                      onClick={() => setRules(prev => prev.filter((_, i) => i !== idx))}
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" /> {t('modal.routing.remove')}
-                    </Button>
-                  </div>
+              }
+            />
+            {rules.map((r, idx) => (
+              <div key={idx} className="flex flex-col gap-3 rounded-xl border bg-muted/24 p-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <Choose
+                    value={r.field}
+                    onChange={v => updateRule(idx, { field: v })}
+                    options={fields.filter(f => f.key).map(f => ({ value: f.key, label: f.key }))}
+                    placeholder={t('modal.routing.field')}
+                    aria-label={t('modal.routing.field')}
+                  />
+                  <Choose
+                    value={r.op ?? 'equals'}
+                    onChange={v => updateRule(idx, { op: v as RoutingOp })}
+                    options={ROUTING_OPS.map(o => ({ value: o, label: o }))}
+                  />
+                  <Input
+                    placeholder={t('modal.routing.value')}
+                    aria-label={t('modal.routing.value')}
+                    value={r.value ?? ''}
+                    onChange={e => updateRule(idx, { value: e.target.value })}
+                  />
                 </div>
-              ))}
-            </section>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Choose
+                    value={r.pipeline_id}
+                    onChange={v => updateRule(idx, { pipeline_id: v, stage_id: '' })}
+                    options={pipelineOptions}
+                    placeholder={t('modal.routing.pipeline')}
+                    aria-label={t('modal.routing.pipeline')}
+                  />
+                  <Choose
+                    value={r.stage_id || NONE}
+                    onChange={v => updateRule(idx, { stage_id: v === NONE ? '' : v })}
+                    options={stageOptions(r.pipeline_id)}
+                    placeholder={t('modal.routing.stage')}
+                    aria-label={t('modal.routing.stage')}
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive-foreground hover:bg-destructive/8"
+                    onClick={() => setRules(prev => prev.filter((_, i) => i !== idx))}
+                  >
+                    <Trash2 />
+                    {t('modal.routing.remove')}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </section>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <Alert variant="error">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </DialogPanel>
 
-            <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={onClose} disabled={saving} className="flex-1">
-                {t('modal.cancel')}
-              </Button>
-              <Button onClick={handleSave} disabled={saving} className="flex-1">
-                {saving ? t('modal.saving') : t('modal.save')}
-              </Button>
-            </div>
-          </div>
-        </ScrollArea>
-      </DialogContent>
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost" />} disabled={saving}>
+            {t('modal.cancel')}
+          </DialogClose>
+          <Button onClick={handleSave} loading={saving}>
+            {saving ? t('modal.saving') : t('modal.save')}
+          </Button>
+        </DialogFooter>
+      </DialogPopup>
     </Dialog>
   );
 };
