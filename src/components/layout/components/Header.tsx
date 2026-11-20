@@ -87,7 +87,7 @@ export default function Header({
   );
 
   return (
-    <div className="flex-shrink-0 bg-sidebar border-b border-sidebar-border px-0 py-3 flex items-center shadow-sm">
+    <header className="flex h-14 shrink-0 items-center border-b border-sidebar-border bg-sidebar">
       {/* Mobile Layout */}
       <div className="md:hidden flex items-center w-full px-4">
         {/* Left: Menu Button */}
@@ -109,7 +109,7 @@ export default function Header({
               </SheetHeader>
 
               <ScrollArea className="flex-1 min-h-0 overflow-hidden p-4">
-                <nav className="space-y-1">
+                <nav className="flex flex-col gap-0.5">
                   {enrichedMenuItems.map(item => {
                     const hasSubItems = item.subItems && item.subItems.length > 0;
                     const menuKey = item.id || item.href;
@@ -148,14 +148,14 @@ export default function Header({
                             });
                           }}
                           className={cn(
-                            'flex items-center gap-3 px-3 py-2.5 rounded-md transition-all w-full text-left cursor-pointer',
+                            'flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-left font-medium text-sm transition-colors',
                             isParentActive
-                              ? 'bg-primary/10 text-primary'
-                              : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+                              ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                              : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
                           )}
                         >
-                          <item.icon className={cn('flex-shrink-0 h-5 w-5', isParentActive && 'text-primary')} />
-                          <span className="font-medium flex-1">{item.name}</span>
+                          <item.icon className={cn('size-4.5 shrink-0', isParentActive ? 'text-primary' : 'opacity-80')} />
+                          <span className="flex-1">{item.name}</span>
                           {isExpanded ? (
                             <ChevronDown className="h-4 w-4" />
                           ) : (
@@ -164,7 +164,7 @@ export default function Header({
                         </button>
 
                         {isExpanded && (
-                          <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-sidebar-border pl-3">
+                          <div className="ms-4 mt-0.5 flex flex-col gap-0.5 border-s border-sidebar-border ps-2">
                             {item.subItems!.map(subItem => {
                               const isSubActive = pathname === subItem.href || pathname.startsWith(subItem.href + '/');
                               return (
@@ -173,14 +173,14 @@ export default function Header({
                                   to={subItem.href}
                                   onClick={() => setIsMobileMenuOpen(false)}
                                   className={cn(
-                                    'flex items-center gap-3 px-3 py-2 rounded-md transition-all text-sm',
+                                    'flex h-8 items-center gap-2.5 rounded-lg px-2.5 font-medium text-sm transition-colors',
                                     isSubActive
-                                      ? 'bg-primary text-primary-foreground'
-                                      : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+                                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                                      : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
                                   )}
                                 >
-                                  <subItem.icon className={cn('flex-shrink-0 h-4 w-4', isSubActive && 'text-primary-foreground')} />
-                                  <span className="font-medium">{subItem.name}</span>
+                                  <subItem.icon className={cn('size-4 shrink-0', isSubActive ? 'text-primary' : 'opacity-80')} />
+                                  <span>{subItem.name}</span>
                                 </Link>
                               );
                             })}
@@ -233,7 +233,7 @@ export default function Header({
         <div
           className={cn(
             'flex items-center justify-between transition-all duration-300 ease-in-out px-4 relative',
-            isCollapsed ? 'w-16' : 'w-56',
+            isCollapsed ? 'w-16' : 'w-60',
           )}
         >
           {/* App Logo - only show when not collapsed */}
@@ -251,13 +251,10 @@ export default function Header({
                   variant="ghost"
                   size="icon"
                   onClick={toggleSidebar}
-                  className="h-8 w-8 text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent flex-shrink-0 cursor-pointer"
+                  aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+                  className="size-8 shrink-0 text-sidebar-foreground/72 hover:text-sidebar-foreground"
                 >
-                  {isCollapsed ? (
-                    <PanelRightClose className="h-4 w-4" />
-                  ) : (
-                    <PanelRightOpen className="h-4 w-4" />
-                  )}
+                  {isCollapsed ? <PanelRightClose /> : <PanelRightOpen />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -286,6 +283,6 @@ export default function Header({
           />
         </div>
       </div>
-    </div>
+    </header>
   );
 }

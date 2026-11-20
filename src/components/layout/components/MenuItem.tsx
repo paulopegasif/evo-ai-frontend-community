@@ -38,24 +38,19 @@ export default function MenuItem({
     <Link
       to={hasSubItems && !mobile && item.href === '#' ? '#' : item.href}
       onClick={onClick}
+      aria-current={isActive && !hasSubItems ? 'page' : undefined}
       className={cn(
-        'relative flex items-center gap-3 px-3 py-2.5 rounded-md transition-all group',
-        mobile ? 'w-full' : isCollapsed ? 'justify-center' : '',
+        'group relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 font-medium text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+        mobile ? 'w-full' : isCollapsed ? 'w-9 justify-center px-0 mx-auto' : '',
         isActive
-          ? mobile
-            ? 'bg-primary text-primary-foreground'
-            : isCollapsed
-            ? 'bg-primary/20 text-primary'
-            : 'bg-primary/15 text-primary border-l-4 border-primary pl-2.5'
-          : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+          : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
       )}
     >
-      <item.icon className={cn('flex-shrink-0 h-5 w-5', isActive && 'text-primary')} />
+      <item.icon className={cn('size-4.5 shrink-0', isActive ? 'text-primary' : 'opacity-80')} />
       {(!isCollapsed || mobile) && (
         <>
-          <div className="flex items-center gap-2 flex-1">
-            <span className="font-medium">{item.name}</span>
-          </div>
+          <span className="flex-1 truncate">{item.name}</span>
           {item.badge ? (
             <UnreadBadge
               count={item.badge}
@@ -63,16 +58,14 @@ export default function MenuItem({
               className="ml-auto"
             />
           ) : hasSubItems && !mobile ? (
-            <div className="ml-auto">
-              <ChevronRight className="h-4 w-4" />
-            </div>
+            <ChevronRight className="ms-auto size-4 opacity-48" />
           ) : null}
         </>
       )}
       {isCollapsed && !mobile && item.badge ? (
         <span
           aria-hidden="true"
-          className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold leading-none"
+          className="absolute -top-1 -right-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-semibold text-[10px] text-primary-foreground leading-none ring-2 ring-sidebar"
         >
           {item.badge < 100 ? item.badge : '99+'}
         </span>

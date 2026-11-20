@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/compat';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { toast } from 'sonner';
 import { Header, Sidebar } from './components';
 import {
@@ -149,22 +141,16 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <WelcomeTourModal />
 
       {/* Logout Dialog */}
-      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader className="text-left space-y-2">
-            <DialogTitle className="text-lg font-semibold">{t('logout.title')}</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              {t('logout.description')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => setLogoutDialogOpen(false)}>
-              {t('logout.cancel')}
-            </Button>
-            <Button onClick={handleLogout}>{t('logout.confirm')}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={logoutDialogOpen}
+        onOpenChange={setLogoutDialogOpen}
+        title={t('logout.title')}
+        description={t('logout.description')}
+        cancelLabel={t('logout.cancel')}
+        confirmLabel={t('logout.confirm')}
+        onConfirm={handleLogout}
+        variant="default"
+      />
     </div>
   );
 }
