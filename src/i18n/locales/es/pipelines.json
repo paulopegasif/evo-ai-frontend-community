@@ -566,7 +566,9 @@
     "noStages": "Ninguna etapa encontrada para reordenar.",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "save": "Guardar Orden"
+    "save": "Guardar Orden",
+    "moveUp": "Mover hacia arriba",
+    "moveDown": "Mover hacia abajo"
   },
   "kanban": {
     "search": {

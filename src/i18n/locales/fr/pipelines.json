@@ -546,7 +546,9 @@
     "noStages": "Aucune étape trouvée à réorganiser.",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Enregistrer l'Ordre"
+    "save": "Enregistrer l'Ordre",
+    "moveUp": "Monter",
+    "moveDown": "Descendre"
   },
   "kanban": {
     "search": {
