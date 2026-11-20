@@ -1,12 +1,7 @@
 import { Controller, type Control } from 'react-hook-form';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getEventLabel, resolveLegacyEventName } from '@/lib/events-manifest';
 import { ALL_PHASE_1_EVENTS, type AutomationRuleFormData } from '@/pages/Customer/Automation/registries';
 
@@ -32,33 +27,37 @@ export default function EventSelector({ control, disabled }: Props) {
     return t(`form.fields.event.options.${eventName}`);
   };
 
+  const items = ALL_PHASE_1_EVENTS.map(eventName => ({ value: eventName, label: eventLabel(eventName) }));
+
   return (
     <Controller
       control={control}
       name="event_name"
       render={({ field, fieldState }) => (
-        <div className="space-y-2">
-          <label className="text-sm font-medium">{t('form.fields.event.label')} *</label>
+        <Field invalid={!!fieldState.error}>
+          <FieldLabel>
+            {t('form.fields.event.label')}
+            <span className="text-destructive-foreground" aria-hidden="true">*</span>
+          </FieldLabel>
           <Select
-            value={field.value ?? ''}
+            items={items}
+            value={field.value ?? null}
             onValueChange={field.onChange}
             disabled={disabled}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t('form.fields.event.placeholder')} />
             </SelectTrigger>
-            <SelectContent>
-              {ALL_PHASE_1_EVENTS.map((eventName) => (
-                <SelectItem key={eventName} value={eventName}>
-                  {eventLabel(eventName)}
+            <SelectPopup>
+              {items.map(item => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-          {fieldState.error && (
-            <p className="text-sm text-destructive">{fieldState.error.message}</p>
-          )}
-        </div>
+          {fieldState.error && <FieldError match>{fieldState.error.message}</FieldError>}
+        </Field>
       )}
     />
   );

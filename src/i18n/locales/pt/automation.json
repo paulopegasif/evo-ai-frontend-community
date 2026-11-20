@@ -193,6 +193,22 @@
       "update": "Salvar",
       "saving": "Salvando...",
       "cancel": "Cancelar"
+    },
+    "sections": {
+      "details": {
+        "title": "Detalhes",
+        "description": "Nome e contexto da regra para a equipa."
+      },
+      "trigger": {
+        "title": "Gatilho",
+        "description": "O evento que inicia esta automação."
+      },
+      "conditions": {
+        "description": "A regra só é executada quando todas as condições forem cumpridas."
+      },
+      "actions": {
+        "description": "O que acontece quando a regra dispara, pela ordem indicada."
+      }
     }
   },
   "dialog": {

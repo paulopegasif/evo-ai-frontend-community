@@ -3,20 +3,33 @@
 exports[`Automation EventSelector (EVO-1263) > matches the closed-trigger snapshot (UI preserved — AC4) 1`] = `
 <div>
   <div
-    class="space-y-2"
+    class="flex flex-col items-start gap-2"
+    data-filled=""
+    data-slot="field"
   >
     <label
-      class="text-sm font-medium"
+      class="inline-flex items-center gap-2 font-medium text-base/4.5 text-foreground data-disabled:opacity-64 sm:text-sm/4"
+      data-filled=""
+      data-slot="field-label"
+      for="base-ui-_r_6_"
+      id="base-ui-_r_7_"
     >
       Trigger event
-       *
+      <span
+        aria-hidden="true"
+        class="text-destructive-foreground"
+      >
+        *
+      </span>
     </label>
     <button
       aria-expanded="false"
       aria-haspopup="listbox"
+      aria-labelledby="base-ui-_r_7_"
       class="relative inline-flex min-h-9 min-w-36 select-none items-center justify-between gap-2 rounded-lg border border-input bg-background not-dark:bg-clip-padding px-[calc(--spacing(3)-1px)] text-left text-base text-foreground shadow-xs/5 outline-none ring-ring/24 transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] not-data-disabled:not-focus-visible:not-aria-invalid:not-data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 focus-visible:border-ring focus-visible:ring-[3px] aria-invalid:border-destructive/36 focus-visible:aria-invalid:border-destructive/64 focus-visible:aria-invalid:ring-destructive/16 data-disabled:pointer-events-none data-disabled:opacity-64 sm:min-h-8 sm:text-sm dark:bg-input/32 dark:aria-invalid:ring-destructive/24 dark:not-data-disabled:not-focus-visible:not-aria-invalid:not-data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)] [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [[data-disabled],:focus-visible,[aria-invalid],[data-pressed]]:shadow-none w-full"
+      data-filled=""
       data-slot="select-trigger"
-      id="base-ui-_r_4_"
+      id="base-ui-_r_6_"
       role="combobox"
       tabindex="0"
       type="button"
@@ -55,7 +68,7 @@ exports[`Automation EventSelector (EVO-1263) > matches the closed-trigger snapsh
     </button>
     <input
       aria-hidden="true"
-      id="base-ui-_r_4_-hidden-input"
+      id="base-ui-_r_6_-hidden-input"
       style="clip-path: inset(50%); overflow: hidden; white-space: nowrap; border: 0px; padding: 0px; width: 1px; height: 1px; margin: 0px; position: fixed; top: 0px; left: 0px;"
       tabindex="-1"
       value="contact_created"

@@ -193,6 +193,22 @@
       "update": "Salva",
       "saving": "Salvataggio...",
       "cancel": "Annulla"
+    },
+    "sections": {
+      "details": {
+        "title": "Dettagli",
+        "description": "Nome e contesto della regola per il team."
+      },
+      "trigger": {
+        "title": "Trigger",
+        "description": "L’evento che avvia questa automazione."
+      },
+      "conditions": {
+        "description": "La regola viene eseguita solo quando le condizioni sono soddisfatte."
+      },
+      "actions": {
+        "description": "Cosa succede quando la regola scatta, nell’ordine indicato."
+      }
     }
   },
   "dialog": {
