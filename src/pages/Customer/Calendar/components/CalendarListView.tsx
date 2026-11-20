@@ -1,11 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, ExternalLink, Search, User, XCircle } from 'lucide-react';
+import { AlertCircle, CalendarSearch, CheckCircle2, ExternalLink, Search, User, XCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { Appointment, AppointmentStatus } from '@/types/appointments';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import { formatCurrency } from '@/pages/Customer/Dashboard/components/dashboardUtils';
 import { appointmentDayKey, appointmentTimeLabel, dateFromKey, todayKey } from '@/utils/accountTime';
-import { STATUS_STYLES, isWithoutOutcome, statusStyle } from './statusStyles';
+import { STATUS_STYLES, isWithoutOutcome, readableCategoryColor, statusStyle } from './statusStyles';
 
 interface CalendarListViewProps {
   appointments: Appointment[];
@@ -74,32 +80,39 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <input
-          type="text"
+      <InputGroup className="max-w-xl">
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+        <InputGroupInput
+          type="search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Buscar por paciente, telefone, procedimento ou profissional"
           aria-label="Buscar agendamentos"
-          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs"
         />
-      </div>
+      </InputGroup>
 
       {groups.length === 0 ? (
-        <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground text-sm">
-          Nenhum agendamento encontrado para os filtros selecionados.
-        </div>
+        <Empty className="rounded-xl border border-dashed bg-card">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <CalendarSearch />
+            </EmptyMedia>
+            <EmptyTitle>Nenhum agendamento</EmptyTitle>
+            <EmptyDescription>Nenhum agendamento encontrado para os filtros selecionados.</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
         groups.map(([day, items]) => (
           <section key={day} className="space-y-2">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground px-1">
+            <h3 className="flex items-center gap-2 px-1 font-semibold text-foreground text-sm">
               {dayHeading(day)}
-              <span className="text-xs font-normal text-muted-foreground">
+              <span className="font-normal text-muted-foreground text-xs tabular-nums">
                 {items.length} {items.length === 1 ? 'agendamento' : 'agendamentos'}
               </span>
             </h3>
-            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs divide-y divide-border">
+            <div className="divide-y overflow-hidden rounded-xl border bg-card shadow-xs/5">
               {items.map((apt) => {
                 const style = statusStyle(apt.status);
                 const pending = isWithoutOutcome(apt);
@@ -111,13 +124,14 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                     tabIndex={0}
                     onClick={() => onSelectAppointment(apt)}
                     onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelectAppointment(apt)}
-                    className="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 hover:bg-muted/40 transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-muted/40"
+                    className="flex cursor-pointer flex-col gap-3 px-4 py-3 outline-none transition-colors hover:bg-accent/40 focus-visible:bg-accent/40 sm:flex-row sm:items-center"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
-                        className={`w-16 shrink-0 text-center text-sm font-semibold tabular-nums ${
-                          apt.all_day ? 'text-warning-foreground text-xs' : ''
-                        }`}
+                        className={cn(
+                          'w-16 shrink-0 text-center font-semibold text-sm tabular-nums',
+                          apt.all_day && 'text-warning-foreground text-xs',
+                        )}
                       >
                         {appointmentTimeLabel(apt)}
                       </div>
@@ -127,21 +141,20 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                           <span className="text-sm font-semibold text-foreground truncate">
                             {apt.contact?.name ?? apt.title}
                           </span>
-                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                            <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+                          <Badge variant={style.badge} size="sm">
                             {style.label}
-                          </span>
+                          </Badge>
                           {pending && (
-                            <span className="inline-flex items-center gap-1 text-xs text-warning-foreground">
-                              <AlertCircle className="h-3 w-3" /> sem desfecho
-                            </span>
+                            <Badge variant="warning" size="sm">
+                              <AlertCircle /> sem desfecho
+                            </Badge>
                           )}
                         </div>
                         <div className="mt-0.5 flex items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground flex-wrap">
                           <span className="flex items-center gap-1.5">
                             <span
-                              className="h-2 w-2 rounded-full shrink-0"
-                              style={{ backgroundColor: colorOf.get(apt.category) ?? 'currentColor' }}
+                              className="size-2 shrink-0 rounded-full ring-1 ring-foreground/10"
+                              style={{ backgroundColor: colorOf.has(apt.category) ? readableCategoryColor(colorOf.get(apt.category)) : 'currentColor' }}
                             />
                             {apt.category}
                           </span>
@@ -159,34 +172,41 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                     <div className="flex items-center gap-2 sm:self-center self-end shrink-0" onClick={(e) => e.stopPropagation()}>
                       {open && (
                         <>
-                          <button
-                            type="button"
+                          <Button
+                            size="sm"
+                            variant="outline"
                             disabled={saving === apt.id}
                             onClick={() => handleStatusChange(apt, 'attended')}
-                            className="px-2.5 py-1 text-xs font-medium rounded-md border border-success/30 text-success-foreground hover:bg-success/10 transition-colors flex items-center gap-1 disabled:opacity-50"
+                            className="text-success-foreground"
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Compareceu
-                          </button>
-                          <button
-                            type="button"
+                            <CheckCircle2 /> Compareceu
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive-outline"
                             disabled={saving === apt.id}
                             onClick={() => handleStatusChange(apt, 'no_show')}
-                            className="px-2.5 py-1 text-xs font-medium rounded-md border border-destructive/30 text-destructive-foreground hover:bg-destructive/10 transition-colors flex items-center gap-1 disabled:opacity-50"
                           >
-                            <XCircle className="w-3.5 h-3.5" /> Faltou
-                          </button>
+                            <XCircle /> Faltou
+                          </Button>
                         </>
                       )}
                       {apt.google_calendar_url && (
-                        <a
-                          href={apt.google_calendar_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                          title="Abrir no Google Calendar"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                size="icon-sm"
+                                variant="ghost"
+                                aria-label="Abrir no Google Calendar"
+                                render={<a href={apt.google_calendar_url} target="_blank" rel="noopener noreferrer" />}
+                              />
+                            }
+                          >
+                            <ExternalLink />
+                          </TooltipTrigger>
+                          <TooltipPopup>Abrir no Google Calendar</TooltipPopup>
+                        </Tooltip>
                       )}
                     </div>
                   </div>

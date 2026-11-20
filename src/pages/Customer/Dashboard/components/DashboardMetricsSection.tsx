@@ -1,8 +1,9 @@
 import { Clock, MessageSquare, Bot, CheckCircle2, AlertTriangle, UserX, Users } from 'lucide-react';
-import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
 import DashboardMetricCard from './DashboardMetricCard';
-import { formatSeconds, formatDecimal } from './dashboardUtils';
+import { formatSeconds, formatDecimal, formatInteger, formatPercent } from './dashboardUtils';
 import { useTranslation } from '@/hooks/useTranslation';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
@@ -46,9 +47,9 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
   const hasAiVsHumanSample = (data.ai_vs_human.ai_messages_count + data.ai_vs_human.human_messages_count) > 0;
 
   return (
-    <section className="space-y-4">
+    <section className="flex flex-col gap-4">
       <div>
-        <h2 className="text-lg font-semibold">{tx('dashboard.sections.statusNow', 'Status da operação agora')}</h2>
+        <h2 className="font-semibold text-lg">{tx('dashboard.sections.statusNow', 'Status da operação agora')}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {tx('dashboard.sections.statusNowSubtitle', 'Indicadores-chave para leitura rápida da saúde operacional')}
         </p>
@@ -58,8 +59,8 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
         <div data-tour="dashboard-messages-card" className="h-full">
           <DashboardMetricCard
             title={t('dashboard.stats.incomingMessages') || 'Mensagens recebidas'}
-            value={data.stats.incoming_messages_count}
-            subtitle={`${data.stats.outgoing_messages_count} ${t('dashboard.stats.sent')}`}
+            value={formatInteger(data.stats.incoming_messages_count)}
+            subtitle={`${formatInteger(data.stats.outgoing_messages_count)} ${t('dashboard.stats.sent')}`}
             icon={MessageSquare}
             accentClassName="bg-primary/10 text-primary"
             importance="primary"
@@ -68,6 +69,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
               tone: 'neutral',
             }}
             tooltip={{ title: tTours('dashboard.step2.title'), content: tTours('dashboard.step2.content') }}
+            sparkline={data.trends.conversations_daily.map(point => point.value)}
           />
         </div>
 
@@ -81,6 +83,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
             importance="primary"
             status={responseStatus}
             tooltip={{ title: tTours('dashboard.step3.title'), content: tTours('dashboard.step3.content') }}
+            sparkline={data.trends.response_time_daily.map(point => point.value)}
           />
         </div>
 
@@ -112,7 +115,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-        <Card className="xl:col-span-7 border-primary/20 bg-primary/[0.02]" data-tour="dashboard-ia-vs-human">
+        <Card className="xl:col-span-7" data-tour="dashboard-ia-vs-human">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Bot className="h-4 w-4 text-primary" />
@@ -120,9 +123,9 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
               <TooltipInfo title={tTours('dashboard.step6.title')} content={tTours('dashboard.step6.content')} />
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardPanel className="space-y-4">
             {!hasAiVsHumanSample && (
-              <div className="rounded-md border border-dashed border-muted-foreground/30 bg-muted/10 p-3 text-sm text-muted-foreground">
+              <div className="rounded-lg border border-dashed bg-muted/40 p-3 text-muted-foreground text-sm">
                 {tx('dashboard.aiVsHuman.noDataHint', 'IA ainda não está ativa neste período, ou as respostas não foram classificadas.')}
               </div>
             )}
@@ -131,67 +134,67 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">{tx('dashboard.aiVsHuman.aiShare', 'Participação IA')}</span>
-                  <span className="font-semibold">{data.ai_vs_human.ai_messages_share}%</span>
+                  <span className="font-semibold">{formatPercent(data.ai_vs_human.ai_messages_share)}</span>
                 </div>
-                <div className="h-2 rounded bg-muted overflow-hidden">
-                  <div className="h-2 bg-[var(--chart-1)]" style={{ width: `${data.ai_vs_human.ai_messages_share}%` }} />
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div className="h-2 bg-[var(--chart-1)]" style={{ width: `${formatPercent(data.ai_vs_human.ai_messages_share)}` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {data.ai_vs_human.ai_messages_count} {tx('dashboard.aiVsHuman.responses', 'respostas IA')}
+                  {formatInteger(data.ai_vs_human.ai_messages_count)} {tx('dashboard.aiVsHuman.responses', 'respostas IA')}
                 </p>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">{tx('dashboard.aiVsHuman.humanShare', 'Participação humana')}</span>
-                  <span className="font-semibold">{data.ai_vs_human.human_messages_share}%</span>
+                  <span className="font-semibold">{formatPercent(data.ai_vs_human.human_messages_share)}</span>
                 </div>
-                <div className="h-2 rounded bg-muted overflow-hidden">
-                  <div className="h-2 bg-[var(--chart-1)] opacity-50" style={{ width: `${data.ai_vs_human.human_messages_share}%` }} />
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div className="h-2 bg-[var(--chart-1)] opacity-50" style={{ width: `${formatPercent(data.ai_vs_human.human_messages_share)}` }} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {data.ai_vs_human.human_messages_count} {tx('dashboard.aiVsHuman.responsesHuman', 'respostas humanas')}
+                  {formatInteger(data.ai_vs_human.human_messages_count)} {tx('dashboard.aiVsHuman.responsesHuman', 'respostas humanas')}
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-              <div className="rounded-md border p-3 bg-muted/10">
+              <div className="rounded-lg border bg-muted/40 p-3">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Bot className="h-4 w-4" />
                   {tx('dashboard.aiVsHuman.aiFirstResponse', '1ª resposta média IA')}
                 </div>
-                <div className="text-xl font-semibold mt-1">
+                <div className="mt-1 font-semibold text-xl tabular-nums">
                   {formatSeconds(data.ai_vs_human.avg_first_response_time_ai_seconds)}
                 </div>
               </div>
 
-              <div className="rounded-md border p-3 bg-muted/10">
+              <div className="rounded-lg border bg-muted/40 p-3">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Users className="h-4 w-4" />
                   {tx('dashboard.aiVsHuman.humanFirstResponse', '1ª resposta média humana')}
                 </div>
-                <div className="text-xl font-semibold mt-1">
+                <div className="mt-1 font-semibold text-xl tabular-nums">
                   {formatSeconds(data.ai_vs_human.avg_first_response_time_human_seconds)}
                 </div>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
 
         <div className="xl:col-span-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
-          <Card className="border-dashed border-warning/40 bg-amber-500/[0.03]" data-tour="dashboard-active-conversations">
+          <Card className="border-warning/32" data-tour="dashboard-active-conversations">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-warning" />
+                <MessageSquare className="size-4 text-warning-foreground" />
                 {tx('dashboard.stats.activeConversations', 'Conversas ativas agora')}
                 <TooltipInfo title={tTours('dashboard.step7.title')} content={tTours('dashboard.step7.content')} />
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardPanel>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-semibold">{data.stats.open_conversations}</div>
-                <Badge variant="outline" className="border-warning/40 text-warning-foreground bg-warning/10">
+                <div className="font-semibold text-2xl tabular-nums">{data.stats.open_conversations}</div>
+                <Badge variant={data.stats.open_conversations > 0 ? 'warning' : 'success'}>
                   {data.stats.open_conversations > 0
                     ? tx('dashboard.status.monitor', 'Monitorar')
                     : tx('dashboard.status.good', 'Estável')}
@@ -200,28 +203,23 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
               <p className="text-sm text-muted-foreground mt-2">
                 {tx('dashboard.status.currentBacklog', 'Backlog operacional atual')}
               </p>
-            </CardContent>
+            </CardPanel>
           </Card>
 
-          <Card className="border-dashed border-destructive/40 bg-rose-500/[0.03]" data-tour="dashboard-unassigned">
+          <Card className="border-destructive/32" data-tour="dashboard-unassigned">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <UserX className="h-4 w-4 text-destructive" />
+                <UserX className="size-4 text-destructive-foreground" />
                 {tx('dashboard.stats.unassignedConversations', 'Conversas sem responsável')}
                 <TooltipInfo title={tTours('dashboard.step8.title')} content={tTours('dashboard.step8.content')} />
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardPanel>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-semibold">{data.stats.unassigned_conversations}</div>
+                <div className="font-semibold text-2xl tabular-nums">{data.stats.unassigned_conversations}</div>
                 <Badge
-                  variant="outline"
-                  className={
-                    unassignedStatus.tone === 'critical'
-                      ? 'border-destructive/40 text-destructive-foreground bg-destructive/10'
-                      : unassignedStatus.tone === 'warning'
-                        ? 'border-warning/40 text-warning-foreground bg-warning/10'
-                        : 'border-success/40 text-success-foreground bg-success/10'
+                  variant={
+                    unassignedStatus.tone === 'critical' ? 'error' : unassignedStatus.tone === 'warning' ? 'warning' : 'success'
                   }
                 >
                   {unassignedStatus.label}
@@ -230,7 +228,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
               <p className="text-sm text-muted-foreground mt-2">
                 {data.stats.pending_conversations} {tx('dashboard.status.pendingNow', 'pendentes agora')}
               </p>
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
       </div>

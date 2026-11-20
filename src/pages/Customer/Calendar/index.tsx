@@ -16,18 +16,15 @@ import {
   UserX,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  Button,
-  Card,
-  CardContent,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Group, GroupSeparator } from '@/components/ui/group';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTab } from '@/components/ui/tabs';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import BaseHeader from '@/components/base/BaseHeader';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import { useAppointmentMetadata } from '@/hooks/useAppointmentMetadata';
@@ -45,7 +42,7 @@ import { CalendarListView } from './components/CalendarListView';
 import { AppointmentModal } from './components/AppointmentModal';
 import CalendarTimeGrid, { type TimeGridColumn } from './components/CalendarTimeGrid';
 import AppointmentSidePanel from './components/AppointmentSidePanel';
-import { STATUS_STYLES, isWithoutOutcome } from './components/statusStyles';
+import { STATUS_STYLES, isWithoutOutcome, readableCategoryColor } from './components/statusStyles';
 import { toast } from 'sonner';
 
 const ALL = '__all__';
@@ -69,8 +66,6 @@ const STATUS_FILTERS = [
   { value: 'no_show', label: 'Faltas' },
   { value: 'cancelled', label: 'Cancelados' },
 ];
-
-const controlClassName = 'h-9 bg-sidebar border-sidebar-border text-sidebar-foreground';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -113,30 +108,41 @@ const rangeTitle = (view: ViewMode, anchor: string, [from, to]: [string, string]
   return capitalize(date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }));
 };
 
+/** KPI tile of the visible period; clickable tiles apply the matching filter. */
 const Counter = ({
   label,
   value,
   icon: Icon,
-  className,
+  tone,
+  active,
   onClick,
 }: {
   label: string;
   value: number;
   icon: React.ElementType;
-  className: string;
+  tone: string;
+  active?: boolean;
   onClick?: () => void;
 }) => (
   <button
     type="button"
     onClick={onClick}
     disabled={!onClick}
-    className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 text-left enabled:hover:bg-muted/40 transition-colors min-w-0"
+    aria-pressed={onClick ? Boolean(active) : undefined}
+    className={cn(
+      'flex min-w-0 items-center gap-3 rounded-xl border bg-card px-3 py-2.5 text-left shadow-xs/5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring enabled:hover:bg-accent/50',
+      active && 'border-primary/40 bg-primary/4',
+    )}
   >
-    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${className}`}>
-      <Icon className="h-3.5 w-3.5" />
+    <span className={cn('flex size-8 shrink-0 items-center justify-center rounded-lg', tone)}>
+      <Icon className="size-4" />
     </span>
-    <span className="text-lg font-semibold leading-none">{value}</span>
-    <span className="text-xs text-muted-foreground leading-tight truncate" title={label}>{label}</span>
+    <span className="flex min-w-0 flex-col">
+      <span className="font-semibold text-lg tabular-nums leading-tight">{value}</span>
+      <span className="truncate text-muted-foreground text-xs" title={label}>
+        {label}
+      </span>
+    </span>
   </button>
 );
 
@@ -254,9 +260,21 @@ export const CalendarPage: React.FC = () => {
           key: day,
           day,
           label: (
-            <button type="button" className="hover:text-primary" onClick={() => navigateTo({ view: 'day', date: day })}>
-              {capitalize(date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''))}{' '}
-              <span className="text-sm text-foreground">{date.getDate()}</span>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-0.5 outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={() => navigateTo({ view: 'day', date: day })}
+              aria-label={`Ver o dia ${date.toLocaleDateString('pt-BR')}`}
+            >
+              {capitalize(date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''))}
+              <span
+                className={cn(
+                  'flex size-6 items-center justify-center rounded-full font-semibold text-sm tabular-nums',
+                  day === todayKey() ? 'bg-primary text-primary-foreground' : 'text-foreground',
+                )}
+              >
+                {date.getDate()}
+              </span>
             </button>
           ),
         };
@@ -291,188 +309,204 @@ export const CalendarPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const userItems = useMemo(
+    () => [{ value: ALL, label: 'Todos os profissionais' }, ...professionals.map((u) => ({ value: u.id, label: u.name }))],
+    [professionals],
+  );
+  const statusItems = useMemo(() => [{ value: ALL, label: 'Todos os status' }, ...STATUS_FILTERS], []);
+  const categoryItems = useMemo(
+    () => [{ value: ALL, label: 'Todos os procedimentos' }, ...categories.map((c) => ({ value: c.name, label: c.name }))],
+    [categories],
+  );
+  const toggleStatus = (status: string) => setSelectedStatus((current) => (current === status ? ALL : status));
+
   return (
-    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 md:gap-6 md:p-6">
       <BaseHeader
         title="Agenda & Consultas"
         subtitle="Horários no fuso de Brasília · clique em um agendamento para ver o lead e mudar o status"
         primaryAction={{
           label: 'Novo agendamento',
-          icon: <Plus className="h-4 w-4" />,
+          icon: <Plus />,
           onClick: () => openCreate(),
         }}
       />
 
       {/* Counters of the visible period */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-        <Counter label={`total ${periodLabel}`} value={stats.total} icon={CalendarDays} className="bg-primary/15 text-primary" />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        <Counter label={`total ${periodLabel}`} value={stats.total} icon={CalendarDays} tone="bg-primary/10 text-primary" />
         <Counter
           label="a confirmar"
           value={stats.scheduled}
           icon={Clock}
-          className="bg-primary/15 text-primary"
-          onClick={() => setSelectedStatus('scheduled')}
+          tone="bg-primary/10 text-primary"
+          active={selectedStatus === 'scheduled'}
+          onClick={() => toggleStatus('scheduled')}
         />
         <Counter
           label="confirmados"
           value={stats.confirmed}
           icon={CheckCircle2}
-          className="bg-sky-500/15 text-sky-500"
-          onClick={() => setSelectedStatus('confirmed')}
+          tone="bg-info/10 text-info-foreground"
+          active={selectedStatus === 'confirmed'}
+          onClick={() => toggleStatus('confirmed')}
         />
         <Counter
           label="compareceram"
           value={stats.attended}
           icon={CheckCircle2}
-          className="bg-success/15 text-success"
-          onClick={() => setSelectedStatus('attended')}
+          tone="bg-success/10 text-success-foreground"
+          active={selectedStatus === 'attended'}
+          onClick={() => toggleStatus('attended')}
         />
         <Counter
           label="faltas"
           value={stats.noShow}
           icon={UserX}
-          className="bg-destructive/15 text-destructive"
-          onClick={() => setSelectedStatus('no_show')}
+          tone="bg-destructive/10 text-destructive-foreground"
+          active={selectedStatus === 'no_show'}
+          onClick={() => toggleStatus('no_show')}
         />
         <Counter
           label={stats.tbd > 0 ? `sem desfecho · ${stats.tbd} com horário a definir` : 'sem desfecho'}
           value={stats.noOutcome}
           icon={AlertCircle}
-          className="bg-warning/15 text-warning-foreground"
+          tone="bg-warning/10 text-warning-foreground"
           onClick={() => navigateTo({ view: 'list' })}
         />
       </div>
 
-      {/* Controls & filters */}
-      <Card>
-        <CardContent className="p-3 space-y-3">
-          <div className="flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9"
-                onClick={() => navigateTo({ date: shiftAnchor(view, anchor, -1) })}
-                aria-label="Anterior"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="sm" className="h-9" onClick={() => navigateTo({ date: todayKey() })}>
-                Hoje
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9"
-                onClick={() => navigateTo({ date: shiftAnchor(view, anchor, 1) })}
-                aria-label="Próximo"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <h2 className="text-lg font-semibold ml-2 whitespace-nowrap">{rangeTitle(view, anchor, range)}</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 text-muted-foreground"
-                onClick={fetchAppointments}
-                disabled={loading}
-                aria-label="Atualizar"
-                title="Atualizar"
-              >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              </Button>
+      {/* Toolbar: period navigation, filters and view */}
+      <Card className="gap-0 py-0">
+        <CardPanel className="flex flex-col gap-3 p-3">
+          <div className="flex flex-col justify-between gap-3 2xl:flex-row 2xl:items-center">
+            <div className="flex min-w-0 items-center gap-2">
+              <Group aria-label="Navegar no período">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigateTo({ date: shiftAnchor(view, anchor, -1) })}
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft />
+                </Button>
+                <GroupSeparator />
+                <Button variant="outline" onClick={() => navigateTo({ date: todayKey() })}>
+                  Hoje
+                </Button>
+                <GroupSeparator />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigateTo({ date: shiftAnchor(view, anchor, 1) })}
+                  aria-label="Próximo"
+                >
+                  <ChevronRight />
+                </Button>
+              </Group>
+              <h2 className="ml-1 truncate font-semibold text-base sm:text-lg">{rangeTitle(view, anchor, range)}</h2>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground"
+                      onClick={fetchAppointments}
+                      disabled={loading}
+                      aria-label="Atualizar"
+                    />
+                  }
+                >
+                  <RefreshCw className={cn(loading && 'animate-spin')} />
+                </TooltipTrigger>
+                <TooltipPopup>Atualizar</TooltipPopup>
+              </Tooltip>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              <Select value={selectedUser} onValueChange={setSelectedUser}>
-                <SelectTrigger className={`${controlClassName} w-[200px]`} aria-label="Filtrar por profissional">
+            <div className="flex flex-wrap items-center gap-2">
+              <Select items={userItems} value={selectedUser} onValueChange={(v) => setSelectedUser(v ?? ALL)}>
+                <SelectTrigger className="w-full sm:w-52" aria-label="Filtrar por profissional">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL}>Todos os profissionais</SelectItem>
-                  {professionals.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.name}
+                <SelectPopup>
+                  {userItems.map((u) => (
+                    <SelectItem key={u.value} value={u.value}>
+                      {u.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
 
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className={`${controlClassName} w-[170px]`} aria-label="Filtrar por status">
+              <Select items={statusItems} value={selectedStatus} onValueChange={(v) => setSelectedStatus(v ?? ALL)}>
+                <SelectTrigger className="w-full sm:w-44" aria-label="Filtrar por status">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL}>Todos os status</SelectItem>
-                  {STATUS_FILTERS.map((s) => (
+                <SelectPopup>
+                  {statusItems.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
                       {s.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
 
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className={`${controlClassName} w-[220px]`} aria-label="Filtrar por procedimento">
+              <Select items={categoryItems} value={selectedCategory} onValueChange={(v) => setSelectedCategory(v ?? ALL)}>
+                <SelectTrigger className="w-full sm:w-56" aria-label="Filtrar por procedimento">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="max-h-80">
+                <SelectPopup className="max-h-80">
                   <SelectItem value={ALL}>Todos os procedimentos</SelectItem>
                   {categories.map((cat) => {
                     const count = visible.filter((a) => a.category === cat.name).length;
                     return (
                       <SelectItem key={cat.name} value={cat.name}>
                         <span className="flex items-center gap-2">
-                          <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                          <span
+                            className="size-2.5 shrink-0 rounded-full ring-1 ring-foreground/10"
+                            style={{ backgroundColor: readableCategoryColor(cat.color) }}
+                          />
                           <span className="truncate">{cat.name}</span>
-                          <span className="text-xs text-muted-foreground">{count}</span>
+                          <span className="text-muted-foreground text-xs tabular-nums">{count}</span>
                         </span>
                       </SelectItem>
                     );
                   })}
-                </SelectContent>
+                </SelectPopup>
               </Select>
 
-              <div className="flex items-center rounded-lg border border-border p-0.5" role="tablist" aria-label="Visão">
-                {VIEWS.map(({ value, label, icon: Icon }) => (
-                  <Button
-                    key={value}
-                    role="tab"
-                    aria-selected={view === value}
-                    variant={view === value ? 'default' : 'ghost'}
-                    size="sm"
-                    className="h-8"
-                    onClick={() => navigateTo({ view: value })}
-                  >
-                    <Icon className="h-4 w-4 sm:mr-1.5" />
-                    <span className="hidden sm:inline">{label}</span>
-                  </Button>
-                ))}
-              </div>
+              <Tabs value={view} onValueChange={(v) => navigateTo({ view: v as ViewMode })}>
+                <TabsList aria-label="Visão">
+                  {VIEWS.map(({ value, label, icon: Icon }) => (
+                    <TabsTab key={value} value={value} aria-label={label}>
+                      <Icon className="size-4" />
+                      <span className="hidden sm:inline">{label}</span>
+                    </TabsTab>
+                  ))}
+                </TabsList>
+              </Tabs>
             </div>
           </div>
 
           {/* Legend and cancelled toggle */}
-          <div className="pt-3 border-t border-border flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-3">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-muted-foreground text-xs">
               {(['scheduled', 'confirmed', 'attended', 'no_show'] as const).map((status) => (
-                <span key={status} className="flex items-center gap-1">
-                  <span className={`h-2 w-2 rounded-full ${STATUS_STYLES[status].dot}`} />
+                <span key={status} className="flex items-center gap-1.5">
+                  <span className={cn('size-2 rounded-full', STATUS_STYLES[status].dot)} />
                   {STATUS_STYLES[status].label}
                 </span>
               ))}
-              <span className="flex items-center gap-1">
-                <CalendarClock className="h-3 w-3 text-warning" /> sem desfecho
+              <span className="flex items-center gap-1.5">
+                <CalendarClock className="size-3.5 text-warning-foreground" /> sem desfecho
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch id="hide-cancelled" checked={hideCancelled} onCheckedChange={toggleHideCancelled} />
-              <Label htmlFor="hide-cancelled" className="text-xs text-muted-foreground cursor-pointer">
-                Ocultar cancelados
-              </Label>
-            </div>
+            <Label className="cursor-pointer text-muted-foreground text-xs">
+              <Switch checked={hideCancelled} onCheckedChange={toggleHideCancelled} />
+              Ocultar cancelados
+            </Label>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {(view === 'week' || view === 'day') && (

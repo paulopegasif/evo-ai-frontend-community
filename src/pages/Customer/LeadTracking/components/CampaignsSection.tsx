@@ -1,22 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Megaphone } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTab } from '@/components/ui/tabs';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/compat';
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { CampaignPerformance } from '@/types/leadTracking';
 import { AXIS_PROPS, SERIES } from './chartConfig';
@@ -54,21 +42,21 @@ type SortKey =
   | 'cost_per_conversation'
   | 'meta_leads';
 
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: 'Ativa', className: 'bg-success/10 text-success-foreground border-success/30' },
-  PAUSED: { label: 'Pausada', className: 'bg-warning/10 text-warning-foreground border-warning/30' },
-  CAMPAIGN_PAUSED: { label: 'Pausada', className: 'bg-warning/10 text-warning-foreground border-warning/30' },
-  ARCHIVED: { label: 'Arquivada', className: 'bg-muted text-muted-foreground border-border' },
-  DELETED: { label: 'Excluída', className: 'bg-muted text-muted-foreground border-border' },
-  IN_PROCESS: { label: 'Em processamento', className: 'bg-muted text-muted-foreground border-border' },
-  WITH_ISSUES: { label: 'Com problemas', className: 'bg-destructive/10 text-destructive-foreground border-destructive/30' },
+const STATUS_LABELS: Record<string, { label: string; variant: 'success' | 'warning' | 'secondary' | 'error' }> = {
+  ACTIVE: { label: 'Ativa', variant: 'success' },
+  PAUSED: { label: 'Pausada', variant: 'warning' },
+  CAMPAIGN_PAUSED: { label: 'Pausada', variant: 'warning' },
+  ARCHIVED: { label: 'Arquivada', variant: 'secondary' },
+  DELETED: { label: 'Excluída', variant: 'secondary' },
+  IN_PROCESS: { label: 'Em processamento', variant: 'secondary' },
+  WITH_ISSUES: { label: 'Com problemas', variant: 'error' },
 };
 
 const StatusBadge = ({ status }: { status: string | null }) => {
   if (!status) return null;
-  const meta = STATUS_LABELS[status] ?? { label: status, className: 'bg-muted text-muted-foreground border-border' };
+  const meta = STATUS_LABELS[status] ?? { label: status, variant: 'secondary' as const };
   return (
-    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${meta.className}`}>
+    <Badge variant={meta.variant} size="sm">
       {meta.label}
     </Badge>
   );
@@ -185,7 +173,7 @@ const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
         c.conversion_rate == null ? (
           <span className="text-muted-foreground">—</span>
         ) : (
-          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+          <Badge variant="secondary" className="tabular-nums">
             {percentOrDash(c.conversion_rate)}
           </Badge>
         ),
@@ -211,20 +199,20 @@ const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
         <div className="flex items-center gap-2 flex-wrap">
           <Tabs value={view} onValueChange={(value) => setView(value as View)}>
             <TabsList>
-              <TabsTrigger value="media">Mídia (Meta)</TabsTrigger>
-              <TabsTrigger value="crm">Resultado (CRM)</TabsTrigger>
+              <TabsTab value="media">Mídia (Meta)</TabsTab>
+              <TabsTab value="crm">Resultado (CRM)</TabsTab>
             </TabsList>
           </Tabs>
           <Tabs value={filter} onValueChange={(value) => setFilter(value as SourceFilter)}>
             <TabsList>
-              <TabsTrigger value="all">Todas ({campaigns.length})</TabsTrigger>
-              <TabsTrigger value="meta">Meta Ads ({metaCount})</TabsTrigger>
-              <TabsTrigger value="other">Outras ({campaigns.length - metaCount})</TabsTrigger>
+              <TabsTab value="all">Todas ({campaigns.length})</TabsTab>
+              <TabsTab value="meta">Meta Ads ({metaCount})</TabsTab>
+              <TabsTab value="other">Outras ({campaigns.length - metaCount})</TabsTab>
             </TabsList>
           </Tabs>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardPanel className="space-y-6">
         {chartData.length > 0 && filter !== 'other' && (
           <div>
             <p className="text-sm font-medium mb-2">Investimento × receita gerada (maiores gastos)</p>
@@ -266,7 +254,7 @@ const CampaignsSection = ({ campaigns }: CampaignsSectionProps) => {
             emptyMessage="Nenhuma campanha encontrada no período."
           />
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

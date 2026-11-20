@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link2, Search, UserPlus, X } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui/compat';
+import { Inbox, Link2, Search, UserPlus, X } from 'lucide-react';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { contactsService } from '@/services/contacts/contactsService';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
@@ -46,7 +51,7 @@ const SaleCard = ({ sale, onResolved }: { sale: UnlinkedSale; onResolved: () => 
   const options = [...sale.candidates, ...hits.filter((h) => !sale.candidates.some((c) => c.id === h.id))];
 
   return (
-    <div className="rounded-lg border border-border p-3 space-y-3">
+    <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-xs/5">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="font-medium">{sale.customer_name}</p>
@@ -54,7 +59,7 @@ const SaleCard = ({ sale, onResolved }: { sale: UnlinkedSale; onResolved: () => 
             {formatCurrency(sale.amount)} · {sale.category ?? 'Procedimento'} · {formatDate(sale.sold_at)}
           </p>
         </div>
-        <Badge variant="outline">{REASONS[sale.reason]}</Badge>
+        <Badge variant="warning">{REASONS[sale.reason]}</Badge>
       </div>
 
       <div className="flex gap-2">
@@ -63,17 +68,17 @@ const SaleCard = ({ sale, onResolved }: { sale: UnlinkedSale; onResolved: () => 
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && search()}
           placeholder="Buscar lead por nome ou telefone"
-          className="h-8"
+          aria-label="Buscar lead por nome ou telefone"
         />
-        <Button size="sm" variant="outline" className="h-8" onClick={search}>
-          <Search className="h-4 w-4" />
+        <Button variant="outline" size="icon" onClick={search} aria-label="Buscar">
+          <Search />
         </Button>
       </div>
 
       {options.length > 0 && (
-        <div className="divide-y divide-border rounded border border-border">
+        <div className="divide-y overflow-hidden rounded-lg border">
           {options.map((c) => (
-            <div key={c.id} className="flex items-center justify-between px-2 py-1.5">
+            <div key={c.id} className="flex items-center justify-between gap-2 px-3 py-1.5">
               <span className="text-sm">
                 {c.name} <span className="text-xs text-muted-foreground">{c.phone_number ?? 'sem telefone'}</span>
               </span>
@@ -83,7 +88,7 @@ const SaleCard = ({ sale, onResolved }: { sale: UnlinkedSale; onResolved: () => 
                 disabled={busy}
                 onClick={() => run(() => leadTrackingService.linkUnlinkedSale(sale.id, c.id), 'Venda ligada ao lead')}
               >
-                <Link2 className="h-4 w-4 mr-1" /> Ligar
+                <Link2 /> Ligar
               </Button>
             </div>
           ))}
@@ -97,7 +102,7 @@ const SaleCard = ({ sale, onResolved }: { sale: UnlinkedSale; onResolved: () => 
           disabled={busy}
           onClick={() => run(() => leadTrackingService.createLeadFromSale(sale.id), 'Lead criado a partir da venda')}
         >
-          <UserPlus className="h-4 w-4 mr-1" /> Criar lead
+          <UserPlus /> Criar lead
         </Button>
         <Button
           size="sm"
@@ -105,7 +110,7 @@ const SaleCard = ({ sale, onResolved }: { sale: UnlinkedSale; onResolved: () => 
           disabled={busy}
           onClick={() => run(() => leadTrackingService.dismissUnlinkedSale(sale.id), 'Venda descartada')}
         >
-          <X className="h-4 w-4 mr-1" /> Descartar
+          <X /> Descartar
         </Button>
       </div>
     </div>
@@ -133,10 +138,22 @@ const ReviewQueueTab = () => {
           mas só entram no retorno das campanhas depois de ligadas.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardPanel className="flex flex-col gap-3">
+        {!sales &&
+          Array.from({ length: 2 }, (_, i) => <Skeleton key={i} className="h-36 w-full rounded-xl" />)}
         {sales?.map((sale) => <SaleCard key={sale.id} sale={sale} onResolved={load} />)}
-        {sales && sales.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma venda pendente.</p>}
-      </CardContent>
+        {sales && sales.length === 0 && (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Inbox />
+              </EmptyMedia>
+              <EmptyTitle>Nenhuma venda pendente.</EmptyTitle>
+              <EmptyDescription>Vendas do Bitrix24 que não puderam ser ligadas a um lead automaticamente.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
+      </CardPanel>
     </Card>
   );
 };

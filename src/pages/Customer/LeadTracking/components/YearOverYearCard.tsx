@@ -1,24 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { CalendarRange, Info } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Skeleton,
-} from '@/components/ui/compat';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/compat';
 import { endOfYear, startOfYear } from 'date-fns';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import type { LeadTrackingParams, TimelineDataPoint } from '@/types/leadTracking';
@@ -121,38 +107,38 @@ const YearOverYearCard = ({ filters, adsHistoryFrom }: YearOverYearCardProps) =>
             <CardDescription>Mesmo mês em anos diferentes, com os filtros ativos (ignora o período escolhido)</CardDescription>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Select value={metric} onValueChange={(value) => setMetric(value as Metric)}>
-              <SelectTrigger className="h-9 w-[190px]" aria-label="Métrica">
+            <Select items={METRICS} value={metric} onValueChange={(value) => value && setMetric(value as Metric)}>
+              <SelectTrigger className="w-full sm:w-48" aria-label="Métrica">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup>
                 {METRICS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>
                     {m.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
             {[
               { value: yearA, set: setYearA, label: 'Ano de comparação' },
               { value: yearB, set: setYearB, label: 'Ano principal' },
             ].map(({ value, set, label }) => (
-              <Select key={label} value={String(value)} onValueChange={(v) => set(Number(v))}>
-                <SelectTrigger className="h-9 w-[96px]" aria-label={label}>
+              <Select key={label} items={years.map((y) => ({ value: String(y), label: String(y) }))} value={String(value)} onValueChange={(v) => v && set(Number(v))}>
+                <SelectTrigger className="w-24 min-w-24" aria-label={label}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {years.map((year) => (
                     <SelectItem key={year} value={String(year)}>
                       {year}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             ))}
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardPanel className="space-y-3">
           {incompleteHistory && (
             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
               <Info className="h-3.5 w-3.5 shrink-0" />
@@ -164,7 +150,7 @@ const YearOverYearCard = ({ filters, adsHistoryFrom }: YearOverYearCardProps) =>
           {loading && !Object.keys(timelines).length ? (
             <Skeleton className="h-[280px] w-full" />
           ) : !hasData ? (
-            <div className="h-[200px] flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-center">
+            <div className="h-[200px] flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed text-center">
               <p className="text-sm font-medium">Sem dados de “{selected.label}” em {yearA} e {yearB}</p>
               <p className="text-xs text-muted-foreground">Escolha outra métrica ou outros anos.</p>
             </div>
@@ -193,7 +179,7 @@ const YearOverYearCard = ({ filters, adsHistoryFrom }: YearOverYearCardProps) =>
               </BarChart>
             </ChartContainer>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

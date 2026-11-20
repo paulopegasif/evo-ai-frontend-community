@@ -1,40 +1,35 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Calendar as CalendarIcon, ExternalLink, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Combobox,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxPopup,
+} from '@/components/ui/combobox';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  DialogDescription,
   DialogFooter,
-  Button,
-  Badge,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Calendar,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/compat';
-import {
-  Calendar as CalendarIcon,
-  Check,
-  ChevronsUpDown,
-  ExternalLink,
-  Trash2,
-} from 'lucide-react';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectButton, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { ConfirmDialog } from '@/components/base';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { pt } from 'date-fns/locale';
+import { pt, ptBR } from 'date-fns/locale';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import { formatCurrency } from '@/pages/Customer/Dashboard/components/dashboardUtils';
 import type { AppointmentProfessional, AppointmentPatient } from '@/hooks/useAppointmentMetadata';
@@ -45,6 +40,7 @@ import type {
   AppointmentCreateParams,
 } from '@/types/appointments';
 import { toast } from 'sonner';
+import { readableCategoryColor, statusStyle } from './statusStyles';
 import { appointmentDayKey, dateFromKey, zonedInstant, zonedTime } from '@/utils/accountTime';
 
 /** Time option for appointments whose date is known but the time is not ("horário a definir"). */
@@ -73,15 +69,6 @@ const STATUS_OPTIONS: { value: AppointmentStatus; label: string }[] = [
   { value: 'rescheduled', label: 'Remarcado' },
 ];
 
-const STATUS_BADGE: Record<AppointmentStatus, string> = {
-  attended: 'bg-success/10 text-success-foreground border-success/30',
-  no_show: 'bg-destructive/10 text-destructive-foreground border-destructive/30',
-  confirmed: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30',
-  scheduled: 'bg-primary/10 text-primary border-primary/30',
-  cancelled: 'bg-muted text-muted-foreground border-border',
-  rescheduled: 'bg-warning/10 text-warning-foreground border-warning/30',
-};
-
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 
 // 15-minute slots across the clinic day.
@@ -96,8 +83,6 @@ const formatDuration = (minutes: number) => {
   const m = minutes % 60;
   return m ? `${h}h ${m}min` : `${h}h`;
 };
-
-const controlClassName = 'bg-sidebar border-sidebar-border text-sidebar-foreground';
 
 export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   open,
@@ -124,8 +109,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState('');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [patientPickerOpen, setPatientPickerOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     setSubmitted(false);
@@ -231,12 +216,12 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
   const handleDelete = async () => {
     if (!appointment) return;
-    if (!confirm('Deseja realmente remover este agendamento?')) return;
 
     try {
       setLoading(true);
       await appointmentsService.deleteAppointment(appointment.id);
       toast.success('Agendamento removido.');
+      setConfirmDelete(false);
       onSave();
       onOpenChange(false);
     } catch (err: unknown) {
@@ -261,304 +246,306 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     }
   };
 
-  const requiredError = (missing: boolean) =>
-    submitted && missing ? 'border-destructive' : '';
+  const invalid = (missing: boolean) => submitted && missing;
+  const requiredMessage = 'Campo obrigatório';
+
+  const timeItems = useMemo(
+    () => [{ value: TIME_TBD, label: 'A definir' }, ...timeSlots.map((slot) => ({ value: slot, label: slot }))],
+    [timeSlots],
+  );
+  const durationItems = useMemo(
+    () =>
+      (DURATION_OPTIONS.includes(duration) ? DURATION_OPTIONS : [...DURATION_OPTIONS, duration].sort((a, b) => a - b)).map(
+        (d) => ({ value: String(d), label: formatDuration(d) }),
+      ),
+    [duration],
+  );
+  const userItems = useMemo(() => users.map((u) => ({ value: u.id, label: u.name })), [users]);
+  const statusItems = STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center justify-between gap-3 pr-6">
-            <DialogTitle>{appointment ? 'Editar agendamento' : 'Novo agendamento'}</DialogTitle>
-            {appointment?.status && (
-              <Badge variant="outline" className={STATUS_BADGE[appointment.status]}>
-                {STATUS_OPTIONS.find((s) => s.value === appointment.status)?.label ?? appointment.status}
-              </Badge>
-            )}
-          </div>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          {/* Procedimento */}
-          <div className="space-y-2">
-            <Label>Procedimento *</Label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {categories.map((cat) => (
-                <button
-                  type="button"
-                  key={cat.name}
-                  onClick={() => handleCategoryChange(cat.name)}
-                  className={`flex flex-col text-left p-2.5 rounded-md border text-sm transition-colors ${
-                    category === cat.name
-                      ? 'border-primary bg-primary/10'
-                      : 'border-sidebar-border bg-sidebar hover:bg-sidebar-accent'
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                    <span className="truncate">{cat.name}</span>
-                  </span>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    {formatDuration(cat.duration)} • {formatCurrency(cat.price)}
-                  </span>
-                </button>
-              ))}
+      <DialogPopup className="sm:max-w-2xl">
+        <form onSubmit={handleSubmit} noValidate className="contents">
+          <DialogHeader>
+            <div className="flex items-center gap-3 pe-8">
+              <DialogTitle>{appointment ? 'Editar agendamento' : 'Novo agendamento'}</DialogTitle>
+              {appointment?.status && (
+                <Badge variant={statusStyle(appointment.status).badge}>
+                  {STATUS_OPTIONS.find((s) => s.value === appointment.status)?.label ?? appointment.status}
+                </Badge>
+              )}
             </div>
-          </div>
+            <DialogDescription>Campos com * são obrigatórios.</DialogDescription>
+          </DialogHeader>
 
-          {/* Título */}
-          <div className="space-y-2">
-            <Label htmlFor="appointment-title">Título do agendamento *</Label>
-            <Input
-              id="appointment-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className={`${controlClassName} ${requiredError(!title)}`}
-              placeholder="Ex.: Avaliação facial - Nome do paciente"
-            />
-          </div>
+          <DialogPanel className="flex flex-col gap-5">
+            {/* Procedimento */}
+            <Field invalid={invalid(!category)} className="w-full">
+              <FieldLabel render={<span />}>Procedimento *</FieldLabel>
+              <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Procedimento">
+                {categories.map((cat) => {
+                  const selected = category === cat.name;
+                  return (
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      key={cat.name}
+                      onClick={() => handleCategoryChange(cat.name)}
+                      className={cn(
+                        'flex flex-col rounded-lg border bg-background p-2.5 text-left text-sm shadow-xs/5 outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring dark:bg-input/32',
+                        selected && 'border-primary bg-primary/6 ring-1 ring-primary/40 hover:bg-primary/8 dark:bg-primary/10',
+                      )}
+                    >
+                      <span className="flex items-center gap-1.5 font-medium">
+                        <span
+                          className="size-2.5 shrink-0 rounded-full ring-1 ring-foreground/10"
+                          style={{ backgroundColor: readableCategoryColor(cat.color) }}
+                        />
+                        <span className="truncate">{cat.name}</span>
+                      </span>
+                      <span className="mt-1 text-muted-foreground text-xs">
+                        {formatDuration(cat.duration)} · {formatCurrency(cat.price)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {invalid(!category) && <FieldError match>{requiredMessage}</FieldError>}
+            </Field>
 
-          {/* Paciente & Profissional */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>Paciente</Label>
-              <Popover open={patientPickerOpen} onOpenChange={setPatientPickerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={patientPickerOpen}
-                    className={`w-full justify-between font-normal ${controlClassName} hover:bg-sidebar-accent`}
-                  >
-                    <span className={`truncate ${selectedPatient ? '' : 'text-muted-foreground'}`}>
-                      {selectedPatient ? selectedPatient.name : 'Selecione um paciente'}
-                    </span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Buscar paciente..." />
-                    <CommandList>
-                      <CommandEmpty>Nenhum paciente encontrado.</CommandEmpty>
-                      <CommandGroup>
-                        {contactId && (
-                          <CommandItem
-                            value="__none__ sem paciente"
-                            onSelect={() => {
-                              handleContactChange('');
-                              setPatientPickerOpen(false);
-                            }}
-                          >
-                            <span className="text-muted-foreground">Sem paciente</span>
-                          </CommandItem>
-                        )}
-                        {contacts.map((c) => (
-                          <CommandItem
-                            key={c.id}
-                            value={`${c.name} ${c.phone_number ?? ''} ${c.id}`}
-                            onSelect={() => {
-                              handleContactChange(c.id);
-                              setPatientPickerOpen(false);
-                            }}
-                          >
-                            <Check className={`mr-2 h-4 w-4 ${contactId === c.id ? 'opacity-100' : 'opacity-0'}`} />
+            {/* Título */}
+            <Field invalid={invalid(!title)}>
+              <FieldLabel>Título do agendamento *</FieldLabel>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex.: Avaliação facial - Nome do paciente"
+              />
+              {invalid(!title) && <FieldError match>{requiredMessage}</FieldError>}
+            </Field>
+
+            {/* Paciente & Profissional */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel>Paciente</FieldLabel>
+                <Combobox
+                  items={contacts}
+                  value={selectedPatient ?? null}
+                  onValueChange={(c) => handleContactChange(c?.id ?? '')}
+                  itemToStringLabel={(c) => c.name}
+                  itemToStringValue={(c) => `${c.name} ${c.phone_number ?? ''}`}
+                  isItemEqualToValue={(a, b) => a.id === b.id}
+                >
+                  <ComboboxInput placeholder="Buscar paciente..." showClear={Boolean(contactId)} />
+                  <ComboboxPopup>
+                    <ComboboxEmpty>Nenhum paciente encontrado.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(c: AppointmentPatient) => (
+                        <ComboboxItem key={c.id} value={c}>
+                          <span className="flex items-center gap-2">
                             <span className="truncate">{c.name}</span>
                             {c.phone_number && (
-                              <span className="ml-auto pl-2 text-xs text-muted-foreground">{c.phone_number}</span>
+                              <span className="ms-auto text-muted-foreground text-xs">{c.phone_number}</span>
                             )}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+                          </span>
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxPopup>
+                </Combobox>
+              </Field>
+
+              <Field invalid={invalid(!userId)}>
+                <FieldLabel>Profissional responsável *</FieldLabel>
+                <Select items={userItems} value={userId || null} onValueChange={(v) => setUserId(v ?? '')}>
+                  <SelectTrigger aria-invalid={invalid(!userId) || undefined}>
+                    <SelectValue placeholder="Selecione um profissional" />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {userItems.map((u) => (
+                      <SelectItem key={u.value} value={u.value}>
+                        {u.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+                {invalid(!userId) && <FieldError match>{requiredMessage}</FieldError>}
+              </Field>
             </div>
 
-            <div className="space-y-2">
-              <Label>Profissional responsável *</Label>
-              <Select value={userId} onValueChange={setUserId}>
-                <SelectTrigger className={`${controlClassName} ${requiredError(!userId)}`}>
-                  <SelectValue placeholder="Selecione um profissional" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Data, Horário e Duração */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Field invalid={invalid(!date)}>
+                <FieldLabel>Data *</FieldLabel>
+                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                  <PopoverTrigger render={<SelectButton aria-invalid={invalid(!date) || undefined} />}>
+                    <span className="flex items-center gap-2">
+                      <CalendarIcon className="size-4 opacity-72" />
+                      {date ? format(date, 'dd/MM/yyyy', { locale: pt }) : 'Selecione'}
+                    </span>
+                  </PopoverTrigger>
+                  <PopoverPopup className="p-2" align="start">
+                    <Calendar
+                      mode="single"
+                      locale={ptBR}
+                      selected={date}
+                      defaultMonth={date}
+                      onSelect={(d: Date | undefined) => {
+                        setDate(d);
+                        setDatePickerOpen(false);
+                      }}
+                    />
+                  </PopoverPopup>
+                </Popover>
+                {invalid(!date) && <FieldError match>{requiredMessage}</FieldError>}
+              </Field>
+              <Field>
+                <FieldLabel>Horário de início *</FieldLabel>
+                <Select items={timeItems} value={time} onValueChange={(v) => v && setTime(v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup className="max-h-64">
+                    {timeItems.map((slot) => (
+                      <SelectItem key={slot.value} value={slot.value}>
+                        {slot.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
+              <Field disabled={time === TIME_TBD}>
+                <FieldLabel>Duração</FieldLabel>
+                <Select
+                  items={durationItems}
+                  value={String(duration)}
+                  onValueChange={(v) => v && setDuration(Number(v))}
+                  disabled={time === TIME_TBD}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {durationItems.map((d) => (
+                      <SelectItem key={d.value} value={d.value}>
+                        {d.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
             </div>
-          </div>
 
-          {/* Data, Horário e Duração */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-2">
-              <Label>Data *</Label>
-              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${controlClassName} hover:bg-sidebar-accent ${requiredError(!date)}`}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                    {date ? format(date, 'dd/MM/yyyy', { locale: pt }) : 'Selecione'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-sidebar border-sidebar-border" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(d: Date | undefined) => {
-                      setDate(d);
-                      setDatePickerOpen(false);
-                    }}
-                    initialFocus
-                    className="bg-sidebar text-sidebar-foreground"
+            {/* Status, Valor e Local */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Select items={statusItems} value={status} onValueChange={(v) => v && setStatus(v as AppointmentStatus)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {STATUS_OPTIONS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        <span className="flex items-center gap-2">
+                          <span className={cn('size-2 rounded-full', statusStyle(s.value).dot)} />
+                          {s.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
+
+              <Field>
+                <FieldLabel>Valor</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>R$</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    min="0"
+                    value={price}
+                    onChange={(e) => setPrice(Number(e.target.value))}
+                    className="tabular-nums"
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="space-y-2">
-              <Label>Horário de início *</Label>
-              <Select value={time} onValueChange={setTime}>
-                <SelectTrigger className={controlClassName}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="max-h-64">
-                  <SelectItem value={TIME_TBD}>A definir</SelectItem>
-                  {timeSlots.map((slot) => (
-                    <SelectItem key={slot} value={slot}>
-                      {slot}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Duração</Label>
-              <Select value={String(duration)} onValueChange={(v) => setDuration(Number(v))} disabled={time === TIME_TBD}>
-                <SelectTrigger className={controlClassName}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(DURATION_OPTIONS.includes(duration) ? DURATION_OPTIONS : [...DURATION_OPTIONS, duration].sort((a, b) => a - b)).map((d) => (
-                    <SelectItem key={d} value={String(d)}>
-                      {formatDuration(d)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                </InputGroup>
+              </Field>
 
-          {/* Status, Valor e Local */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as AppointmentStatus)}>
-                <SelectTrigger className={controlClassName}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>
-                      {s.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Field>
+                <FieldLabel>Local / sala</FieldLabel>
+                <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex.: Consultório 1" />
+              </Field>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="appointment-price">Valor (R$)</Label>
-              <Input
-                id="appointment-price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                className={controlClassName}
+            {/* Observações */}
+            <Field>
+              <FieldLabel>Observações</FieldLabel>
+              <Textarea
+                rows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Queixa principal, histórico ou recomendações..."
               />
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="appointment-location">Local / sala</Label>
-              <Input
-                id="appointment-location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Ex.: Consultório 1"
-                className={controlClassName}
-              />
-            </div>
-          </div>
-
-          {/* Observações */}
-          <div className="space-y-2">
-            <Label htmlFor="appointment-notes">Observações</Label>
-            <Textarea
-              id="appointment-notes"
-              rows={2}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Queixa principal, histórico ou recomendações..."
-              className={controlClassName}
-            />
-          </div>
-
-          {/* Google Calendar */}
-          {appointment && (
-            <div className="p-3 rounded-md border border-sidebar-border bg-sidebar flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium">Google Calendar</p>
-                <p className="text-xs text-muted-foreground">
-                  Adicione este agendamento à agenda do profissional
-                </p>
+            {/* Google Calendar */}
+            {appointment && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/40 p-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-sm">Google Calendar</p>
+                  <p className="text-muted-foreground text-xs">Adicione este agendamento à agenda do profissional</p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={handleSyncGoogle} className="shrink-0">
+                  <ExternalLink />
+                  Adicionar ao Google
+                </Button>
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={handleSyncGoogle} className="gap-1.5 shrink-0">
-                <ExternalLink className="h-4 w-4" />
-                Adicionar ao Google
-              </Button>
-            </div>
-          )}
+            )}
+          </DialogPanel>
 
-          <DialogFooter className="flex items-center justify-between sm:justify-between pt-3 border-t border-border">
+          <DialogFooter className="sm:justify-between">
             {appointment ? (
               <Button
                 type="button"
-                variant="destructive"
-                size="sm"
-                onClick={handleDelete}
+                variant="destructive-outline"
+                onClick={() => setConfirmDelete(true)}
                 disabled={loading}
-                className="gap-1.5"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 />
                 Excluir
               </Button>
-            ) : <div />}
+            ) : (
+              <span className="hidden sm:block" />
+            )}
 
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={loading}
-              >
+            <div className="flex flex-col-reverse gap-2 sm:flex-row">
+              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Salvando...' : appointment ? 'Salvar alterações' : 'Criar agendamento'}
+              <Button type="submit" loading={loading && !confirmDelete}>
+                {appointment ? 'Salvar alterações' : 'Criar agendamento'}
               </Button>
             </div>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Excluir agendamento?"
+        description="Deseja realmente remover este agendamento? Esta ação não pode ser desfeita."
+        cancelLabel="Cancelar"
+        confirmLabel="Excluir"
+        onConfirm={handleDelete}
+        loading={loading}
+      />
     </Dialog>
   );
 };

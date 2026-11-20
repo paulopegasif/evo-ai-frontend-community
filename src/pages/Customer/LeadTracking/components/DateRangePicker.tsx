@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { CalendarDays } from 'lucide-react';
 import { ptBR } from 'date-fns/locale';
-import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { formatRange, type DateRange } from '../periods';
 
 interface DateRangePickerProps {
@@ -16,7 +18,7 @@ interface Draft {
   to?: Date;
 }
 
-/** Range picked on the design-system calendar; future days are disabled. */
+/** Range picked on the coss calendar; future days are disabled. */
 const DateRangePicker = ({ value, onChange, placeholder = 'Escolher datas', ariaLabel }: DateRangePickerProps) => {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Draft | undefined>(value ?? undefined);
@@ -34,22 +36,22 @@ const DateRangePicker = ({ value, onChange, placeholder = 'Escolher datas', aria
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 font-normal" aria-label={ariaLabel}>
-          <CalendarDays className="h-4 w-4 mr-2" />
-          {value ? formatRange(value) : placeholder}
-        </Button>
+      <PopoverTrigger render={<Button variant="outline" className="font-normal" aria-label={ariaLabel} />}>
+        <CalendarDays />
+        {value ? formatRange(value) : placeholder}
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="end">
-        <Calendar
-          mode="range"
-          locale={ptBR}
-          numberOfMonths={2}
-          defaultMonth={draft?.from ?? value?.from}
-          selected={draft?.from ? { from: draft.from, to: draft.to } : undefined}
-          onSelect={(range: Draft | undefined) => setDraft(range)}
-          disabled={{ after: new Date() }}
-        />
+      <PopoverPopup className="p-0" align="end">
+        <div className="p-2">
+          <Calendar
+            mode="range"
+            locale={ptBR}
+            numberOfMonths={2}
+            defaultMonth={draft?.from ?? value?.from}
+            selected={draft?.from ? { from: draft.from, to: draft.to } : undefined}
+            onSelect={(range: Draft | undefined) => setDraft(range)}
+            disabled={{ after: new Date() }}
+          />
+        </div>
         <div className="flex items-center justify-end gap-2 border-t p-3">
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
             Cancelar
@@ -58,7 +60,7 @@ const DateRangePicker = ({ value, onChange, placeholder = 'Escolher datas', aria
             Aplicar
           </Button>
         </div>
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 };

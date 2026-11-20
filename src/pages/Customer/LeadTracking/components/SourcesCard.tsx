@@ -1,17 +1,8 @@
 import { useMemo } from 'react';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Cell, Pie, PieChart } from 'recharts';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from '@/components/ui/compat';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/compat';
 import type { LeadSourcePerformance } from '@/types/leadTracking';
 import { CATEGORICAL, OTHER_COLOR } from './chartConfig';
 import { percentOrDash, plural } from './format';
@@ -81,7 +72,7 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
         </CardTitle>
         <CardDescription>Canal do primeiro contato e quanto cada um converte</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardPanel>
         {total === 0 ? (
           <div className="h-[260px] flex items-center justify-center text-sm text-muted-foreground">
             Nenhum lead no período.
@@ -140,7 +131,7 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
           </div>
           </div>
         )}
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };
