@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { integrationsService } from '@/services/integrations';
 import { DashboardApp } from '@/types/integrations';
-import { Skeleton } from '@/components/ui/compat';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /**
  * Generic page component for displaying embedded dashboard apps
@@ -62,21 +64,12 @@ export default function DashboardAppPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="flex flex-col h-full">
-        {/* Header Skeleton */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <Skeleton className="h-8 w-64" />
-              <Skeleton className="h-4 w-96" />
-            </div>
-          </div>
+      <div className="flex h-full flex-col gap-4 p-4 md:gap-6 md:p-6" aria-busy="true">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-64" />
+          <Skeleton className="h-4 w-96 max-w-full" />
         </div>
-
-        {/* Content Skeleton */}
-        <div className="flex-1 p-6">
-          <Skeleton className="h-full w-full rounded-lg" />
-        </div>
+        <Skeleton className="w-full flex-1 rounded-xl" />
       </div>
     );
   }
@@ -84,36 +77,26 @@ export default function DashboardAppPage() {
   // Error state
   if (error || !app) {
     return (
-      <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-destructive">
-                {t('dashboardApps.page.error.title')}
-              </h1>
-              <p className="text-muted-foreground">
-                {error || t('dashboardApps.page.error.notFound')}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Error Content */}
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="text-center space-y-4">
-            <AlertCircle className="h-16 w-16 text-destructive mx-auto" />
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold">{t('dashboardApps.page.error.heading')}</h2>
-              <p className="text-sm text-muted-foreground max-w-md">
-                {t('dashboardApps.page.error.description')}
-              </p>
-            </div>
-            <button onClick={() => navigate(-1)} className="text-sm text-primary hover:underline">
+      <div className="flex h-full flex-col items-center justify-center p-4 md:p-6">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <AlertCircle />
+            </EmptyMedia>
+            <EmptyTitle>{t('dashboardApps.page.error.heading')}</EmptyTitle>
+            <EmptyDescription>
+              {error || t('dashboardApps.page.error.notFound')}
+              <br />
+              {t('dashboardApps.page.error.description')}
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              <ArrowLeft />
               {t('dashboardApps.page.error.goBack')}
-            </button>
-          </div>
-        </div>
+            </Button>
+          </EmptyContent>
+        </Empty>
       </div>
     );
   }
@@ -125,15 +108,15 @@ export default function DashboardAppPage() {
 
   if (!appUrl) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-          <h1 className="text-2xl font-bold tracking-tight text-destructive">
-            {t('dashboardApps.page.error.invalidUrl')}
-          </h1>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <AlertCircle className="h-16 w-16 text-destructive" />
-        </div>
+      <div className="flex h-full flex-col items-center justify-center p-4 md:p-6">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <AlertCircle />
+            </EmptyMedia>
+            <EmptyTitle>{t('dashboardApps.page.error.invalidUrl')}</EmptyTitle>
+          </EmptyHeader>
+        </Empty>
       </div>
     );
   }
