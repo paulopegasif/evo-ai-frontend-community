@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/compat';
-import { Badge } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Clock, Filter, Hash, Tag, UserCheck, Users, Workflow } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/compat';
-import { ScrollArea } from '@/components/ui/compat';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/compat';
-import { Checkbox } from '@/components/ui/compat';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/accordion';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { STATUS_META } from '../chat-header/statusMeta';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useFilterOptions } from '@/hooks/chat/useFilterOptions';
 import { BaseFilter } from '@/types/core';
@@ -148,73 +149,74 @@ const ConversationsFilterPopover: React.FC<ConversationsFilterPopoverProps> = ({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={disabled}
-          className="h-8 px-2 cursor-pointer relative"
-          data-tour="chat-filter-button"
-        >
-          <Filter className="h-4 w-4" />
-          {t('chatSidebar.filtersButton')}
-          {hasAppliedFilters && (
-            <span className="absolute -top-1 -right-1 h-2 w-2 bg-primary rounded-full" />
-          )}
-        </Button>
+      <PopoverTrigger
+        disabled={disabled}
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn('relative', hasAppliedFilters && 'text-primary')}
+            data-tour="chat-filter-button"
+          />
+        }
+      >
+        <Filter />
+        {t('chatSidebar.filtersButton')}
+        {hasAppliedFilters && (
+          <span aria-hidden="true" className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary" />
+        )}
       </PopoverTrigger>
 
-      <PopoverContent
-        className="w-80 h-[26rem] p-0 flex flex-col overflow-hidden bg-muted"
+      <PopoverPopup
+        className="w-80 [&_[data-slot=popover-viewport]]:p-0 [&_[data-slot=popover-viewport]]:[--viewport-inline-padding:0px]"
         side="right"
         align="start"
         sideOffset={8}
-        collisionPadding={12}
       >
-        <div className="flex items-center justify-between px-4 py-3 shrink-0 bg-background border-b">
-          <span className="text-sm font-semibold">{t('conversationsFilter.title')}</span>
-          {activeCount > 0 && (
-            <Badge variant="secondary" className="text-xs">
-              {activeCount}
-            </Badge>
-          )}
+       <div className="flex h-[26rem] flex-col overflow-hidden">
+        <div className="flex shrink-0 items-center justify-between border-b px-4 py-2.5">
+          <span className="font-semibold text-sm">{t('conversationsFilter.title')}</span>
+          {activeCount > 0 && <Badge variant="info">{activeCount}</Badge>}
         </div>
 
-        <ScrollArea className="grow min-h-0 overflow-y-auto">
-          <div className="p-2.5 flex flex-col gap-2">
+        <ScrollArea className="min-h-0 grow bg-muted/40">
+          <div className="flex flex-col gap-2 p-2.5">
             {/* Status é um card à parte (não faz parte do Accordion abaixo) por
                 ser o único com bolinha colorida por opção, em vez de checkbox
                 puro — visual ligeiramente diferente das demais seções. */}
-            <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
+            <Accordion multiple value={openSections} onValueChange={v => setOpenSections(v as string[])}>
               <AccordionItem
                 value="status"
-                className="border-0 rounded-xl bg-background shadow-sm overflow-hidden"
+                className="overflow-hidden rounded-lg border bg-background last:border-b"
               >
-                <AccordionTrigger className="px-3.5 py-3 text-sm font-semibold hover:no-underline [&>svg]:text-muted-foreground">
+                <AccordionTrigger className="px-3 py-2.5 font-semibold text-sm hover:no-underline">
                   <span className="flex items-center gap-2">
                     <Clock className={cn('h-4 w-4', SECTION_ACCENT)} />
                     {t('conversationsFilter.attributes.status')}
                   </span>
                 </AccordionTrigger>
-                <AccordionContent className="px-3.5 pb-3 pt-0 space-y-1">
+                <AccordionPanel className="space-y-0.5 px-3 pt-0 pb-2.5">
                   {STATUS_OPTIONS.map(status => {
                     const config = getStatusConfig(status, t);
-                    const dotColor = config.color.replace('text-', 'bg-');
                     return (
                       <label
                         key={status}
-                        className="flex items-center gap-2.5 w-full py-1.5 text-sm rounded-lg cursor-pointer"
+                        className="flex w-full cursor-pointer items-center gap-2.5 rounded-md py-1 text-foreground text-sm"
                       >
                         <Checkbox
                           checked={statusValues.includes(status)}
                           onCheckedChange={() => toggleValue('status', status, true)}
                         />
                         <span className="flex-1">{config.label}</span>
-                        <span className={cn('h-2.5 w-2.5 rounded-full flex-shrink-0', dotColor)} />
+                        <span
+                          aria-hidden="true"
+                          className="size-2 flex-shrink-0 rounded-full"
+                          style={{ background: STATUS_META[status]?.color }}
+                        />
                       </label>
                     );
                   })}
-                </AccordionContent>
+                </AccordionPanel>
               </AccordionItem>
             </Accordion>
 
@@ -227,24 +229,24 @@ const ConversationsFilterPopover: React.FC<ConversationsFilterPopoverProps> = ({
               return (
                 <Accordion
                   key={section.attributeKey}
-                  type="multiple"
+                  multiple
                   value={openSections}
-                  onValueChange={setOpenSections}
+                  onValueChange={v => setOpenSections(v as string[])}
                 >
                   <AccordionItem
                     value={section.attributeKey}
                     className={cn(
-                      'border-0 rounded-xl bg-background shadow-sm overflow-hidden',
-                      isOpen && 'ring-1 ring-primary/25',
+                      'overflow-hidden rounded-lg border bg-background last:border-b',
+                      isOpen && 'border-primary/32',
                     )}
                   >
-                    <AccordionTrigger className="px-3.5 py-3 text-sm font-semibold hover:no-underline [&>svg]:text-muted-foreground">
+                    <AccordionTrigger className="px-3 py-2.5 font-semibold text-sm hover:no-underline">
                       <span className="flex items-center gap-2">
                         <IconComponent className={cn('h-4 w-4', SECTION_ACCENT)} />
                         {t(`conversationsFilter.attributes.${section.attributeKey}`)}
                       </span>
                     </AccordionTrigger>
-                    <AccordionContent className="px-3.5 pb-3 pt-0 space-y-1">
+                    <AccordionPanel className="space-y-0.5 px-3 pt-0 pb-2.5">
                       {sectionOptions.length === 0 ? (
                         <div className="py-1.5 text-xs text-muted-foreground">
                           {t('conversationsFilter.popover.noOptions')}
@@ -253,7 +255,7 @@ const ConversationsFilterPopover: React.FC<ConversationsFilterPopoverProps> = ({
                         sectionOptions.map(option => (
                           <label
                             key={option.value}
-                            className="flex items-center gap-2.5 w-full py-1.5 text-sm rounded-lg cursor-pointer"
+                            className="flex w-full cursor-pointer items-center gap-2.5 rounded-md py-1 text-foreground text-sm"
                           >
                             <Checkbox
                               checked={selectedValues.includes(option.value)}
@@ -263,7 +265,7 @@ const ConversationsFilterPopover: React.FC<ConversationsFilterPopoverProps> = ({
                           </label>
                         ))
                       )}
-                    </AccordionContent>
+                    </AccordionPanel>
                   </AccordionItem>
                 </Accordion>
               );
@@ -271,15 +273,16 @@ const ConversationsFilterPopover: React.FC<ConversationsFilterPopoverProps> = ({
           </div>
         </ScrollArea>
 
-        <div className="flex items-center justify-between px-4 py-3 border-t bg-background gap-2 shrink-0">
-          <Button variant="ghost" size="sm" onClick={handleClearAll} className="text-xs cursor-pointer">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-t px-4 py-2.5">
+          <Button variant="ghost" size="sm" onClick={handleClearAll}>
             {t('conversationsFilter.popover.clearAll')}
           </Button>
-          <Button size="sm" onClick={handleApply} className="cursor-pointer">
+          <Button size="sm" onClick={handleApply}>
             {t('conversationsFilter.applyFilters')}
           </Button>
         </div>
-      </PopoverContent>
+       </div>
+      </PopoverPopup>
     </Popover>
   );
 };
