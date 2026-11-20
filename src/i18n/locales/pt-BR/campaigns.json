@@ -1,7 +1,7 @@
 {
   "title": "Campanhas",
   "card": {
-    "contacts": "Contactos",
+    "contacts": "Contatos",
     "scheduledFor": "Agendado para",
     "sent": "Enviados",
     "deliveryRate": "Taxa de Entrega",
@@ -17,32 +17,32 @@
       "viewStats": "Ver estatísticas",
       "duplicate": "Duplicar",
       "edit": "Editar campanha",
-      "delete": "Eliminar campanha"
+      "delete": "Excluir campanha"
     }
   },
   "header": {
     "title": "Campanhas",
-    "subtitle": "Gerir as suas campanhas de mensagens em massa",
-    "searchPlaceholder": "Pesquisar campanhas...",
+    "subtitle": "Gerencie suas campanhas de mensagens em massa",
+    "searchPlaceholder": "Buscar campanhas...",
     "newCampaign": "Nova Campanha",
     "bulkPause": "Pausar Selecionadas",
     "bulkResume": "Retomar Selecionadas",
     "bulkDuplicate": "Duplicar Selecionadas",
-    "bulkDelete": "Eliminar Selecionadas"
+    "bulkDelete": "Excluir Selecionadas"
   },
   "empty": {
     "title": "Nenhuma campanha encontrada",
-    "description": "Crie uma nova campanha para começar a enviar mensagens em massa para os seus contactos.",
+    "description": "Crie uma nova campanha para começar a enviar mensagens em massa para seus contatos.",
     "action": "Nova Campanha"
   },
   "loading": {
-    "campaigns": "A carregar campanhas...",
-    "creating": "A criar...",
-    "updating": "A atualizar...",
-    "deleting": "A eliminar...",
-    "scheduling": "A agendar...",
-    "pausing": "A pausar...",
-    "resuming": "A retomar..."
+    "campaigns": "Carregando campanhas...",
+    "creating": "Criando...",
+    "updating": "Atualizando...",
+    "deleting": "Excluindo...",
+    "scheduling": "Agendando...",
+    "pausing": "Pausando...",
+    "resuming": "Retomando..."
   },
   "messages": {
     "loadError": "Erro ao carregar campanhas",
@@ -50,8 +50,8 @@
     "createError": "Erro ao criar campanha",
     "updateSuccess": "Campanha atualizada com sucesso",
     "updateError": "Erro ao atualizar campanha",
-    "deleteSuccess": "Campanha eliminada com sucesso",
-    "deleteError": "Erro ao eliminar campanha",
+    "deleteSuccess": "Campanha excluída com sucesso",
+    "deleteError": "Erro ao excluir campanha",
     "pauseSuccess": "Campanha pausada com sucesso",
     "pauseError": "Erro ao pausar campanha",
     "startSuccess": "Campanha iniciada com sucesso",
@@ -62,14 +62,14 @@
     "stopError": "Erro ao cancelar campanha",
     "duplicateSuccess": "Campanha duplicada com sucesso",
     "duplicateError": "Erro ao duplicar campanha",
-    "bulkDeleteSuccess": "{{count}} campanha(s) eliminada(s) com sucesso",
-    "bulkDeleteError": "Erro ao eliminar campanhas",
+    "bulkDeleteSuccess": "{{count}} campanha(s) excluída(s) com sucesso",
+    "bulkDeleteError": "Erro ao excluir campanhas",
     "bulkPauseSuccess": "{{count}} campanha(s) pausada(s) com sucesso",
     "bulkPauseError": "Erro ao pausar campanhas",
     "bulkResumeSuccess": "{{count}} campanha(s) retomada(s) com sucesso",
     "bulkResumeError": "Erro ao retomar campanhas",
     "detailsError": "Erro ao carregar detalhes da campanha",
-    "noPermissionToCreate": "Não tem permissão para criar campanhas",
+    "noPermissionToCreate": "Você não tem permissão para criar campanhas",
     "editInDevelopment": "Edição de campanhas em desenvolvimento",
     "statsInDevelopment": "Estatísticas de campanhas em desenvolvimento",
     "statsError": "Erro ao carregar estatísticas da campanha",
@@ -80,18 +80,18 @@
   },
   "dialog": {
     "deleteCampaign": {
-      "title": "Eliminar Campanha",
-      "description": "Tem a certeza de que deseja eliminar a campanha \"{{name}}\"? Esta ação não pode ser revertida.",
-      "confirm": "Eliminar",
+      "title": "Excluir Campanha",
+      "description": "Tem certeza de que deseja excluir a campanha \"{{name}}\"? Esta ação não pode ser revertida.",
+      "confirm": "Excluir",
       "cancel": "Cancelar",
-      "deleting": "A eliminar..."
+      "deleting": "Excluindo..."
     },
     "bulkDelete": {
-      "title": "Eliminar Campanhas",
-      "description": "Tem a certeza de que deseja eliminar {{count}} campanha(s) selecionada(s)? Esta ação não pode ser revertida.",
-      "confirm": "Eliminar Todas",
+      "title": "Excluir Campanhas",
+      "description": "Tem certeza de que deseja excluir {{count}} campanha(s) selecionada(s)? Esta ação não pode ser revertida.",
+      "confirm": "Excluir Todas",
       "cancel": "Cancelar",
-      "deleting": "A eliminar..."
+      "deleting": "Excluindo..."
     },
     "editCampaign": {
       "title": "Editar Campanha",
@@ -142,7 +142,7 @@
   "status": {
     "draft": "Rascunho",
     "scheduled": "Agendada",
-    "sending": "A enviar",
+    "sending": "Enviando",
     "paused": "Pausada",
     "stopped": "Parada",
     "completed": "Concluída",
@@ -161,10 +161,10 @@
   "table": {
     "columns": {
       "name": "Campanha",
-      "status": "Estado",
-      "contacts": "Contactos",
+      "status": "Status",
+      "contacts": "Contatos",
       "delivery": "Entrega",
-      "engagement": "Envolvimento",
+      "engagement": "Engajamento",
       "created": "Criado",
       "quickActions": "Ações rápidas"
     },
@@ -175,7 +175,7 @@
     "empty": {
       "noResults": "Nenhuma campanha encontrada",
       "title": "Nenhuma campanha encontrada",
-      "description": "Crie uma nova campanha para começar a enviar mensagens em massa para os seus contactos."
+      "description": "Crie uma nova campanha para começar a enviar mensagens em massa para seus contatos."
     }
   },
   "wizard": {
@@ -208,9 +208,9 @@
     "progress": {
       "basicInfo": "Informações Básicas",
       "template": "Conteúdo",
-      "contacts": "Contactos",
+      "contacts": "Contatos",
       "schedule": "Agendamento",
-      "review": "Rever",
+      "review": "Revisar",
       "success": "Concluído"
     },
     "step1": {
