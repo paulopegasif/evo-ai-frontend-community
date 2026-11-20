@@ -546,7 +546,7 @@
         "unknown": "Desconhecido"
       },
       "select": "Selecione um template",
-      "selected": "Template: {{name}}",
+      "selected": "Modelo: {{name}}",
       "change": "Trocar template",
       "fillVariables": "Preencha as variáveis",
       "preview": "Pré-visualização",
