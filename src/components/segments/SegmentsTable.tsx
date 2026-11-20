@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Edit, Trash2, Play, Pause, RefreshCw, List } from 'lucide-react';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import BaseTable from '@/components/base/BaseTable';
 import { Segment } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -50,9 +50,9 @@ export default function SegmentsTable({
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      running: 'default' as const,
-      paused: 'secondary' as const,
-      completed: 'outline' as const,
+      running: 'success' as const,
+      paused: 'warning' as const,
+      completed: 'secondary' as const,
     };
 
     const labels = {

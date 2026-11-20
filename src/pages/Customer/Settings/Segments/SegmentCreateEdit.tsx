@@ -3,7 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { Button, Input, Label, RadioGroup, RadioGroupItem } from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import EmptyState from '@/components/base/EmptyState';
+import RadioCardGroup from '@/components/base/RadioCard';
 import { Plus, Save, ArrowLeft, RefreshCw, Target, Users, Filter, Eye, AlertCircle, List, Workflow } from 'lucide-react';
 
 import { segmentsService } from '@/services/segments/segmentsService';
@@ -262,70 +272,65 @@ export default function SegmentCreateEdit() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-muted-foreground">{t('loadingSegment')}</div>
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6" aria-busy="true">
+        <span className="sr-only">{t('loadingSegment')}</span>
+        <Skeleton className="h-8 w-72" />
+        <Skeleton className="h-36 rounded-2xl" />
+        <Skeleton className="h-72 rounded-2xl" />
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="border-b px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/settings/segments')}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-semibold flex items-center gap-2">
-                <Target className="h-6 w-6" />
+      <div className="border-b px-4 py-4 md:px-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => navigate('/settings/segments')}
+                    aria-label={t('actions.back')}
+                  />
+                }
+              >
+                <ArrowLeft />
+              </TooltipTrigger>
+              <TooltipPopup>{t('actions.back')}</TooltipPopup>
+            </Tooltip>
+            <div className="min-w-0">
+              <h1 className="flex items-center gap-2 font-semibold text-xl md:text-2xl">
+                <Target className="size-5 text-muted-foreground" />
                 {isEditing ? t('createEdit.titleEdit') : t('createEdit.titleNew')}
               </h1>
               {isEditing && segment && (
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                  <span className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+                  <Badge variant="secondary">
+                    <Users />
                     {t('createEdit.contactsCount', { count: segment.contactsCount || 0 })}
-                  </span>
-                  <span>
-                    {t('createEdit.lastComputed', { date: formatDate(segment.lastComputedAt) })}
-                  </span>
+                  </Badge>
+                  <span>{t('createEdit.lastComputed', { date: formatDate(segment.lastComputedAt) })}</span>
                 </div>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={handlePreview}
-              disabled={previewing}
-              className="flex items-center gap-2"
-            >
-              <Eye className="h-4 w-4" />
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" onClick={handlePreview} loading={previewing}>
+              {!previewing && <Eye />}
               {previewing ? t('actions.previewing') : t('actions.preview')}
             </Button>
             {isEditing && (
-              <Button
-                variant="outline"
-                onClick={handleRecompute}
-                disabled={recomputing}
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${recomputing ? 'animate-spin' : ''}`} />
+              <Button variant="outline" onClick={handleRecompute} disabled={recomputing}>
+                <RefreshCw className={recomputing ? 'animate-spin' : ''} />
                 {t('actions.recompute')}
               </Button>
             )}
-            <Button
-              onClick={handleSave}
-              disabled={saving || !hasChanges}
-              className="flex items-center gap-2"
-            >
-              <Save className="h-4 w-4" />
+            <Button onClick={handleSave} disabled={!hasChanges} loading={saving}>
+              {!saving && <Save />}
               {saving ? t('actions.saving') : t('actions.save')}
             </Button>
           </div>
@@ -334,19 +339,18 @@ export default function SegmentCreateEdit() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto p-6 space-y-6">
+        <div className="mx-auto flex max-w-5xl flex-col gap-6 p-4 md:p-6">
           {/* Preview result / error (does not affect the form) */}
           {previewError && (
-            <div className="rounded-lg border border-destructive/24 bg-destructive/8 p-3">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
-                <p className="text-sm text-destructive-foreground">{previewError}</p>
-              </div>
-            </div>
+            <Alert variant="error">
+              <AlertCircle />
+              <AlertDescription>{previewError}</AlertDescription>
+            </Alert>
           )}
           {previewCount !== null && !previewError && (
-            <div className="rounded-lg border bg-muted/30 p-3">
-              <p className="text-sm">
+            <Alert variant="info">
+              <Eye />
+              <AlertDescription className="text-foreground">
                 {t('preview.result', { count: previewCount })}
                 {previewSample.length > 0 && (
                   <span className="text-muted-foreground">
@@ -354,182 +358,141 @@ export default function SegmentCreateEdit() {
                     {t('preview.sample', { ids: previewSample.join(', ') })}
                   </span>
                 )}
-              </p>
-            </div>
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* Nome do Segmento */}
-          <div className="rounded-lg border p-6">
-            <Label htmlFor="name" className="text-base font-semibold mb-3 block">
-              {t('createEdit.name.label')}
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder={t('createEdit.name.placeholder')}
-              className="max-w-xl"
-            />
-            <p className="text-sm text-muted-foreground mt-2">{t('createEdit.name.description')}</p>
-          </div>
+          <Card>
+            <CardPanel className="pt-6">
+              <Field>
+                <FieldLabel htmlFor="name">{t('createEdit.name.label')}</FieldLabel>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder={t('createEdit.name.placeholder')}
+                  className="max-w-xl"
+                />
+                <FieldDescription>{t('createEdit.name.description')}</FieldDescription>
+              </Field>
+            </CardPanel>
+          </Card>
 
           {/* Definição do Segmento */}
-          <div className="rounded-lg border p-6">
-            <div className="mb-6 flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-base font-semibold mb-1 flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
+          <Card>
+            <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Filter className="size-4 text-muted-foreground" />
                   {t('createEdit.definition.title')}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {t('createEdit.definition.description')}
-                </p>
+                </CardTitle>
+                <CardDescription>{t('createEdit.definition.description')}</CardDescription>
               </div>
               {/* Form ⇄ Canvas editor toggle (same underlying definition) */}
-              <div className="flex flex-shrink-0 items-center gap-1 rounded-md border p-1">
-                <Button
-                  type="button"
-                  variant={editorMode === 'form' ? 'default' : 'ghost'}
-                  size="sm"
-                  className="h-7 gap-1"
-                  onClick={() => setEditorMode('form')}
-                >
-                  <List className="h-3.5 w-3.5" />
+              <ToggleGroup
+                variant="outline"
+                size="sm"
+                value={[editorMode]}
+                onValueChange={next => {
+                  const mode = next[0] as 'form' | 'canvas' | undefined;
+                  if (mode) setEditorMode(mode);
+                }}
+              >
+                <ToggleGroupItem value="form">
+                  <List />
                   {t('actions.form')}
-                </Button>
-                <Button
-                  type="button"
-                  variant={editorMode === 'canvas' ? 'default' : 'ghost'}
-                  size="sm"
-                  className="h-7 gap-1"
-                  onClick={() => setEditorMode('canvas')}
-                >
-                  <Workflow className="h-3.5 w-3.5" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="canvas">
+                  <Workflow />
                   {t('actions.canvas')}
-                </Button>
-              </div>
-            </div>
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </CardHeader>
 
-            {editorMode === 'canvas' ? (
-              <SegmentCanvasBuilder
-                definitionType={definitionType}
-                nodes={nodes}
-                onNodesChange={setNodes}
-                onDefinitionTypeChange={handleDefinitionTypeChange}
-              />
-            ) : (
-              <>
-            {/* Tipo de Combinação */}
-            <div className="rounded-lg border p-4 mb-6">
-              <Label className="text-sm font-medium mb-3 block">
-                {t('createEdit.definition.combinationType')}
-              </Label>
-              <RadioGroup value={definitionType} onValueChange={handleDefinitionTypeChange}>
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <RadioGroupItem value="Everyone" id="everyone" className="mt-1" />
-                    <div className="flex-1">
-                      <label htmlFor="everyone" className="font-medium cursor-pointer">
-                        {t('createEdit.definition.everyone.label')}
-                      </label>
-                      <p className="text-sm text-muted-foreground">
-                        {t('createEdit.definition.everyone.description')}
-                      </p>
+            <CardPanel className="flex flex-col gap-6">
+              {editorMode === 'canvas' ? (
+                <SegmentCanvasBuilder
+                  definitionType={definitionType}
+                  nodes={nodes}
+                  onNodesChange={setNodes}
+                  onDefinitionTypeChange={handleDefinitionTypeChange}
+                />
+              ) : (
+                <>
+                  {/* Tipo de Combinação */}
+                  <div className="flex flex-col gap-2">
+                    <span className="font-medium text-sm" id="segment-combination-label">
+                      {t('createEdit.definition.combinationType')}
+                    </span>
+                    <RadioCardGroup
+                      aria-labelledby="segment-combination-label"
+                      value={definitionType}
+                      onValueChange={handleDefinitionTypeChange}
+                      className="sm:grid-cols-3"
+                      options={(['Everyone', 'And', 'Or'] as const).map(value => {
+                        const key = value === 'Everyone' ? 'everyone' : value === 'And' ? 'and' : 'or';
+                        return {
+                          value,
+                          title: t(`createEdit.definition.${key}.label`),
+                          description: t(`createEdit.definition.${key}.description`),
+                        };
+                      })}
+                    />
+                  </div>
+
+                  {/* Mensagem para Everyone */}
+                  {definitionType === 'Everyone' && (
+                    <Alert variant="info">
+                      <Users />
+                      <AlertDescription className="text-foreground">
+                        <span className="font-medium">{t('createEdit.definition.everyone.messageTitle')}</span>
+                        <span className="block text-muted-foreground">
+                          {t('createEdit.definition.everyone.messageDescription')}
+                        </span>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* Lista de Condições */}
+                  {definitionType !== 'Everyone' && (
+                    <div className="flex flex-col gap-3">
+                      {nodes.length === 0 && (
+                        <EmptyState
+                          icon={Filter}
+                          title={t('createEdit.definition.noConditions.title')}
+                          description={t('createEdit.definition.noConditions.description')}
+                          action={{
+                            label: t('actions.addFirstCondition'),
+                            onClick: addCondition,
+                            variant: 'outline',
+                          }}
+                          className="rounded-xl border border-dashed py-10"
+                        />
+                      )}
+
+                      {nodes.map((node, index) => (
+                        <SegmentConditionEditor
+                          key={node.id}
+                          condition={node}
+                          index={index}
+                          onUpdate={updateCondition}
+                          onRemove={removeCondition}
+                        />
+                      ))}
+
+                      {nodes.length > 0 && (
+                        <Button type="button" variant="outline" onClick={addCondition} className="w-full border-dashed">
+                          <Plus />
+                          {t('actions.addCondition')}
+                        </Button>
+                      )}
                     </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <RadioGroupItem value="And" id="and" className="mt-1" />
-                    <div className="flex-1">
-                      <label htmlFor="and" className="font-medium cursor-pointer">
-                        {t('createEdit.definition.and.label')}
-                      </label>
-                      <p className="text-sm text-muted-foreground">
-                        {t('createEdit.definition.and.description')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <RadioGroupItem value="Or" id="or" className="mt-1" />
-                    <div className="flex-1">
-                      <label htmlFor="or" className="font-medium cursor-pointer">
-                        {t('createEdit.definition.or.label')}
-                      </label>
-                      <p className="text-sm text-muted-foreground">
-                        {t('createEdit.definition.or.description')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {/* Mensagem para Everyone */}
-            {definitionType === 'Everyone' && (
-              <div className="rounded-lg border p-4">
-                <div className="flex items-start gap-3">
-                  <Users className="h-5 w-5 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium mb-1">
-                      {t('createEdit.definition.everyone.messageTitle')}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {t('createEdit.definition.everyone.messageDescription')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Lista de Condições */}
-            {definitionType !== 'Everyone' && (
-              <div className="space-y-4">
-                {nodes.length === 0 && (
-                  <div className="text-center py-12 rounded-lg border-2 border-dashed">
-                    <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                    <h3 className="text-lg font-medium mb-1">
-                      {t('createEdit.definition.noConditions.title')}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {t('createEdit.definition.noConditions.description')}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={addCondition}
-                      className="mx-auto"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {t('actions.addFirstCondition')}
-                    </Button>
-                  </div>
-                )}
-
-                {nodes.map((node, index) => (
-                  <SegmentConditionEditor
-                    key={node.id}
-                    condition={node}
-                    index={index}
-                    onUpdate={updateCondition}
-                    onRemove={removeCondition}
-                  />
-                ))}
-
-                {nodes.length > 0 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addCondition}
-                    className="w-full border-dashed"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t('actions.addCondition')}
-                  </Button>
-                )}
-              </div>
-            )}
-              </>
-            )}
-          </div>
+                  )}
+                </>
+              )}
+            </CardPanel>
+          </Card>
         </div>
       </div>
     </div>

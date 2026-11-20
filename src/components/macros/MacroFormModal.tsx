@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Macro, MACRO_ACTION_TYPES } from '@/types/automation';
 import { macrosService } from '@/services/macros';
 import MacroActionRow from './MacroActionRow';
+import RadioCardGroup from '@/components/base/RadioCard';
 
 interface MacroFormModalProps {
   isOpen: boolean;
@@ -257,40 +258,16 @@ export default function MacroFormModal({ isOpen, onClose, macro, onSuccess }: Ma
               <span className="font-medium text-sm" id="macro-visibility-label">
                 {t('modal.form.visibility')}
               </span>
-              <div role="radiogroup" aria-labelledby="macro-visibility-label" className="grid gap-3 sm:grid-cols-2">
-                {visibilityOptions.map(opt => {
-                  const active = formData.visibility === opt.value;
+              <RadioCardGroup
+                aria-labelledby="macro-visibility-label"
+                value={formData.visibility}
+                onValueChange={value => handleFieldChange('visibility', value)}
+                disabled={loading}
+                options={visibilityOptions.map(opt => {
                   const Icon = opt.icon;
-                  return (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      disabled={loading}
-                      onClick={() => handleFieldChange('visibility', opt.value)}
-                      className={`flex items-start gap-3 rounded-xl border p-4 text-start outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
-                        active ? 'border-primary/48 bg-primary/4' : 'hover:bg-accent/50'
-                      }`}
-                    >
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border bg-background">
-                        <Icon className="size-4 text-muted-foreground" />
-                      </span>
-                      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span className="font-medium text-sm">{opt.title}</span>
-                        <span className="text-muted-foreground text-sm">{opt.description}</span>
-                      </span>
-                      <span
-                        className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${
-                          active ? 'border-primary bg-primary' : 'border-input'
-                        }`}
-                      >
-                        {active && <span className="size-1.5 rounded-full bg-primary-foreground" />}
-                      </span>
-                    </button>
-                  );
+                  return { value: opt.value, title: opt.title, description: opt.description, icon: <Icon /> };
                 })}
-              </div>
+              />
             </div>
 
             <div className="flex flex-col gap-4 border-t pt-6">

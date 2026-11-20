@@ -160,7 +160,9 @@
       "title": "Team not found",
       "description": "The team you are looking for was not found.",
       "action": "Back to teams"
-    }
+    },
+    "pendingChanges": "{{added}} to add · {{removed}} to remove",
+    "noPendingChanges": "No pending changes"
   },
   "dialog": {
     "delete": {
@@ -185,5 +187,9 @@
     "saving": "Saving...",
     "save": "Save",
     "addUsers": "Add Users"
+  },
+  "viewMode": {
+    "cards": "Card view",
+    "table": "Table view"
   }
 }

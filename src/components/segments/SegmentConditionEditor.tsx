@@ -1,14 +1,9 @@
-import { Fragment, useState, useEffect, useCallback } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Label,
-  Button,
-} from '@/components/ui/compat';
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import OptionSelect from './ui/OptionSelect';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Trash2, Settings, Clock, Plus, X } from 'lucide-react';
 import {
   EVENT_CATEGORIES,
@@ -80,29 +75,23 @@ function ManifestEventSelect({
   const resolved = resolveLegacyEventName(value);
   const selected = resolved.selectorValue && resolved.selectorValue !== 'custom' ? resolved.selectorValue : '';
   return (
-    <Select value={selected} onValueChange={(v) => v && onSelect(v)}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Selecione um evento" />
-      </SelectTrigger>
-      <SelectContent>
-        {EVENT_CATEGORIES.filter((category) => category !== 'custom').map((category) => {
-          const events = getEventsByCategory(category);
-          if (events.length === 0) return null;
-          return (
-            <Fragment key={category}>
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
-                {SEGMENT_EVENT_CATEGORY_LABELS[category]}
-              </div>
-              {events.map((entry) => (
-                <SelectItem key={entry.eventName} value={entry.eventName}>
-                  {getEventLabel(entry.eventName, currentLanguage)}
-                </SelectItem>
-              ))}
-            </Fragment>
-          );
-        })}
-      </SelectContent>
-    </Select>
+    <OptionSelect
+      value={selected}
+      onValueChange={v => v && onSelect(v)}
+      placeholder="Selecione um evento"
+      className="w-full"
+      groups={EVENT_CATEGORIES.filter(category => category !== 'custom').map(category => ({
+        key: category,
+        label: SEGMENT_EVENT_CATEGORY_LABELS[category],
+      }))}
+      options={EVENT_CATEGORIES.filter(category => category !== 'custom').flatMap(category =>
+        getEventsByCategory(category).map(entry => ({
+          value: entry.eventName,
+          label: getEventLabel(entry.eventName, currentLanguage),
+          group: category,
+        })),
+      )}
+    />
   );
 }
 
@@ -112,6 +101,7 @@ export default function SegmentConditionEditor({
   onUpdate,
   onRemove,
 }: SegmentConditionEditorProps) {
+  const { t } = useLanguage('segments');
   const [selectedConditionType, setSelectedConditionType] = useState<string>(condition.type || '');
   const [localCondition, setLocalCondition] = useState<SegmentNodeUnion>(condition);
 
@@ -567,23 +557,35 @@ export default function SegmentConditionEditor({
 
 
   return (
-    <div className="border rounded-lg p-4 mb-4">
+    <div className="rounded-xl border bg-card p-4 shadow-xs/5">
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1 mr-4">
+      <div className="flex items-end justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <ConditionTypeSelector
             value={selectedConditionType}
             onChange={handleConditionTypeChange}
           />
         </div>
-        <Button variant="ghost" size="icon" onClick={() => onRemove(index)}>
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onRemove(index)}
+                aria-label={t('conditionEditor.removeCondition')}
+              />
+            }
+          >
+            <Trash2 />
+          </TooltipTrigger>
+          <TooltipPopup>{t('conditionEditor.removeCondition')}</TooltipPopup>
+        </Tooltip>
       </div>
 
       {/* Condition Body */}
       {selectedConditionType && (
-        <div className="border-t pt-4">
+        <div className="mt-4 border-t pt-4">
           {/* User Property Configuration */}
           {selectedConditionType === 'UserProperty' && (
             <UserPropertyEditor
@@ -653,7 +655,7 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'Performed' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Nome do Evento</Label>
+                <Label className="mb-2">Nome do Evento</Label>
                 <ManifestEventSelect
                   value={(localCondition as PerformedNode).event}
                   onSelect={handleEventSelect}
@@ -662,23 +664,19 @@ export default function SegmentConditionEditor({
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <Label className="text-sm font-medium mb-1">Vezes Executado</Label>
-                  <Select
+                  <Label className="mb-2">Vezes Executado</Label>
+                  <OptionSelect
                     value={(localCondition as PerformedNode).timesOperator}
                     onValueChange={v => handlePropertyChange('timesOperator', v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="GreaterThanOrEqual">Pelo menos</SelectItem>
-                      <SelectItem value="LessThan">Menos que</SelectItem>
-                      <SelectItem value="Equals">Exatamente</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    options={[
+                      { value: 'GreaterThanOrEqual', label: 'Pelo menos' },
+                      { value: 'LessThan', label: 'Menos que' },
+                      { value: 'Equals', label: 'Exatamente' },
+                    ]}
+                  />
                 </div>
                 <div className="flex-1">
-                  <Label className="text-sm font-medium mb-1">Quantidade</Label>
+                  <Label className="mb-2">Quantidade</Label>
                   <Input
                     type="number"
                     min="1"
@@ -699,9 +697,9 @@ export default function SegmentConditionEditor({
                       addProperty();
                     }
                   }}
-                  className="flex items-center gap-1"
+                  
                 >
-                  <Settings className="h-3 w-3" />
+                  <Settings />
                   Propriedades
                 </Button>
                 <Button
@@ -726,24 +724,24 @@ export default function SegmentConditionEditor({
                       onUpdate(index, node);
                     }
                   }}
-                  className="flex items-center gap-1"
+                  
                 >
-                  <Clock className="h-3 w-3" />
+                  <Clock />
                   Janela de Tempo
                 </Button>
               </div>
 
               {/* Properties Panel */}
               {showPropertyConfig && (
-                <div className="rounded-lg border p-4">
-                  <h4 className="text-sm font-semibold mb-2">Propriedades do Evento</h4>
+                <div className="rounded-xl border bg-muted/24 p-4">
+                  <h4 className="mb-3 font-semibold text-sm">Propriedades do Evento</h4>
                   <div className="space-y-2">
                     {performedProperties.map((prop, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2 rounded border">
+                      <div key={i} className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/24 p-2">
                         {/* Special handling for attributeName in custom_attribute_changed */}
                         {(localCondition as PerformedNode).event === 'contact.custom_attribute.changed' &&
                         prop.path === 'attributeName' ? (
-                          <Select
+                          <OptionSelect
                             value={(prop.operator.value as string) || ''}
                             onValueChange={value => {
                               const updated = [...performedProperties];
@@ -755,42 +753,27 @@ export default function SegmentConditionEditor({
                               setPerformedProperties(updated);
                             }}
                             disabled={loadingCustomAttributes}
-                          >
-                            <SelectTrigger className="flex-1">
-                              <SelectValue
-                                placeholder={
-                                  loadingCustomAttributes
-                                    ? 'Carregando...'
-                                    : 'Selecione um atributo'
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {availableCustomAttributes.length === 0 &&
-                                !loadingCustomAttributes && (
-                                  <div className="p-2 text-sm text-muted-foreground text-center">
-                                    Nenhum atributo personalizado cadastrado
-                                  </div>
-                                )}
-                              {availableCustomAttributes.map(attr => (
-                                <SelectItem key={attr.id} value={attr.attribute_key}>
-                                  <div className="flex flex-col">
-                                    <span>{attr.attribute_display_name}</span>
-                                    {attr.attribute_description && (
-                                      <span className="text-xs text-muted-foreground">
-                                        {attr.attribute_description}
-                                      </span>
-                                    )}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            placeholder={loadingCustomAttributes ? 'Carregando...' : 'Selecione um atributo'}
+                            empty={!loadingCustomAttributes ? 'Nenhum atributo personalizado cadastrado' : undefined}
+                            className="flex-1"
+                            options={availableCustomAttributes.map(attr => ({
+                              value: attr.attribute_key,
+                              label: attr.attribute_display_name,
+                              content: (
+                                <div className="flex flex-col">
+                                  <span>{attr.attribute_display_name}</span>
+                                  {attr.attribute_description && (
+                                    <span className="text-muted-foreground text-xs">{attr.attribute_description}</span>
+                                  )}
+                                </div>
+                              ),
+                            }))}
+                          />
                         ) : /* Special handling for labelName in label events */
                         ((localCondition as PerformedNode).event === 'contact.label.added' ||
                             (localCondition as PerformedNode).event === 'contact.label.removed') &&
                           prop.path === 'labelName' ? (
-                          <Select
+                          <OptionSelect
                             value={(prop.operator.value as string) || ''}
                             onValueChange={value => {
                               const updated = [...performedProperties];
@@ -802,33 +785,20 @@ export default function SegmentConditionEditor({
                               setPerformedProperties(updated);
                             }}
                             disabled={loadingLabels}
-                          >
-                            <SelectTrigger className="flex-1">
-                              <SelectValue
-                                placeholder={
-                                  loadingLabels ? 'Carregando...' : 'Selecione uma label'
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {availableLabels.length === 0 && !loadingLabels && (
-                                <div className="p-2 text-sm text-muted-foreground text-center">
-                                  Nenhuma label cadastrada
-                                </div>
-                              )}
-                              {availableLabels.map(label => (
-                                <SelectItem key={label.id} value={label.title}>
-                                  <span className="flex items-center gap-2">
-                                    <span
-                                      className="w-3 h-3 rounded-full"
-                                      style={{ backgroundColor: label.color }}
-                                    />
-                                    {label.title}
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            placeholder={loadingLabels ? 'Carregando...' : 'Selecione uma label'}
+                            empty={!loadingLabels ? 'Nenhuma label cadastrada' : undefined}
+                            className="flex-1"
+                            options={availableLabels.map(label => ({
+                              value: label.title,
+                              label: label.title,
+                              content: (
+                                <span className="flex items-center gap-2">
+                                  <span className="size-3 rounded-full" style={{ backgroundColor: label.color }} />
+                                  {label.title}
+                                </span>
+                              ),
+                            }))}
+                          />
                         ) : (
                           <Input
                             placeholder="Caminho"
@@ -841,24 +811,20 @@ export default function SegmentConditionEditor({
                             className="flex-1"
                           />
                         )}
-                        <Select
+                        <OptionSelect
                           value={prop.operator.type}
                           onValueChange={v => {
                             const updated = [...performedProperties];
                             updated[i] = { ...prop, operator: { ...prop.operator, type: v } };
                             setPerformedProperties(updated);
-                          }}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Equals">Igual</SelectItem>
-                            <SelectItem value="NotEquals">Diferente</SelectItem>
-                            <SelectItem value="Contains">Contém</SelectItem>
-                            <SelectItem value="Exists">Existe</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          }} className="w-32"
+                          options={[
+                            { value: 'Equals', label: 'Igual' },
+                            { value: 'NotEquals', label: 'Diferente' },
+                            { value: 'Contains', label: 'Contém' },
+                            { value: 'Exists', label: 'Existe' },
+                          ]}
+                        />
                         {prop.operator.type !== 'Exists' && (
                           <Input
                             placeholder="Valor"
@@ -874,13 +840,18 @@ export default function SegmentConditionEditor({
                             className="flex-1"
                           />
                         )}
-                        <Button variant="ghost" size="icon" onClick={() => removeProperty(i)}>
-                          <X className="h-4 w-4" />
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => removeProperty(i)}
+                          aria-label={t('conditionEditor.removeProperty')}
+                        >
+                          <X />
                         </Button>
                       </div>
                     ))}
                     <Button variant="outline" size="sm" onClick={addProperty} className="w-full">
-                      <Plus className="h-3 w-3 mr-1" />
+                      <Plus />
                       Adicionar Propriedade
                     </Button>
                   </div>
@@ -889,8 +860,8 @@ export default function SegmentConditionEditor({
 
               {/* Time Window Panel */}
               {showTimeWindow && (
-                <div className="rounded-lg border p-4">
-                  <h4 className="text-sm font-semibold mb-2">Janela de Tempo</h4>
+                <div className="rounded-xl border bg-muted/24 p-4">
+                  <h4 className="mb-3 font-semibold text-sm">Janela de Tempo</h4>
                   <div className="flex gap-2">
                     <Input
                       type="number"
@@ -902,24 +873,20 @@ export default function SegmentConditionEditor({
                       }}
                       className="w-24"
                     />
-                    <Select
+                    <OptionSelect
                       value={timeWindowUnit}
                       onValueChange={v => {
                         setTimeWindowUnit(v);
                         updateTimeWindow(timeWindowValue, v);
                       }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="minutes">Minutos</SelectItem>
-                        <SelectItem value="hours">Horas</SelectItem>
-                        <SelectItem value="days">Dias</SelectItem>
-                        <SelectItem value="weeks">Semanas</SelectItem>
-                        <SelectItem value="months">Meses</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      options={[
+                        { value: 'minutes', label: 'Minutos' },
+                        { value: 'hours', label: 'Horas' },
+                        { value: 'days', label: 'Dias' },
+                        { value: 'weeks', label: 'Semanas' },
+                        { value: 'months', label: 'Meses' },
+                      ]}
+                    />
                   </div>
                 </div>
               )}
@@ -930,7 +897,7 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'LastPerformed' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Nome do Evento</Label>
+                <Label className="mb-2">Nome do Evento</Label>
                 <ManifestEventSelect
                   value={(localCondition as LastPerformedNode).event}
                   onSelect={handleEventSelect}
@@ -948,9 +915,9 @@ export default function SegmentConditionEditor({
                       addProperty();
                     }
                   }}
-                  className="flex items-center gap-1"
+                  
                 >
-                  <Settings className="h-3 w-3" />
+                  <Settings />
                   Onde Propriedades
                 </Button>
                 <Button
@@ -975,24 +942,24 @@ export default function SegmentConditionEditor({
                       onUpdate(index, node);
                     }
                   }}
-                  className="flex items-center gap-1"
+                  
                 >
-                  <Clock className="h-3 w-3" />
+                  <Clock />
                   Janela de Tempo
                 </Button>
               </div>
 
               {/* Properties Panel */}
               {showPropertyConfig && (
-                <div className="rounded-lg border p-4">
-                  <h4 className="text-sm font-semibold mb-2">Onde Propriedades</h4>
+                <div className="rounded-xl border bg-muted/24 p-4">
+                  <h4 className="mb-3 font-semibold text-sm">Onde Propriedades</h4>
                   <div className="space-y-2">
                     {performedProperties.map((prop, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2 rounded border">
+                      <div key={i} className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/24 p-2">
                         {/* Special handling for attributeName in custom_attribute_changed */}
                         {(localCondition as LastPerformedNode).event ===
                           'contact.custom_attribute.changed' && prop.path === 'attributeName' ? (
-                          <Select
+                          <OptionSelect
                             value={(prop.operator.value as string) || ''}
                             onValueChange={value => {
                               const updated = [...performedProperties];
@@ -1014,42 +981,27 @@ export default function SegmentConditionEditor({
                               }
                             }}
                             disabled={loadingCustomAttributes}
-                          >
-                            <SelectTrigger className="flex-1">
-                              <SelectValue
-                                placeholder={
-                                  loadingCustomAttributes
-                                    ? 'Carregando...'
-                                    : 'Selecione um atributo'
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {availableCustomAttributes.length === 0 &&
-                                !loadingCustomAttributes && (
-                                  <div className="p-2 text-sm text-muted-foreground text-center">
-                                    Nenhum atributo personalizado cadastrado
-                                  </div>
-                                )}
-                              {availableCustomAttributes.map(attr => (
-                                <SelectItem key={attr.id} value={attr.attribute_key}>
-                                  <div className="flex flex-col">
-                                    <span>{attr.attribute_display_name}</span>
-                                    {attr.attribute_description && (
-                                      <span className="text-xs text-muted-foreground">
-                                        {attr.attribute_description}
-                                      </span>
-                                    )}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            placeholder={loadingCustomAttributes ? 'Carregando...' : 'Selecione um atributo'}
+                            empty={!loadingCustomAttributes ? 'Nenhum atributo personalizado cadastrado' : undefined}
+                            className="flex-1"
+                            options={availableCustomAttributes.map(attr => ({
+                              value: attr.attribute_key,
+                              label: attr.attribute_display_name,
+                              content: (
+                                <div className="flex flex-col">
+                                  <span>{attr.attribute_display_name}</span>
+                                  {attr.attribute_description && (
+                                    <span className="text-muted-foreground text-xs">{attr.attribute_description}</span>
+                                  )}
+                                </div>
+                              ),
+                            }))}
+                          />
                         ) : /* Special handling for labelName in label events */
                         ((localCondition as LastPerformedNode).event === 'contact.label.added' ||
                             (localCondition as LastPerformedNode).event === 'contact.label.removed') &&
                           prop.path === 'labelName' ? (
-                          <Select
+                          <OptionSelect
                             value={(prop.operator.value as string) || ''}
                             onValueChange={value => {
                               const updated = [...performedProperties];
@@ -1071,33 +1023,20 @@ export default function SegmentConditionEditor({
                               }
                             }}
                             disabled={loadingLabels}
-                          >
-                            <SelectTrigger className="flex-1">
-                              <SelectValue
-                                placeholder={
-                                  loadingLabels ? 'Carregando...' : 'Selecione uma label'
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {availableLabels.length === 0 && !loadingLabels && (
-                                <div className="p-2 text-sm text-muted-foreground text-center">
-                                  Nenhuma label cadastrada
-                                </div>
-                              )}
-                              {availableLabels.map(label => (
-                                <SelectItem key={label.id} value={label.title}>
-                                  <span className="flex items-center gap-2">
-                                    <span
-                                      className="w-3 h-3 rounded-full"
-                                      style={{ backgroundColor: label.color }}
-                                    />
-                                    {label.title}
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            placeholder={loadingLabels ? 'Carregando...' : 'Selecione uma label'}
+                            empty={!loadingLabels ? 'Nenhuma label cadastrada' : undefined}
+                            className="flex-1"
+                            options={availableLabels.map(label => ({
+                              value: label.title,
+                              label: label.title,
+                              content: (
+                                <span className="flex items-center gap-2">
+                                  <span className="size-3 rounded-full" style={{ backgroundColor: label.color }} />
+                                  {label.title}
+                                </span>
+                              ),
+                            }))}
+                          />
                         ) : (
                           <Input
                             placeholder="Caminho"
@@ -1120,7 +1059,7 @@ export default function SegmentConditionEditor({
                             className="flex-1"
                           />
                         )}
-                        <Select
+                        <OptionSelect
                           value={prop.operator.type}
                           onValueChange={v => {
                             const updated = [...performedProperties];
@@ -1136,18 +1075,14 @@ export default function SegmentConditionEditor({
                               setLocalCondition(node);
                               onUpdate(index, node);
                             }
-                          }}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Equals">Igual</SelectItem>
-                            <SelectItem value="NotEquals">Diferente</SelectItem>
-                            <SelectItem value="Contains">Contém</SelectItem>
-                            <SelectItem value="Exists">Existe</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          }} className="w-32"
+                          options={[
+                            { value: 'Equals', label: 'Igual' },
+                            { value: 'NotEquals', label: 'Diferente' },
+                            { value: 'Contains', label: 'Contém' },
+                            { value: 'Exists', label: 'Existe' },
+                          ]}
+                        />
                         {prop.operator.type !== 'Exists' && (
                           <Input
                             placeholder="Valor"
@@ -1173,13 +1108,18 @@ export default function SegmentConditionEditor({
                             className="flex-1"
                           />
                         )}
-                        <Button variant="ghost" size="icon" onClick={() => removeProperty(i)}>
-                          <X className="h-4 w-4" />
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => removeProperty(i)}
+                          aria-label={t('conditionEditor.removeProperty')}
+                        >
+                          <X />
                         </Button>
                       </div>
                     ))}
                     <Button variant="outline" size="sm" onClick={addProperty} className="w-full">
-                      <Plus className="h-3 w-3 mr-1" />
+                      <Plus />
                       Adicionar Propriedade
                     </Button>
                   </div>
@@ -1188,8 +1128,8 @@ export default function SegmentConditionEditor({
 
               {/* Time Window Panel */}
               {showTimeWindow && (
-                <div className="rounded-lg border p-4">
-                  <h4 className="text-sm font-semibold mb-2">Janela de Tempo</h4>
+                <div className="rounded-xl border bg-muted/24 p-4">
+                  <h4 className="mb-3 font-semibold text-sm">Janela de Tempo</h4>
                   <div className="flex gap-2">
                     <Input
                       type="number"
@@ -1201,24 +1141,20 @@ export default function SegmentConditionEditor({
                       }}
                       className="w-24"
                     />
-                    <Select
+                    <OptionSelect
                       value={timeWindowUnit}
                       onValueChange={v => {
                         setTimeWindowUnit(v);
                         updateTimeWindow(timeWindowValue, v);
                       }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="minutes">Minutos</SelectItem>
-                        <SelectItem value="hours">Horas</SelectItem>
-                        <SelectItem value="days">Dias</SelectItem>
-                        <SelectItem value="weeks">Semanas</SelectItem>
-                        <SelectItem value="months">Meses</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      options={[
+                        { value: 'minutes', label: 'Minutos' },
+                        { value: 'hours', label: 'Horas' },
+                        { value: 'days', label: 'Dias' },
+                        { value: 'weeks', label: 'Semanas' },
+                        { value: 'months', label: 'Meses' },
+                      ]}
+                    />
                   </div>
                 </div>
               )}
@@ -1229,25 +1165,21 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'Email' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Evento de Email</Label>
-                <Select
+                <Label className="mb-2">Evento de Email</Label>
+                <OptionSelect
                   value={(localCondition as EmailNode).event || 'MessageSent'}
                   onValueChange={v => handlePropertyChange('event', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MessageSent">Email Enviado</SelectItem>
-                    <SelectItem value="EmailOpened">Email Aberto</SelectItem>
-                    <SelectItem value="EmailClicked">Email Clicado</SelectItem>
-                    <SelectItem value="EmailBounced">Email Retornado</SelectItem>
-                    <SelectItem value="EmailDelivered">Email Entregue</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'MessageSent', label: 'Email Enviado' },
+                    { value: 'EmailOpened', label: 'Email Aberto' },
+                    { value: 'EmailClicked', label: 'Email Clicado' },
+                    { value: 'EmailBounced', label: 'Email Retornado' },
+                    { value: 'EmailDelivered', label: 'Email Entregue' },
+                  ]}
+                />
               </div>
               <div>
-                <Label className="text-sm font-medium mb-1">Template ID (opcional)</Label>
+                <Label className="mb-2">Template ID (opcional)</Label>
                 <Input
                   value={(localCondition as EmailNode).templateId || ''}
                   onChange={e => handlePropertyChange('templateId', e.target.value)}
@@ -1261,23 +1193,19 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'WhatsApp' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Evento de WhatsApp</Label>
-                <Select
+                <Label className="mb-2">Evento de WhatsApp</Label>
+                <OptionSelect
                   value={(localCondition as EmailNode).event || 'MessageSent'}
                   onValueChange={v => handlePropertyChange('event', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MessageSent">WhatsApp Enviado</SelectItem>
-                    <SelectItem value="MessageRead">WhatsApp Lido</SelectItem>
-                    <SelectItem value="MessageReplied">WhatsApp Respondido</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'MessageSent', label: 'WhatsApp Enviado' },
+                    { value: 'MessageRead', label: 'WhatsApp Lido' },
+                    { value: 'MessageReplied', label: 'WhatsApp Respondido' },
+                  ]}
+                />
               </div>
               <div>
-                <Label className="text-sm font-medium mb-1">Template ID (opcional)</Label>
+                <Label className="mb-2">Template ID (opcional)</Label>
                 <Input
                   value={(localCondition as EmailNode).templateId || ''}
                   onChange={e => handlePropertyChange('templateId', e.target.value)}
@@ -1291,23 +1219,19 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'Web' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Evento Web</Label>
-                <Select
+                <Label className="mb-2">Evento Web</Label>
+                <OptionSelect
                   value={(localCondition as EmailNode).event || 'MessageSent'}
                   onValueChange={v => handlePropertyChange('event', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MessageSent">Mensagem Web Enviada</SelectItem>
-                    <SelectItem value="MessageOpened">Mensagem Web Aberta</SelectItem>
-                    <SelectItem value="MessageClicked">Mensagem Web Clicada</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'MessageSent', label: 'Mensagem Web Enviada' },
+                    { value: 'MessageOpened', label: 'Mensagem Web Aberta' },
+                    { value: 'MessageClicked', label: 'Mensagem Web Clicada' },
+                  ]}
+                />
               </div>
               <div>
-                <Label className="text-sm font-medium mb-1">Template ID (opcional)</Label>
+                <Label className="mb-2">Template ID (opcional)</Label>
                 <Input
                   value={(localCondition as EmailNode).templateId || ''}
                   onChange={e => handlePropertyChange('templateId', e.target.value)}
@@ -1321,23 +1245,19 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'SMS' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Evento de SMS</Label>
-                <Select
+                <Label className="mb-2">Evento de SMS</Label>
+                <OptionSelect
                   value={(localCondition as EmailNode).event || 'MessageSent'}
                   onValueChange={v => handlePropertyChange('event', v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MessageSent">SMS Enviado</SelectItem>
-                    <SelectItem value="MessageRead">SMS Lido</SelectItem>
-                    <SelectItem value="MessageReplied">SMS Respondido</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'MessageSent', label: 'SMS Enviado' },
+                    { value: 'MessageRead', label: 'SMS Lido' },
+                    { value: 'MessageReplied', label: 'SMS Respondido' },
+                  ]}
+                />
               </div>
               <div>
-                <Label className="text-sm font-medium mb-1">Template ID (opcional)</Label>
+                <Label className="mb-2">Template ID (opcional)</Label>
                 <Input
                   value={(localCondition as EmailNode).templateId || ''}
                   onChange={e => handlePropertyChange('templateId', e.target.value)}
@@ -1351,7 +1271,7 @@ export default function SegmentConditionEditor({
           {selectedConditionType === 'RandomBucket' && (
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-1">Porcentagem Incluída</Label>
+                <Label className="mb-2">Porcentagem Incluída</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
@@ -1379,7 +1299,7 @@ export default function SegmentConditionEditor({
 
           {/* Manual Configuration */}
           {selectedConditionType === 'Manual' && (
-            <div className="text-center py-8 rounded-lg border">
+            <div className="rounded-xl border border-dashed py-8 text-center">
               <h4 className="text-lg font-semibold mb-2">Upload Manual de Segmento</h4>
               <p className="text-sm text-muted-foreground mb-4">
                 Faça upload de um arquivo CSV com os IDs dos usuários

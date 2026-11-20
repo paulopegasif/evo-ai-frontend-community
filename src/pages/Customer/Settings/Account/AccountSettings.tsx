@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { type Locale } from '@/i18n/config';
 import { Button } from '@/components/ui/button';
-import { Card, CardFooter, CardPanel } from '@/components/ui/card';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
@@ -17,45 +16,13 @@ import { usePermissions } from '@/contexts/PermissionsContext';
 import { useCurrentUser } from '@/utils/auth';
 import { isAdminRole } from '@/constants/roles';
 import BaseHeader from '@/components/base/BaseHeader';
+import SettingsSection from '@/components/base/SettingsSection';
 import { accountService } from '@/services/account/accountService';
 import { useAppDataStore } from '@/store/appDataStore';
 import type { Account, FormDataOptions } from '@/types/settings';
 import { Copy } from 'lucide-react';
 
 import { SettingsTour } from '@/tours';
-
-// Settings section: title + description on the left, content Card on the right.
-interface SectionLayoutProps {
-  title: string;
-  description: string;
-  children?: React.ReactNode;
-  headerActions?: React.ReactNode;
-  footer?: React.ReactNode;
-}
-
-function SectionLayout({ title, description, children, headerActions, footer }: SectionLayoutProps) {
-  return (
-    <section className="grid gap-4 border-t py-6 first:border-t-0 first:pt-0 md:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] md:gap-8">
-      <div className="flex items-start justify-between gap-4 md:flex-col md:justify-start">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-semibold text-base">{title}</h2>
-          <p className="text-muted-foreground text-sm">{description}</p>
-        </div>
-        {headerActions && <div className="shrink-0 md:hidden">{headerActions}</div>}
-      </div>
-      <Card>
-        {headerActions && (
-          <div className="hidden items-center justify-between gap-4 px-6 py-4 md:flex [&+[data-slot=card-panel]]:border-t">
-            <span className="font-medium text-sm">{title}</span>
-            {headerActions}
-          </div>
-        )}
-        {children && <CardPanel className="flex flex-col gap-5 pt-6">{children}</CardPanel>}
-        {footer && <CardFooter className="justify-end border-t">{footer}</CardFooter>}
-      </Card>
-    </section>
-  );
-}
 
 export default function AccountSettings() {
   const { t, changeLanguage } = useLanguage('accountSettings');
@@ -364,7 +331,7 @@ export default function AccountSettings() {
           {/* Configurações Gerais */}
           <div data-tour="settings-general">
             <form onSubmit={handleGeneralSubmit}>
-              <SectionLayout
+              <SettingsSection
                 title={t('sections.general.title')}
                 description={t('sections.general.description')}
                 footer={
@@ -436,13 +403,13 @@ export default function AccountSettings() {
                     />
                   </Field>
                 )}
-              </SectionLayout>
+              </SettingsSection>
             </form>
           </div>
 
           {/* Auto-Resolução */}
           <div data-tour="settings-auto-resolve">
-            <SectionLayout
+            <SettingsSection
               title={t('sections.autoResolve.title')}
               description={t('sections.autoResolve.description')}
               headerActions={
@@ -534,12 +501,12 @@ export default function AccountSettings() {
                   </div>
                 </>
               )}
-            </SectionLayout>
+            </SettingsSection>
           </div>
 
           {/* Transcrição de Áudio */}
           {isOnEvolutionCloud && (
-            <SectionLayout
+            <SettingsSection
               title={t('sections.audioTranscription.title')}
               description={t('sections.audioTranscription.description')}
               headerActions={
@@ -554,7 +521,7 @@ export default function AccountSettings() {
 
           {/* Mascaramento de PII dos Contatos — admin tiers only (super_admin / account_owner / administrator). */}
           {isAdmin && (
-            <SectionLayout
+            <SettingsSection
               title={t('sections.maskContactPii.title')}
               description={t('sections.maskContactPii.description')}
               headerActions={
@@ -569,7 +536,7 @@ export default function AccountSettings() {
 
           {/* ID da Conta */}
           <div data-tour="settings-account-id">
-            <SectionLayout title={t('sections.accountId.title')} description={t('sections.accountId.description')}>
+            <SettingsSection title={t('sections.accountId.title')} description={t('sections.accountId.description')}>
               <InputGroup>
                 <InputGroupInput readOnly value={String(account?.id ?? '')} className="font-mono" aria-label={t('sections.accountId.title')} />
                 <InputGroupAddon align="inline-end">
@@ -590,7 +557,7 @@ export default function AccountSettings() {
                   </Tooltip>
                 </InputGroupAddon>
               </InputGroup>
-            </SectionLayout>
+            </SettingsSection>
           </div>
 
           {/* Informações de Build */}

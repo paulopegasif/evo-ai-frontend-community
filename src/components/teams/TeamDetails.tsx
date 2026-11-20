@@ -1,18 +1,11 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Avatar,
-  AvatarFallback,
-  Badge,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Separator,
-} from '@/components/ui/compat';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { DetailRow, DetailSection } from '@/components/users/DetailSection';
 import {
   Edit,
   Users,
@@ -54,191 +47,161 @@ export default function TeamDetails({
 
   if (!team) return null;
 
+  const autoAssignBadge = (labelOn: string, labelOff: string) => (
+    <Badge variant={team.allow_auto_assign ? 'success' : 'secondary'}>
+      {team.allow_auto_assign ? labelOn : labelOff}
+    </Badge>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b bg-muted/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-info/12 text-info-foreground text-lg">
-                  {getInitials(team.name)}
-                </AvatarFallback>
+      <DialogPopup className="sm:max-w-3xl">
+        <DialogHeader className="border-b">
+          <div className="flex flex-col gap-4 pe-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-4">
+              <Avatar className="size-12 rounded-xl text-base">
+                <AvatarFallback className="rounded-xl">{getInitials(team.name)}</AvatarFallback>
               </Avatar>
-              <div>
-                <DialogTitle className="text-xl font-semibold">
-                  {team.name}
-                </DialogTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant={team.allow_auto_assign ? "secondary" : "outline"} className="text-xs">
-                    {team.allow_auto_assign ? t('details.autoAssignActive') : t('details.autoAssignInactive')}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {t('details.id')}: {team.id}
+              <div className="min-w-0">
+                <DialogTitle className="truncate">{team.name}</DialogTitle>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  {autoAssignBadge(t('details.autoAssignActive'), t('details.autoAssignInactive'))}
+                  <span className="text-muted-foreground text-xs">
+                    {t('details.id')}: <span className="font-mono">{team.id}</span>
                   </span>
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onManageUsers(team)}
-              >
-                <Users className="h-4 w-4 mr-2" />
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={() => onManageUsers(team)}>
+                <Users />
                 {t('details.actions.manageUsers')}
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onEdit(team)}
-              >
-                <Edit className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" onClick={() => onEdit(team)}>
+                <Edit />
                 {t('details.actions.edit')}
               </Button>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto">
-          <Tabs defaultValue="overview" className="h-full">
-            <TabsList className="w-full justify-start px-6 py-0 h-12 bg-transparent border-b rounded-none">
-              <TabsTrigger value="overview" className="data-active:border-b-2 data-active:border-primary rounded-none">
-                <StickyNote className="h-4 w-4 mr-2" />
-                {t('details.tabs.overview')}
-              </TabsTrigger>
-              <TabsTrigger value="members" className="data-active:border-b-2 data-active:border-primary rounded-none">
-                <Users className="h-4 w-4 mr-2" />
-                {t('details.tabs.members')} ({team.members_count || 0})
-              </TabsTrigger>
-              <TabsTrigger value="activity" className="data-active:border-b-2 data-active:border-primary rounded-none">
-                <History className="h-4 w-4 mr-2" />
-                {t('details.tabs.activity')}
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="data-active:border-b-2 data-active:border-primary rounded-none">
-                <Settings className="h-4 w-4 mr-2" />
-                {t('details.tabs.settings')}
-              </TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="overview" className="flex min-h-0 flex-1 flex-col gap-0">
+          <TabsList variant="underline" className="w-full justify-start overflow-x-auto border-b px-6">
+            <TabsTab value="overview">
+              <StickyNote />
+              {t('details.tabs.overview')}
+            </TabsTab>
+            <TabsTab value="members">
+              <Users />
+              {t('details.tabs.members')} ({team.members_count || 0})
+            </TabsTab>
+            <TabsTab value="activity">
+              <History />
+              {t('details.tabs.activity')}
+            </TabsTab>
+            <TabsTab value="settings">
+              <Settings />
+              {t('details.tabs.settings')}
+            </TabsTab>
+          </TabsList>
 
-            <TabsContent value="overview" className="px-6 py-4 space-y-6">
-              {/* Description */}
-              <div className="space-y-3">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <StickyNote className="h-4 w-4" />
+          <DialogPanel className="pt-4">
+            <TabsPanel value="overview" className="flex flex-col gap-5">
+              <section className="flex flex-col gap-2">
+                <h3 className="flex items-center gap-2 font-semibold text-sm">
+                  <StickyNote className="size-4 text-muted-foreground" />
                   {t('details.overview.description')}
                 </h3>
-                <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-4">
+                <p className="rounded-xl border bg-muted/24 p-4 text-muted-foreground text-sm">
                   {team.description || t('details.overview.noDescription')}
                 </p>
+              </section>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Card>
+                  <CardPanel className="flex flex-col gap-1 pt-4 pb-4">
+                    <span className="text-muted-foreground text-sm">{t('details.overview.totalMembers')}</span>
+                    <span className="font-semibold text-2xl tabular-nums">{team.members_count || 0}</span>
+                  </CardPanel>
+                </Card>
+                <Card>
+                  <CardPanel className="flex flex-col gap-1 pt-4 pb-4">
+                    <span className="text-muted-foreground text-sm">{t('details.overview.autoAssign')}</span>
+                    <span
+                      className={`font-semibold text-2xl ${team.allow_auto_assign ? 'text-success-foreground' : 'text-muted-foreground'}`}
+                    >
+                      {team.allow_auto_assign ? t('details.overview.active') : t('details.overview.inactive')}
+                    </span>
+                  </CardPanel>
+                </Card>
               </div>
 
-              <Separator />
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">{t('details.overview.totalMembers')}</p>
-                  <p className="text-2xl font-bold text-info-foreground">{team.members_count || 0}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">{t('details.overview.autoAssign')}</p>
-                  <p className={`text-2xl font-bold ${team.allow_auto_assign ? 'text-green-600' : 'text-gray-400'}`}>
-                    {team.allow_auto_assign ? t('details.overview.active') : t('details.overview.inactive')}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Timestamps */}
-              <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {t('details.overview.temporalInfo')}
-                </h3>
-                <div className="space-y-2 text-sm">
+              {(team.created_at || team.updated_at) && (
+                <DetailSection icon={<Clock />} title={t('details.overview.temporalInfo')}>
                   {team.created_at && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('details.overview.created')}</span>
-                      <span className="font-mono">
-                        {formatDistanceToNow(parseApiDate(team.created_at) ?? new Date(), {
-                          addSuffix: true,
-                          locale: ptBR,
-                        })}
-                      </span>
-                    </div>
+                    <DetailRow label={t('details.overview.created')}>
+                      {formatDistanceToNow(parseApiDate(team.created_at) ?? new Date(), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </DetailRow>
                   )}
                   {team.updated_at && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('details.overview.lastUpdate')}</span>
-                      <span className="font-mono">
-                        {formatDistanceToNow(new Date(team.updated_at), {
-                          addSuffix: true,
-                          locale: ptBR,
-                        })}
-                      </span>
-                    </div>
+                    <DetailRow label={t('details.overview.lastUpdate')}>
+                      {formatDistanceToNow(new Date(team.updated_at), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </DetailRow>
                   )}
-                </div>
-              </div>
-            </TabsContent>
+                </DetailSection>
+              )}
+            </TabsPanel>
 
-            <TabsContent value="members" className="px-6 py-4">
-              <div className="text-center py-12 text-muted-foreground">
-                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t('details.members.placeholder')}</p>
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => onManageUsers(team)}
+            <TabsPanel value="members">
+              <Empty className="py-10">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Users />
+                  </EmptyMedia>
+                  <EmptyDescription>{t('details.members.placeholder')}</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                  <Button variant="outline" onClick={() => onManageUsers(team)}>
+                    {t('details.members.manageUsers')}
+                  </Button>
+                </EmptyContent>
+              </Empty>
+            </TabsPanel>
+
+            <TabsPanel value="activity">
+              <Empty className="py-10">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <History />
+                  </EmptyMedia>
+                  <EmptyDescription>{t('details.activity.placeholder')}</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            </TabsPanel>
+
+            <TabsPanel value="settings" className="flex flex-col gap-4">
+              <DetailSection icon={<Settings />} title={t('details.settings.title')}>
+                <DetailRow
+                  label={t('details.settings.autoAssignTitle')}
+                  hint={t('details.settings.autoAssignDescription')}
                 >
-                  {t('details.members.manageUsers')}
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="activity" className="px-6 py-4">
-              <div className="text-center py-12 text-muted-foreground">
-                <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t('details.activity.placeholder')}</p>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="settings" className="px-6 py-4 space-y-6">
-              <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  {t('details.settings.title')}
-                </h3>
-
-                <div className="space-y-4 bg-muted/30 rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{t('details.settings.autoAssignTitle')}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {t('details.settings.autoAssignDescription')}
-                      </p>
-                    </div>
-                    <Badge variant={team.allow_auto_assign ? "secondary" : "outline"}>
-                      {team.allow_auto_assign ? t('details.settings.enabled') : t('details.settings.disabled')}
-                    </Badge>
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  onClick={() => onEdit(team)}
-                  className="w-full"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  {t('details.settings.editSettings')}
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </DialogContent>
+                  {autoAssignBadge(t('details.settings.enabled'), t('details.settings.disabled'))}
+                </DetailRow>
+              </DetailSection>
+              <Button variant="outline" onClick={() => onEdit(team)} className="w-full">
+                <Edit />
+                {t('details.settings.editSettings')}
+              </Button>
+            </TabsPanel>
+          </DialogPanel>
+        </Tabs>
+      </DialogPopup>
     </Dialog>
   );
 }

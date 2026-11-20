@@ -1,21 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import {
-  Badge,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
 import { Edit, Eye, LayoutTemplate, Plus, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -49,13 +41,13 @@ import type { Inbox } from '@/types/channels/inbox';
 
 type Scope = { kind: 'global' } | { kind: 'inbox'; inbox: Inbox };
 
-const STATUS_STYLE: Record<string, string> = {
-  approved: 'bg-success text-white',
-  pending: 'bg-warning text-white',
-  rejected: 'bg-destructive text-white',
-  paused: 'bg-gray-600 dark:bg-gray-500 text-white',
-  inactive: 'bg-gray-600 dark:bg-gray-500 text-white',
-  unknown: 'bg-gray-400 dark:bg-gray-600 text-white',
+const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'error' | 'secondary' | 'outline'> = {
+  approved: 'success',
+  pending: 'warning',
+  rejected: 'error',
+  paused: 'secondary',
+  inactive: 'secondary',
+  unknown: 'outline',
 };
 
 export default function MessageTemplates() {
@@ -295,12 +287,12 @@ export default function MessageTemplates() {
     if (scope.kind === 'inbox') {
       const key = getStatusBadgeKey(template);
       return (
-        <Badge className={STATUS_STYLE[key] ?? STATUS_STYLE.unknown}>{t(`status.${key}`)}</Badge>
+        <Badge variant={STATUS_VARIANT[key] ?? STATUS_VARIANT.unknown}>{t(`status.${key}`)}</Badge>
       );
     }
     const isActive = template.active !== false;
     return (
-      <Badge className={isActive ? 'bg-success text-white' : 'bg-gray-500 text-white'}>
+      <Badge variant={isActive ? 'success' : 'secondary'}>
         {t(`status.${isActive ? 'active' : 'inactive'}`)}
       </Badge>
     );
@@ -376,22 +368,22 @@ export default function MessageTemplates() {
   );
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">{t('page.title')}</h2>
-          <p className="text-sm text-muted-foreground">{t('page.description')}</p>
+          <h2 className="font-semibold text-xl">{t('page.title')}</h2>
+          <p className="mt-1 text-muted-foreground text-sm">{t('page.description')}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {canSync && (
             <Button variant="outline" onClick={handleSync} loading={isSyncing}>
-              <RefreshCw className="w-4 h-4 mr-2" />
+              {!isSyncing && <RefreshCw />}
               {t('actions.sync')}
             </Button>
           )}
           {can('message_templates', 'create') && (
             <Button onClick={openCreate}>
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus />
               {t('newTemplate')}
             </Button>
           )}
@@ -399,35 +391,31 @@ export default function MessageTemplates() {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-        <div className="w-full sm:w-64">
-          <label className="block text-sm font-medium mb-2">{t('scope.label')}</label>
-          <Select
+        <Field className="w-full sm:w-64">
+          <FieldLabel htmlFor="message-templates-scope">{t('scope.label')}</FieldLabel>
+          <OptionSelect
+            id="message-templates-scope"
             value={scope.kind === 'global' ? 'global' : String(scope.inbox.id)}
             onValueChange={handleScopeChange}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('inboxSelector.placeholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="global">{t('scope.global')}</SelectItem>
-              {inboxes.map(inbox => (
-                <SelectItem key={inbox.id} value={String(inbox.id)}>
-                  {inbox.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            placeholder={t('inboxSelector.placeholder')}
+            options={[
+              { value: 'global', label: t('scope.global') },
+              ...inboxes.map(inbox => ({ value: String(inbox.id), label: inbox.name })),
+            ]}
+          />
+        </Field>
 
-        <div className="relative w-full sm:max-w-md">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
+        <InputGroup className="w-full sm:max-w-md">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="pl-10"
+            aria-label={t('searchPlaceholder')}
           />
-        </div>
+        </InputGroup>
       </div>
 
       <BaseTable
@@ -480,12 +468,12 @@ export default function MessageTemplates() {
       />
 
       <Dialog open={!!previewTarget} onOpenChange={open => !open && setPreviewTarget(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogPopup className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{previewTarget?.name}</DialogTitle>
           </DialogHeader>
           {previewTarget && (
-            <div className="py-2">
+            <DialogPanel>
               <TemplatePreview
                 template={MessageTemplateService.transformToFrontendFormat(
                   previewTarget,
@@ -494,32 +482,26 @@ export default function MessageTemplates() {
                 channelType={channelTypeFor(previewTarget)}
                 t={tChannels}
               />
-            </div>
+            </DialogPanel>
           )}
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
 
-      <Dialog open={!!deleteTarget} onOpenChange={open => !open && setDeleteTarget(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-muted-foreground">
-              {t('deleteDialog.message', { name: deleteTarget?.name })}
-            </p>
-            <p className="text-sm text-destructive-foreground mt-2">{t('deleteDialog.warning')}</p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete} loading={isDeleting}>
-              {t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={open => !open && setDeleteTarget(null)}
+        title={t('deleteDialog.title')}
+        description={
+          <>
+            {t('deleteDialog.message', { name: deleteTarget?.name })}{' '}
+            <span className="text-destructive-foreground">{t('deleteDialog.warning')}</span>
+          </>
+        }
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDelete}
+        loading={isDeleting}
+      />
     </div>
   );
 }

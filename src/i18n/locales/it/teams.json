@@ -160,7 +160,9 @@
       "title": "Team non trovato",
       "description": "Il team che stai cercando non è stato trovato.",
       "action": "Torna ai team"
-    }
+    },
+    "pendingChanges": "{{added}} da aggiungere · {{removed}} da rimuovere",
+    "noPendingChanges": "Nessuna modifica in sospeso"
   },
   "dialog": {
     "delete": {
@@ -185,5 +187,9 @@
     "saving": "Salvataggio...",
     "save": "Salva",
     "addUsers": "Aggiungi Utenti"
+  },
+  "viewMode": {
+    "cards": "Vista a schede",
+    "table": "Vista tabella"
   }
 }

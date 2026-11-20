@@ -61,7 +61,9 @@
     "fileSelectButton": "Select File",
     "fileUploading": "Uploading...",
     "fileSelected": "File selected: {{filename}}",
-    "noConfig": "This action does not require additional configuration."
+    "noConfig": "This action does not require additional configuration.",
+    "removeAction": "Remove action",
+    "removeValue": "Remove {{value}}"
   },
   "table": {
     "columns": {

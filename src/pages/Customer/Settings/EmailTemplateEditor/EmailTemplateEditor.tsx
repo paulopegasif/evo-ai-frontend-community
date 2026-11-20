@@ -1,20 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
 import { ArrowLeft, Save } from 'lucide-react';
 import EmailEditorComponent, { EditorRef } from 'react-email-editor';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -264,7 +259,7 @@ const EmailTemplateEditor: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full flex flex-col p-4">
+      <div className="flex h-full flex-col p-4 md:p-6">
         <BaseHeader
           title={
             mode === 'create'
@@ -273,13 +268,10 @@ const EmailTemplateEditor: React.FC = () => {
           }
           subtitle={t('settings.messageTemplates.editor.subtitle')}
         />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-sidebar-foreground/60">
-              {t('settings.messageTemplates.editor.loadingTemplate')}
-            </p>
-          </div>
+        <div className="mt-4 flex flex-1 gap-4" aria-busy="true">
+          <Skeleton className="hidden h-96 w-80 shrink-0 rounded-2xl md:block" />
+          <Skeleton className="flex-1 rounded-2xl" />
+          <span className="sr-only">{t('settings.messageTemplates.editor.loadingTemplate')}</span>
         </div>
       </div>
     );
@@ -287,8 +279,8 @@ const EmailTemplateEditor: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-shrink-0 p-4 pb-0">
-        <div className="flex items-center justify-between mb-4">
+      <div className="shrink-0 p-4 pb-0 md:p-6 md:pb-0">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <BaseHeader
             title={
               mode === 'create'
@@ -299,7 +291,7 @@ const EmailTemplateEditor: React.FC = () => {
           />
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft />
               {t('settings.messageTemplates.editor.back')}
             </Button>
             <Button
@@ -308,7 +300,7 @@ const EmailTemplateEditor: React.FC = () => {
               loading={isSaving}
               size="sm"
             >
-              <Save className="w-4 h-4 mr-2" />
+              {!isSaving && <Save />}
               {mode === 'create'
                 ? t('settings.messageTemplates.form.create')
                 : t('settings.messageTemplates.form.save')}
@@ -317,121 +309,101 @@ const EmailTemplateEditor: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex gap-4 px-4 pb-4 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden px-4 pb-4 md:flex-row md:px-6 md:pb-6">
         {/* Left Sidebar - Form Fields */}
-        <div className="w-80 flex-shrink-0 overflow-y-auto pr-2">
+        <div className="shrink-0 overflow-y-auto md:w-80">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">
-                {t('settings.messageTemplates.editor.templateInfo')}
-              </CardTitle>
+              <CardTitle>{t('settings.messageTemplates.editor.templateInfo')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t('settings.messageTemplates.form.name')}
-                </label>
+            <CardPanel className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel htmlFor="email-tpl-name">{t('settings.messageTemplates.form.name')}</FieldLabel>
                 <Input
+                  id="email-tpl-name"
                   value={formData.name}
                   onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   placeholder={t('settings.messageTemplates.form.namePlaceholder')}
                 />
-              </div>
+              </Field>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t('settings.messageTemplates.form.category')}
-                  </label>
-                  <Select
+                <Field className="min-w-0">
+                  <FieldLabel htmlFor="email-tpl-category">{t('settings.messageTemplates.form.category')}</FieldLabel>
+                  <OptionSelect
+                    id="email-tpl-category"
+                    className="min-w-0"
                     value={formData.category}
-                    onValueChange={(value: string) =>
+                    onValueChange={value =>
                       setFormData(prev => ({
                         ...prev,
                         category: value as TemplateFormData['category'],
                       }))
                     }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {channelConfig.categories.map((cat: string) => (
-                        <SelectItem key={cat} value={cat}>
-                          {t(`settings.messageTemplates.form.categories.${cat.toLowerCase()}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    options={channelConfig.categories.map((cat: string) => ({
+                      value: cat,
+                      label: t(`settings.messageTemplates.form.categories.${cat.toLowerCase()}`),
+                    }))}
+                  />
+                </Field>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    {t('settings.messageTemplates.form.language')}
-                  </label>
-                  <Select
+                <Field className="min-w-0">
+                  <FieldLabel htmlFor="email-tpl-language">{t('settings.messageTemplates.form.language')}</FieldLabel>
+                  <OptionSelect
+                    id="email-tpl-language"
+                    className="min-w-0"
                     value={formData.language}
                     onValueChange={value => setFormData(prev => ({ ...prev, language: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pt_BR">Português (BR)</SelectItem>
-                      <SelectItem value="en_US">English (US)</SelectItem>
-                      <SelectItem value="es_ES">Español</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    options={[
+                      { value: 'pt_BR', label: 'Português (BR)' },
+                      { value: 'en_US', label: 'English (US)' },
+                      { value: 'es_ES', label: 'Español' },
+                    ]}
+                  />
+                </Field>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t('settings.messageTemplates.form.subject')}
-                </label>
+              <Field>
+                <FieldLabel htmlFor="email-tpl-subject">{t('settings.messageTemplates.form.subject')}</FieldLabel>
                 <Input
+                  id="email-tpl-subject"
                   value={formData.subject || ''}
                   onChange={e => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                   placeholder={t('settings.messageTemplates.form.subjectPlaceholder')}
                 />
-              </div>
+              </Field>
 
-              <div className="flex items-center justify-between p-3 bg-muted/48 rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium">
-                    {t('settings.messageTemplates.form.active')}
-                  </label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('settings.messageTemplates.form.activeHelp')}
-                  </p>
-                </div>
+              <div className="flex items-center justify-between gap-4 rounded-xl border bg-muted/24 p-3">
+                <Field className="gap-1">
+                  <FieldLabel htmlFor="email-tpl-active">{t('settings.messageTemplates.form.active')}</FieldLabel>
+                  <FieldDescription className="text-xs">{t('settings.messageTemplates.form.activeHelp')}</FieldDescription>
+                </Field>
                 <Switch
+                  id="email-tpl-active"
                   checked={formData.active !== false}
                   onCheckedChange={checked => setFormData(prev => ({ ...prev, active: checked }))}
                 />
               </div>
 
               {channelConfig.usesLiquid && (
-                <div className="p-3 bg-info/8 rounded-lg">
-                  <p className="text-xs text-info-foreground">
-                    {t('settings.messageTemplates.form.liquidHelp')}
-                  </p>
-                </div>
+                <Alert variant="info">
+                  <AlertDescription className="text-xs">{t('settings.messageTemplates.form.liquidHelp')}</AlertDescription>
+                </Alert>
               )}
-            </CardContent>
+            </CardPanel>
           </Card>
         </div>
 
         {/* Editor Area */}
         <div
-          className="flex-1 bg-background rounded-lg shadow-sm overflow-hidden border border-border flex flex-col"
+          className="flex min-h-[60vh] flex-1 flex-col overflow-hidden rounded-2xl border bg-background md:min-h-0"
           style={{ position: 'relative', minHeight: 0 }}
         >
           {!isEditorReady && !isLegacyHtml && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background z-10 rounded-lg">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                <p className="mt-4 text-sidebar-foreground/60">
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background">
+              <div className="flex flex-col items-center gap-3">
+                <Spinner className="size-6 text-muted-foreground" />
+                <p className="text-muted-foreground text-sm">
                   {t('settings.messageTemplates.editor.loadingEditor')}
                 </p>
               </div>
@@ -440,13 +412,13 @@ const EmailTemplateEditor: React.FC = () => {
           {isLegacyHtml && isEditorReady ? (
             // Show HTML preview for legacy templates
             <div className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex-shrink-0 p-4 border-b border-border">
-                <div className="flex items-center justify-between">
+              <div className="shrink-0 border-b p-4">
+                <div className="flex items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-sm font-medium text-sidebar-foreground">
+                    <h3 className="font-medium text-sm">
                       {t('settings.messageTemplates.editor.htmlPreview') || 'Visualização HTML'}
                     </h3>
-                    <p className="text-xs text-sidebar-foreground/60 mt-1">
+                    <p className="mt-1 text-muted-foreground text-xs">
                       {t('settings.messageTemplates.editor.htmlPreviewDescription') ||
                         'Este template foi criado com HTML. Você pode editá-lo visualmente no editor abaixo.'}
                     </p>
@@ -496,7 +468,7 @@ const EmailTemplateEditor: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex-shrink-0 p-4 border-t border-border">
+              <div className="shrink-0 border-t p-4">
                 <div className="flex-1 w-full overflow-hidden" style={{ minHeight: 0 }}>
                   <EmailEditorComponent
                     ref={emailEditorRef}

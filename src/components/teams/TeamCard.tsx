@@ -1,4 +1,8 @@
-import { Button, Card, CardContent, Avatar, AvatarFallback, Badge } from '@/components/ui/compat';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Edit, Users, Trash2 } from 'lucide-react';
 import { Team } from '@/types/users';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -27,70 +31,55 @@ export default function TeamCard({
       .slice(0, 2);
 
   return (
-    <Card className="group relative bg-sidebar border-sidebar-border hover:bg-sidebar-accent/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/10 overflow-hidden">
-      <CardContent className="p-0">
-        <div className="flex items-center gap-3 p-4 border-b border-sidebar-border">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-info/12 text-info-foreground">
-              {getInitials(team.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base truncate text-sidebar-foreground">
-              {team.name}
-            </h3>
-            {team.description && (
-              <p className="text-xs text-sidebar-foreground/60 truncate">{team.description}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {team.allow_auto_assign && (
-              <Badge variant="secondary" className="text-xs">
-                {t('card.autoAssign')}
-              </Badge>
-            )}
-          </div>
+    <Card className="group overflow-hidden transition-shadow hover:shadow-md/5">
+      <div className="flex items-center gap-3 p-4">
+        <Avatar className="size-10 rounded-lg">
+          <AvatarFallback className="rounded-lg">{getInitials(team.name)}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-semibold text-sm">{team.name}</h3>
+          {team.description && <p className="truncate text-muted-foreground text-xs">{team.description}</p>}
         </div>
+        {team.allow_auto_assign && <Badge variant="success">{t('card.autoAssign')}</Badge>}
+      </div>
 
-        <div className="px-4 py-3 text-xs text-sidebar-foreground/70">
-          <div className="flex items-center justify-between">
-            <span>{t('card.id')}</span>
-            <span className="font-mono">{team.id}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>{t('card.members')}</span>
-            <span className="font-mono">{team.members_count || 0}</span>
-          </div>
+      <dl className="flex flex-col gap-1 border-t px-4 py-3 text-xs">
+        <div className="flex items-center justify-between gap-2">
+          <dt className="text-muted-foreground">{t('card.id')}</dt>
+          <dd className="font-mono">{team.id}</dd>
         </div>
+        <div className="flex items-center justify-between gap-2">
+          <dt className="text-muted-foreground">{t('card.members')}</dt>
+          <dd className="tabular-nums">{team.members_count || 0}</dd>
+        </div>
+      </dl>
 
-        <div className="flex border-t border-sidebar-border opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <Button
-            variant="ghost"
-            className="flex-1 rounded-none h-12 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
-            onClick={() => onManageUsers?.(team)}
+      <div className="flex items-center gap-1 border-t bg-muted/24 p-2">
+        <Button variant="ghost" size="sm" className="flex-1" onClick={() => onManageUsers?.(team)}>
+          <Users />
+          {t('card.actions.users')}
+        </Button>
+        <Button variant="ghost" size="sm" className="flex-1" onClick={() => onEdit?.(team)}>
+          <Edit />
+          {t('card.actions.edit')}
+        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-destructive-foreground hover:bg-destructive/8"
+                onClick={() => onDelete?.(team)}
+                aria-label={t('card.actions.delete')}
+              />
+            }
           >
-            <Users className="h-4 w-4 mr-2" />
-            {t('card.actions.users')}
-          </Button>
-          <div className="w-px bg-sidebar-border" />
-          <Button
-            variant="ghost"
-            className="rounded-none h-12 px-4 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
-            onClick={() => onEdit?.(team)}
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            {t('card.actions.edit')}
-          </Button>
-          <div className="w-px bg-sidebar-border" />
-          <Button
-            variant="ghost"
-            className="rounded-none h-12 px-4 text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={() => onDelete?.(team)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
+            <Trash2 />
+          </TooltipTrigger>
+          <TooltipPopup>{t('card.actions.delete')}</TooltipPopup>
+        </Tooltip>
+      </div>
     </Card>
   );
 }

@@ -59,7 +59,37 @@ vi.mock('react-router-dom', async importOriginal => {
   return { ...actual, useNavigate: () => h.navigate };
 });
 
-// Keep the real design system EXCEPT the Radix Select family, which is hard to
+// The page's scope picker uses OptionSelect (coss Select); render it as the same
+// native <select> so scope switching stays assertable in jsdom.
+vi.mock('@/components/segments/ui/OptionSelect', () => ({
+  default: ({
+    value,
+    onValueChange,
+    options,
+    disabled,
+  }: {
+    value?: string | null;
+    onValueChange?: (value: string) => void;
+    options: Array<{ value: string; label: ReactNode }>;
+    disabled?: boolean;
+  }) => (
+    <select
+      data-testid="ds-select"
+      disabled={disabled}
+      value={value || ''}
+      onChange={e => onValueChange?.(e.target.value)}
+    >
+      {options.map(o => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  ),
+}));
+
+// TemplateFormModal (components/channels) still renders the compat Select:
+// keep the real design system EXCEPT the Radix Select family, which is hard to
 // drive in jsdom — render it as a native <select> so scope/provider switching is
 // assertable. Everything else (Button, Badge, Dialog, Table, etc.) stays real.
 vi.mock('@/components/ui/compat', async importOriginal => {

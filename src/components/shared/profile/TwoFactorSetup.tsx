@@ -1,25 +1,23 @@
 import { useState } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Button,
-  Input,
-  Label,
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Alert,
-  AlertDescription,
-  RadioGroup,
-  RadioGroupItem,
-  Badge,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import RadioCardGroup from '@/components/base/RadioCard';
 import { Shield, Smartphone, Mail, AlertTriangle, Check, Copy, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { twoFactorService } from '@/services/profile/twoFactorService';
@@ -185,6 +183,11 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
     setSelectedMethod('totp');
   };
 
+  const closeSetup = () => {
+    setSetupDialogOpen(false);
+    resetSetupState();
+  };
+
   const renderSetupDialog = () => {
     switch (setupStep) {
       case 'method':
@@ -192,49 +195,36 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
           <>
             <DialogHeader>
               <DialogTitle>{t('twoFactor.setup.title')}</DialogTitle>
-              <DialogDescription>
-                {t('twoFactor.setup.description')}
-              </DialogDescription>
+              <DialogDescription>{t('twoFactor.setup.description')}</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-3">
-                <Label>{t('twoFactor.setup.methodSelection')}</Label>
-                <RadioGroup value={selectedMethod} onValueChange={(value) => setSelectedMethod(value as 'totp' | 'email')}>
-                  <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50">
-                    <RadioGroupItem value="totp" id="totp" />
-                    <Label htmlFor="totp" className="flex-1 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <Smartphone className="h-4 w-4" />
-                        <span className="font-medium">{t('twoFactor.setup.totp.title')}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {t('twoFactor.setup.totp.description')}
-                      </p>
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50">
-                    <RadioGroupItem value="email" id="email" />
-                    <Label htmlFor="email" className="flex-1 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4" />
-                        <span className="font-medium">{t('twoFactor.setup.email.title')}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {t('twoFactor.setup.email.description')}
-                      </p>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </div>
+            <DialogPanel className="flex flex-col gap-3">
+              <Label id="mfa-method-label">{t('twoFactor.setup.methodSelection')}</Label>
+              <RadioCardGroup
+                aria-labelledby="mfa-method-label"
+                className="grid-cols-1 sm:grid-cols-1"
+                value={selectedMethod}
+                onValueChange={setSelectedMethod}
+                options={[
+                  {
+                    value: 'totp',
+                    icon: <Smartphone />,
+                    title: t('twoFactor.setup.totp.title'),
+                    description: t('twoFactor.setup.totp.description'),
+                  },
+                  {
+                    value: 'email',
+                    icon: <Mail />,
+                    title: t('twoFactor.setup.email.title'),
+                    description: t('twoFactor.setup.email.description'),
+                  },
+                ]}
+              />
+            </DialogPanel>
             <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setSetupDialogOpen(false);
-                resetSetupState();
-              }}>
+              <Button variant="ghost" onClick={closeSetup}>
                 {t('twoFactor.setup.actions.cancel')}
               </Button>
-              <Button onClick={handleEnableMfa} disabled={isLoading}>
+              <Button onClick={handleEnableMfa} loading={isLoading}>
                 {isLoading ? t('twoFactor.setup.actions.processing') : t('twoFactor.setup.actions.continue')}
               </Button>
             </DialogFooter>
@@ -246,59 +236,53 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
           <>
             <DialogHeader>
               <DialogTitle>{t('twoFactor.configure.title')}</DialogTitle>
-              <DialogDescription>
-                {t('twoFactor.configure.description')}
-              </DialogDescription>
+              <DialogDescription>{t('twoFactor.configure.description')}</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
+            <DialogPanel className="flex flex-col gap-5">
               {qrCode ? (
-                <div className="flex justify-center p-4 bg-white rounded-lg border">
+                // QR codes need a white quiet zone to scan reliably in dark mode too.
+                <div className="flex justify-center rounded-xl border bg-white p-4">
                   <div
                     dangerouslySetInnerHTML={{ __html: qrCode }}
-                    className="flex justify-center items-center"
+                    className="flex items-center justify-center"
                     style={{ minHeight: '200px', minWidth: '200px' }}
                   />
                 </div>
               ) : (
-                <div className="flex justify-center p-4 bg-muted rounded-lg border">
-                  <div className="text-center">
-                    <p className="text-muted-foreground">{t('twoFactor.configure.qrCodeLoading')}</p>
-                    <p className="text-sm text-muted-foreground">{t('twoFactor.configure.qrCodeError')}</p>
-                  </div>
+                <div className="flex flex-col items-center justify-center gap-1 rounded-xl border bg-muted/48 p-6 text-center">
+                  <p className="text-muted-foreground">{t('twoFactor.configure.qrCodeLoading')}</p>
+                  <p className="text-muted-foreground text-sm">{t('twoFactor.configure.qrCodeError')}</p>
                 </div>
               )}
 
-              <div className="space-y-2">
-                <Label>{t('twoFactor.configure.manualKey')}</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={secretKey || ''}
-                    readOnly
-                    className="font-mono text-sm"
-                  />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => copyToClipboard(secretKey)}
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
+              <Field>
+                <FieldLabel htmlFor="mfa-secret-key">{t('twoFactor.configure.manualKey')}</FieldLabel>
+                <div className="flex w-full gap-2">
+                  <Input id="mfa-secret-key" value={secretKey || ''} readOnly className="font-mono" />
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => copyToClipboard(secretKey)}
+                          aria-label={t('twoFactor.configure.copyKey')}
+                        />
+                      }
+                    >
+                      <Copy />
+                    </TooltipTrigger>
+                    <TooltipPopup>{t('twoFactor.configure.copyKey')}</TooltipPopup>
+                  </Tooltip>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t('twoFactor.configure.manualKeyDescription')}
-                </p>
-              </div>
-            </div>
+                <FieldDescription>{t('twoFactor.configure.manualKeyDescription')}</FieldDescription>
+              </Field>
+            </DialogPanel>
             <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setSetupDialogOpen(false);
-                resetSetupState();
-              }              }>
+              <Button variant="ghost" onClick={closeSetup}>
                 {t('twoFactor.setup.actions.cancel')}
               </Button>
-              <Button onClick={() => setSetupStep('verify')}>
-                {t('twoFactor.configure.actions.configured')}
-              </Button>
+              <Button onClick={() => setSetupStep('verify')}>{t('twoFactor.configure.actions.configured')}</Button>
             </DialogFooter>
           </>
         );
@@ -314,37 +298,35 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
                   : t('twoFactor.verify.descriptionEmail')}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="verification-code">{t('twoFactor.verify.codeLabel')}</Label>
+            <DialogPanel className="flex flex-col gap-3">
+              <Field>
+                <FieldLabel htmlFor="verification-code">{t('twoFactor.verify.codeLabel')}</FieldLabel>
                 <Input
                   id="verification-code"
                   type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
                   value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onChange={e => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="000000"
                   maxLength={6}
-                  className="text-center text-2xl font-mono tracking-widest"
+                  size="lg"
+                  className="text-center font-mono text-2xl tracking-widest"
                 />
-              </div>
+              </Field>
 
               {selectedMethod === 'email' && (
-                <Button
-                  variant="link"
-                  onClick={handleResendEmailCode}
-                  disabled={isLoading}
-                  className="w-full"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                <Button variant="link" onClick={handleResendEmailCode} disabled={isLoading} className="self-center">
+                  <RefreshCw />
                   {t('twoFactor.verify.resendEmail')}
                 </Button>
               )}
-            </div>
+            </DialogPanel>
             <DialogFooter>
               <Button variant="outline" onClick={() => setSetupStep(selectedMethod === 'totp' ? 'configure' : 'method')}>
                 {t('twoFactor.verify.actions.back')}
               </Button>
-              <Button onClick={handleVerifyCode} disabled={isLoading || verificationCode.length !== 6}>
+              <Button onClick={handleVerifyCode} disabled={verificationCode.length !== 6} loading={isLoading}>
                 {isLoading ? t('twoFactor.verify.actions.verifying') : t('twoFactor.verify.actions.verify')}
               </Button>
             </DialogFooter>
@@ -356,44 +338,38 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
           <>
             <DialogHeader>
               <DialogTitle>{t('twoFactor.backupCodes.title')}</DialogTitle>
-              <DialogDescription>
-                {t('twoFactor.backupCodes.description')}
-              </DialogDescription>
+              <DialogDescription>{t('twoFactor.backupCodes.description')}</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  {t('twoFactor.backupCodes.warning')}
-                </AlertDescription>
+            <DialogPanel className="flex flex-col gap-4">
+              <Alert variant="warning">
+                <AlertTriangle />
+                <AlertDescription>{t('twoFactor.backupCodes.warning')}</AlertDescription>
               </Alert>
 
-              <div className="grid grid-cols-2 gap-2 p-4 bg-muted rounded-lg">
+              <ol className="grid grid-cols-2 gap-2 rounded-xl border bg-muted/48 p-4">
                 {backupCodes.map((code, index) => (
-                  <div key={index} className="font-mono text-sm flex items-center gap-2">
-                    <span className="text-muted-foreground">{index + 1}.</span>
+                  <li key={index} className="flex items-center gap-2 font-mono text-sm">
+                    <span className="text-muted-foreground tabular-nums">{index + 1}.</span>
                     <span>{code}</span>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
 
-              <Button
-                variant="outline"
-                onClick={copyAllBackupCodes}
-                className="w-full"
-              >
-                <Copy className="h-4 w-4 mr-2" />
+              <Button variant="outline" onClick={copyAllBackupCodes} className="w-full">
+                <Copy />
                 {t('twoFactor.backupCodes.copyAll')}
               </Button>
-            </div>
+            </DialogPanel>
             <DialogFooter>
-              <Button onClick={() => {
-                setSetupDialogOpen(false);
-                resetSetupState();
-                onUpdate?.();
-                toast.success(t('twoFactor.notifications.enabled'));
-              }}>
-                <Check className="h-4 w-4 mr-2" />
+              <Button
+                onClick={() => {
+                  setSetupDialogOpen(false);
+                  resetSetupState();
+                  onUpdate?.();
+                  toast.success(t('twoFactor.notifications.enabled'));
+                }}
+              >
+                <Check />
                 {t('twoFactor.backupCodes.complete')}
               </Button>
             </DialogFooter>
@@ -406,130 +382,93 @@ const TwoFactorSetup = ({ onUpdate }: TwoFactorSetupProps) => {
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
+              <Shield className="size-5 text-muted-foreground" />
               <CardTitle>{t('twoFactor.title')}</CardTitle>
             </div>
-            {mfaEnabled && (
-              <Badge variant="default">
-                {t('twoFactor.status.enabled')}
-              </Badge>
-            )}
+            {mfaEnabled && <Badge variant="success">{t('twoFactor.status.enabled')}</Badge>}
           </div>
-          <CardDescription>
-            {t('twoFactor.description')}
-          </CardDescription>
+          <CardDescription>{t('twoFactor.description')}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="flex flex-col gap-4">
           {!mfaEnabled ? (
             <>
               {mfaSetupIncomplete && (
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    {t('twoFactor.setupIncompleteWarning')}
-                  </AlertDescription>
+                <Alert variant="error">
+                  <AlertTriangle />
+                  <AlertDescription>{t('twoFactor.setupIncompleteWarning')}</AlertDescription>
                 </Alert>
               )}
-              <Alert>
-                <Shield className="h-4 w-4" />
-                <AlertDescription>
-                  {t('twoFactor.info')}
-                </AlertDescription>
+              <Alert variant="info">
+                <Shield />
+                <AlertDescription>{t('twoFactor.info')}</AlertDescription>
               </Alert>
-              <Button onClick={() => setSetupDialogOpen(true)}>
-                <Shield className="h-4 w-4 mr-2" />
+              <Button onClick={() => setSetupDialogOpen(true)} className="self-start">
+                <Shield />
                 {t('twoFactor.actions.enable')}
               </Button>
             </>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
+            <>
+              <div className="flex items-center justify-between gap-4 rounded-xl border p-4">
                 <div>
-                  <p className="font-medium">{t('twoFactor.status.title')}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {t('twoFactor.status.configured')}
-                  </p>
+                  <p className="font-medium text-sm">{t('twoFactor.status.title')}</p>
+                  <p className="text-muted-foreground text-sm">{t('twoFactor.status.configured')}</p>
                 </div>
                 <Badge variant="success">
-                  <Check className="h-3 w-3 mr-1" />
+                  <Check />
                   {t('twoFactor.status.enabled')}
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="font-medium">{t('twoFactor.backupCodes.title')}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {t('twoFactor.backupCodes.regenerateDescription')}
-                  </p>
+                  <p className="font-medium text-sm">{t('twoFactor.backupCodes.title')}</p>
+                  <p className="text-muted-foreground text-sm">{t('twoFactor.backupCodes.regenerateDescription')}</p>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleRegenerateBackupCodes}
-                  disabled={isLoading}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                <Button size="sm" variant="outline" onClick={handleRegenerateBackupCodes} loading={isLoading}>
+                  {!isLoading && <RefreshCw />}
                   {t('twoFactor.backupCodes.regenerate')}
                 </Button>
               </div>
 
               <div className="flex justify-end">
-                <Button
-                  variant="destructive"
-                  onClick={() => setDisableDialogOpen(true)}
-                >
+                <Button variant="destructive-outline" onClick={() => setDisableDialogOpen(true)}>
                   {t('twoFactor.actions.disable')}
                 </Button>
               </div>
-            </div>
+            </>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
 
-      {/* Setup Dialog */}
-      <Dialog open={setupDialogOpen} onOpenChange={(open) => {
-        if (!open) resetSetupState();
-        setSetupDialogOpen(open);
-      }}>
-        <DialogContent className="max-w-md">
-          {renderSetupDialog()}
-        </DialogContent>
+      <Dialog
+        open={setupDialogOpen}
+        onOpenChange={open => {
+          if (!open) resetSetupState();
+          setSetupDialogOpen(open);
+        }}
+      >
+        <DialogPopup className="sm:max-w-md">{renderSetupDialog()}</DialogPopup>
       </Dialog>
 
-      {/* Disable Dialog */}
-      <Dialog open={disableDialogOpen} onOpenChange={setDisableDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('twoFactor.disable.title')}</DialogTitle>
-            <DialogDescription>
-              {t('twoFactor.disable.description')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                {t('twoFactor.disable.warning')}
-              </AlertDescription>
-            </Alert>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDisableDialogOpen(false)}>
-              {t('twoFactor.disable.actions.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDisableMfa}
-              disabled={isLoading}
-            >
-              {isLoading ? t('twoFactor.disable.actions.disabling') : t('twoFactor.disable.actions.disable')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={disableDialogOpen}
+        onOpenChange={setDisableDialogOpen}
+        variant="destructive"
+        title={t('twoFactor.disable.title')}
+        description={t('twoFactor.disable.description')}
+        cancelLabel={t('twoFactor.disable.actions.cancel')}
+        confirmLabel={isLoading ? t('twoFactor.disable.actions.disabling') : t('twoFactor.disable.actions.disable')}
+        onConfirm={handleDisableMfa}
+        loading={isLoading}
+      >
+        <Alert variant="error">
+          <AlertTriangle />
+          <AlertDescription>{t('twoFactor.disable.warning')}</AlertDescription>
+        </Alert>
+      </ConfirmDialog>
     </>
   );
 };

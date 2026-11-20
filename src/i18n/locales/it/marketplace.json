@@ -13,7 +13,8 @@
   "product": {
     "install": "Installa",
     "free": "Gratuito",
-    "version": "v{{version}}"
+    "version": "v{{version}}",
+    "openExternal": "Apri la pagina del prodotto"
   },
   "empty": {
     "title": "Nessun prodotto trovato",

@@ -1,16 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
-  Button,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-} from '@/components/ui/compat';
-import { Camera, Upload } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Slider } from '@/components/ui/slider';
+import { Camera, Upload, ZoomIn, ZoomOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { normalizeAvatarUrl } from '@/utils/avatarUrl';
@@ -133,54 +134,36 @@ export default function ProfilePhotoUploader({
 
   return (
     <div className="flex items-center gap-6">
-      {/* Avatar Display */}
       <div className="relative">
-        <Avatar className="h-24 w-24">
+        <Avatar className="size-24">
           <AvatarImage src={photoUrl} alt={userName} />
-          <AvatarFallback className="text-lg font-semibold">
-            {getUserInitials(userName)}
-          </AvatarFallback>
+          <AvatarFallback className="font-semibold text-lg">{getUserInitials(userName)}</AvatarFallback>
         </Avatar>
 
-        {/* Camera overlay on hover */}
-        <div
-          className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-          onClick={handleUploadClick}
-        >
-          <Camera className="h-6 w-6 text-white" />
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col gap-2">
-        <Button
-          variant="outline"
-          size="sm"
+        <button
+          type="button"
           onClick={handleUploadClick}
           disabled={isUploading}
-          className="flex items-center gap-2"
+          aria-label={t('photoUploader.changePhoto')}
+          className="absolute inset-0 flex items-center justify-center rounded-full bg-foreground/56 text-background opacity-0 outline-none transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <Upload className="h-4 w-4" />
-          {isUploading ? t('photoUploader.uploading') : t('photoUploader.changePhoto')}
-        </Button>
-
-        <p className="text-xs text-muted-foreground">
-          {t('photoUploader.fileInfo')}
-        </p>
+          <Camera className="size-6" />
+        </button>
       </div>
 
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileSelect}
-        className="hidden"
-      />
+      <div className="flex flex-col items-start gap-2">
+        <Button variant="outline" size="sm" onClick={handleUploadClick} loading={isUploading}>
+          {!isUploading && <Upload />}
+          {isUploading ? t('photoUploader.uploading') : t('photoUploader.changePhoto')}
+        </Button>
+        <p className="text-muted-foreground text-xs">{t('photoUploader.fileInfo')}</p>
+      </div>
+
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
 
       <Dialog
         open={isCropOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           if (open) {
             setIsCropOpen(true);
           } else {
@@ -188,43 +171,47 @@ export default function ProfilePhotoUploader({
           }
         }}
       >
-        <DialogContent className="sm:max-w-2xl">
+        <DialogPopup className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('photoUploader.changePhoto')}</DialogTitle>
           </DialogHeader>
 
-          <div className="relative h-80 w-full bg-muted">
-            {cropImageUrl && (
-              <Cropper
-                image={cropImageUrl}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onCropComplete={handleCropComplete}
-                onZoomChange={setZoom}
+          <DialogPanel className="flex flex-col gap-4">
+            <div className="relative h-80 w-full overflow-hidden rounded-xl bg-muted">
+              {cropImageUrl && (
+                <Cropper
+                  image={cropImageUrl}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  onCropChange={setCrop}
+                  onCropComplete={handleCropComplete}
+                  onZoomChange={setZoom}
+                />
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <ZoomOut className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <Slider
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoom}
+                onValueChange={value => setZoom(Array.isArray(value) ? value[0] : value)}
+                getAriaLabel={() => t('photoUploader.changePhoto')}
               />
-            )}
-          </div>
+              <ZoomIn className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            </div>
+          </DialogPanel>
 
-          <input
-            type="range"
-            min={1}
-            max={3}
-            step={0.1}
-            value={zoom}
-            onChange={event => setZoom(Number(event.target.value))}
-            className="w-full"
-            aria-label={t('photoUploader.changePhoto')}
-          />
-
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={handleCropCancel}>
-              {t('common.cancel')}
+          <DialogFooter>
+            <DialogClose render={<Button variant="ghost" />}>{t('common.cancel')}</DialogClose>
+            <Button onClick={handleCropConfirm} loading={isUploading}>
+              {t('common.save')}
             </Button>
-            <Button onClick={handleCropConfirm}>{t('common.save')}</Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </div>
   );
