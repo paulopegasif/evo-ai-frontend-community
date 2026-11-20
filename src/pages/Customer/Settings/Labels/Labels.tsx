@@ -2,16 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsLabelsTour } from '@/tours';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
-import { Search, Tags } from 'lucide-react';
+import { AlertTriangle, Search, Tags } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import ListSkeleton from '@/components/base/ListSkeleton';
 import EmptyState from '@/components/base/EmptyState';
 
 import { labelsService } from '@/services/contacts/labelsService';
@@ -315,7 +309,7 @@ export default function Labels() {
   );
 
   return (
-    <div className="h-full flex flex-col p-4" data-tour="settings-labels-page">
+    <div className="flex h-full flex-col p-4 md:p-6" data-tour="settings-labels-page">
       <SettingsLabelsTour />
       <div data-tour="settings-labels-header">
         <LabelsHeader
@@ -333,9 +327,10 @@ export default function Labels() {
       {/* Content */}
       <div className="flex-1 overflow-auto mt-6" data-tour="settings-labels-content">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading')}</div>
-          </div>
+          <>
+            <span className="sr-only">{t('loading')}</span>
+            <ListSkeleton />
+          </>
         ) : sortedLabels.length === 0 ? (
           state.searchQuery.trim() ? (
             <EmptyState
@@ -408,69 +403,49 @@ export default function Labels() {
       )}
 
       {/* Delete Label Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.delete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.delete.description', { title: labelToDelete?.title })}
-            </DialogDescription>
-          </DialogHeader>
-          {!!labelToDelete?.usage_count && labelToDelete.usage_count > 0 && (
-            <p className="text-sm text-warning-foreground">
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.delete.title')}
+        description={t('dialog.delete.description', { title: labelToDelete?.title })}
+        cancelLabel={t('dialog.delete.cancel')}
+        confirmLabel={state.loading.delete ? t('dialog.delete.deleting') : t('dialog.delete.confirm')}
+        onConfirm={confirmDeleteLabel}
+        loading={state.loading.delete}
+      >
+        {!!labelToDelete?.usage_count && labelToDelete.usage_count > 0 && (
+          <Alert variant="warning">
+            <AlertTriangle />
+            <AlertDescription>
               {t('dialog.delete.usageWarning', { count: labelToDelete.usage_count })}
-            </p>
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.delete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteLabel}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('dialog.delete.deleting') : t('dialog.delete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDescription>
+          </Alert>
+        )}
+      </ConfirmDialog>
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedLabelIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          {selectedInUse.length > 0 && (
-            <p className="text-sm text-warning-foreground">
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedLabelIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={state.loading.bulk ? t('dialog.bulkDelete.deleting') : t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      >
+        {selectedInUse.length > 0 && (
+          <Alert variant="warning">
+            <AlertTriangle />
+            <AlertDescription>
               {t('dialog.bulkDelete.usageWarning', {
                 labels: selectedInUse.length,
                 records: selectedInUseRecords,
               })}
-            </p>
-          )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk ? t('dialog.bulkDelete.deleting') : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDescription>
+          </Alert>
+        )}
+      </ConfirmDialog>
 
       {/* Label Modal */}
       <LabelModal
