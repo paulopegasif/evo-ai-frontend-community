@@ -68,7 +68,8 @@
     "saving": "Salvando...",
     "updateAutoResolve": "Atualizar Auto-Resolução",
     "deleteAccount": "Excluir Conta",
-    "cancelDeletion": "Cancelar Exclusão"
+    "cancelDeletion": "Cancelar Exclusão",
+    "copyAccountId": "Copiar ID da conta"
   },
   "messages": {
     "permissionDenied": {
