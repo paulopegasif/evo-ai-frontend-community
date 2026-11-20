@@ -28,17 +28,19 @@ const ReplyToChip: React.FC<ReplyToChipProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-muted/48 border-l-4 border-border mx-2 mb-2 rounded-r">
-      <div className="flex-1 min-w-0">
-        <div className="text-xs font-medium text-muted-foreground mb-1">{t('replyTo.replyingTo', { name: senderName })}</div>
-        <div className="text-sm text-foreground truncate">{truncateText(replyToMessage.text)}</div>
+    <div className="mx-3 mt-2 flex items-center gap-2 rounded-lg border-s-2 border-foreground/24 bg-muted/48 py-1.5 ps-2.5 pe-1">
+      <div className="min-w-0 flex-1">
+        <p className="font-medium text-muted-foreground text-xs">{t('replyTo.replyingTo', { name: senderName })}</p>
+        <p className="truncate text-foreground text-sm">{truncateText(replyToMessage.text)}</p>
       </div>
       <button
+        type="button"
         onClick={onClose}
-        className="p-1 rounded-full hover:bg-accent transition-colors duration-200"
+        aria-label={t('replyTo.cancelReply')}
         title={t('replyTo.cancelReply')}
+        className="rounded-md p-1 text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <X size={14} className="text-muted-foreground" />
+        <X className="size-3.5" />
       </button>
     </div>
   );

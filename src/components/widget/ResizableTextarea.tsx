@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
-import { Textarea } from '@/components/ui/compat';
+import { cn } from '@/lib/utils';
 
 interface ResizableTextareaProps {
   value: string;
@@ -95,33 +95,21 @@ export const ResizableTextarea = forwardRef<ResizableTextareaRef, ResizableTexta
       }
     };
 
+    // Plain <textarea>: the height is driven imperatively above, so it must be the
+    // element itself (not a styled wrapper). The surrounding composer draws the frame.
     return (
-      <Textarea
+      <textarea
         ref={textareaRef}
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
-        className={`
-          w-full
-          resize-none
-          border
-          rounded-md
-          px-3 py-2
-          text-sm
-          text-slate-900
-          placeholder:text-slate-400
-          focus:outline-none
-          focus:ring-2
-          focus:border-transparent
-          transition-all
-          duration-200
-          overflow-y-auto
-          ${disabled ? 'bg-muted/48 cursor-not-allowed' : 'bg-background border-border'}
-          ${className}
-        `}
         rows={minRows}
+        className={cn(
+          'block w-full resize-none overflow-y-auto bg-transparent px-3 py-2.5 text-foreground text-sm outline-none placeholder:text-muted-foreground/72 disabled:cursor-not-allowed disabled:opacity-64',
+          className,
+        )}
         style={{
           minHeight: `40px`,
           maxHeight: `${maxRows * 22}px`,
