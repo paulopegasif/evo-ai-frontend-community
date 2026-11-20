@@ -1,20 +1,19 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogFooter,
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-} from '@/components/ui/compat';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { Textarea } from '@/components/ui/textarea';
 import { scheduledActionsService } from '@/services/scheduledActions/scheduledActionsService';
 import InboxesService from '@/services/channels/inboxesService';
 import { contactsService } from '@/services/contacts';
@@ -22,7 +21,7 @@ import type { ScheduledAction, CreateScheduledAction } from '@/types/automation'
 import type { Inbox } from '@/types/channels/inbox';
 import type { Contact } from '@/types/contacts';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, XIcon } from 'lucide-react';
 import {
   buildChannelOptions,
   getMessagingInboxes,
@@ -67,6 +66,21 @@ export function ScheduleActionModal({
     task_description: '',
     recurrence_type: 'once',
   });
+
+  const recurrenceOptions = [
+    { value: 'once', label: t('scheduledActions.recurrenceOnce') },
+    { value: 'daily', label: t('scheduledActions.recurrenceDaily') },
+    { value: 'weekly', label: t('scheduledActions.recurrenceWeekly') },
+    { value: 'monthly', label: t('scheduledActions.recurrenceMonthly') },
+  ];
+
+  const actionTypeOptions = [
+    { value: 'send_message', label: t('scheduledActions.actions.send_message') },
+    { value: 'execute_webhook', label: t('scheduledActions.actions.execute_webhook') },
+    { value: 'create_task', label: t('scheduledActions.actions.create_task') },
+  ];
+
+  const webhookMethodOptions = ['GET', 'POST', 'PUT', 'DELETE'].map(method => ({ value: method, label: method }));
 
   const channelOptions = useMemo<ChannelOption[]>(() => buildChannelOptions(availableInboxes, t), [availableInboxes, t]);
 
@@ -340,292 +354,304 @@ export function ScheduleActionModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
             {action ? t('scheduledActions.titleEdit') : t('scheduledActions.title')}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* CONTACT SELECTOR - Show when contactId is not provided and not editing */}
-          {!initialContactId && !action?.contact_id && (
-            <div className="space-y-2 contact-selector-container">
-              <Label htmlFor="contact">{t('scheduledActions.contact')}</Label>
-              <div className="relative">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="contact"
-                    value={selectedContact ? selectedContact.name : contactSearchQuery}
-                    onChange={e => {
-                      setContactSearchQuery(e.target.value);
-                      setShowContactDropdown(true);
-                      if (selectedContact) {
-                        setSelectedContact(null);
-                        setSelectedContactId(undefined);
-                      }
-                    }}
-                    onFocus={() => {
-                      if (contactSearchQuery.length >= 2 || contactSearchResults.length > 0) {
+        <form onSubmit={handleSubmit} className="contents">
+          <DialogPanel className="flex flex-col gap-4">
+            {/* CONTACT SELECTOR - Show when contactId is not provided and not editing */}
+            {!initialContactId && !action?.contact_id && (
+              <Field className="contact-selector-container" invalid={!!errors.contact_id}>
+                <FieldLabel htmlFor="contact">{t('scheduledActions.contact')}</FieldLabel>
+                <div className="relative w-full">
+                  <InputGroup>
+                    <InputGroupInput
+                      id="contact"
+                      value={selectedContact ? selectedContact.name : contactSearchQuery}
+                      onChange={e => {
+                        setContactSearchQuery(e.target.value);
                         setShowContactDropdown(true);
-                      }
-                    }}
-                    placeholder={t('scheduledActions.contactPlaceholder')}
-                    className={`pl-10 ${errors.contact_id ? 'border-red-500' : ''}`}
-                  />
-                  {loadingContacts && (
-                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-                  )}
-                  {selectedContact && !showContactDropdown && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedContact(null);
-                        setSelectedContactId(undefined);
-                        setContactSearchQuery('');
+                        if (selectedContact) {
+                          setSelectedContact(null);
+                          setSelectedContactId(undefined);
+                        }
                       }}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      ×
-                    </button>
+                      onFocus={() => {
+                        if (contactSearchQuery.length >= 2 || contactSearchResults.length > 0) {
+                          setShowContactDropdown(true);
+                        }
+                      }}
+                      placeholder={t('scheduledActions.contactPlaceholder')}
+                      aria-invalid={errors.contact_id ? true : undefined}
+                    />
+                    <InputGroupAddon>
+                      <Search aria-hidden="true" />
+                    </InputGroupAddon>
+                    {(loadingContacts || (selectedContact && !showContactDropdown)) && (
+                      <InputGroupAddon align="inline-end">
+                        {loadingContacts && <Spinner />}
+                        {selectedContact && !showContactDropdown && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            aria-label={t('scheduledActions.clearContact')}
+                            onClick={() => {
+                              setSelectedContact(null);
+                              setSelectedContactId(undefined);
+                              setContactSearchQuery('');
+                            }}
+                          >
+                            <XIcon />
+                          </Button>
+                        )}
+                      </InputGroupAddon>
+                    )}
+                  </InputGroup>
+                  {showContactDropdown && contactSearchResults.length > 0 && (
+                    <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-popover text-popover-foreground shadow-lg">
+                      {contactSearchResults.map(contact => (
+                        <div
+                          key={contact.id}
+                          className="cursor-pointer border-b px-4 py-2 last:border-b-0 hover:bg-accent"
+                          onClick={() => {
+                            setSelectedContact(contact);
+                            setSelectedContactId(contact.id);
+                            setContactSearchQuery('');
+                            setShowContactDropdown(false);
+                            if (errors.contact_id) {
+                              setErrors({ ...errors, contact_id: '' });
+                            }
+                          }}
+                        >
+                          <div className="font-medium">{contact.name}</div>
+                          {contact.email && (
+                            <div className="text-sm text-muted-foreground">{contact.email}</div>
+                          )}
+                          {contact.phone_number && (
+                            <div className="text-sm text-muted-foreground">{contact.phone_number}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showContactDropdown && contactSearchQuery.length >= 2 && !loadingContacts && contactSearchResults.length === 0 && (
+                    <div className="absolute z-50 mt-1 w-full rounded-lg border bg-popover p-4 text-muted-foreground text-sm shadow-lg">
+                      {t('scheduledActions.noContactsFound')}
+                    </div>
                   )}
                 </div>
-                {showContactDropdown && contactSearchResults.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
-                    {contactSearchResults.map(contact => (
-                      <div
-                        key={contact.id}
-                        className="px-4 py-2 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
-                        onClick={() => {
-                          setSelectedContact(contact);
-                          setSelectedContactId(contact.id);
-                          setContactSearchQuery('');
-                          setShowContactDropdown(false);
-                          if (errors.contact_id) {
-                            setErrors({ ...errors, contact_id: '' });
-                          }
-                        }}
-                      >
-                        <div className="font-medium">{contact.name}</div>
-                        {contact.email && (
-                          <div className="text-sm text-muted-foreground">{contact.email}</div>
-                        )}
-                        {contact.phone_number && (
-                          <div className="text-sm text-muted-foreground">{contact.phone_number}</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {showContactDropdown && contactSearchQuery.length >= 2 && !loadingContacts && contactSearchResults.length === 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-4 text-sm text-muted-foreground">
-                    {t('scheduledActions.noContactsFound')}
-                  </div>
-                )}
-              </div>
-              {errors.contact_id && <p className="text-sm text-destructive">{errors.contact_id}</p>}
-            </div>
-          )}
+                {errors.contact_id && <FieldError match>{errors.contact_id}</FieldError>}
+              </Field>
+            )}
 
-          {/* GENERAL SCHEDULE PARAMETERS - FIRST */}
-          <div className="space-y-2">
-            <Label htmlFor="scheduled_for">{t('scheduledActions.dateTime')}</Label>
-            <Input
-              id="scheduled_for"
-              type="datetime-local"
-              value={formData.scheduled_for}
-              min={getMinDateTime()}
-              onChange={e => {
-                setFormData({ ...formData, scheduled_for: e.target.value });
-                if (errors.scheduled_for) {
-                  setErrors({ ...errors, scheduled_for: '' });
+            {/* GENERAL SCHEDULE PARAMETERS - FIRST */}
+            <Field invalid={!!errors.scheduled_for}>
+              <FieldLabel htmlFor="scheduled_for">{t('scheduledActions.dateTime')}</FieldLabel>
+              <Input
+                id="scheduled_for"
+                type="datetime-local"
+                value={formData.scheduled_for}
+                min={getMinDateTime()}
+                onChange={e => {
+                  setFormData({ ...formData, scheduled_for: e.target.value });
+                  if (errors.scheduled_for) {
+                    setErrors({ ...errors, scheduled_for: '' });
+                  }
+                }}
+                required
+                aria-invalid={errors.scheduled_for ? true : undefined}
+              />
+              {errors.scheduled_for && <FieldError match>{errors.scheduled_for}</FieldError>}
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="recurrence_type">{t('scheduledActions.recurrence')}</FieldLabel>
+              <Select
+                items={recurrenceOptions}
+                value={formData.recurrence_type || null}
+                onValueChange={value => setFormData({ ...formData, recurrence_type: String(value ?? '') })}
+              >
+                <SelectTrigger id="recurrence_type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup alignItemWithTrigger={false}>
+                  {recurrenceOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </Field>
+
+            {/* ACTION TYPE - MIDDLE */}
+            <Field>
+              <FieldLabel htmlFor="action_type">{t('scheduledActions.actionType')}</FieldLabel>
+              <Select
+                items={actionTypeOptions}
+                value={formData.action_type || null}
+                onValueChange={value =>
+                  setFormData({
+                    ...formData,
+                    action_type: String(value ?? ''),
+                    message: '',
+                    webhook_url: '',
+                    task_title: '',
+                  })
                 }
-              }}
-              required
-              className={errors.scheduled_for ? 'border-destructive' : ''}
-            />
-            {errors.scheduled_for && <p className="text-sm text-destructive">{errors.scheduled_for}</p>}
-          </div>
+              >
+                <SelectTrigger id="action_type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup alignItemWithTrigger={false}>
+                  {actionTypeOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="recurrence_type">{t('scheduledActions.recurrence')}</Label>
-            <Select
-              value={formData.recurrence_type}
-              onValueChange={value => setFormData({ ...formData, recurrence_type: value })}
-            >
-              <SelectTrigger id="recurrence_type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="once">{t('scheduledActions.recurrenceOnce')}</SelectItem>
-                <SelectItem value="daily">{t('scheduledActions.recurrenceDaily')}</SelectItem>
-                <SelectItem value="weekly">{t('scheduledActions.recurrenceWeekly')}</SelectItem>
-                <SelectItem value="monthly">{t('scheduledActions.recurrenceMonthly')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* ACTION-SPECIFIC FIELDS - LAST */}
+            {/* SEND MESSAGE - with channel selector */}
+            {formData.action_type === 'send_message' && (
+              <>
+                <Field invalid={!!errors.channel}>
+                  <FieldLabel htmlFor="channel">{t('scheduledActions.channel')}</FieldLabel>
+                  <Select
+                    items={channelOptions}
+                    value={formData.channel || null}
+                    onValueChange={value => setFormData({ ...formData, channel: String(value ?? '') })}
+                    disabled={loadingInboxes || channelOptions.length === 0}
+                  >
+                    <SelectTrigger id="channel">
+                      <SelectValue
+                        placeholder={
+                          loadingInboxes
+                            ? t('scheduledActions.loadingChannels')
+                            : t('scheduledActions.selectChannel')
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectPopup alignItemWithTrigger={false}>
+                      {channelOptions.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectPopup>
+                  </Select>
+                  {channelOptions.length === 0 && !loadingInboxes && (
+                    <p className="text-sm text-warning-foreground">
+                      {t('scheduledActions.messages.noChannelsConfigured')}
+                    </p>
+                  )}
+                  {errors.channel && <FieldError match>{errors.channel}</FieldError>}
+                </Field>
 
-          {/* ACTION TYPE - MIDDLE */}
-          <div className="space-y-2">
-            <Label htmlFor="action_type">{t('scheduledActions.actionType')}</Label>
-            <Select
-              value={formData.action_type}
-              onValueChange={value =>
-                setFormData({
-                  ...formData,
-                  action_type: value,
-                  message: '',
-                  webhook_url: '',
-                            task_title: '',
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="send_message">
-                  {t('scheduledActions.actions.send_message')}
-                </SelectItem>
-                <SelectItem value="execute_webhook">
-                  {t('scheduledActions.actions.execute_webhook')}
-                </SelectItem>
-                <SelectItem value="create_task">
-                  {t('scheduledActions.actions.create_task')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+                <Field invalid={!!errors.message}>
+                  <FieldLabel htmlFor="message">{t('scheduledActions.message')}</FieldLabel>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={e => {
+                      setFormData({ ...formData, message: e.target.value });
+                      if (errors.message) {
+                        setErrors({ ...errors, message: '' });
+                      }
+                    }}
+                    rows={5}
+                    required
+                    aria-invalid={errors.message ? true : undefined}
+                  />
+                  {errors.message && <FieldError match>{errors.message}</FieldError>}
+                </Field>
+              </>
+            )}
 
-          {/* ACTION-SPECIFIC FIELDS - LAST */}
-          {/* SEND MESSAGE - with channel selector */}
-          {formData.action_type === 'send_message' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="channel">{t('scheduledActions.channel')}</Label>
-                <Select
-                  value={formData.channel}
-                  onValueChange={value => setFormData({ ...formData, channel: value })}
-                  disabled={loadingInboxes || channelOptions.length === 0}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={loadingInboxes ? 'Loading channels...' : 'Select a channel'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {channelOptions.length === 0 && !loadingInboxes && (
-                      <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                        No channels configured
-                      </div>
-                    )}
-                    {channelOptions.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {channelOptions.length === 0 && !loadingInboxes && (
-                  <p className="text-sm text-warning-foreground">
-                    {t('scheduledActions.messages.noChannelsConfigured')}
-                  </p>
-                )}
-                {errors.channel && <p className="text-sm text-destructive">{errors.channel}</p>}
-              </div>
+            {/* EXECUTE WEBHOOK */}
+            {formData.action_type === 'execute_webhook' && (
+              <>
+                <Field invalid={!!errors.webhook_url}>
+                  <FieldLabel htmlFor="webhook_url">{t('scheduledActions.webhookUrl')}</FieldLabel>
+                  <Input
+                    id="webhook_url"
+                    type="url"
+                    value={formData.webhook_url}
+                    onChange={e => {
+                      setFormData({ ...formData, webhook_url: e.target.value });
+                      if (errors.webhook_url) {
+                        setErrors({ ...errors, webhook_url: '' });
+                      }
+                    }}
+                    placeholder="https://example.com/webhook"
+                    required
+                    aria-invalid={errors.webhook_url ? true : undefined}
+                  />
+                  {errors.webhook_url && <FieldError match>{errors.webhook_url}</FieldError>}
+                </Field>
 
-              <div className="space-y-2">
-                <Label htmlFor="message">{t('scheduledActions.message')}</Label>
-                <Textarea
-                  id="message"
-                  value={formData.message}
-                  onChange={e => {
-                    setFormData({ ...formData, message: e.target.value });
-                    if (errors.message) {
-                      setErrors({ ...errors, message: '' });
-                    }
-                  }}
-                  rows={5}
-                  required
-                  className={errors.message ? 'border-destructive' : ''}
-                />
-                {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
-              </div>
-            </>
-          )}
+                <Field>
+                  <FieldLabel htmlFor="webhook_method">{t('scheduledActions.webhookMethod')}</FieldLabel>
+                  <Select
+                    items={webhookMethodOptions}
+                    value={formData.webhook_method || null}
+                    onValueChange={value => setFormData({ ...formData, webhook_method: String(value ?? '') })}
+                  >
+                    <SelectTrigger id="webhook_method">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectPopup alignItemWithTrigger={false}>
+                      {webhookMethodOptions.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectPopup>
+                  </Select>
+                </Field>
+              </>
+            )}
 
-          {/* EXECUTE WEBHOOK */}
-          {formData.action_type === 'execute_webhook' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="webhook_url">{t('scheduledActions.webhookUrl')}</Label>
-                <Input
-                  id="webhook_url"
-                  type="url"
-                  value={formData.webhook_url}
-                  onChange={e => {
-                    setFormData({ ...formData, webhook_url: e.target.value });
-                    if (errors.webhook_url) {
-                      setErrors({ ...errors, webhook_url: '' });
-                    }
-                  }}
-                  placeholder="https://example.com/webhook"
-                  required
-                  className={errors.webhook_url ? 'border-destructive' : ''}
-                />
-                {errors.webhook_url && <p className="text-sm text-destructive">{errors.webhook_url}</p>}
-              </div>
+            {/* CREATE TASK */}
+            {formData.action_type === 'create_task' && (
+              <>
+                <Field invalid={!!errors.task_title}>
+                  <FieldLabel htmlFor="task_title">{t('scheduledActions.taskTitle')}</FieldLabel>
+                  <Input
+                    id="task_title"
+                    value={formData.task_title}
+                    onChange={e => {
+                      setFormData({ ...formData, task_title: e.target.value });
+                      if (errors.task_title) {
+                        setErrors({ ...errors, task_title: '' });
+                      }
+                    }}
+                    required
+                    aria-invalid={errors.task_title ? true : undefined}
+                  />
+                  {errors.task_title && <FieldError match>{errors.task_title}</FieldError>}
+                </Field>
 
-              <div className="space-y-2">
-                <Label htmlFor="webhook_method">{t('scheduledActions.webhookMethod')}</Label>
-                <Select
-                  value={formData.webhook_method}
-                  onValueChange={value => setFormData({ ...formData, webhook_method: value })}
-                >
-                  <SelectTrigger id="webhook_method">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="GET">GET</SelectItem>
-                    <SelectItem value="POST">POST</SelectItem>
-                    <SelectItem value="PUT">PUT</SelectItem>
-                    <SelectItem value="DELETE">DELETE</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
+                <Field>
+                  <FieldLabel htmlFor="task_description">{t('scheduledActions.taskDescription')}</FieldLabel>
+                  <Textarea
+                    id="task_description"
+                    value={formData.task_description}
+                    onChange={e => setFormData({ ...formData, task_description: e.target.value })}
+                    rows={4}
+                  />
+                </Field>
+              </>
+            )}
 
-          {/* CREATE TASK */}
-          {formData.action_type === 'create_task' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="task_title">{t('scheduledActions.taskTitle')}</Label>
-                <Input
-                  id="task_title"
-                  value={formData.task_title}
-                  onChange={e => {
-                    setFormData({ ...formData, task_title: e.target.value });
-                    if (errors.task_title) {
-                      setErrors({ ...errors, task_title: '' });
-                    }
-                  }}
-                  required
-                  className={errors.task_title ? 'border-destructive' : ''}
-                />
-                {errors.task_title && <p className="text-sm text-destructive">{errors.task_title}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="task_description">{t('scheduledActions.taskDescription')}</Label>
-                <Textarea
-                  id="task_description"
-                  value={formData.task_description}
-                  onChange={e => setFormData({ ...formData, task_description: e.target.value })}
-                  rows={4}
-                />
-              </div>
-            </>
-          )}
+          </DialogPanel>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
@@ -643,7 +669,7 @@ export function ScheduleActionModal({
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

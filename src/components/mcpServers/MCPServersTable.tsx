@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { Server, Eye, Wrench } from 'lucide-react';
 import { MCPServer } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -22,22 +22,23 @@ export default function MCPServersTable({
   const { t } = useLanguage('mcpServers');
   const serversList = servers || [];
 
-  const getTypeColor = (type: string) => {
+  const getTypeBadge = (
+    type: string,
+  ): { variant: 'success' | 'warning' | 'info' | 'outline'; className?: string } => {
     switch (type) {
       case 'official':
-        return 'bg-success/10 text-success-foreground border-success/30';
-      case 'community':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'oauth':
-        return 'bg-info/10 text-info-foreground border-info/30';
       case 'webhook':
-        return 'bg-success/10 text-success-foreground border-success/30';
+        return { variant: 'success' };
+      case 'community':
       case 'basic_auth':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
+        return { variant: 'warning' };
+      case 'oauth':
+        return { variant: 'info' };
       case 'credentials':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
+        // categorical accent, no status token for it
+        return { variant: 'outline', className: 'border-purple-500/30 bg-purple-500/8 text-purple-600 dark:text-purple-400' };
       default:
-        return 'bg-gray-500/10 text-muted-foreground border-gray-500/30';
+        return { variant: 'outline', className: 'text-muted-foreground' };
     }
   };
 
@@ -57,10 +58,10 @@ export default function MCPServersTable({
           <div className="min-w-0 flex-1">
             <div className="font-medium text-sm truncate mb-1">{server.name || t('table.noName')}</div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className={`text-xs ${getTypeColor(server.type)}`}>
+              <Badge variant={getTypeBadge(server.type).variant} className={getTypeBadge(server.type).className}>
                 {server.type}
               </Badge>
-              <Badge variant="outline" className={`text-xs ${getTypeColor(server.config_type)}`}>
+              <Badge variant={getTypeBadge(server.config_type).variant} className={getTypeBadge(server.config_type).className}>
                 {server.config_type?.toUpperCase() || 'N/A'}
               </Badge>
             </div>

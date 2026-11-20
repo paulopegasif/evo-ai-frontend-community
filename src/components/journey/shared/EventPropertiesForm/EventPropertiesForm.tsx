@@ -2,16 +2,7 @@ import { useId, useMemo, useState, useEffect } from 'react';
 import { Plus, X, AlertTriangle, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-// cmdk-based Command (typeahead list) — kept from the compat module on purpose:
-// it carries cmdk filtering behavior, not just a re-export.
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/compat/command';
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
@@ -307,7 +298,7 @@ function dateInputValue(raw: unknown): string {
 }
 
 // Per card: "Campos opcionais como 'Add field' expandível com autocomplete
-// da lista" — searchable typeahead picker built on cmdk Command, mirroring
+// da lista" — searchable typeahead picker built on the coss Command (Autocomplete), mirroring
 // the EventSelector pattern.
 function OptionalFieldPicker({
   fields,
@@ -349,24 +340,22 @@ function OptionalFieldPicker({
       >
         {/* F6 fix: key={open} remounts the Command on each open, clearing any
             leftover CommandInput query from the previous open. */}
-        <Command key={String(open)}>
+        <Command key={String(open)} items={fields}>
           <CommandInput placeholder={searchPlaceholder} />
+          <CommandEmpty>{noResultsLabel}</CommandEmpty>
           <CommandList>
-            <CommandEmpty>{noResultsLabel}</CommandEmpty>
-            <CommandGroup>
-              {fields.map((field) => (
-                <CommandItem
-                  key={field}
-                  value={field}
-                  onSelect={() => {
-                    onAdd(field);
-                    setOpen(false);
-                  }}
-                >
-                  {field}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {(field: string) => (
+              <CommandItem
+                key={field}
+                value={field}
+                onClick={() => {
+                  onAdd(field);
+                  setOpen(false);
+                }}
+              >
+                {field}
+              </CommandItem>
+            )}
           </CommandList>
         </Command>
       </PopoverPopup>

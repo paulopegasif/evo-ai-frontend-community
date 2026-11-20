@@ -1,24 +1,28 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
-  Button,
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Badge,
-  Checkbox,
-} from '@/components/ui/compat';
-import { Edit, Eye, Key, Plus, Trash2, X, Loader2 } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Edit, Eye, EyeOff, Key, Plus, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApiKey, ApiKeyCreate, ApiKeyUpdate } from '@/types/agents';
 import { createApiKey, listApiKeys, updateApiKey, deleteApiKey } from '@/services/agents';
@@ -187,10 +191,27 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
     }
   };
 
+  const closeForm = () => {
+    setIsAddingKey(false);
+    setIsEditingKey(false);
+    setCurrentApiKey({});
+  };
+
+  const iconButton = (label: string, icon: ReactNode, onClick: () => void) => (
+    <Tooltip>
+      <TooltipTrigger
+        render={<Button type="button" variant="ghost" size="icon-sm" aria-label={label} onClick={onClick} />}
+      >
+        {icon}
+      </TooltipTrigger>
+      <TooltipPopup>{label}</TooltipPopup>
+    </Tooltip>
+  );
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogPopup className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>{t('title')}</DialogTitle>
             <DialogDescription>
@@ -198,29 +219,19 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex-1 overflow-auto">
+          <DialogPanel>
             {isAddingKey ? (
-              <div className="space-y-4 p-4 border rounded-lg">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">
+              <div className="flex flex-col gap-4 rounded-xl border bg-muted/24 p-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-base">
                     {isEditingKey ? t('form.title.edit') : t('form.title.new')}
                   </h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setIsAddingKey(false);
-                      setIsEditingKey(false);
-                      setCurrentApiKey({});
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  {iconButton(t('actions.cancel'), <X />, closeForm)}
                 </div>
 
-                <div className="grid gap-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name">{t('form.labels.name')}</Label>
+                <div className="flex flex-col gap-4">
+                  <Field>
+                    <FieldLabel htmlFor="name">{t('form.labels.name')}</FieldLabel>
                     <Input
                       id="name"
                       value={currentApiKey.name || ''}
@@ -230,41 +241,44 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
                           name: e.target.value,
                         })
                       }
-                      className="col-span-3"
                       placeholder={t('form.placeholders.name')}
                     />
-                  </div>
+                  </Field>
 
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="provider">{t('form.labels.provider')}</Label>
+                  <Field>
+                    <FieldLabel htmlFor="provider">{t('form.labels.provider')}</FieldLabel>
                     <Select
-                      value={currentApiKey.provider}
-                      onValueChange={value =>
+                      items={availableProviders}
+                      value={currentApiKey.provider || null}
+                      onValueChange={value => {
+                        if (value == null) return;
+                        const provider = String(value);
                         setCurrentApiKey({
                           ...currentApiKey,
-                          provider: value,
-                          ...(value !== CUSTOM_OPENAI_PROVIDER ? { base_url: '' } : {}),
-                        })
-                      }
+                          provider,
+                          ...(provider !== CUSTOM_OPENAI_PROVIDER ? { base_url: '' } : {}),
+                        });
+                      }}
                     >
-                      <SelectTrigger className="col-span-3">
+                      <SelectTrigger id="provider">
                         <SelectValue placeholder={t('form.placeholders.provider')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectPopup alignItemWithTrigger={false}>
                         {availableProviders.map(provider => (
                           <SelectItem key={provider.value} value={provider.value}>
                             {provider.label}
                           </SelectItem>
                         ))}
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
-                  </div>
+                  </Field>
 
                   {currentApiKey.provider === CUSTOM_OPENAI_PROVIDER && (
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="base_url">Base URL</Label>
+                    <Field>
+                      <FieldLabel htmlFor="base_url">Base URL</FieldLabel>
                       <Input
                         id="base_url"
+                        type="url"
                         value={currentApiKey.base_url || ''}
                         onChange={e =>
                           setCurrentApiKey({
@@ -272,21 +286,20 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
                             base_url: e.target.value,
                           })
                         }
-                        className="col-span-3"
                         placeholder="https://api.example.com/v1"
                       />
-                    </div>
+                    </Field>
                   )}
 
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="key_value">
+                  <Field>
+                    <FieldLabel htmlFor="key_value">
                       {t('form.labels.key')}
                       {currentApiKey.provider !== CUSTOM_OPENAI_PROVIDER && (
-                        <span className="text-destructive ml-1">*</span>
+                        <span className="text-destructive-foreground" aria-hidden="true">*</span>
                       )}
-                    </Label>
-                    <div className="col-span-3 relative">
-                      <Input
+                    </FieldLabel>
+                    <InputGroup>
+                      <InputGroupInput
                         id="key_value"
                         value={currentApiKey.key_value || ''}
                         onChange={e =>
@@ -295,30 +308,33 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
                             key_value: e.target.value,
                           })
                         }
-                        className="pr-10"
                         type={isKeyVisible ? 'text' : 'password'}
+                        autoComplete="off"
                         placeholder={
                           isEditingKey
                             ? t('form.placeholders.keyEdit')
                             : t('form.placeholders.keyNew')
                         }
                       />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        type="button"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
-                        onClick={() => setIsKeyVisible(!isKeyVisible)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
+                      <InputGroupAddon align="inline-end">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          aria-label={isKeyVisible ? t('form.hideKey') : t('form.showKey')}
+                          aria-pressed={isKeyVisible}
+                          onClick={() => setIsKeyVisible(!isKeyVisible)}
+                        >
+                          {isKeyVisible ? <EyeOff /> : <Eye />}
+                        </Button>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </Field>
 
                   {isEditingKey && (
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="is_active">{t('form.labels.status')}</Label>
-                      <div className="col-span-3 flex items-center space-x-2">
+                    <div className="flex flex-col gap-2">
+                      <Label>{t('form.labels.status')}</Label>
+                      <Label className="flex items-center gap-2 font-normal">
                         <Checkbox
                           id="is_active"
                           checked={currentApiKey.is_active !== false}
@@ -329,55 +345,49 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
                             })
                           }
                         />
-                        <Label htmlFor="is_active">{t('form.labels.active')}</Label>
-                      </div>
+                        {t('form.labels.active')}
+                      </Label>
                     </div>
                   )}
                 </div>
 
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsAddingKey(false);
-                      setIsEditingKey(false);
-                      setCurrentApiKey({});
-                    }}
-                  >
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button type="button" variant="outline" onClick={closeForm}>
                     {t('actions.cancel')}
                   </Button>
-                  <Button onClick={handleSaveApiKey} disabled={loading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <Button type="button" onClick={handleSaveApiKey} loading={loading}>
                     {isEditingKey ? t('actions.update') : t('actions.save')}
                   </Button>
                 </div>
               </div>
             ) : (
-              <>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-medium">{t('list.title')}</h3>
-                  <Button onClick={handleAddClick}>
-                    <Plus className="mr-2 h-4 w-4" />
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-base">{t('list.title')}</h3>
+                  <Button type="button" onClick={handleAddClick}>
+                    <Plus />
                     {t('actions.add')}
                   </Button>
                 </div>
 
                 {loading ? (
-                  <div className="flex items-center justify-center h-40">
-                    <Loader2 className="h-8 w-8 animate-spin" />
+                  <div className="flex flex-col gap-3" aria-busy="true">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-[74px] w-full rounded-lg" />
+                    ))}
                   </div>
                 ) : apiKeys.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="flex flex-col gap-3">
                     {apiKeys.map(apiKey => (
                       <div
                         key={apiKey.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
+                        className="flex items-center justify-between gap-4 rounded-lg border bg-card p-4"
                       >
-                        <div>
-                          <p className="font-medium">{apiKey.name}</p>
-                          <div className="flex items-center gap-2 mt-1">
+                        <div className="min-w-0">
+                          <p className="font-medium text-foreground">{apiKey.name}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
                             {apiKey.base_url && (
-                              <span className="text-sm text-muted-foreground">
+                              <span className="truncate text-sm text-muted-foreground">
                                 {apiKey.base_url}
                               </span>
                             )}
@@ -385,70 +395,58 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
                             <span className="text-sm text-muted-foreground">
                               {t('list.createdAt')} {new Date(apiKey.created_at).toLocaleDateString('pt-BR')}
                             </span>
-                            {!apiKey.is_active && <Badge variant="destructive">{t('list.inactive')}</Badge>}
+                            {!apiKey.is_active && <Badge variant="error">{t('list.inactive')}</Badge>}
                           </div>
                         </div>
 
-                        <div className="flex gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleEditClick(apiKey)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteClick(apiKey)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        <div className="flex shrink-0 gap-1">
+                          {iconButton(t('actions.edit'), <Edit />, () => handleEditClick(apiKey))}
+                          {iconButton(t('actions.delete'), <Trash2 />, () => handleDeleteClick(apiKey))}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-dashed rounded-lg">
-                    <Key className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">{t('empty.title')}</h3>
-                    <p className="text-muted-foreground mb-4">
-                      {t('empty.description')}
-                    </p>
-                    <Button onClick={handleAddClick}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      {t('actions.addFirst')}
-                    </Button>
-                  </div>
+                  <Empty className="rounded-lg border border-dashed">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Key />
+                      </EmptyMedia>
+                      <EmptyTitle>{t('empty.title')}</EmptyTitle>
+                      <EmptyDescription>{t('empty.description')}</EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button type="button" onClick={handleAddClick}>
+                        <Plus />
+                        {t('actions.addFirst')}
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
                 )}
-              </>
+              </div>
             )}
-          </div>
+          </DialogPanel>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <DialogClose render={<Button variant="outline" />}>
               {t('actions.close')}
-            </Button>
+            </DialogClose>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
 
       {/* Dialog de confirmação de exclusão */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: keyToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: keyToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={handleDeleteConfirm}
+        loading={loading}
+        icon={<Trash2 />}
+      />
     </>
   );
 }

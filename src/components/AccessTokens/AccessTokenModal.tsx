@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-  Label as UILabel,
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Search } from 'lucide-react';
 import type { AccessToken, AccessTokenFormData } from '@/types/auth';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -212,9 +216,11 @@ export default function AccessTokenModal({
     }
   };
 
+  const totalPermissions = Object.values(categorizedPermissions).flatMap(c => c.permissions).length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
             {isNew ? t('form.title.new') : t('form.title.edit')}
@@ -227,98 +233,96 @@ export default function AccessTokenModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[60vh] overflow-y-auto">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <DialogPanel>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {/* Name */}
-            <div className="space-y-2">
-              <UILabel htmlFor="name">{t('form.labels.name')}</UILabel>
+            <Field invalid={!!errors.name}>
+              <FieldLabel htmlFor="name">{t('form.labels.name')}</FieldLabel>
               <Input
                 id="name"
                 placeholder={t('form.placeholders.name')}
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className={errors.name ? 'border-destructive' : ''}
+                aria-invalid={errors.name ? true : undefined}
               />
-              {errors.name && (
-                <p className="text-sm text-destructive">{errors.name}</p>
-              )}
-              <p className="text-sm text-muted-foreground">
-                {t('form.descriptions.name')}
-              </p>
-            </div>
+              <FieldError match={!!errors.name}>{errors.name}</FieldError>
+              <FieldDescription>{t('form.descriptions.name')}</FieldDescription>
+            </Field>
 
             {/* Scopes */}
-            <div className="space-y-3">
-              <UILabel>{t('form.labels.scopes')}</UILabel>
-              <p className="text-sm text-muted-foreground">
-                {t('form.descriptions.scopes')}
-              </p>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <Label>{t('form.labels.scopes')}</Label>
+                <p className="text-sm text-muted-foreground">
+                  {t('form.descriptions.scopes')}
+                </p>
+              </div>
 
               {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
+              <InputGroup>
+                <InputGroupAddon>
+                  <Search aria-hidden="true" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  type="search"
                   placeholder={t('form.placeholders.searchPermissions')}
+                  aria-label={t('form.placeholders.searchPermissions')}
                   value={scopeSearch}
                   onChange={(e) => setScopeSearch(e.target.value)}
-                  className="pl-10"
                 />
-              </div>
+              </InputGroup>
 
               {/* Global actions */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
+                <Label className="flex items-center gap-3 text-sm font-medium">
+                  <Checkbox
                     id="select-all-resources"
-                    checked={selectedScopes.length > 0 && selectedScopes.length === Object.values(categorizedPermissions).flatMap(c => c.permissions).length}
-                    ref={ref => {
-                      if (ref) {
-                        ref.indeterminate = selectedScopes.length > 0 && selectedScopes.length < Object.values(categorizedPermissions).flatMap(c => c.permissions).length;
-                      }
-                    }}
-                    onChange={(e) => {
-                      if (e.target.checked) {
+                    checked={selectedScopes.length > 0 && selectedScopes.length === totalPermissions}
+                    indeterminate={selectedScopes.length > 0 && selectedScopes.length < totalPermissions}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
                         selectAllScopes();
                       } else {
                         deselectAllScopes();
                       }
                     }}
                     disabled={loadingScopes}
-                    className="w-4 h-4 text-primary bg-background border-2 rounded focus:ring-primary"
                   />
-                  <UILabel htmlFor="select-all-resources" className="text-sm font-medium">
-                    {t('form.labels.selectAll')}
-                  </UILabel>
-                </div>
-                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                  {t('form.labels.selectAll')}
+                </Label>
+                <Badge variant="secondary">
                   {t('form.labels.selectedCount', { count: selectedScopes.length })}
-                </span>
+                </Badge>
               </div>
 
               {/* Accordion with permissions */}
               {loadingScopes ? (
-                <div className="p-4 text-center">
-                  <p className="text-sm text-muted-foreground">{t('permissions.loadingPermissions')}</p>
+                <div className="flex flex-col gap-2" aria-busy="true">
+                  <span className="sr-only">{t('permissions.loadingPermissions')}</span>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-11 w-full rounded-lg" />
+                  ))}
                 </div>
               ) : scopesError ? (
-                <div className="p-4 text-center">
-                  <p className="text-sm text-destructive mb-2">{scopesError}</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => loadResourceActions()}
-                  >
-                    {t('permissions.retryLoad')}
-                  </Button>
-                </div>
+                <Alert variant="error">
+                  <AlertDescription>{scopesError}</AlertDescription>
+                  <AlertAction>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => loadResourceActions()}
+                    >
+                      {t('permissions.retryLoad')}
+                    </Button>
+                  </AlertAction>
+                </Alert>
               ) : Object.keys(categorizedPermissions).length === 0 ? (
-                <div className="p-4 text-center">
+                <div className="rounded-lg border border-dashed p-4 text-center">
                   <p className="text-sm text-muted-foreground">{t('permissions.noPermissionsAvailable')}</p>
                 </div>
               ) : (
-                <Accordion type="multiple" className="w-full">
+                <Accordion multiple className="w-full rounded-lg border">
                   {Object.entries(categorizedPermissions)
                     .filter(([resource, category]) => {
                       if (!scopeSearch) return true;
@@ -342,35 +346,29 @@ export default function AccessTokenModal({
                       const someResourceActionsSelected = selectedActionsForResource.length > 0 && !allResourceActionsSelected;
 
                       return (
-                        <AccordionItem key={resource} value={resource} className="border-b-0">
-                          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                            <div className="flex items-center justify-between w-full">
-                              <div className="flex items-center space-x-3">
-                                <input
-                                  type="checkbox"
-                                  id={`select-resource-${resource}`}
-                                  checked={allResourceActionsSelected}
-                                  ref={ref => {
-                                    if (ref) {
-                                      ref.indeterminate = someResourceActionsSelected;
-                                    }
-                                  }}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    toggleResourceActions(resource);
-                                  }}
-                                  disabled={loadingScopes}
-                                  className="w-4 h-4 text-primary bg-background border-2 rounded focus:ring-primary"
-                                />
-                                <span className="font-medium text-left">{category.name}</span>
-                              </div>
-                              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-                                {selectedActionsForResource.length}/{category.permissions.length}
-                              </span>
+                        <AccordionItem key={resource} value={resource}>
+                          <div className="flex items-center gap-3 px-4">
+                            <Checkbox
+                              id={`select-resource-${resource}`}
+                              aria-label={category.name}
+                              checked={allResourceActionsSelected}
+                              indeterminate={someResourceActionsSelected}
+                              onCheckedChange={() => toggleResourceActions(resource)}
+                              disabled={loadingScopes}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <AccordionTrigger className="items-center py-3 hover:no-underline">
+                                <span className="flex w-full items-center justify-between gap-3">
+                                  <span className="font-medium text-left">{category.name}</span>
+                                  <Badge variant="secondary">
+                                    {selectedActionsForResource.length}/{category.permissions.length}
+                                  </Badge>
+                                </span>
+                              </AccordionTrigger>
                             </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="px-4 pb-3">
-                            <div className="space-y-2">
+                          </div>
+                          <AccordionContent className="px-4 pb-3 ps-11">
+                            <div className="flex flex-col gap-2">
                               {category.permissions
                                 .filter(permission => {
                                   if (!scopeSearch) return true;
@@ -384,29 +382,26 @@ export default function AccessTokenModal({
                                 .map((permission) => {
                                   const fullActionKey = permission.key;
                                   return (
-                                    <div key={permission.key} className="flex items-center space-x-2">
-                                      <input
-                                        type="checkbox"
+                                    <Label
+                                      key={permission.key}
+                                      className="flex cursor-pointer items-start gap-2 text-sm font-normal"
+                                    >
+                                      <Checkbox
                                         id={fullActionKey}
                                         checked={selectedScopes.includes(fullActionKey)}
-                                        onChange={(e) => handleScopeToggle(fullActionKey, e.target.checked)}
+                                        onCheckedChange={(checked) => handleScopeToggle(fullActionKey, checked)}
                                         disabled={loadingScopes}
-                                        className="w-4 h-4 text-primary bg-background border-2 rounded focus:ring-primary"
+                                        className="mt-0.5"
                                       />
-                                      <UILabel 
-                                        htmlFor={fullActionKey} 
-                                        className="text-sm font-normal cursor-pointer flex-1"
-                                      >
-                                        <div className="flex flex-col">
-                                          <span>{permission.name}</span>
-                                          {permission.description && (
-                                            <span className="text-xs text-muted-foreground">
-                                              {permission.description}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </UILabel>
-                                    </div>
+                                      <span className="flex flex-1 flex-col">
+                                        <span className="text-foreground">{permission.name}</span>
+                                        {permission.description && (
+                                          <span className="text-xs text-muted-foreground">
+                                            {permission.description}
+                                          </span>
+                                        )}
+                                      </span>
+                                    </Label>
                                   );
                                 })}
                             </div>
@@ -418,11 +413,11 @@ export default function AccessTokenModal({
               )}
               
               {errors.scopes && (
-                <p className="text-sm text-destructive">{errors.scopes}</p>
+                <p className="text-sm text-destructive-foreground" role="alert">{errors.scopes}</p>
               )}
             </div>
           </form>
-        </div>
+        </DialogPanel>
 
         <DialogFooter>
           <Button
@@ -433,11 +428,11 @@ export default function AccessTokenModal({
           >
             {t('actions.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? t('actions.save') + '...' : isNew ? t('actions.create') : t('actions.save')}
+          <Button type="button" onClick={handleSubmit} loading={loading}>
+            {isNew ? t('actions.create') : t('actions.save')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

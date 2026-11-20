@@ -7,7 +7,8 @@ import { ScheduleActionModal } from './ScheduleActionModal';
 
 vi.mock('lucide-react', () => ({
   Search: () => null,
-  Loader2: () => null,
+  XIcon: () => null,
+  Loader2Icon: () => null,
 }));
 
 vi.mock('@/hooks/useLanguage', () => ({
@@ -36,7 +37,9 @@ vi.mock('@/services/scheduledActions/scheduledActionsService', () => ({
   },
 }));
 
-vi.mock('@/components/ui/compat', () => {
+// Base UI's Select only renders its options while the popup is open; a native
+// <select> keeps the option list queryable so the channel filtering can be asserted.
+vi.mock('@/components/ui/select', () => {
   const passthrough = ({ children }: { children?: React.ReactNode }) => <>{children}</>;
 
   const extractOptionNodes = (children: React.ReactNode): React.ReactNode[] => {
@@ -49,7 +52,7 @@ vi.mock('@/components/ui/compat', () => {
         return [child];
       }
 
-      return extractOptionNodes(child.props.children);
+      return extractOptionNodes((child.props as { children?: React.ReactNode }).children);
     });
   };
 
@@ -59,8 +62,8 @@ vi.mock('@/components/ui/compat', () => {
     children,
     disabled,
   }: {
-    value?: string;
-    onValueChange?: (value: string) => void;
+    value?: string | null;
+    onValueChange?: (value: string | null) => void;
     children?: React.ReactNode;
     disabled?: boolean;
   }) => (
@@ -84,26 +87,24 @@ vi.mock('@/components/ui/compat', () => {
   }) => <option value={value}>{children}</option>;
 
   return {
-    Dialog: passthrough,
-    DialogContent: passthrough,
-    DialogHeader: passthrough,
-    DialogTitle: passthrough,
-    DialogFooter: passthrough,
-    Button: ({ children }: { children?: React.ReactNode }) => <button type="button">{children}</button>,
-    Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
-    Label: ({
-      htmlFor,
-      children,
-    }: {
-      htmlFor?: string;
-      children?: React.ReactNode;
-    }) => <label htmlFor={htmlFor}>{children}</label>,
     Select,
-    SelectContent: passthrough,
+    SelectPopup: passthrough,
     SelectItem,
     SelectTrigger: passthrough,
     SelectValue: ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>,
-    Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} />,
+  };
+});
+
+vi.mock('@/components/ui/dialog', () => {
+  const passthrough = ({ children }: { children?: React.ReactNode }) => <>{children}</>;
+
+  return {
+    Dialog: passthrough,
+    DialogPopup: passthrough,
+    DialogHeader: passthrough,
+    DialogTitle: passthrough,
+    DialogPanel: passthrough,
+    DialogFooter: passthrough,
   };
 });
 

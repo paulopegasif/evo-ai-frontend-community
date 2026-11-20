@@ -1,12 +1,6 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  ScrollArea,
-  Badge,
-  Separator,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 import { Wrench, Tag, FileText, Settings } from 'lucide-react';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -24,15 +18,15 @@ export default function ToolDetails({ open, onOpenChange, tool }: ToolDetailsPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Wrench className="h-5 w-5" />
+            <Wrench className="size-5" />
             {tool.name}
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-120px)]">
+        <DialogPanel>
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-4">
@@ -75,7 +69,7 @@ export default function ToolDetails({ open, onOpenChange, tool }: ToolDetailsPro
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-muted/30 rounded-lg border border-dashed text-center">
+                <div className="p-4 bg-muted/24 rounded-lg border border-dashed text-center">
                   <Tag className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">{t('details.tags.empty')}</p>
                 </div>
@@ -150,13 +144,13 @@ export default function ToolDetails({ open, onOpenChange, tool }: ToolDetailsPro
               {Array.isArray(tool.examples) && tool.examples.length > 0 ? (
                 <div className="space-y-3">
                   {tool.examples.map((example: any, index: number) => (
-                    <div key={index} className="p-3 border rounded-lg bg-muted/30">
+                    <div key={index} className="p-3 border rounded-lg bg-muted/24">
                       <pre className="text-sm whitespace-pre-wrap break-words">{example}</pre>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-muted/30 rounded-lg border border-dashed text-center">
+                <div className="p-4 bg-muted/24 rounded-lg border border-dashed text-center">
                   <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">{t('details.examples.empty')}</p>
                 </div>
@@ -212,7 +206,7 @@ export default function ToolDetails({ open, onOpenChange, tool }: ToolDetailsPro
                           <label className="text-sm font-medium text-muted-foreground">
                             {t('details.configuration.defaultValues')}
                           </label>
-                          <div className="mt-1 p-3 bg-muted/30 rounded border">
+                          <div className="mt-1 p-3 bg-muted/24 rounded border">
                             <pre className="text-xs overflow-auto">
                               {JSON.stringify(tool.config.default_values, null, 2)}
                             </pre>
@@ -224,8 +218,8 @@ export default function ToolDetails({ open, onOpenChange, tool }: ToolDetailsPro
               </>
             )}
           </div>
-        </ScrollArea>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }

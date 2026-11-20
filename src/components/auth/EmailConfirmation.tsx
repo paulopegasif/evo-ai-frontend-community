@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Alert, AlertDescription } from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { confirmEmail, resendConfirmation } from '@/services/auth/authService';
@@ -46,10 +49,7 @@ const EmailConfirmation = () => {
       }, 3000);
     } catch (error: any) {
       setConfirmationStatus('error');
-      setMessage(
-        error?.response?.data?.message ||
-          t('auth.emailConfirmation.error'),
-      );
+      setMessage(error?.response?.data?.message || t('auth.emailConfirmation.error'));
     } finally {
       setIsLoading(false);
     }
@@ -75,14 +75,14 @@ const EmailConfirmation = () => {
   const getStatusIcon = () => {
     switch (confirmationStatus) {
       case 'success':
-        return <CheckCircle className="h-12 w-12 text-success" />;
+        return <CheckCircle className="size-12 text-success" />;
       case 'error':
-        return <XCircle className="h-12 w-12 text-destructive" />;
+        return <XCircle className="size-12 text-destructive" />;
       default:
         return isLoading ? (
-          <Loader2 className="h-12 w-12 text-primary animate-spin" />
+          <Loader2 className="size-12 text-primary animate-spin" />
         ) : (
-          <Mail className="h-12 w-12 text-primary" />
+          <Mail className="size-12 text-primary" />
         );
     }
   };
@@ -90,11 +90,11 @@ const EmailConfirmation = () => {
   const getStatusVariant = () => {
     switch (confirmationStatus) {
       case 'success':
-        return 'default';
+        return 'success' as const;
       case 'error':
-        return 'destructive';
+        return 'error' as const;
       default:
-        return 'default';
+        return 'default' as const;
     }
   };
 
@@ -107,72 +107,79 @@ const EmailConfirmation = () => {
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
-          <div className="text-center mb-6">
-            <div className="mx-auto flex items-center justify-center mb-4">{getStatusIcon()}</div>
-            <h2 className="font-semibold text-xl">{t('auth.emailConfirmation.title')}</h2>
-            <p className="text-muted-foreground mt-2">
-              {confirmationToken ? t('auth.emailConfirmation.confirming') : t('auth.emailConfirmation.confirm')}
-            </p>
-          </div>
+        <Card>
+          <CardPanel className="p-6 sm:p-8">
+            <div className="text-center mb-6">
+              <div className="mx-auto flex items-center justify-center mb-4">{getStatusIcon()}</div>
+              <h2 className="font-semibold text-xl">{t('auth.emailConfirmation.title')}</h2>
+              <p className="text-muted-foreground mt-2">
+                {confirmationToken
+                  ? t('auth.emailConfirmation.confirming')
+                  : t('auth.emailConfirmation.confirm')}
+              </p>
+            </div>
 
-          <div className="space-y-4">
-            {message && (
-              <Alert variant={getStatusVariant()}>
-                <AlertDescription>{message}</AlertDescription>
-              </Alert>
-            )}
+            <div className="space-y-4">
+              {message && (
+                <Alert variant={getStatusVariant()}>
+                  <AlertDescription>{message}</AlertDescription>
+                </Alert>
+              )}
 
-            {confirmationStatus === 'success' && (
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  {t('auth.emailConfirmation.redirecting')}
-                </p>
-              </div>
-            )}
-
-            {(confirmationStatus === 'error' || !confirmationToken) && (
-              <div className="space-y-4">
+              {confirmationStatus === 'success' && (
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {t('auth.emailConfirmation.resend.title')}
+                  <p className="text-sm text-muted-foreground">
+                    {t('auth.emailConfirmation.redirecting')}
                   </p>
                 </div>
+              )}
 
-                <div className="space-y-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder={t('auth.emailConfirmation.resend.placeholder')}
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
+              {(confirmationStatus === 'error' || !confirmationToken) && (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {t('auth.emailConfirmation.resend.title')}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Input
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder={t('auth.emailConfirmation.resend.placeholder')}
+                      aria-label={t('auth.emailConfirmation.resend.placeholder')}
+                    />
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={!email}
+                    loading={isLoading}
+                    className="w-full"
+                  >
+                    {isLoading
+                      ? t('auth.emailConfirmation.resend.sending')
+                      : t('auth.emailConfirmation.resend.button')}
+                  </Button>
                 </div>
+              )}
 
+              <div className="text-center">
                 <Button
-                  onClick={handleResendConfirmation}
-                  disabled={isLoading || !email}
-                  className="w-full"
+                  type="button"
+                  variant="link"
+                  onClick={() => navigate('/auth')}
+                  className="text-sm"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {t('auth.emailConfirmation.resend.sending')}
-                    </>
-                  ) : (
-                    t('auth.emailConfirmation.resend.button')
-                  )}
+                  {t('auth.emailConfirmation.backToLogin')}
                 </Button>
               </div>
-            )}
-
-            <div className="text-center">
-              <Button variant="link" onClick={() => navigate('/auth')} className="text-sm">
-                {t('auth.emailConfirmation.backToLogin')}
-              </Button>
             </div>
-          </div>
-        </div>
+          </CardPanel>
+        </Card>
       </div>
     </div>
   );
