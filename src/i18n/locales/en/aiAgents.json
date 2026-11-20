@@ -1284,7 +1284,8 @@
     "view": "View",
     "saving": "Saving...",
     "continue": "Continue",
-    "skip": "Skip"
+    "skip": "Skip",
+    "more": "More actions"
   },
   "wizardActions": {
     "back": "Back",
@@ -1395,7 +1396,8 @@
         "searchTools": "Search tools...",
         "noToolsAvailable": "No tools available",
         "toolsFromAgents": "Tools from selected LLM agents will appear here",
-        "saveSettings": "Save Settings"
+        "saveSettings": "Save Settings",
+        "expandDescription": "Expand description"
       }
     },
     "step4": {

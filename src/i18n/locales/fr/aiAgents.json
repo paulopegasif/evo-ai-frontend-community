@@ -1218,7 +1218,8 @@
     "view": "Visualiser",
     "saving": "Enregistrement...",
     "continue": "Continuer",
-    "skip": "Passer"
+    "skip": "Passer",
+    "more": "Plus d'actions"
   },
   "wizardActions": {
     "back": "Retour",
@@ -1329,7 +1330,8 @@
         "searchTools": "Rechercher des outils...",
         "noToolsAvailable": "Aucun outil disponible",
         "toolsFromAgents": "Les outils des agents LLM sélectionnés apparaîtront ici",
-        "saveSettings": "Sauvegarder les Paramètres"
+        "saveSettings": "Sauvegarder les Paramètres",
+        "expandDescription": "Agrandir la description"
       }
     },
     "step4": {

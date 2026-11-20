@@ -1219,7 +1219,8 @@
     "view": "Visualizza",
     "saving": "Salvataggio...",
     "continue": "Continua",
-    "skip": "Salta"
+    "skip": "Salta",
+    "more": "Altre azioni"
   },
   "wizardActions": {
     "back": "Indietro",
@@ -1330,7 +1331,8 @@
         "searchTools": "Cerca strumenti...",
         "noToolsAvailable": "Nessuno strumento disponibile",
         "toolsFromAgents": "Gli strumenti degli agenti LLM selezionati appariranno qui",
-        "saveSettings": "Salva Impostazioni"
+        "saveSettings": "Salva Impostazioni",
+        "expandDescription": "Espandi descrizione"
       }
     },
     "step4": {

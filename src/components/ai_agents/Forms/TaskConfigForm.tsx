@@ -1,27 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Button,
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  Input,
-  Label,
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  Checkbox,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Maximize2, Save, X, ArrowDown, List, Search, Edit, PenTool, Loader2 } from 'lucide-react';
 import { listAgents } from '@/services/agents';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -63,12 +63,12 @@ const getAgentTypeLabel = (type: string): string => {
 const getAgentTypeColor = (type: string): string => {
   const colorMap: Record<string, string> = {
     llm: 'bg-info text-white',
-    sequential: 'bg-orange-500 text-white',
+    sequential: 'bg-warning text-white',
     parallel: 'bg-success text-white',
-    loop: 'bg-pink-500 text-white',
+    loop: 'bg-primary text-white',
     task: 'bg-success text-white',
   };
-  return colorMap[type] || 'bg-gray-500 text-white';
+  return colorMap[type] || 'bg-muted text-white';
 };
 
 const TaskConfigForm = ({
@@ -405,7 +405,7 @@ const TaskConfigForm = ({
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3 pt-0 pb-3">
+        <CardPanel className="space-y-3 pt-0 pb-3">
           {data.tasks && data.tasks.length > 0 ? (
             <div className="space-y-2">
               {data.tasks.map((task, index) => (
@@ -499,7 +499,7 @@ const TaskConfigForm = ({
               </p>
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Add/Edit Task Card */}
@@ -524,7 +524,7 @@ const TaskConfigForm = ({
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-2.5 pt-0">
+          <CardPanel className="space-y-2.5 pt-0">
             {isLoading && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -556,23 +556,26 @@ const TaskConfigForm = ({
                       {t('wizard.step3.taskConfig.agentLabel')}
                     </Label>
                     <Select
-                      value={newTask.agent_id}
-                      onValueChange={value => setNewTask({ ...newTask, agent_id: value })}
+                      items={availableAgents.map(agent => ({ value: agent.id, label: agent.name }))}
+                      value={newTask.agent_id || null}
+                      onValueChange={value => value && setNewTask({ ...newTask, agent_id: value })}
                     >
-                      <SelectTrigger className="h-8 text-xs">
+                      <SelectTrigger size="sm">
                         <SelectValue placeholder={t('wizard.step3.taskConfig.selectAgent')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectPopup>
                         <div className="sticky top-0 z-10 p-1.5 bg-background border-b">
-                          <div className="relative">
-                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                            <Input
+                          <InputGroup>
+                            <InputGroupAddon>
+                              <Search />
+                            </InputGroupAddon>
+                            <InputGroupInput
+                              size="sm"
                               placeholder={t('wizard.step3.taskConfig.searchAgents')}
-                              className="h-7 pl-7 text-xs"
                               value={taskAgentSearchQuery}
                               onChange={e => setTaskAgentSearchQuery(e.target.value)}
                             />
-                          </div>
+                          </InputGroup>
                         </div>
 
                         <div className="max-h-[200px] overflow-y-auto py-1">
@@ -593,7 +596,7 @@ const TaskConfigForm = ({
                             </div>
                           )}
                         </div>
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
                   </div>
 
@@ -606,17 +609,20 @@ const TaskConfigForm = ({
                         id="description"
                         value={newTask.description}
                         onChange={handleDescriptionChange}
-                        className="w-full pr-8 text-xs"
+                        className="w-full [&_textarea]:pe-8"
                         rows={2}
                         onClick={handleExpandDescription}
                       />
-                      <button
+                      <Button
                         type="button"
-                        className="absolute top-2 right-2 text-muted-foreground hover:text-primary focus:outline-none"
+                        variant="ghost"
+                        size="icon-xs"
+                        className="absolute top-1 right-1"
+                        aria-label={t('wizard.step3.taskConfig.expandDescription')}
                         onClick={handleExpandDescription}
                       >
-                        <Maximize2 className="h-3 w-3" />
-                      </button>
+                        <Maximize2 />
+                      </Button>
                     </div>
                     <div className="mt-0.5 text-xs text-muted-foreground">
                       {t('wizard.step3.taskConfig.contentPlaceholder')}
@@ -629,11 +635,11 @@ const TaskConfigForm = ({
                     {t('wizard.step3.taskConfig.expectedOutputLabel')}
                   </Label>
                   <Input
+                    size="sm"
                     id="expected_output"
                     placeholder={t('wizard.step3.taskConfig.expectedOutputPlaceholder')}
                     value={newTask.expected_output}
                     onChange={e => setNewTask({ ...newTask, expected_output: e.target.value })}
-                    className="h-8 text-xs"
                   />
                 </div>
 
@@ -686,26 +692,24 @@ const TaskConfigForm = ({
                 </div>
               </>
             )}
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Description Modal */}
       <Dialog open={isDescriptionModalOpen} onOpenChange={handleDescriptionModalOpenChange}>
-        <DialogContent className="sm:max-w-[1200px] max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogPopup className="sm:max-w-[1200px]">
           <DialogHeader>
             <DialogTitle>{t('wizard.step3.taskConfig.taskDescription')}</DialogTitle>
           </DialogHeader>
-
-          <div className="flex-1 overflow-hidden flex flex-col min-h-[60vh]">
+          <DialogPanel>
             <Textarea
               value={expandedDescription}
               onChange={e => setExpandedDescription(e.target.value)}
-              className="flex-1 min-h-full p-4 resize-none text-sm"
+              className="[&_textarea]:min-h-[60vh] [&_textarea]:resize-none"
               placeholder={t('wizard.step3.taskConfig.descriptionPlaceholder')}
             />
-          </div>
-
+          </DialogPanel>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDescriptionModalOpen(false)} size="sm">
               {t('wizard.step3.taskConfig.cancel')}
@@ -715,65 +719,66 @@ const TaskConfigForm = ({
               {t('wizard.step3.taskConfig.saveDescription')}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
 
       {/* Tools Modal */}
       <Dialog open={isToolsModalOpen} onOpenChange={setIsToolsModalOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogPopup className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>{t('wizard.step3.taskConfig.availableTools')}</DialogTitle>
           </DialogHeader>
+          <DialogPanel>
+            <InputGroup>
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder={t('wizard.step3.taskConfig.searchTools')}
+                value={toolSearchQuery}
+                onChange={e => setToolSearchQuery(e.target.value)}
+              />
+            </InputGroup>
 
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={t('wizard.step3.taskConfig.searchTools')}
-              className="pl-9"
-              value={toolSearchQuery}
-              onChange={e => setToolSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-            {filteredTools.length > 0 ? (
-              filteredTools.map(tool => (
-                <div
-                  key={tool.id}
-                  className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted transition duration-150"
-                >
-                  <Checkbox
-                    id={tool.id}
-                    checked={isToolEnabled(tool.id)}
-                    onCheckedChange={() => handleToggleTool(tool.id)}
-                  />
-                  <Label htmlFor={tool.id} className="cursor-pointer flex-1 text-sm">
-                    {tool.name}
-                  </Label>
-                  <Badge variant="outline" className="text-xs">
-                    {tool.id}
-                  </Badge>
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+              {filteredTools.length > 0 ? (
+                filteredTools.map(tool => (
+                  <div
+                    key={tool.id}
+                    className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted transition duration-150"
+                  >
+                    <Checkbox
+                      id={tool.id}
+                      checked={isToolEnabled(tool.id)}
+                      onCheckedChange={() => handleToggleTool(tool.id)}
+                    />
+                    <Label htmlFor={tool.id} className="cursor-pointer flex-1 text-sm">
+                      {tool.name}
+                    </Label>
+                    <Badge variant="outline" className="text-xs">
+                      {tool.id}
+                    </Badge>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground text-sm">
+                    {t('wizard.step3.taskConfig.noToolsAvailable')}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t('wizard.step3.taskConfig.toolsFromAgents')}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground text-sm">
-                  {t('wizard.step3.taskConfig.noToolsAvailable')}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t('wizard.step3.taskConfig.toolsFromAgents')}
-                </p>
-              </div>
-            )}
-          </div>
-
+              )}
+            </div>
+          </DialogPanel>
           <DialogFooter>
             <Button onClick={handleSaveTools} size="sm">
               <Save className="h-4 w-4 mr-2" />
               {t('wizard.step3.taskConfig.saveSettings')}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </div>
   );

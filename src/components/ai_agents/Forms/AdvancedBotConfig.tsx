@@ -1,15 +1,9 @@
 import { useCallback } from 'react';
-import {
-  Label,
-  Input,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  Switch,
-  Textarea,
-} from '@/components/ui/compat';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Zap, Clock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -51,13 +45,11 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
             </div>
             <div>
               <CardTitle>{t('advancedBot.messageHandling')}</CardTitle>
-              <CardDescription>
-                {t('advancedBot.messageHandlingDescription')}
-              </CardDescription>
+              <CardDescription>{t('advancedBot.messageHandlingDescription')}</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="message-wait-time" className="text-sm font-medium">
               {t('advancedBot.messageWaitTime')}
@@ -96,25 +88,23 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
               {t('advancedBot.messageSignatureDescription')}
             </p>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Card das Configurações de Segmentação */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-500/10">
-              <Zap className="h-5 w-5 text-purple-500" />
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Zap className="h-5 w-5 text-primary" />
             </div>
             <div>
               <CardTitle>{t('advancedBot.textSegmentation')}</CardTitle>
-              <CardDescription>
-                {t('advancedBot.textSegmentationDescription')}
-              </CardDescription>
+              <CardDescription>{t('advancedBot.textSegmentationDescription')}</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           <div className="flex items-center space-x-2">
             <Switch
               id="enable-text-segmentation"
@@ -128,7 +118,7 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
           </div>
 
           {data.enable_text_segmentation && (
-            <div className="space-y-4 ml-6 border-l-2 border-purple-200 pl-4">
+            <div className="space-y-4 ml-6 border-l-2 border-primary/32 pl-4">
               <div className="space-y-2">
                 <Label htmlFor="max-characters-per-segment" className="text-sm font-medium">
                   {t('advancedBot.maxCharactersPerSegment')}
@@ -139,7 +129,9 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
                   min={50}
                   max={2000}
                   value={data.max_characters_per_segment}
-                  onChange={e => handleInputChange('max_characters_per_segment', parseInt(e.target.value) || 300)}
+                  onChange={e =>
+                    handleInputChange('max_characters_per_segment', parseInt(e.target.value) || 300)
+                  }
                   disabled={isReadOnly}
                   className="w-32"
                 />
@@ -158,7 +150,9 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
                   min={10}
                   max={500}
                   value={data.min_segment_size}
-                  onChange={e => handleInputChange('min_segment_size', parseInt(e.target.value) || 50)}
+                  onChange={e =>
+                    handleInputChange('min_segment_size', parseInt(e.target.value) || 50)
+                  }
                   disabled={isReadOnly}
                   className="w-32"
                 />
@@ -178,7 +172,9 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
                   max={1000}
                   step={0.01}
                   value={data.character_delay_ms}
-                  onChange={e => handleInputChange('character_delay_ms', parseFloat(e.target.value) || 0.05)}
+                  onChange={e =>
+                    handleInputChange('character_delay_ms', parseFloat(e.target.value) || 0.05)
+                  }
                   disabled={isReadOnly}
                   className="w-32"
                 />
@@ -188,7 +184,7 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
               </div>
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

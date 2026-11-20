@@ -1,22 +1,7 @@
-import {
-  Button,
-  Badge,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/compat';
-import {
-  ArrowLeft,
-  Save,
-  X,
-  Edit3,
-  Copy,
-  MoreHorizontal,
-  Bot,
-  ChevronRight,
-} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
+import { ArrowLeft, Save, X, Edit3, Copy, MoreHorizontal, Bot, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 
@@ -103,26 +88,26 @@ AgentHeaderProps) => {
             </Button>
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+          <Menu>
+            <MenuTrigger
+              render={<Button variant="outline" size="icon-sm" aria-label={t('actions.more')} />}
+            >
+              <MoreHorizontal />
+            </MenuTrigger>
+            <MenuPopup align="end">
               {onDuplicate && (
-                <DropdownMenuItem onClick={onDuplicate}>
+                <MenuItem onClick={onDuplicate}>
                   <Copy className="mr-2 h-4 w-4" />
                   {t('actions.duplicate')}
-                </DropdownMenuItem>
+                </MenuItem>
               )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onBack}>
+              <MenuSeparator />
+              <MenuItem onClick={onBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 {t('actions.backToList')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </MenuItem>
+            </MenuPopup>
+          </Menu>
         </div>
       );
     }

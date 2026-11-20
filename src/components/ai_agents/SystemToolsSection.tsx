@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
-import { Button, Badge, Card, CardContent, CardHeader } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
 import { Wrench, Plus, Settings, X } from 'lucide-react';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -77,7 +79,7 @@ const SystemToolsSection = ({
       </CardHeader>
 
       {isOpen && (
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           {tools.length > 0 ? (
             <div className="space-y-3">
               {tools.map(tool => (
@@ -153,7 +155,7 @@ const SystemToolsSection = ({
               )}
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       )}
 
       {/* Modal de Ferramentas */}

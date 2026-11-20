@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Button, Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Users, Plus, X } from 'lucide-react';
 import AgentToolsDialog from './Dialogs/AgentToolsDialog';
 import { useLanguage } from '@/hooks/useLanguage';

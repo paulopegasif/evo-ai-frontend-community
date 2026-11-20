@@ -63,7 +63,7 @@ export default function AgentsTable({
       label: t('fields.type'),
       sortable: true,
       render: agent => {
-        const meta = getAgentTypeMeta(agent.type);
+        const meta = getAgentTypeMeta(agent.type, t);
         return <Badge variant={meta.badge}>{meta.label}</Badge>;
       },
     },

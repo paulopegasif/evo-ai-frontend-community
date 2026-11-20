@@ -1,5 +1,8 @@
 import { useCallback } from 'react';
-import { Badge, Card, CardContent, CardHeader, Switch, Label } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Settings, Brain, Zap } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -73,7 +76,7 @@ const AdvancedSettingsSection = ({
         <CollapsibleHeader
           title={t('advancedBot.title')}
           description={t('advancedBot.description')}
-          icon={<Settings className="h-5 w-5 text-indigo-500" />}
+          icon={<Settings className="h-5 w-5 text-primary" />}
           count={[data.load_memory, data.planner, data.load_knowledge].filter(Boolean).length}
           isOpen={isOpen}
           onToggle={onToggle}
@@ -81,7 +84,7 @@ const AdvancedSettingsSection = ({
       </CardHeader>
 
       {isOpen && (
-        <CardContent className="space-y-6">
+        <CardPanel className="space-y-6">
           {/* Load Memory */}
           <div className="flex items-start justify-between p-4 bg-muted/30 rounded-lg border">
             <div className="flex-1">
@@ -223,7 +226,7 @@ const AdvancedSettingsSection = ({
                           {!isReadOnly && (
                             <button
                               onClick={() => handleRemoveKnowledgeTag(tag)}
-                              className="text-info hover:text-blue-300"
+                              className="text-info hover:text-info-foreground"
                             >
                               <X className="h-3 w-3" />
                             </button>
@@ -257,7 +260,7 @@ const AdvancedSettingsSection = ({
               )}
             </div>
           </div> */}
-        </CardContent>
+        </CardPanel>
       )}
     </Card>
   );

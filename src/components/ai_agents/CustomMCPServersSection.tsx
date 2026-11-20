@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import {
-  Button,
-  Badge,
-  } from '@/components/ui/compat';
-import {
-  ExternalLink,
-  Plus,
-  X,
-} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Plus, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import CustomMCPDialog from './Dialogs/CustomMCPDialog';
 
@@ -39,74 +33,74 @@ const CustomMCPServersSection = ({
   return (
     <div className="space-y-4">
       {customMCPServerIds && customMCPServerIds.length > 0 ? (
-            <div className="space-y-3">
-              {customMCPServerIds.map(serverId => (
-                <div
-                  key={`referenced-${serverId}`}
-                  className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <ExternalLink className="h-4 w-4 text-info" />
-                      <span className="font-medium">{serverId}</span>
-                      <Badge
-                        variant="outline"
-                        className="text-xs bg-success/10 text-success-foreground border-success/30"
-                      >
-                        {t('tools.mcpServers.referenced')}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {t('tools.mcpServers.externallyManaged')}
-                    </p>
-                  </div>
-                  {!isReadOnly && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveCustomMCPServer(serverId)}
-                      className="text-destructive hover:text-destructive/80"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
+        <div className="space-y-3">
+          {customMCPServerIds.map(serverId => (
+            <div
+              key={`referenced-${serverId}`}
+              className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border"
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <ExternalLink className="h-4 w-4 text-info" />
+                  <span className="font-medium">{serverId}</span>
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-success/10 text-success-foreground border-success/30"
+                  >
+                    {t('tools.mcpServers.referenced')}
+                  </Badge>
                 </div>
-              ))}
-
-              {!isReadOnly && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowCustomMCPDialog(true)}
-                  className="w-full mt-2"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  {t('tools.mcpServers.addCustom')}
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-dashed">
-              <div>
-                <p className="font-medium">{t('tools.mcpServers.noCustomConfigured')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {t('tools.mcpServers.connectFromManagement')}
+                  {t('tools.mcpServers.externallyManaged')}
                 </p>
               </div>
               {!isReadOnly && (
                 <Button
-                  type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  onClick={() => setShowCustomMCPDialog(true)}
+                  onClick={() => handleRemoveCustomMCPServer(serverId)}
+                  className="text-destructive hover:text-destructive/80"
                 >
-                  <Plus className="h-4 w-4 mr-1" />
-                  {t('tools.mcpServers.add')}
+                  <X className="h-4 w-4" />
                 </Button>
               )}
             </div>
+          ))}
+
+          {!isReadOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCustomMCPDialog(true)}
+              className="w-full mt-2"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              {t('tools.mcpServers.addCustom')}
+            </Button>
           )}
+        </div>
+      ) : (
+        <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-dashed">
+          <div>
+            <p className="font-medium">{t('tools.mcpServers.noCustomConfigured')}</p>
+            <p className="text-sm text-muted-foreground">
+              {t('tools.mcpServers.connectFromManagement')}
+            </p>
+          </div>
+          {!isReadOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCustomMCPDialog(true)}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              {t('tools.mcpServers.add')}
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Modal de Seleção de MCPs Personalizados */}
       <CustomMCPDialog

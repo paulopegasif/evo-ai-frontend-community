@@ -179,5 +179,15 @@
   "view": {
     "grid": "Card view",
     "table": "Table view"
+  },
+  "typeLabels": {
+    "llm": "Native",
+    "external": "External",
+    "a2a": "A2A",
+    "sequential": "Sequential agent",
+    "parallel": "Parallel agent",
+    "loop": "Loop agent",
+    "workflow": "Workflow",
+    "task": "Task"
   }
 }
