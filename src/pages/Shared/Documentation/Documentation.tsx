@@ -1,177 +1,104 @@
+import type { LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@/components/ui/compat';
-import { FileText, Search, BookOpen, Code, Video, Download } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { BookOpen, Code, Download, FileText, Info, Lightbulb, Search, Video } from 'lucide-react';
+
+const NAV_SECTIONS: { key: string; icon: LucideIcon; items: string[] }[] = [
+  { key: 'quickStart', icon: BookOpen, items: ['introduction', 'firstSteps', 'initialSetup', 'basicTutorial'] },
+  {
+    key: 'guides',
+    icon: FileText,
+    items: ['managingAgents', 'knowledgeBase', 'chatSettings', 'apiIntegration', 'backupRestore'],
+  },
+  {
+    key: 'apiReference',
+    icon: Code,
+    items: ['authentication', 'agentEndpoints', 'chatApi', 'webhooks', 'errorCodes'],
+  },
+  { key: 'videoTutorials', icon: Video, items: ['initialSetup', 'firstAgent', 'advancedChat', 'bestPractices'] },
+];
 
 const Documentacao = () => {
   const { t } = useLanguage('documentation');
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t('header.title')}</h1>
-            <p className="text-muted-foreground">
-              {t('header.subtitle')}
-            </p>
-          </div>
-          <Button variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
-            {t('header.downloadPdf')}
-          </Button>
+    <div className="flex h-full flex-col">
+      <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-start sm:justify-between md:p-6">
+        <div>
+          <h1 className="font-semibold text-xl md:text-2xl">{t('header.title')}</h1>
+          <p className="mt-1 text-muted-foreground text-sm">{t('header.subtitle')}</p>
         </div>
+        <Button variant="outline">
+          <Download />
+          {t('header.downloadPdf')}
+        </Button>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 flex">
-        {/* Documentation Sidebar */}
-        <div className="w-80 border-r bg-card/50">
-          {/* Search */}
-          <div className="p-4 border-b">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <aside className="flex shrink-0 flex-col border-b md:w-72 md:border-r md:border-b-0">
+          <div className="border-b p-4">
+            <InputGroup>
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
                 placeholder={t('search.placeholder')}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                aria-label={t('search.placeholder')}
               />
+            </InputGroup>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto p-3">
+            <div className="flex flex-col gap-5">
+              {NAV_SECTIONS.map(({ key, icon: Icon, items }) => (
+                <div key={key}>
+                  <h3 className="mb-1.5 px-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                    {t(`sections.${key}.title`)}
+                  </h3>
+                  <ul className="flex flex-col gap-0.5">
+                    {items.map(item => (
+                      <li key={item}>
+                        <Button variant="ghost" size="sm" className="w-full justify-start font-normal">
+                          <Icon className="text-muted-foreground" />
+                          {t(`sections.${key}.items.${item}`)}
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </nav>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
+            <div>
+              <h2 className="font-semibold text-lg">{t('content.title')}</h2>
+              <p className="mt-1 text-muted-foreground text-sm">
+                {t('content.lastUpdated', { date: '15 de dezembro de 2024' })}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm">
+                {t('content.edit')}
+              </Button>
+              <Button variant="outline" size="sm">
+                {t('content.share')}
+              </Button>
             </div>
           </div>
 
-          {/* Navigation */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 space-y-4">
-              {/* Quick Start */}
-              <div>
-                <h3 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wide">
-                  {t('sections.quickStart.title')}
-                </h3>
-                <div className="space-y-1">
-                  {[
-                    t('sections.quickStart.items.introduction'),
-                    t('sections.quickStart.items.firstSteps'),
-                    t('sections.quickStart.items.initialSetup'),
-                    t('sections.quickStart.items.basicTutorial'),
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-accent cursor-pointer text-sm"
-                    >
-                      <BookOpen className="h-4 w-4 text-muted-foreground" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Guides */}
-              <div>
-                <h3 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wide">
-                  {t('sections.guides.title')}
-                </h3>
-                <div className="space-y-1">
-                  {[
-                    t('sections.guides.items.managingAgents'),
-                    t('sections.guides.items.knowledgeBase'),
-                    t('sections.guides.items.chatSettings'),
-                    t('sections.guides.items.apiIntegration'),
-                    t('sections.guides.items.backupRestore'),
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-accent cursor-pointer text-sm"
-                    >
-                      <FileText className="h-4 w-4 text-muted-foreground" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* API Reference */}
-              <div>
-                <h3 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wide">
-                  {t('sections.apiReference.title')}
-                </h3>
-                <div className="space-y-1">
-                  {[
-                    t('sections.apiReference.items.authentication'),
-                    t('sections.apiReference.items.agentEndpoints'),
-                    t('sections.apiReference.items.chatApi'),
-                    t('sections.apiReference.items.webhooks'),
-                    t('sections.apiReference.items.errorCodes'),
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-accent cursor-pointer text-sm"
-                    >
-                      <Code className="h-4 w-4 text-muted-foreground" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Video Tutorials */}
-              <div>
-                <h3 className="font-semibold text-sm mb-3 text-muted-foreground uppercase tracking-wide">
-                  {t('sections.videoTutorials.title')}
-                </h3>
-                <div className="space-y-1">
-                  {[
-                    t('sections.videoTutorials.items.initialSetup'),
-                    t('sections.videoTutorials.items.firstAgent'),
-                    t('sections.videoTutorials.items.advancedChat'),
-                    t('sections.videoTutorials.items.bestPractices'),
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-accent cursor-pointer text-sm"
-                    >
-                      <Video className="h-4 w-4 text-muted-foreground" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Documentation Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Content Header */}
-          <div className="p-6 border-b bg-background/95">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">{t('content.title')}</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t('content.lastUpdated', { date: '15 de dezembro de 2024' })}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  {t('content.edit')}
-                </Button>
-                <Button variant="outline" size="sm">
-                  {t('content.share')}
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Content Area */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            <div className="max-w-4xl mx-auto prose prose-gray dark:prose-invert">
-              <div className="bg-info/8 border border-info/24 rounded-lg p-6 mb-8">
-                <h3 className="text-lg font-semibold text-info-foreground mb-2">
-                  {t('content.welcome.title')}
-                </h3>
-                <p className="text-info-foreground">
-                  {t('content.welcome.description')}
-                </p>
-              </div>
+          <div className="flex-1 overflow-y-auto p-4 md:p-6">
+            <div className="prose prose-gray dark:prose-invert mx-auto max-w-4xl">
+              <Alert variant="info" className="not-prose mb-8">
+                <Info />
+                <AlertTitle>{t('content.welcome.title')}</AlertTitle>
+                <AlertDescription>{t('content.welcome.description')}</AlertDescription>
+              </Alert>
 
               <h2>{t('content.whatIs.title')}</h2>
               <p>
@@ -204,12 +131,11 @@ const Documentacao = () => {
                 <li dangerouslySetInnerHTML={{ __html: t('content.gettingStarted.steps.step4') }} />
               </ol>
 
-              <div className="bg-warning/8 border border-warning/24 rounded-lg p-6 mt-8">
-                <h3 className="text-lg font-semibold text-warning-foreground mb-2">{t('content.tip.title')}</h3>
-                <p className="text-warning-foreground">
-                  {t('content.tip.description')}
-                </p>
-              </div>
+              <Alert variant="warning" className="not-prose mt-8">
+                <Lightbulb />
+                <AlertTitle>{t('content.tip.title')}</AlertTitle>
+                <AlertDescription>{t('content.tip.description')}</AlertDescription>
+              </Alert>
 
               <h2>{t('content.support.title')}</h2>
               <p>
