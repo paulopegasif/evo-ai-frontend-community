@@ -1,22 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-  Switch,
-} from '@/components/ui/compat';
-import { Plus, X, Settings, Pencil, Check, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
+import { Plus, X, Settings, Pencil, Check } from 'lucide-react';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import { CustomAttributeDefinition, AttributeModel } from '@/types/settings';
 import { toast } from 'sonner';
@@ -70,6 +64,9 @@ export default function CustomAttributesForm({
 }: CustomAttributesFormProps) {
   const defaultTranslationNamespace = mode === 'editable' ? 'chat' : 'customAttributes';
   const { t } = useLanguage(translationNamespace || defaultTranslationNamespace);
+  // Control labels (aria/tooltips) always come from this component's own namespace.
+  const { t: tCa } = useLanguage('customAttributes');
+  const fieldId = (key: string) => `custom-attr-${attributeModel}-${key}`;
   const [definedAttributes, setDefinedAttributes] = useState<CustomAttributeDefinition[]>([]);
   const [loading, setLoading] = useState(false);
   const [newAttributeKey, setNewAttributeKey] = useState('');
@@ -238,6 +235,7 @@ export default function CustomAttributesForm({
     const value = valueToString(rawValue);
 
     const commonProps = {
+      id: fieldId(attribute.attribute_key),
       disabled,
     };
 
@@ -335,37 +333,28 @@ export default function CustomAttributesForm({
 
       case 'list':
         return (
-          <Select
+          <OptionSelect
+            id={fieldId(attribute.attribute_key)}
             value={value}
             onValueChange={newValue => handleUpdateAttribute(attribute.attribute_key, newValue)}
             disabled={disabled}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={t('placeholders.select', {
-                  name: attribute.attribute_display_name.toLowerCase(),
-                })}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {attribute.attribute_values?.map(option => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t('placeholders.select', {
+              name: attribute.attribute_display_name.toLowerCase(),
+            })}
+            options={(attribute.attribute_values ?? []).map(option => ({ value: option, label: option }))}
+          />
         );
 
       case 'checkbox':
         return (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Switch
+              id={fieldId(attribute.attribute_key)}
               checked={Boolean(rawValue)}
               onCheckedChange={checked => handleUpdateAttribute(attribute.attribute_key, checked)}
               disabled={disabled}
             />
-            <Label className="text-sm">{rawValue ? t('checkbox.yes') : t('checkbox.no')}</Label>
+            <span className="text-sm">{rawValue ? t('checkbox.yes') : t('checkbox.no')}</span>
           </div>
         );
 
@@ -392,6 +381,43 @@ export default function CustomAttributesForm({
     const isEditing = editingKey === key;
 
     if (isEditing) {
+      const editActions = (
+        <>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={handleSave}
+                  loading={saving}
+                  aria-label={tCa('actions.save')}
+                />
+              }
+            >
+              <Check />
+            </TooltipTrigger>
+            <TooltipPopup>{tCa('actions.save')}</TooltipPopup>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={handleCancelEdit}
+                  disabled={saving}
+                  aria-label={tCa('actions.cancel')}
+                />
+              }
+            >
+              <X />
+            </TooltipTrigger>
+            <TooltipPopup>{tCa('actions.cancel')}</TooltipPopup>
+          </Tooltip>
+        </>
+      );
+
       switch (attribute.attribute_display_type) {
         case 'text':
         case 'number':
@@ -402,32 +428,13 @@ export default function CustomAttributesForm({
                 type={attribute.attribute_display_type === 'number' ? 'number' : 'text'}
                 value={editValue}
                 onChange={e => setEditValue(e.target.value)}
-                className="flex-1 h-8 text-xs"
+                size="sm"
+                className="flex-1"
+                aria-label={attribute.attribute_display_name}
                 autoFocus
                 disabled={saving}
               />
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSave}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                {saving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleCancelEdit}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
+              {editActions}
             </div>
           );
 
@@ -442,72 +449,29 @@ export default function CustomAttributesForm({
                 onClick={event => {
                   (event.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
                 }}
-                className="flex-1 h-8 text-xs [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
+                size="sm"
+                className="flex-1 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100"
+                aria-label={attribute.attribute_display_name}
                 autoFocus
                 disabled={saving}
               />
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSave}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                {saving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleCancelEdit}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
+              {editActions}
             </div>
           );
 
         case 'list':
           return (
             <div className="flex items-center gap-2">
-              <Select value={editValue} onValueChange={setEditValue} disabled={saving}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {attribute.attribute_values?.map(option => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSave}
+              <OptionSelect
+                value={editValue}
+                onValueChange={setEditValue}
                 disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                {saving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )}
-              </Button>
-              <Button
                 size="sm"
-                variant="ghost"
-                onClick={handleCancelEdit}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
+                className="flex-1"
+                aria-label={attribute.attribute_display_name}
+                options={(attribute.attribute_values ?? []).map(option => ({ value: option, label: option }))}
+              />
+              {editActions}
             </div>
           );
 
@@ -517,32 +481,13 @@ export default function CustomAttributesForm({
               <Input
                 value={editValue}
                 onChange={e => setEditValue(e.target.value)}
-                className="flex-1 h-8 text-xs"
+                size="sm"
+                className="flex-1"
+                aria-label={attribute.attribute_display_name}
                 autoFocus
                 disabled={saving}
               />
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSave}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                {saving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleCancelEdit}
-                disabled={saving}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
+              {editActions}
             </div>
           );
       }
@@ -561,26 +506,34 @@ export default function CustomAttributesForm({
             checked={Boolean(rawValue)}
             onCheckedChange={() => handleBooleanToggle(key, Boolean(rawValue))}
             disabled={saving}
-            className="scale-75"
+            aria-label={attribute.attribute_display_name}
           />
         </div>
       );
     }
 
     return (
-      <div className="flex items-center justify-between group">
+      <div className="group flex items-center justify-between gap-2">
         <span className="text-xs text-foreground truncate flex-1">
           {value || <span className="text-muted-foreground">--</span>}
         </span>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => handleStartEdit(key, rawValue)}
-          disabled={saving}
-          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <Pencil className="h-3 w-3" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                size="icon-xs"
+                variant="ghost"
+                onClick={() => handleStartEdit(key, rawValue)}
+                disabled={saving}
+                aria-label={`${tCa('actions.edit')}: ${attribute.attribute_display_name}`}
+                className="opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:opacity-100"
+              />
+            }
+          >
+            <Pencil />
+          </TooltipTrigger>
+          <TooltipPopup>{tCa('actions.edit')}</TooltipPopup>
+        </Tooltip>
       </div>
     );
   };
@@ -593,8 +546,13 @@ export default function CustomAttributesForm({
   if (mode === 'editable') {
     if (loading) {
       return (
-        <div className="text-center py-4">
-          <Loader2 className="h-4 w-4 animate-spin mx-auto text-muted-foreground" />
+        <div className="flex flex-col gap-3 py-1" aria-busy="true">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="flex flex-col gap-1.5">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+          ))}
         </div>
       );
     }
@@ -609,10 +567,10 @@ export default function CustomAttributesForm({
     }
 
     return (
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         {definedAttributes.map(attribute => (
-          <div key={attribute.attribute_key} className="space-y-1">
-            <Label className="text-xs text-muted-foreground">
+          <div key={attribute.attribute_key} className="flex flex-col gap-1">
+            <Label className="font-normal text-muted-foreground text-xs">
               {attribute.attribute_display_name}
             </Label>
             {renderEditableField(attribute)}
@@ -624,40 +582,37 @@ export default function CustomAttributesForm({
 
   // Form mode rendering
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       {loading && (
-        <div className="text-center py-4">
-          <div className="text-sm text-muted-foreground">{t('loading')}</div>
+        <div className="flex flex-col gap-3" aria-busy="true">
+          <span className="sr-only">{t('loading')}</span>
+          {[0, 1].map(i => (
+            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+          ))}
         </div>
       )}
 
       {/* Defined Custom Attributes */}
       {definedAttributes.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Settings className="h-4 w-4" />
-            <Label className="text-sm font-medium text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Settings className="size-4" />
+            <h4 className="font-medium text-sm">
               {t('sections.defined')}
-            </Label>
+            </h4>
           </div>
           <div className="space-y-3">
             {definedAttributes.map(attribute => (
               <Card key={attribute.attribute_key}>
-                <CardContent className="p-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm font-medium">
-                        {attribute.attribute_display_name}
-                      </Label>
-                      {attribute.attribute_description && (
-                        <span className="text-xs text-muted-foreground">
-                          - {attribute.attribute_description}
-                        </span>
-                      )}
-                    </div>
-                    {renderFormField(attribute)}
+                <CardPanel className="flex flex-col gap-2">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <Label htmlFor={fieldId(attribute.attribute_key)}>{attribute.attribute_display_name}</Label>
+                    {attribute.attribute_description && (
+                      <span className="text-muted-foreground text-xs">{attribute.attribute_description}</span>
+                    )}
                   </div>
-                </CardContent>
+                  {renderFormField(attribute)}
+                </CardPanel>
               </Card>
             ))}
           </div>
@@ -667,11 +622,11 @@ export default function CustomAttributesForm({
       {/* Ad-hoc Custom Attributes */}
       {adHocAttributes.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Plus className="h-4 w-4" />
-            <Label className="text-sm font-medium text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Plus className="size-4" />
+            <h4 className="font-medium text-sm">
               {t('sections.additional')}
-            </Label>
+            </h4>
           </div>
           <div className="space-y-3">
             {adHocAttributes.map(([key, value]) => {
@@ -680,12 +635,15 @@ export default function CustomAttributesForm({
 
               return (
                 <Card key={key}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 space-y-2">
-                        <Label className="text-sm font-medium">{key}</Label>
+                  <CardPanel>
+                    <div className="flex items-end gap-3">
+                      <div className="flex flex-1 flex-col gap-2">
+                        <Label htmlFor={fieldId(key)} className="font-mono">
+                          {key}
+                        </Label>
                         {isObject ? (
                           <Textarea
+                            id={fieldId(key)}
                             value={displayValue}
                             onChange={e => {
                               try {
@@ -703,6 +661,7 @@ export default function CustomAttributesForm({
                           />
                         ) : (
                           <Input
+                            id={fieldId(key)}
                             value={displayValue}
                             onChange={e => handleUpdateAttribute(key, e.target.value)}
                             placeholder={t('fields.attributeValue.placeholder')}
@@ -711,17 +670,25 @@ export default function CustomAttributesForm({
                         )}
                       </div>
                       {!disabled && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveAttribute(key)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveAttribute(key)}
+                                aria-label={`${tCa('actions.remove')}: ${key}`}
+                                className="text-destructive-foreground hover:bg-destructive/8"
+                              />
+                            }
+                          >
+                            <X />
+                          </TooltipTrigger>
+                          <TooltipPopup>{tCa('actions.remove')}</TooltipPopup>
+                        </Tooltip>
                       )}
                     </div>
-                  </CardContent>
+                  </CardPanel>
                 </Card>
               );
             })}
@@ -737,8 +704,8 @@ export default function CustomAttributesForm({
               <CardHeader>
                 <CardTitle className="text-sm">{t('sections.newAttribute')}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
+              <CardPanel className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="attribute-key">{t('fields.attributeKey.label')}</Label>
                   <Input
                     id="attribute-key"
@@ -747,7 +714,7 @@ export default function CustomAttributesForm({
                     placeholder={t('fields.attributeKey.placeholder')}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="attribute-value">{t('fields.attributeValue.label')}</Label>
                   <Input
                     id="attribute-value"
@@ -776,7 +743,7 @@ export default function CustomAttributesForm({
                     {t('actions.cancel')}
                   </Button>
                 </div>
-              </CardContent>
+              </CardPanel>
             </Card>
           ) : (
             <Button
@@ -785,7 +752,7 @@ export default function CustomAttributesForm({
               onClick={() => setShowAddForm(true)}
               className="border-dashed"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus />
               {t('actions.addAttribute')}
             </Button>
           )}
@@ -797,13 +764,15 @@ export default function CustomAttributesForm({
         attributeEntries.length === 0 &&
         !showAddForm &&
         !loading && (
-          <div className="text-center py-6 text-muted-foreground">
-            <Settings className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">{t('empty.title')}</p>
-            <p className="text-xs mt-1">
-              {!disabled ? t('empty.description') : t('empty.descriptionReadOnly')}
-            </p>
-          </div>
+          <Empty className="py-6">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Settings />
+              </EmptyMedia>
+              <EmptyTitle className="text-base">{t('empty.title')}</EmptyTitle>
+              <EmptyDescription>{!disabled ? t('empty.description') : t('empty.descriptionReadOnly')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         )}
     </div>
   );
