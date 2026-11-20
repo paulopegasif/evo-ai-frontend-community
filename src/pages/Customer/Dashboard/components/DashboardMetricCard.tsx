@@ -141,7 +141,7 @@ const DashboardMetricCard = ({
                 importance === 'primary' ? 'text-3xl' : 'text-2xl',
               )}
             >
-              {value}
+              {typeof value === 'number' ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : value}
             </span>
             {comparison && <DeltaBadge comparison={comparison} />}
             {status && <Badge variant={toneVariant[status.tone]}>{status.label}</Badge>}
