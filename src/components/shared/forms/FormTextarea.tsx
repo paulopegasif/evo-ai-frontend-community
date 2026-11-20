@@ -1,4 +1,5 @@
-import { Label, Textarea } from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
 
 interface FormTextareaProps {
   id: string;
@@ -22,22 +23,13 @@ export function FormTextarea({
   required = false,
 }: FormTextareaProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className={className}>
+    <Field>
+      <FieldLabel htmlFor={id} className={className}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
-      </Label>
-      <Textarea
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={className}
-      />
-      {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
-      )}
-    </div>
+        {required && <span className="text-destructive-foreground">*</span>}
+      </FieldLabel>
+      <Textarea id={id} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className={className} />
+      {description && <FieldDescription>{description}</FieldDescription>}
+    </Field>
   );
 }
-
