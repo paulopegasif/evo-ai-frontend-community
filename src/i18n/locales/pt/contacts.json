@@ -768,6 +768,10 @@
       "updateError": "Erro ao atualizar nota",
       "deleteSuccess": "Nota eliminada",
       "deleteError": "Erro ao eliminar nota"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar nota?",
+      "description": "Esta nota será eliminada permanentemente."
     }
   }
 }

@@ -1,6 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Badge } from '@/components/ui/compat';
-import { Pencil, Trash2, Package, Cloud } from 'lucide-react';
+import { Cloud, Package, Pencil, Trash2 } from 'lucide-react';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
+import { BaseTable, type TableAction, type TableColumn } from '@/components/base';
 import type { Product } from '@/types/products';
 import { stockInfo } from './productStock';
 
@@ -12,8 +13,8 @@ interface Props {
   onDelete: (product: Product) => void;
 }
 
-const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'outline'> = {
-  active: 'default',
+const STATUS_VARIANT: Record<string, NonNullable<BadgeProps['variant']>> = {
+  active: 'success',
   inactive: 'secondary',
   draft: 'outline',
 };
@@ -30,95 +31,85 @@ function formatPrice(value: number, currency: string) {
   }
 }
 
-export default function ProductsTable({
-  products,
-  canUpdate,
-  canDelete,
-  onEdit,
-  onDelete,
-}: Props) {
+export default function ProductsTable({ products, canUpdate, canDelete, onEdit, onDelete }: Props) {
   const { t } = useLanguage('products');
 
-  if (products.length === 0) {
-    return (
-      <div className="text-center text-sm text-muted-foreground py-10 border border-dashed rounded-md">
-        {t('table.empty')}
-      </div>
-    );
-  }
+  const columns: TableColumn<Product>[] = [
+    {
+      key: 'name',
+      label: t('table.columns.name'),
+      render: product => {
+        const Icon = product.kind === 'digital' ? Cloud : Package;
+        return (
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              <Icon className="size-4" />
+            </span>
+            <span className="truncate font-medium">{product.name}</span>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'sku',
+      label: t('table.columns.sku'),
+      className: 'hidden md:table-cell',
+      render: product => <span className="text-muted-foreground tabular-nums">{product.sku ?? '—'}</span>,
+    },
+    {
+      key: 'kind',
+      label: t('table.columns.kind'),
+      className: 'hidden lg:table-cell',
+      render: product => <Badge variant="outline">{t(`kind.${product.kind}`)}</Badge>,
+    },
+    {
+      key: 'price',
+      label: t('table.columns.price'),
+      align: 'right',
+      render: product => (
+        <span className="whitespace-nowrap font-medium tabular-nums">{formatPrice(product.default_price, product.currency)}</span>
+      ),
+    },
+    {
+      key: 'stock',
+      label: t('table.columns.stock'),
+      align: 'right',
+      render: product => {
+        const stock = stockInfo(product);
+        if (stock == null) return <span className="text-muted-foreground">—</span>;
+        if (stock === 0) return <Badge variant="error">{t('table.outOfStock')}</Badge>;
+        return <span className="tabular-nums">{stock}</span>;
+      },
+    },
+    {
+      key: 'status',
+      label: t('table.columns.status'),
+      render: product => (
+        <Badge variant={STATUS_VARIANT[product.status] ?? 'outline'}>{t(`status.${product.status}`)}</Badge>
+      ),
+    },
+    {
+      key: 'variants',
+      label: t('table.columns.variants'),
+      align: 'right',
+      className: 'hidden md:table-cell',
+      render: product => <span className="text-muted-foreground tabular-nums">{product.variants?.length ?? 0}</span>,
+    },
+  ];
+
+  const actions: TableAction<Product>[] = [
+    { label: t('actions.edit'), icon: <Pencil />, onClick: onEdit, show: () => canUpdate },
+    { label: t('actions.delete'), icon: <Trash2 />, onClick: onDelete, show: () => canDelete, variant: 'destructive' },
+  ];
 
   return (
-    <div className="border rounded-md overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-muted/40 text-left">
-          <tr>
-            <th className="px-3 py-2 w-10"></th>
-            <th className="px-3 py-2">{t('table.columns.name')}</th>
-            <th className="px-3 py-2">{t('table.columns.sku')}</th>
-            <th className="px-3 py-2">{t('table.columns.kind')}</th>
-            <th className="px-3 py-2">{t('table.columns.price')}</th>
-            <th className="px-3 py-2">{t('table.columns.stock')}</th>
-            <th className="px-3 py-2">{t('table.columns.status')}</th>
-            <th className="px-3 py-2">{t('table.columns.variants')}</th>
-            <th className="px-3 py-2 text-right">{t('table.columns.actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => {
-            const Icon = product.kind === 'digital' ? Cloud : Package;
-            const stock = stockInfo(product);
-            return (
-              <tr key={product.id} className="border-t hover:bg-muted/30">
-                <td className="px-3 py-2">
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                </td>
-                <td className="px-3 py-2 font-medium">{product.name}</td>
-                <td className="px-3 py-2 text-muted-foreground">{product.sku ?? '—'}</td>
-                <td className="px-3 py-2">{t(`kind.${product.kind}`)}</td>
-                <td className="px-3 py-2 font-mono text-xs">
-                  {formatPrice(product.default_price, product.currency)}
-                </td>
-                <td className="px-3 py-2">
-                  {stock == null ? (
-                    <span className="text-muted-foreground">—</span>
-                  ) : stock === 0 ? (
-                    <span className="text-destructive font-medium">{t('table.outOfStock')}</span>
-                  ) : (
-                    stock
-                  )}
-                </td>
-                <td className="px-3 py-2">
-                  <Badge variant={STATUS_VARIANT[product.status] ?? 'outline'}>
-                    {t(`status.${product.status}`)}
-                  </Badge>
-                </td>
-                <td className="px-3 py-2 text-muted-foreground">{product.variants?.length ?? 0}</td>
-                <td className="px-3 py-2 text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={!canUpdate}
-                    onClick={() => onEdit(product)}
-                    title={t('actions.edit')}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={!canDelete}
-                    onClick={() => onDelete(product)}
-                    title={t('actions.delete')}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <BaseTable<Product>
+      data={products}
+      columns={columns}
+      actions={actions}
+      emptyMessage={t('table.empty')}
+      getRowKey={product => String(product.id)}
+      getRowLabel={product => product.name}
+    />
   );
 }

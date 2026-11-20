@@ -1,24 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getContactColor } from '@/utils/avatar';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
-import { Search, User, Phone, Mail, MessageSquare } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { Check, Mail, MessageSquare, Phone, Search, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { initials } from './kanban/kanbanUtils';
 import { ConversationForModal, PipelineStage } from '@/types/analytics';
 import { pipelinesService } from '@/services/pipelines';
 import { toast } from 'sonner';
@@ -183,197 +186,198 @@ export default function AddItemModal({
   };
 
   const canAddItem = selectedStage && selectedItem;
+  const stageItems = stages.map(stage => ({ value: String(stage.id), label: stage.name }));
+  const typeItems = [
+    { value: 'conversation', label: t('addItem.itemTypes.conversation') },
+    { value: 'contact', label: t('addItem.itemTypes.contact') },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] min-h-[500px] flex flex-col">
+      <DialogPopup className="max-h-[85vh] max-w-xl">
         <DialogHeader>
           <DialogTitle>{t('addItem.title')}</DialogTitle>
           <DialogDescription>{t('addItem.description')}</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4 flex-1 overflow-y-auto">
-          {/* Stage Selection */}
-          <div className="grid gap-2">
-            <Label>{t('addItem.selectStage')}</Label>
-            <Select
-              value={selectedStage?.id.toString()}
-              onValueChange={value => {
-                const stage = stages.find(s => s.id.toString() === value);
-                setSelectedStage(stage || null);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('addItem.chooseStage')} />
-              </SelectTrigger>
-              <SelectContent>
-                {stages.map(stage => (
-                  <SelectItem key={stage.id} value={stage.id.toString()}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: stage.color }}
-                      />
-                      {stage.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <DialogPanel className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field>
+              <FieldLabel>{t('addItem.selectStage')}</FieldLabel>
+              <Select
+                items={stageItems}
+                value={selectedStage ? String(selectedStage.id) : null}
+                onValueChange={value => {
+                  const stage = stages.find(s => String(s.id) === value);
+                  setSelectedStage(stage || null);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('addItem.chooseStage')} />
+                </SelectTrigger>
+                <SelectPopup>
+                  {stages.map(stage => (
+                    <SelectItem key={stage.id} value={String(stage.id)}>
+                      <span className="flex items-center gap-2">
+                        <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
+                        {stage.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </Field>
+
+            <Field>
+              <FieldLabel>{t('addItem.itemType')}</FieldLabel>
+              <Select
+                items={typeItems}
+                value={itemType}
+                onValueChange={value => {
+                  if (!value) return;
+                  setAvailableItems([]);
+                  setItemType(value as 'conversation' | 'contact');
+                  setSelectedItem(null);
+                  setSearchQuery('');
+                  setNotes('');
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('addItem.chooseItemType')} />
+                </SelectTrigger>
+                <SelectPopup>
+                  {typeItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </Field>
           </div>
 
-          {/* Item Type Selection */}
-          <div className="grid gap-2">
-            <Label>{t('addItem.itemType')}</Label>
-            <Select
-              value={itemType}
-              onValueChange={(value: 'conversation' | 'contact') => {
-                setAvailableItems([]);
-                setItemType(value);
-                setSelectedItem(null);
-                setSearchQuery('');
-                setNotes('');
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('addItem.chooseItemType')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="conversation">{t('addItem.itemTypes.conversation')}</SelectItem>
-                <SelectItem value="contact">{t('addItem.itemTypes.contact')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Search */}
-          <div className="grid gap-2">
-            <Label>{t('addItem.searchItems')}</Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
+          <Field>
+            <FieldLabel>{t('addItem.availableItems')}</FieldLabel>
+            <InputGroup>
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
+                aria-label={t('addItem.searchItems')}
                 placeholder={t('addItem.searchPlaceholder')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="pl-9"
               />
-            </div>
-          </div>
-
-          {/* Items List */}
-          <div className="grid gap-2">
-            <Label>{t('addItem.availableItems')}</Label>
-            <div className="border rounded-lg h-48 overflow-y-auto">
+            </InputGroup>
+            <div className="h-56 w-full overflow-y-auto rounded-lg border" role="listbox" aria-label={t('addItem.availableItems')}>
               {isLoadingItems ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
-                </div>
-              ) : availableItems.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  <div className="text-center">
-                    <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">
-                      {searchQuery ? t('addItem.noItemsFound') : t('addItem.noItemsAvailable')}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-2 space-y-2">
-                  {availableItems.map(item => (
-                    <div
-                      key={item.id}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedItem?.id === item.id
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:bg-muted/50'
-                      }`}
-                      onClick={() => handleItemSelect(item)}
-                    >
-                      <div className="flex items-start gap-3">
-                        {/* Avatar */}
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                          style={{ backgroundColor: getContactColor(getItemDisplayName(item)) }}
-                        >
-                          {getItemDisplayName(item)[0]?.toUpperCase() || 'U'}
-                        </div>
-
-                        {/* Item Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="text-sm font-semibold truncate">
-                              {getItemDisplayName(item)}
-                            </h4>
-                            {item.display_id && (
-                              <span className="text-xs text-muted-foreground">
-                                {item.display_id}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Contact Details */}
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                            {(item.email || item.contact?.email) && (
-                              <div className="flex items-center gap-1">
-                                <Mail className="w-3 h-3" />
-                                <span className="truncate max-w-32">
-                                  {item.email || item.contact?.email}
-                                </span>
-                              </div>
-                            )}
-                            {(item.phone_number || item.contact?.phone_number) && (
-                              <div className="flex items-center gap-1">
-                                <Phone className="w-3 h-3" />
-                                <span>{item.phone_number || item.contact?.phone_number}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Last Message (for conversations) */}
-                          {itemType === 'conversation' && item.last_message && (
-                            <p className="text-xs text-muted-foreground line-clamp-1">
-                              {item.last_message.content}
-                            </p>
-                          )}
-
-                          {/* Assignee (for conversations) */}
-                          {itemType === 'conversation' && item.assignee && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <User className="w-3 h-3 text-muted-foreground" />
-                              <span className="text-xs text-muted-foreground">
-                                {item.assignee.name}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                <div className="flex flex-col gap-1 p-1.5">
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-2">
+                      <Skeleton className="size-8 rounded-full" />
+                      <div className="flex flex-1 flex-col gap-1.5">
+                        <Skeleton className="h-3.5 w-1/2" />
+                        <Skeleton className="h-3 w-3/4" />
                       </div>
                     </div>
                   ))}
                 </div>
+              ) : availableItems.length === 0 ? (
+                <Empty className="h-full p-4">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <MessageSquare />
+                    </EmptyMedia>
+                    <EmptyDescription>
+                      {searchQuery ? t('addItem.noItemsFound') : t('addItem.noItemsAvailable')}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              ) : (
+                <div className="flex flex-col gap-0.5 p-1.5">
+                  {availableItems.map(item => {
+                    const name = getItemDisplayName(item);
+                    const email = item.email || item.contact?.email;
+                    const phone = item.phone_number || item.contact?.phone_number;
+                    const selected = selectedItem?.id === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        onClick={() => handleItemSelect(item)}
+                        className={cn(
+                          'flex w-full items-start gap-3 rounded-md p-2 text-left outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
+                          selected && 'bg-primary/8 ring-1 ring-primary/32 hover:bg-primary/8',
+                        )}
+                      >
+                        <Avatar className="size-8 text-xs">
+                          <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(name) }}>
+                            {initials(name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-2">
+                            <span className="truncate font-medium text-sm">{name}</span>
+                            {item.display_id && (
+                              <span className="shrink-0 text-muted-foreground text-xs tabular-nums">#{item.display_id}</span>
+                            )}
+                          </span>
+                          {(email || phone) && (
+                            <span className="mt-0.5 flex items-center gap-3 text-muted-foreground text-xs">
+                              {email && (
+                                <span className="flex min-w-0 items-center gap-1">
+                                  <Mail className="size-3 shrink-0" />
+                                  <span className="truncate">{email}</span>
+                                </span>
+                              )}
+                              {phone && (
+                                <span className="flex shrink-0 items-center gap-1 tabular-nums">
+                                  <Phone className="size-3" />
+                                  {phone}
+                                </span>
+                              )}
+                            </span>
+                          )}
+                          {itemType === 'conversation' && item.last_message && (
+                            <span className="mt-0.5 line-clamp-1 text-muted-foreground text-xs">{item.last_message.content}</span>
+                          )}
+                          {itemType === 'conversation' && item.assignee && (
+                            <span className="mt-0.5 flex items-center gap-1 text-muted-foreground text-xs">
+                              <User className="size-3" />
+                              {item.assignee.name}
+                            </span>
+                          )}
+                        </span>
+                        {selected && <Check className="mt-1 size-4 shrink-0 text-primary" />}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
-          </div>
+          </Field>
 
-          {/* Notes */}
-          <div className="grid gap-2">
-            <Label>{t('addItem.notes')}</Label>
+          <Field>
+            <FieldLabel>{t('addItem.notes')}</FieldLabel>
             <Textarea
               placeholder={t('addItem.notesPlaceholder')}
               value={notes}
               onChange={e => setNotes(e.target.value)}
               rows={3}
             />
-          </div>
-        </div>
+          </Field>
+        </DialogPanel>
 
-        <DialogFooter className="flex-shrink-0 mt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
-            {t('addItem.cancel')}
-          </Button>
-          <Button onClick={handleAddItem} disabled={!canAddItem || isAdding}>
-            {isAdding ? t('addItem.adding') : t('addItem.add')}
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost" disabled={isAdding} />}>{t('addItem.cancel')}</DialogClose>
+          <Button onClick={handleAddItem} disabled={!canAddItem} loading={isAdding}>
+            {t('addItem.add')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

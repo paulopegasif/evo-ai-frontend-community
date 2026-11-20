@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { PipelineStage as BasePipelineStage } from '@/types/analytics';
 
@@ -109,111 +112,75 @@ export default function ReorderStagesModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[80vh] overflow-hidden">
+      <DialogPopup className="max-h-[85vh] max-w-md">
         <DialogHeader>
           <DialogTitle>{t('reorderStages.title')}</DialogTitle>
-          <DialogDescription>
-            {t('reorderStages.description')}
-          </DialogDescription>
+          <DialogDescription>{t('reorderStages.description')}</DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 overflow-y-auto max-h-[60vh]">
-          <div className="space-y-2">
-            {orderedStages.map((stage, index) => (
-              <div
-                key={stage.id}
-                className={`group p-3 bg-background border border-border rounded-lg transition-all duration-200 ${
-                  draggedIndex === index ? 'opacity-50 scale-95' : 'hover:border-primary/30'
-                }`}
-                draggable
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, index)}
-              >
-                <div className="flex items-center space-x-3">
-                  {/* Position Number */}
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-muted-foreground">
-                    {index + 1}
-                  </div>
-
-                  {/* Stage Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: stage.color }}
-                      />
-                      <h4 className="text-sm font-medium text-foreground truncate">
-                        {stage.name}
-                      </h4>
-                    </div>
-                    {stage.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-1">
-                        {stage.description}
-                      </p>
+        <DialogPanel>
+          {orderedStages.length === 0 ? (
+            <p className="py-8 text-center text-muted-foreground text-sm">{t('reorderStages.noStages')}</p>
+          ) : (
+            <ol className="flex flex-col gap-1.5">
+              {orderedStages.map((stage, index) => {
+                const count = stage.conversations?.length || 0;
+                return (
+                  <li
+                    key={stage.id}
+                    className={cn(
+                      'group flex cursor-grab items-center gap-3 rounded-lg border bg-card px-2.5 py-2 transition-[opacity,border-color] hover:border-ring/40 active:cursor-grabbing',
+                      draggedIndex === index && 'opacity-48',
                     )}
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {t('reorderStages.conversationsCount', { count: stage.conversations?.length || 0, plural: (stage.conversations?.length || 0) !== 1 ? 's' : '' })}
+                    draggable
+                    onDragStart={e => handleDragStart(e, index)}
+                    onDragOver={handleDragOver}
+                    onDrop={e => handleDrop(e, index)}
+                  >
+                    <GripVertical className="size-4 shrink-0 text-muted-foreground/72" aria-hidden="true" />
+                    <span className="w-5 shrink-0 text-center text-muted-foreground text-xs tabular-nums">{index + 1}</span>
+                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-medium text-sm">{stage.name}</div>
+                      <div className="truncate text-muted-foreground text-xs">
+                        {stage.description ? `${stage.description} · ` : ''}
+                        {t('reorderStages.conversationsCount', { count, plural: count !== 1 ? 's' : '' })}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Controls */}
-                  <div className="flex items-center space-x-1">
-                    {/* Move Up */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => moveStage(index, 'up')}
-                      disabled={index === 0}
-                    >
-                      <ArrowUp className="w-4 h-4" />
-                    </Button>
-
-                    {/* Move Down */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => moveStage(index, 'down')}
-                      disabled={index === orderedStages.length - 1}
-                    >
-                      <ArrowDown className="w-4 h-4" />
-                    </Button>
-
-                    {/* Drag Handle */}
-                    <div className="cursor-grab active:cursor-grabbing p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <GripVertical className="w-4 h-4 text-muted-foreground" />
+                    <div className="flex shrink-0 items-center">
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => moveStage(index, 'up')}
+                        disabled={index === 0}
+                        aria-label={t('reorderStages.moveUp')}
+                      >
+                        <ArrowUp />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => moveStage(index, 'down')}
+                        disabled={index === orderedStages.length - 1}
+                        aria-label={t('reorderStages.moveDown')}
+                      >
+                        <ArrowDown />
+                      </Button>
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {orderedStages.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              <p className="text-sm">{t('reorderStages.noStages')}</p>
-            </div>
+                  </li>
+                );
+              })}
+            </ol>
           )}
-        </div>
+        </DialogPanel>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            {t('reorderStages.cancel')}
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!hasChanges || loading}
-          >
-            {loading ? t('reorderStages.saving') : t('reorderStages.save')}
+          <DialogClose render={<Button variant="ghost" disabled={loading} />}>{t('reorderStages.cancel')}</DialogClose>
+          <Button onClick={handleSubmit} disabled={!hasChanges} loading={loading}>
+            {t('reorderStages.save')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

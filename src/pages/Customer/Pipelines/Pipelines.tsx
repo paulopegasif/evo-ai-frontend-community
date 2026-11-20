@@ -265,7 +265,7 @@ export default function Pipelines() {
     : state.pipelines;
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col gap-4 p-4 md:gap-6 md:p-6">
       <PipelinesTour />
       <div data-tour="pipelines-header">
         <PipelinesHeader
@@ -279,7 +279,7 @@ export default function Pipelines() {
 
       {/* Content — list only (the mockup has no card/grid mode). BaseTable renders
           its own loading + empty states, matching the Contacts screen. */}
-      <div className="flex-1 overflow-auto mt-4" data-tour="pipelines-list">
+      <div className="min-h-0 flex-1 overflow-auto" data-tour="pipelines-list">
         <PipelinesTable
           pipelines={filteredPipelines}
           loading={state.loading.list}

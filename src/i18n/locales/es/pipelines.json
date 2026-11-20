@@ -290,7 +290,8 @@
     "saving": "Guardando...",
     "save": "Guardar Cambios",
     "scheduleAction": "Programar acción",
-    "stageLabel": "Etapa:"
+    "stageLabel": "Etapa:",
+    "removeService": "Quitar servicio"
   },
   "editConversation": {
     "title": "Editar Conversación en el Pipeline",
@@ -565,7 +566,9 @@
     "noStages": "Ninguna etapa encontrada para reordenar.",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "save": "Guardar Orden"
+    "save": "Guardar Orden",
+    "moveUp": "Mover hacia arriba",
+    "moveDown": "Mover hacia abajo"
   },
   "kanban": {
     "search": {

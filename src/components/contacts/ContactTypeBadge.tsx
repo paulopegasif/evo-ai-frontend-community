@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { User, Building2, Users, LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -7,11 +7,11 @@ interface ContactTypeBadgeProps {
   className?: string;
 }
 
-type BadgeVariant = 'secondary' | 'default' | 'outline';
+type BadgeVariant = 'secondary' | 'info' | 'outline';
 
 const TYPE_CONFIG: Record<string, { icon: LucideIcon; variant: BadgeVariant; labelKey: string }> = {
   person:  { icon: User,      variant: 'secondary', labelKey: 'type.person' },
-  company: { icon: Building2, variant: 'default',   labelKey: 'type.company' },
+  company: { icon: Building2, variant: 'info',      labelKey: 'type.company' },
   group:   { icon: Users,     variant: 'outline',   labelKey: 'type.group' },
 };
 
@@ -22,7 +22,7 @@ export default function ContactTypeBadge({ type, className = '' }: ContactTypeBa
 
   return (
     <Badge variant={config.variant} className={`gap-1 ${className}`}>
-      <Icon className="h-3 w-3" />
+      <Icon />
       {t(config.labelKey)}
     </Badge>
   );

@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Button, Card, CardContent } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { Edit, Lock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
 import { unixTimestampToIso } from '@/utils/chat/contactTimestamp';
-import ContactStatusBadge from './ContactStatusBadge';
 import ContactForm from './ContactForm';
 import ContactTagsList from './ContactTagsList';
-import ContactAvatar from '@/components/chat/contact/ContactAvatar';
 import type { Contact, ContactFormData } from '@/types/contacts';
 
 interface ContactDetailsCardProps {
@@ -48,15 +47,15 @@ interface FieldRowProps {
 
 function FieldRow({ label, value, masked, protectedTitle }: FieldRowProps) {
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-border/50 last:border-b-0">
-      <span className="shrink-0 basis-[170px] text-sm text-muted-foreground">{label}</span>
-      <span
-        className="flex items-center gap-1.5 min-w-0 flex-1 text-[13.5px] font-medium text-foreground truncate"
+    <div className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)] items-baseline gap-3 py-2">
+      <dt className="text-muted-foreground text-sm">{label}</dt>
+      <dd
+        className={`flex min-w-0 items-center gap-1.5 text-sm ${value ? 'text-foreground' : 'text-muted-foreground/72'}`}
         title={protectedTitle}
       >
-        {masked && <Lock className="h-3 w-3 shrink-0 text-muted-foreground" aria-label={protectedTitle} />}
-        {value || '—'}
-      </span>
+        {masked && <Lock className="size-3 shrink-0 text-muted-foreground" aria-label={protectedTitle} />}
+        <span className="min-w-0 break-words">{value || '—'}</span>
+      </dd>
     </div>
   );
 }
@@ -78,7 +77,7 @@ export default function ContactDetailsCard({
   if (isNew || isEditing) {
     return (
       <Card>
-        <CardContent className="p-5">
+        <CardPanel>
           <ContactForm
             contact={isNew ? undefined : contact}
             isNew={isNew}
@@ -89,7 +88,7 @@ export default function ContactDetailsCard({
             }}
             onCancel={isNew ? onCancelNew : () => setIsEditing(false)}
           />
-        </CardContent>
+        </CardPanel>
       </Card>
     );
   }
@@ -101,27 +100,21 @@ export default function ContactDetailsCard({
   const isPerson = contact.type === 'person';
   const linkedCompanyName = isPerson ? contact.companies?.[0]?.name : undefined;
   const socialProfiles = contact.additional_attributes?.social_profiles;
+  const filledSocial = SOCIAL_KEYS.filter(key => socialProfiles?.[key]);
 
   return (
     <Card>
-      <CardContent className="p-5">
-        <div className="flex items-start gap-4 mb-4">
-          <ContactAvatar contact={contact} size="lg" showColoredFallback />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-semibold truncate">{contact.name}</h2>
-            </div>
-            <div className="mt-1">
-              <ContactStatusBadge blocked={contact.blocked} />
-            </div>
-          </div>
+      <CardHeader>
+        <CardTitle className="text-base">{t('details.sections.basicInfo')}</CardTitle>
+        <CardAction>
           <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-            <Edit className="h-4 w-4 mr-2" />
+            <Edit />
             {t('details.actions.edit')}
           </Button>
-        </div>
-
-        <div className="flex flex-col">
+        </CardAction>
+      </CardHeader>
+      <CardPanel className="flex flex-col gap-5">
+        <dl className="-my-2 flex flex-col divide-y">
           <FieldRow label={t('details.fields.name')} value={contact.name} />
           <FieldRow label={t('details.fields.taxId')} value={contact.tax_id} />
           <FieldRow
@@ -139,35 +132,34 @@ export default function ContactDetailsCard({
           <FieldRow label={t('details.fields.city')} value={contact.additional_attributes?.city} />
           <FieldRow label={t('details.fields.country')} value={contact.additional_attributes?.country} />
           <FieldRow label={t('details.fields.company')} value={linkedCompanyName} />
-          <FieldRow
-            label={t('details.sections.description')}
-            value={contact.additional_attributes?.description}
-          />
+          <FieldRow label={t('details.sections.description')} value={contact.additional_attributes?.description} />
           <FieldRow label={t('details.fields.createdAt')} value={formatDate(contact.created_at)} />
-        </div>
+        </dl>
 
-        <div className="mt-4 pt-4 border-t border-border/50">
-          <h3 className="text-sm font-semibold mb-2">{t('form.sections.labels')}</h3>
+        <section className="flex flex-col gap-2 border-t pt-4">
+          <h3 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">{t('form.sections.labels')}</h3>
           {contact.labels && contact.labels.length > 0 ? (
             <ContactTagsList labels={contact.labels} maxVisible={contact.labels.length} size="sm" />
           ) : (
-            <span className="text-[13.5px] text-muted-foreground">—</span>
+            <span className="text-muted-foreground/72 text-sm">—</span>
           )}
-        </div>
+        </section>
 
-        <div className="mt-4 pt-4 border-t border-border/50">
-          <h3 className="text-sm font-semibold mb-2">{t('details.sections.socialProfiles')}</h3>
-          <div className="flex flex-col">
-            {SOCIAL_KEYS.map(key => (
-              <FieldRow
-                key={key}
-                label={t(`form.fields.social.${key}.label`)}
-                value={socialProfiles?.[key]}
-              />
-            ))}
-          </div>
-        </div>
-      </CardContent>
+        <section className="flex flex-col gap-1 border-t pt-4">
+          <h3 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+            {t('details.sections.socialProfiles')}
+          </h3>
+          {filledSocial.length === 0 ? (
+            <span className="text-muted-foreground/72 text-sm">—</span>
+          ) : (
+            <dl className="flex flex-col">
+              {filledSocial.map(key => (
+                <FieldRow key={key} label={t(`form.fields.social.${key}.label`)} value={socialProfiles?.[key]} />
+              ))}
+            </dl>
+          )}
+        </section>
+      </CardPanel>
     </Card>
   );
 }

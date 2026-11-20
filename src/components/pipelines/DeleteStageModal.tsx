@@ -1,14 +1,7 @@
+import { TriangleAlert } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
-import { AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { PipelineStage } from '@/types/analytics';
 
 interface DeleteStageModalProps {
@@ -35,100 +28,56 @@ export default function DeleteStageModal({
   const hasConversations = itemCount > 0;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-destructive" />
-            </div>
-            <div>
-              <DialogTitle>{t('deleteStage.title')}</DialogTitle>
-              <DialogDescription className="mt-1">
-                {t('deleteStage.description')}
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
-
-        <div className="py-4">
-          <p className="text-sm text-muted-foreground mb-4">
-            {t('deleteStage.confirmMessage')}{' '}
-            <span className="font-medium text-foreground">"{stage.name}"</span>?
-          </p>
-          
-          {/* Stage Preview */}
-          <div className="p-3 bg-muted/50 rounded-lg border border-border mb-4">
-            <div className="flex items-center space-x-3">
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: stage.color }}
-              />
-              <div>
-                <h4 className="text-sm font-medium text-foreground">
-                  {stage.name}
-                </h4>
-                {stage.description && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {stage.description}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Warning about conversations */}
-          {hasConversations ? (
-            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-              <div className="flex items-start space-x-2">
-                <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
-                <div className="text-sm">
-                  <p className="font-medium text-destructive mb-1">
-                    {t('deleteStage.warningTitle')}
-                  </p>
-                  <p className="text-destructive/80">
-                    {t('deleteStage.warningMessage', { count: itemCount, plural: itemCount !== 1 ? 's' : '', pronoun: itemCount !== 1 ? 'elas' : 'ela', verb: itemCount !== 1 ? 'ão' : '', removed: itemCount !== 1 ? 's' : '' })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-3 bg-muted/50 rounded-lg border border-border">
-              <p className="text-sm text-muted-foreground">
-                {t('deleteStage.safeToDelete')}
-              </p>
-            </div>
-          )}
-
-          <div className="mt-4 text-sm text-muted-foreground">
-            <strong>{t('deleteStage.importantLabel')}</strong> {t('deleteStage.deletionWillLabel')}
-            <ul className="list-disc list-inside mt-2 space-y-1">
-              <li>{t('deleteStage.deletionWill.removeStage')}</li>
-              {hasConversations && (
-                <li>{t('deleteStage.deletionWill.removeConversations')}</li>
-              )}
-              <li>{t('deleteStage.deletionWill.reorderStages')}</li>
-            </ul>
+    <ConfirmDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('deleteStage.title')}
+      description={
+        <>
+          {t('deleteStage.confirmMessage')} <span className="font-medium text-foreground">"{stage.name}"</span>?{' '}
+          {t('deleteStage.description')}
+        </>
+      }
+      cancelLabel={t('deleteStage.cancel')}
+      confirmLabel={t('deleteStage.delete')}
+      onConfirm={onConfirm}
+      loading={loading}
+    >
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2.5 rounded-lg border bg-muted/48 px-3 py-2">
+          <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
+          <div className="min-w-0">
+            <div className="truncate font-medium text-sm">{stage.name}</div>
+            {stage.description && <div className="truncate text-muted-foreground text-xs">{stage.description}</div>}
           </div>
         </div>
 
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            {t('deleteStage.cancel')}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={loading}
-          >
-            {loading ? t('deleteStage.deleting') : t('deleteStage.delete')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        {hasConversations ? (
+          <Alert variant="error">
+            <TriangleAlert />
+            <AlertTitle>{t('deleteStage.warningTitle')}</AlertTitle>
+            <AlertDescription>
+              {t('deleteStage.warningMessage', {
+                count: itemCount,
+                plural: itemCount !== 1 ? 's' : '',
+                pronoun: itemCount !== 1 ? 'elas' : 'ela',
+                verbPlural: itemCount !== 1 ? 'ão' : '',
+              })}
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <p className="text-muted-foreground text-sm">{t('deleteStage.safeToDelete')}</p>
+        )}
+
+        <div className="text-muted-foreground text-sm">
+          <span className="font-medium text-foreground">{t('deleteStage.important')}</span>
+          <ul className="mt-1 list-inside list-disc space-y-0.5">
+            <li>{t('deleteStage.effects.remove')}</li>
+            {hasConversations && <li>{t('deleteStage.effects.removeConversations')}</li>}
+            <li>{t('deleteStage.effects.reorder')}</li>
+          </ul>
+        </div>
+      </div>
+    </ConfirmDialog>
   );
 }
