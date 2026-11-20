@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Button, Input } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import ChannelsService from '@/services/channels/channelsService';
 import { toast } from 'sonner';
@@ -313,9 +315,9 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
       <div className="space-y-6" data-tour="facebook-connect">
         {/* Configuration Check */}
         {!isFacebookConfigured && (
-          <div className="flex items-start gap-3 p-4 rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20">
+          <div className="flex items-start gap-3 p-4 rounded-lg border border-warning/24 bg-warning/8">
             <svg
-              className="w-5 h-5 text-yellow-600 mt-0.5"
+              className="w-5 h-5 text-warning-foreground mt-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -328,10 +330,10 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
               />
             </svg>
             <div>
-              <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
+              <h4 className="font-medium text-warning-foreground">
                 {t('errors.facebookNotConfigured')}
               </h4>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+              <p className="text-sm text-warning-foreground mt-1">
                 {t('errors.facebookConfigMessage')}
               </p>
             </div>
@@ -341,8 +343,8 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
         {/* Connection Info */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
-            <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20">
-              <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+            <div className="p-3 rounded-lg bg-info/8">
+              <svg className="w-8 h-8 text-info-foreground" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </div>
@@ -390,11 +392,11 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
       {/* Error State */}
       {hasError && (
         <div className="text-center space-y-4">
-          <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="font-medium text-red-800 dark:text-red-200 mb-2">
+          <div className="p-4 bg-destructive/8 border border-destructive/24 rounded-lg">
+            <h4 className="font-medium text-destructive-foreground mb-2">
               {t('errors.connectionError')}
             </h4>
-            <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
+            <p className="text-sm text-destructive-foreground">{errorMessage}</p>
             <Button variant="outline" size="sm" className="mt-3" onClick={handleRetry}>
               {t('tryAgain')}
             </Button>
@@ -406,7 +408,7 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
       {isLoading && !hasError && (
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
-            <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            <Spinner className="size-6 text-primary" />
             <span className="text-foreground">{loadingMessage}</span>
           </div>
         </div>
@@ -418,9 +420,9 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
           {/* Page Selection */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 pb-3 border-b border-border">
-              <div className="p-2 rounded-lg bg-green-50 dark:bg-green-950/20">
+              <div className="p-2 rounded-lg bg-success/8">
                 <svg
-                  className="w-5 h-5 text-green-600"
+                  className="w-5 h-5 text-success-foreground"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -474,9 +476,9 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
           {/* Channel Configuration */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 pb-3 border-b border-border">
-              <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/20">
+              <div className="p-2 rounded-lg bg-info/8">
                 <svg
-                  className="w-5 h-5 text-blue-600"
+                  className="w-5 h-5 text-info-foreground"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -510,7 +512,7 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
                 value={inboxName}
                 onChange={e => setInboxName(e.target.value)}
                 placeholder={t('channelNamePlaceholder', { platform: 'Messenger' })}
-                className="h-11"
+                size="lg"
               />
             </div>
           </div>
@@ -523,10 +525,10 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
               </Button>
               <Button onClick={handleCreate} disabled={!canProceed || isLoading} className="min-w-32">
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <>
+                    <Spinner />
                     {t('creating')}
-                  </div>
+                  </>
                 ) : (
                   t('createChannel')
                 )}
@@ -539,11 +541,11 @@ export default function FacebookChannelForm({ onSuccess, onCancel }: FacebookCha
       {/* No Pages Available */}
       {!isLoading && !hasError && pages.length === 0 && hasLoginStarted && (
         <div className="text-center space-y-4">
-          <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+          <div className="p-4 bg-warning/8 border border-warning/24 rounded-lg">
+            <h4 className="font-medium text-warning-foreground mb-2">
               {t('errors.noPagesAvailable')}
             </h4>
-            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+            <p className="text-sm text-warning-foreground">
               {t('errors.noPagesAvailableMessage')}
             </p>
           </div>

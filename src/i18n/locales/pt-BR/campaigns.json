@@ -1,7 +1,7 @@
 {
   "title": "Campanhas",
   "card": {
-    "contacts": "Contactos",
+    "contacts": "Contatos",
     "scheduledFor": "Agendado para",
     "sent": "Enviados",
     "deliveryRate": "Taxa de Entrega",
@@ -17,32 +17,32 @@
       "viewStats": "Ver estatísticas",
       "duplicate": "Duplicar",
       "edit": "Editar campanha",
-      "delete": "Eliminar campanha"
+      "delete": "Excluir campanha"
     }
   },
   "header": {
     "title": "Campanhas",
-    "subtitle": "Gerir as suas campanhas de mensagens em massa",
-    "searchPlaceholder": "Pesquisar campanhas...",
+    "subtitle": "Gerencie suas campanhas de mensagens em massa",
+    "searchPlaceholder": "Buscar campanhas...",
     "newCampaign": "Nova Campanha",
     "bulkPause": "Pausar Selecionadas",
     "bulkResume": "Retomar Selecionadas",
     "bulkDuplicate": "Duplicar Selecionadas",
-    "bulkDelete": "Eliminar Selecionadas"
+    "bulkDelete": "Excluir Selecionadas"
   },
   "empty": {
     "title": "Nenhuma campanha encontrada",
-    "description": "Crie uma nova campanha para começar a enviar mensagens em massa para os seus contactos.",
+    "description": "Crie uma nova campanha para começar a enviar mensagens em massa para seus contatos.",
     "action": "Nova Campanha"
   },
   "loading": {
-    "campaigns": "A carregar campanhas...",
-    "creating": "A criar...",
-    "updating": "A atualizar...",
-    "deleting": "A eliminar...",
-    "scheduling": "A agendar...",
-    "pausing": "A pausar...",
-    "resuming": "A retomar..."
+    "campaigns": "Carregando campanhas...",
+    "creating": "Criando...",
+    "updating": "Atualizando...",
+    "deleting": "Excluindo...",
+    "scheduling": "Agendando...",
+    "pausing": "Pausando...",
+    "resuming": "Retomando..."
   },
   "messages": {
     "loadError": "Erro ao carregar campanhas",
@@ -50,8 +50,8 @@
     "createError": "Erro ao criar campanha",
     "updateSuccess": "Campanha atualizada com sucesso",
     "updateError": "Erro ao atualizar campanha",
-    "deleteSuccess": "Campanha eliminada com sucesso",
-    "deleteError": "Erro ao eliminar campanha",
+    "deleteSuccess": "Campanha excluída com sucesso",
+    "deleteError": "Erro ao excluir campanha",
     "pauseSuccess": "Campanha pausada com sucesso",
     "pauseError": "Erro ao pausar campanha",
     "startSuccess": "Campanha iniciada com sucesso",
@@ -62,14 +62,14 @@
     "stopError": "Erro ao cancelar campanha",
     "duplicateSuccess": "Campanha duplicada com sucesso",
     "duplicateError": "Erro ao duplicar campanha",
-    "bulkDeleteSuccess": "{{count}} campanha(s) eliminada(s) com sucesso",
-    "bulkDeleteError": "Erro ao eliminar campanhas",
+    "bulkDeleteSuccess": "{{count}} campanha(s) excluída(s) com sucesso",
+    "bulkDeleteError": "Erro ao excluir campanhas",
     "bulkPauseSuccess": "{{count}} campanha(s) pausada(s) com sucesso",
     "bulkPauseError": "Erro ao pausar campanhas",
     "bulkResumeSuccess": "{{count}} campanha(s) retomada(s) com sucesso",
     "bulkResumeError": "Erro ao retomar campanhas",
     "detailsError": "Erro ao carregar detalhes da campanha",
-    "noPermissionToCreate": "Não tem permissão para criar campanhas",
+    "noPermissionToCreate": "Você não tem permissão para criar campanhas",
     "editInDevelopment": "Edição de campanhas em desenvolvimento",
     "statsInDevelopment": "Estatísticas de campanhas em desenvolvimento",
     "statsError": "Erro ao carregar estatísticas da campanha",
@@ -80,18 +80,18 @@
   },
   "dialog": {
     "deleteCampaign": {
-      "title": "Eliminar Campanha",
-      "description": "Tem a certeza de que deseja eliminar a campanha \"{{name}}\"? Esta ação não pode ser revertida.",
-      "confirm": "Eliminar",
+      "title": "Excluir Campanha",
+      "description": "Tem certeza de que deseja excluir a campanha \"{{name}}\"? Esta ação não pode ser revertida.",
+      "confirm": "Excluir",
       "cancel": "Cancelar",
-      "deleting": "A eliminar..."
+      "deleting": "Excluindo..."
     },
     "bulkDelete": {
-      "title": "Eliminar Campanhas",
-      "description": "Tem a certeza de que deseja eliminar {{count}} campanha(s) selecionada(s)? Esta ação não pode ser revertida.",
-      "confirm": "Eliminar Todas",
+      "title": "Excluir Campanhas",
+      "description": "Tem certeza de que deseja excluir {{count}} campanha(s) selecionada(s)? Esta ação não pode ser revertida.",
+      "confirm": "Excluir Todas",
       "cancel": "Cancelar",
-      "deleting": "A eliminar..."
+      "deleting": "Excluindo..."
     },
     "editCampaign": {
       "title": "Editar Campanha",
@@ -142,7 +142,7 @@
   "status": {
     "draft": "Rascunho",
     "scheduled": "Agendada",
-    "sending": "A enviar",
+    "sending": "Enviando",
     "paused": "Pausada",
     "stopped": "Parada",
     "completed": "Concluída",
@@ -161,10 +161,10 @@
   "table": {
     "columns": {
       "name": "Campanha",
-      "status": "Estado",
-      "contacts": "Contactos",
+      "status": "Status",
+      "contacts": "Contatos",
       "delivery": "Entrega",
-      "engagement": "Envolvimento",
+      "engagement": "Engajamento",
       "created": "Criado",
       "quickActions": "Ações rápidas"
     },
@@ -175,7 +175,7 @@
     "empty": {
       "noResults": "Nenhuma campanha encontrada",
       "title": "Nenhuma campanha encontrada",
-      "description": "Crie uma nova campanha para começar a enviar mensagens em massa para os seus contactos."
+      "description": "Crie uma nova campanha para começar a enviar mensagens em massa para seus contatos."
     }
   },
   "wizard": {
@@ -197,14 +197,20 @@
       "contactSelectionRequired": "Selecione uma opção",
       "scheduleOptionRequired": "Selecione uma opção",
       "scheduleDateRequired": "Data e hora são obrigatórias",
-      "scheduleDateFuture": "Data deve ser no futuro"
+      "scheduleDateFuture": "Data deve ser no futuro",
+      "triggerRequired": "Configure o gatilho para campanhas com gatilho",
+      "triggerEventRequired": "Informe o nome do evento",
+      "triggerSegmentRequired": "Selecione um segmento",
+      "triggerLabelRequired": "Selecione uma etiqueta",
+      "triggerAttributeRequired": "Selecione um atributo personalizado",
+      "triggerWebhookRequired": "Informe a URL do webhook"
     },
     "progress": {
       "basicInfo": "Informações Básicas",
       "template": "Conteúdo",
-      "contacts": "Contactos",
+      "contacts": "Contatos",
       "schedule": "Agendamento",
-      "review": "Rever",
+      "review": "Revisar",
       "success": "Concluído"
     },
     "step1": {
@@ -217,7 +223,10 @@
       "typeLabel": "Tipo de Campanha",
       "typePlaceholder": "Selecione o tipo",
       "channelLabel": "Canal de Comunicação",
-      "channelPlaceholder": "Selecione o canal"
+      "channelPlaceholder": "Selecione o canal",
+      "descriptionLabel": "Descrição",
+      "descriptionPlaceholder": "Descreva brevemente o objetivo desta campanha...",
+      "optional": "Opcional"
     },
     "step2": {
       "title": "Audiência",
@@ -236,7 +245,11 @@
       "activeFilters": "Filtros Ativos",
       "noFiltersAdded": "Nenhum filtro adicionado. Adicione filtros para segmentar sua audiência.",
       "totalContacts": "Total de contatos na base",
-      "basedOnFilters": "Baseado em {{count}} filtro(s) aplicado(s)"
+      "basedOnFilters": "Baseado em {{count}} filtro(s) aplicado(s)",
+      "addFilter": "Adicionar filtro",
+      "removeFilter": "Remover filtro {{label}}",
+      "operatorLabel": "Operador",
+      "typeLabel": "Tipo de filtro"
     },
     "step3": {
       "title": "Conteúdo",
@@ -246,7 +259,11 @@
       "inboxDescription": "Selecione apenas 1 inbox para esta campanha",
       "health": "saúde",
       "templatesLabel": "Templates",
-      "templatesSelected": "{{count}} selecionado(s)"
+      "templatesSelected": "{{count}} selecionado(s)",
+      "noContentPreview": "Sem pré-visualização do conteúdo",
+      "noInboxes": "Nenhuma caixa de entrada disponível para este canal",
+      "selectInboxFirst": "Selecione uma caixa de entrada primeiro",
+      "noTemplates": "Nenhum template disponível para esta caixa de entrada"
     },
     "step4": {
       "title": "Configurações",
@@ -296,13 +313,101 @@
       "noLimitDescription": "Sem limite - Enviar o mais rápido possível",
       "hours": "{{count}} horas",
       "hoursDay": "{{count}} horas ({{days}} dia)",
-      "hoursDays": "{{count}} horas ({{days}} dias)"
+      "hoursDays": "{{count}} horas ({{days}} dias)",
+      "ui": {
+        "sendStrategy": "Estratégia de envio",
+        "sendStrategyDescription": "Como os templates selecionados são distribuídos entre os contatos",
+        "distributionStrategy": "Estratégia de distribuição",
+        "strategyOptions": {
+          "round_robin": "Sequencial",
+          "weighted": "Ponderado",
+          "random": "Aleatório",
+          "ab_test": "Teste A/B"
+        },
+        "weightPerTemplate": "Distribuição por template (%)",
+        "templateFallback": "Modelo {{id}}",
+        "weightFor": "Peso de {{name}}",
+        "total": "Total",
+        "winnerCriteria": "Critério de vencedor",
+        "openRate": "Taxa de abertura",
+        "clickRate": "Taxa de clique",
+        "testSample": "Amostra do teste",
+        "baseMessage": "Mensagem base: {{value}}%",
+        "remainderWinner": "Restante (vencedor): {{value}}%",
+        "testSuffix": "(teste)",
+        "winnerMessage": "Mensagem vencedora",
+        "skipWinner": "Não enviar automaticamente",
+        "sendAt": "Enviar em",
+        "advancedOptions": "Opções avançadas",
+        "advancedOptionsDescription": "Ritmo de envio, horários permitidos e novas tentativas",
+        "spreadWindow": "Janela de distribuição",
+        "spreadWindowDescription": "Intervalo entre os disparos da campanha",
+        "spread": {
+          "none": "Sem intervalo",
+          "minutes": "{{count}} minutos",
+          "hours": "{{count}} horas",
+          "hoursMinutes": "{{hours}} h {{minutes}} min"
+        },
+        "timeWindowsHint": "Restringir envios ao horário e aos dias permitidos",
+        "retry": "Tentativas automáticas",
+        "retryDescription": "Tentar reenviar em caso de falha"
+      }
     },
     "actions": {
       "continue": "Continuar",
       "back": "Voltar",
       "create": "Criar Campanha",
       "save": "Salvar Campanha"
+    },
+    "stepOf": "Passo {{current}} de {{total}}",
+    "success": {
+      "createdTitle": "Campanha criada",
+      "updatedTitle": "Campanha atualizada",
+      "createdDescription": "Sua campanha foi criada e está pronta.",
+      "updatedDescription": "Sua campanha foi atualizada com sucesso.",
+      "nextSteps": "Próximos passos",
+      "steps": {
+        "track": "Acompanhe o progresso da campanha no painel",
+        "monitor": "Monitore as estatísticas de envio e engajamento",
+        "pause": "Você pode pausar ou editar a campanha a qualquer momento"
+      },
+      "viewCampaigns": "Ver campanhas",
+      "newCampaign": "Nova campanha",
+      "keepEditing": "Continuar editando"
+    },
+    "step5": {
+      "general": "Informações gerais",
+      "name": "Nome",
+      "description": "Descrição",
+      "channelAndType": "Canal e tipo",
+      "audience": "Audiência",
+      "selection": "Seleção",
+      "estimatedContacts": "Contatos estimados",
+      "content": "Conteúdo",
+      "inbox": "Caixa de entrada",
+      "inboxSelected": "Caixa selecionada",
+      "noneSelected": "Nenhuma selecionada",
+      "templates": "Templates",
+      "templatesSelected": "{{count}} selecionado(s)",
+      "settings": "Configurações",
+      "scheduling": "Agendamento",
+      "sendImmediately": "Envio imediato",
+      "notAvailable": "N/D",
+      "distributionStrategy": "Estratégia de distribuição",
+      "weightsPerTemplate": "Pesos por template",
+      "winnerCriteria": "Critério de vencedor",
+      "sampleSize": "Tamanho da amostra",
+      "sampleOfContacts": "{{value}}% dos contatos",
+      "testPhase": "Fase de teste",
+      "immediate": "Imediato",
+      "winnerSend": "Envio do vencedor",
+      "manual": "Manual",
+      "winnerNotAutomatic": "O vencedor não será enviado automaticamente",
+      "sendInterval": "Intervalo de envio",
+      "allowedHours": "Horário permitido",
+      "noTimeRestriction": "Sem restrição de horário",
+      "rateLimit": "Limite de taxa",
+      "retriesEnabled": "Novas tentativas ativas"
     }
   }
 }

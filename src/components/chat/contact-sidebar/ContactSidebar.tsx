@@ -3,9 +3,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 
-import { Button } from '@evoapi/design-system/button';
-import { Card, CardHeader, CardContent } from '@evoapi/design-system/card';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { X, User, ChevronDown, Info } from 'lucide-react';
 
 import ContactHeader from './ContactHeader';
@@ -50,7 +50,7 @@ const CollapsibleHeader = ({
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold truncate">{title}</h3>
           {count !== undefined && count > 0 && (
-            <Badge variant="secondary" className="text-xs flex-shrink-0">
+            <Badge variant="secondary" className="flex-shrink-0">
               {count}
             </Badge>
           )}
@@ -58,10 +58,8 @@ const CollapsibleHeader = ({
         {description && <p className="text-xs text-muted-foreground truncate">{description}</p>}
       </div>
     </div>
-    <Button variant="ghost" size="sm" onClick={onToggle} aria-expanded={isOpen} aria-label={title} className="h-6 w-6 p-0 flex-shrink-0">
-      <div className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-        <ChevronDown className="h-3 w-3" />
-      </div>
+    <Button variant="ghost" size="icon-xs" onClick={onToggle} aria-expanded={isOpen} aria-label={title} className="flex-shrink-0">
+      <ChevronDown className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
     </Button>
   </div>
 );
@@ -174,7 +172,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
       {/* Backdrop — flutua sobre o layout (desktop e mobile), igual ao protótipo */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30"
+          className="fixed inset-0 z-30 bg-black/32 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
@@ -185,7 +183,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
         aria-modal="true"
         aria-label={t('contactSidebar.title', 'Detalhes do contato')}
         className={`
-        border-l bg-background flex flex-col h-full
+        border-l bg-background flex flex-col h-full shadow-lg/5
         fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-96 z-40
         transform transition-all duration-300 ease-in-out overflow-hidden
         ${isOpen
@@ -195,28 +193,28 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
       `}
       >
         {/* Header com Avatar e Info Básica + Close Button */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative">
+        <div className="relative border-b bg-background">
           <ContactHeader contact={enrichedContact ?? contact} channelType={conversation?.inbox?.channel_type} />
 
           {/* Close Button */}
           <Button
             variant="ghost"
-            size="sm"
+            size="icon-sm"
             onClick={onClose}
             aria-label={t('contactSidebar.close', 'Fechar')}
-            className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-muted"
+            className="absolute top-3 right-3"
           >
-            <X className="h-4 w-4" />
+            <X />
           </Button>
         </div>
 
         {/* Cards - Estrutura protótipo: Informações do Contato (fixo/expandido) + Atributos da Conversa (colapsável) */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-2 scrollbar-thin">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-muted/24 p-3">
           {/* 1. Contact Details - card único, sempre expandido (sem chevron) */}
-          <Card>
-            <CardHeader className="pb-2">
+          <Card className="gap-0 py-0">
+            <CardHeader className="px-4 pt-3.5 pb-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <User className="h-4 w-4 text-green-500" />
+                <User className="size-4 text-muted-foreground" />
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-semibold truncate">
                     {t('contactSidebar.sections.contactDetails.title')}
@@ -228,34 +226,34 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
               </div>
             </CardHeader>
 
-            <CardContent className="pt-0 px-3 pb-3">
+            <CardPanel className="px-4 pt-0 pb-4">
               <ContactDetails
                 contact={enrichedContact ?? contact}
                 onContactAttributeUpdate={handleContactAttributeUpdate}
               />
-            </CardContent>
+            </CardPanel>
           </Card>
 
           {/* 2. Conversation Custom Attributes - Atributos personalizados da conversa */}
           {conversation && (
-            <Card>
-              <CardHeader className="pb-2">
+            <Card className="gap-0 py-0">
+              <CardHeader className="px-4 py-3.5">
                 <CollapsibleHeader
                   title={t('contactSidebar.sections.conversationAttributes.title')}
                   description={t('contactSidebar.sections.conversationAttributes.description')}
-                  icon={<Info className="h-4 w-4 text-cyan-500" />}
+                  icon={<Info className="size-4 text-muted-foreground" />}
                   isOpen={showConversationAttributes}
                   onToggle={() => setShowConversationAttributes(!showConversationAttributes)}
                 />
               </CardHeader>
 
               {showConversationAttributes && (
-                <CardContent className="pt-0 px-3 pb-3">
+                <CardPanel className="px-4 pt-0 pb-4">
                   <EditableConversationCustomAttributes
                     conversation={conversation}
                     onConversationUpdate={onFilterReload}
                   />
-                </CardContent>
+                </CardPanel>
               )}
             </Card>
           )}

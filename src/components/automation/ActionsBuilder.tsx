@@ -1,6 +1,14 @@
 import { useFieldArray, type Control } from 'react-hook-form';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardPanel,
+  CardTitle,
+} from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import {
   type AutomationRuleFormData,
@@ -27,36 +35,49 @@ export default function ActionsBuilder({ control, formData }: Props) {
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold">{t('form.fields.actions.label')} *</h3>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          aria-label={t('form.fields.actions.addRow')}
-          onClick={() => append(getDefaultActionForName('send_message'))}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {t('form.fields.actions.addRow')}
-        </Button>
-      </div>
-      {fields.length === 0 ? (
-        <p className="text-sm text-red-500">{t('form.fields.actions.empty')}</p>
-      ) : (
-        <div className="space-y-2">
-          {fields.map((field, index) => (
-            <ActionRow
-              key={field.id}
-              control={control}
-              index={index}
-              formData={formData}
-              onRemove={() => remove(index)}
-              onActionChange={handleActionChange}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {t('form.fields.actions.label')}
+          <span className="text-destructive-foreground" aria-hidden="true">
+            {' '}
+            *
+          </span>
+        </CardTitle>
+        <CardDescription>{t('form.sections.actions.description')}</CardDescription>
+        <CardAction>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-label={t('form.fields.actions.addRow')}
+            onClick={() => append(getDefaultActionForName('send_message'))}
+          >
+            <Plus />
+            {t('form.fields.actions.addRow')}
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardPanel>
+        {fields.length === 0 ? (
+          <p className="rounded-lg border border-destructive/32 border-dashed px-4 py-6 text-center text-destructive-foreground text-sm">
+            {t('form.fields.actions.empty')}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {fields.map((field, index) => (
+              <ActionRow
+                key={field.id}
+                control={control}
+                index={index}
+                formData={formData}
+                onRemove={() => remove(index)}
+                onActionChange={handleActionChange}
+              />
+            ))}
+          </div>
+        )}
+      </CardPanel>
+    </Card>
   );
 }

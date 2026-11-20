@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Mail, MessageSquare, Phone, Send, TriangleAlert } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-  Label,
-  Avatar,
-  AvatarFallback,
-  Badge,
-} from '@evoapi/design-system';
-import { MessageSquare, Phone, Mail, Send, Loader2 } from 'lucide-react';
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { Contact, ContactableInboxes } from '@/types/contacts';
 import { contactsService } from '@/services/contacts';
 import { conversationAPI } from '@/services/conversations';
@@ -197,13 +197,13 @@ export default function StartConversationModal({
   const getChannelIcon = (channelType: string) => {
     switch (channelType) {
       case 'Channel::Whatsapp':
-        return <MessageSquare className="h-4 w-4 text-green-600" />;
+        return <MessageSquare className="h-4 w-4 text-success-foreground" />;
       case 'Channel::Email':
-        return <Mail className="h-4 w-4 text-blue-600" />;
+        return <Mail className="h-4 w-4 text-info-foreground" />;
       case 'Channel::Sms':
         return <Phone className="h-4 w-4 text-purple-600" />;
       default:
-        return <MessageSquare className="h-4 w-4 text-gray-600" />;
+        return <MessageSquare className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -362,10 +362,10 @@ export default function StartConversationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogPopup className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
+            <MessageSquare className="size-5 text-muted-foreground" />
             {t('startConversation.title')}
           </DialogTitle>
           <DialogDescription>
@@ -373,26 +373,20 @@ export default function StartConversationModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="contents">
+          <DialogPanel className="flex flex-col gap-5">
           {/* Contact Info */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-            <Avatar className="h-10 w-10">
-              {contact.avatar_url ? (
-                <img
-                  src={contact.avatar_url}
-                  alt={contact.name}
-                  className="h-10 w-10 rounded-full"
-                />
-              ) : (
-                <AvatarFallback className="bg-primary/10 text-primary">
-                  {getUserInitials(contact.name || 'NA')}
-                </AvatarFallback>
-              )}
+          <div className="flex items-center gap-3 rounded-lg border bg-muted/48 p-3 dark:bg-muted/24">
+            <Avatar className="size-10">
+              {contact.avatar_url && <AvatarImage src={contact.avatar_url} alt={contact.name} />}
+              <AvatarFallback className="bg-primary/10 font-semibold text-primary">
+                {getUserInitials(contact.name || 'NA')}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{contact.name}</p>
               {contact.email && (
-                <p className="text-sm text-muted-foreground truncate">{contact.email}</p>
+                <p className="truncate text-muted-foreground text-xs">{contact.email}</p>
               )}
             </div>
           </div>
@@ -401,22 +395,23 @@ export default function StartConversationModal({
           <div className="space-y-2">
             <Label htmlFor="inbox">{t('startConversation.fields.channel.label')} *</Label>
             {loadingInboxes ? (
-              <div className="flex items-center gap-2 p-3 rounded-md border">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm text-muted-foreground">
-                  {t('startConversation.loading.channels')}
-                </span>
-              </div>
+              <Skeleton className="h-9 w-full rounded-lg sm:h-8" aria-label={t('startConversation.loading.channels')} />
             ) : availableInboxes.length === 0 ? (
-              <div className="p-3 rounded-md border border-orange-200 bg-orange-50">
-                <p className="text-sm text-orange-700">{t('startConversation.empty.noChannels')}</p>
-              </div>
+              <Alert variant="warning">
+                <TriangleAlert />
+                <AlertDescription>{t('startConversation.empty.noChannels')}</AlertDescription>
+              </Alert>
             ) : (
-              <Select value={selectedInboxId} onValueChange={setSelectedInboxId} required>
-                <SelectTrigger>
+              <Select
+                items={availableInboxes.filter(inbox => inbox?.id).map(inbox => ({ value: inbox.id.toString(), label: inbox.name }))}
+                value={selectedInboxId || null}
+                onValueChange={value => value != null && setSelectedInboxId(String(value))}
+                required
+              >
+                <SelectTrigger id="inbox" className="w-full">
                   <SelectValue placeholder={t('startConversation.fields.channel.placeholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {availableInboxes.map(inbox =>
                     inbox && inbox.id ? (
                       <SelectItem
@@ -424,13 +419,10 @@ export default function StartConversationModal({
                         value={inbox.id.toString()}
                         disabled={!inbox.available || !inbox.can_create_conversation}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex w-full items-center gap-2">
                           {getChannelIcon(inbox.channel_type)}
-                          <span>{inbox.name}</span>
-                          <Badge
-                            variant={inbox.available ? 'default' : 'secondary'}
-                            className="ml-auto"
-                          >
+                          <span className="truncate">{inbox.name}</span>
+                          <Badge variant={inbox.available ? 'outline' : 'secondary'} className="ms-auto">
                             {getChannelLabel(inbox.channel_type)}
                           </Badge>
                           {!inbox.can_create_conversation && (
@@ -442,28 +434,26 @@ export default function StartConversationModal({
                       </SelectItem>
                     ) : null,
                   )}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             )}
           </div>
 
           {/* WhatsApp Cloud requires a Meta-approved template. Two warning states. */}
           {isWhatsAppCloud && !loadingTemplates && messageTemplates.length === 0 && (
-            <div className="p-3 rounded-md border border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-800">
-              <p className="text-sm text-orange-700 dark:text-orange-400">
-                ⚠️ {t('startConversation.templates.noneForInbox')}
-              </p>
-            </div>
+            <Alert variant="warning">
+              <TriangleAlert />
+              <AlertDescription>{t('startConversation.templates.noneForInbox')}</AlertDescription>
+            </Alert>
           )}
           {isWhatsAppCloud &&
             !loadingTemplates &&
             messageTemplates.length > 0 &&
             messageTemplates.every(tpl => !isTemplateSendable(tpl)) && (
-              <div className="p-3 rounded-md border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-                <p className="text-sm text-amber-700 dark:text-amber-400">
-                  ⚠️ {t('startConversation.templates.noApproved')}
-                </p>
-              </div>
+              <Alert variant="warning">
+                <TriangleAlert />
+                <AlertDescription>{t('startConversation.templates.noApproved')}</AlertDescription>
+              </Alert>
             )}
 
           {/* Template Selection */}
@@ -501,16 +491,15 @@ export default function StartConversationModal({
               </div>
 
               {useTemplate && (
-                <div className="space-y-3 p-3 border rounded-lg">
+                <div className="space-y-3 rounded-lg border p-3">
                   {messageTemplates.length === 0 ? (
-                    <div className="p-3 rounded-md border border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-800">
-                      <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                        ⚠️ {t('startConversation.templates.noneForInbox')}
-                      </p>
-                    </div>
+                    <Alert variant="warning">
+                      <TriangleAlert />
+                      <AlertDescription>{t('startConversation.templates.noneForInbox')}</AlertDescription>
+                    </Alert>
                   ) : !selectedTemplate ? (
                     <>
-                      <Label>Selecione um Template</Label>
+                      <Label>{t('startConversation.templates.select')}</Label>
                       <div className="space-y-2 max-h-48 overflow-y-auto">
                         {messageTemplates.map(template => {
                           const previewText = getTemplatePreviewText(template, isEmailInbox);
@@ -522,9 +511,10 @@ export default function StartConversationModal({
                             cloudBadgeKey !== null && cloudBadgeKey !== 'approved';
 
                           return (
-                            <div
+                            <button
+                              type="button"
                               key={template.id}
-                              className="p-3 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                              className="w-full rounded-lg border p-3 text-left transition-colors hover:border-ring/40 hover:bg-accent/50"
                               onClick={() => {
                                 setSelectedTemplate(template);
                                 setTemplateParams(
@@ -535,17 +525,17 @@ export default function StartConversationModal({
                               <div className="flex items-center gap-2">
                                 <div className="font-medium text-sm">{template.name}</div>
                                 {showCloudBadge && (
-                                  <Badge variant="outline" className="text-xs">
+                                  <Badge variant="outline" size="sm">
                                     {t(
                                       `startConversation.templates.statusBadge.${cloudBadgeKey}`,
                                     )}
                                   </Badge>
                                 )}
                               </div>
-                              <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              <div className="mt-1 line-clamp-2 text-muted-foreground text-xs">
                                 {previewText}
                               </div>
-                            </div>
+                            </button>
                           );
                         })}
                       </div>
@@ -553,7 +543,7 @@ export default function StartConversationModal({
                   ) : (
                     <>
                       <div className="flex items-center justify-between">
-                        <Label>Template: {selectedTemplate.name}</Label>
+                        <Label>{t('startConversation.templates.selected', { name: selectedTemplate.name })}</Label>
                         <Button
                           type="button"
                           variant="ghost"
@@ -563,12 +553,12 @@ export default function StartConversationModal({
                             setTemplateParams({});
                           }}
                         >
-                          Trocar Template
+                          {t('startConversation.templates.change')}
                         </Button>
                       </div>
 
                       {isWhatsAppCloud && !isTemplateSendable(selectedTemplate) && (
-                        <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+                        <p className="text-xs text-warning-foreground mt-1">
                           {t('startConversation.templates.pendingSelectedHint')}
                         </p>
                       )}
@@ -576,22 +566,23 @@ export default function StartConversationModal({
                       {/* Template Variables */}
                       {Object.keys(templateParams).length > 0 && (
                         <div className="space-y-2">
-                          <Label className="text-sm">Preencha as Variáveis</Label>
+                          <Label>{t('startConversation.templates.fillVariables')}</Label>
                           {extractTemplateVariables(selectedTemplate).map(variable => {
                             const key = variable.name;
                             return (
                               <div key={key} className="flex items-center gap-2">
-                                <span className="bg-muted text-muted-foreground inline-block rounded-md text-xs py-2 px-3 min-w-[50px] text-center font-medium">
+                                <span className="inline-block min-w-12 rounded-md bg-muted px-3 py-2 text-center font-medium text-muted-foreground text-xs">
                                   {variable.label || key}
                                 </span>
-                                <input
+                                <Input
                                   type="text"
                                   value={templateParams[key] ?? ''}
                                   onChange={e =>
                                     setTemplateParams(prev => ({ ...prev, [key]: e.target.value }))
                                   }
-                                  className="flex-1 h-9 px-3 text-sm rounded-md border border-input bg-background"
-                                  placeholder={variable.example || `Valor para {{${key}}}`}
+                                  className="flex-1"
+                                  aria-label={variable.label || key}
+                                  placeholder={variable.example || t('startConversation.templates.valueFor', { key: `{{${key}}}` })}
                                 />
                               </div>
                             );
@@ -600,8 +591,8 @@ export default function StartConversationModal({
                       )}
 
                       {/* Preview of processed message */}
-                      <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-                        <Label className="text-xs text-muted-foreground mb-1 block">Preview</Label>
+                      <div className="mt-3 rounded-lg border bg-muted/48 p-3 dark:bg-muted/24">
+                        <span className="mb-1 block text-muted-foreground text-xs">{t('startConversation.templates.preview')}</span>
                         {isEmailInbox ? (
                           <div className="text-sm">
                             {(() => {
@@ -627,7 +618,7 @@ export default function StartConversationModal({
                                 } else {
                                   // JSON format - show message that HTML will be generated
                                   html =
-                                    '<p style="color: #666;">Template de email visual. O HTML será gerado automaticamente.</p>';
+                                    `<p class="text-muted-foreground">${t('startConversation.templates.visualEmail')}</p>`;
                                 }
                               }
 
@@ -678,21 +669,16 @@ export default function StartConversationModal({
             </div>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={loading}
-              className="flex-1"
-            >
+          </DialogPanel>
+
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={handleCancel} disabled={loading}>
               {t('startConversation.actions.cancel')}
             </Button>
             <Button
               type="submit"
+              loading={loading}
               disabled={Boolean(
-                loading ||
                   !selectedInboxId ||
                   availableInboxes.length === 0 ||
                   // WhatsApp Cloud requires a Meta-approved template
@@ -711,23 +697,13 @@ export default function StartConversationModal({
                   // Non-WhatsApp with template and variables requires all params filled
                   (!isWhatsAppInbox && useTemplate && selectedTemplate && someTemplateParams()),
               )}
-              className="flex-1"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {t('startConversation.actions.sending')}
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  {t('startConversation.actions.send')}
-                </>
-              )}
+              <Send />
+              {t('startConversation.actions.send')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

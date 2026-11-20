@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
-import { Input } from '@evoapi/design-system';
-import { Search } from 'lucide-react';
+import { useMemo, useState, type ReactNode } from 'react';
+import { Search, SearchX } from 'lucide-react';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ChannelCard } from './ChannelCard';
 import { ChannelType } from '@/hooks/channels/useChannelForm';
@@ -10,9 +11,11 @@ interface ChannelGridProps {
   onChannelSelect: (channel: ChannelType) => void;
   canFB: boolean;
   canIG: boolean;
+  /** Progress indicator rendered under the page title. */
+  stepper?: ReactNode;
 }
 
-export const ChannelGrid = ({ channels, onChannelSelect, canFB, canIG }: ChannelGridProps) => {
+export const ChannelGrid = ({ channels, onChannelSelect, canFB, canIG, stepper }: ChannelGridProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { t } = useLanguage('channels');
 
@@ -26,59 +29,63 @@ export const ChannelGrid = ({ channels, onChannelSelect, canFB, canIG }: Channel
     [searchQuery, channels],
   );
 
-  const pageContainer = 'mx-auto w-full max-w-6xl px-4 md:px-6';
-
-  const renderHeader = (title: string, subtitle?: string) => (
-    <div className="mb-6 md:mb-8">
-      <h1 className="text-2xl font-bold tracking-tight text-sidebar-foreground mb-2">{title}</h1>
-      {subtitle && <p className="text-sidebar-foreground/70">{subtitle}</p>}
-    </div>
-  );
-
   return (
-    <div className={pageContainer}>
-      <div data-tour="channel-grid-header">
-        {renderHeader(t('newChannel.channelGrid.title'), t('newChannel.channelGrid.subtitle'))}
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 md:px-6">
+      <div className="flex flex-col gap-4" data-tour="channel-grid-header">
+        <div>
+          <h1 className="font-semibold text-xl md:text-2xl">{t('newChannel.channelGrid.title')}</h1>
+          <p className="mt-1 text-muted-foreground text-sm">{t('newChannel.channelGrid.subtitle')}</p>
+        </div>
+        {stepper}
       </div>
 
-      {/* Search */}
-      <div className="mb-8" data-tour="channel-grid-search">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sidebar-foreground/60 h-5 w-5" />
-          <Input
+      <div data-tour="channel-grid-search">
+        <InputGroup className="max-w-md">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
+            type="search"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder={t('newChannel.channelGrid.searchPlaceholder')}
-            className="pl-10 bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:border-sidebar-border"
+            aria-label={t('newChannel.channelGrid.searchPlaceholder')}
           />
+        </InputGroup>
+      </div>
+
+      {filteredChannels.length === 0 ? (
+        <Empty className="rounded-xl border border-dashed py-12">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <SearchX />
+            </EmptyMedia>
+            <EmptyTitle>{t('newChannel.channelGrid.noResults')}</EmptyTitle>
+            <EmptyDescription>{t('newChannel.channelGrid.noResultsDescription')}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 pb-8 sm:grid-cols-2 xl:grid-cols-3" data-tour="channel-grid-list">
+          {filteredChannels.map((channel, index) => {
+            // Gate tiles by the backend-sourced `hasXxxConfig` booleans (single
+            // source of truth with the admin save endpoint). Twitter has no
+            // channel type yet — extend here if/when it lands.
+            const disabled =
+              channel.type === 'facebook' ? !canFB : channel.type === 'instagram' ? !canIG : false;
+
+            return (
+              <ChannelCard
+                key={channel.id}
+                channel={channel}
+                disabled={disabled}
+                disabledTooltip={disabled ? t('newChannel.channelGrid.notConfiguredTooltip') : undefined}
+                onClick={() => onChannelSelect(channel)}
+                data-tour={index === 0 ? 'channel-grid-first-card' : undefined}
+              />
+            );
+          })}
         </div>
-      </div>
-
-      {/* Channel Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 pb-8" data-tour="channel-grid-list">
-        {filteredChannels.map((channel, index) => {
-          // Gate tiles by the backend-sourced `hasXxxConfig` booleans (single
-          // source of truth with the admin save endpoint). Twitter has no
-          // channel type yet — extend here if/when it lands.
-          const disabled =
-            channel.type === 'facebook'
-              ? !canFB
-              : channel.type === 'instagram'
-              ? !canIG
-              : false;
-
-          return (
-            <ChannelCard
-              key={channel.id}
-              channel={channel}
-              disabled={disabled}
-              disabledTooltip={disabled ? t('newChannel.channelGrid.notConfiguredTooltip') : undefined}
-              onClick={() => onChannelSelect(channel)}
-              data-tour={index === 0 ? 'channel-grid-first-card' : undefined}
-            />
-          );
-        })}
-      </div>
+      )}
     </div>
   );
 };

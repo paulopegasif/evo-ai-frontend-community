@@ -1,5 +1,6 @@
 import { AlertTriangle, CalendarX2, Clock, Timer, UserX } from 'lucide-react';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import type { FunnelVelocity, TrackingAlerts } from '@/types/leadTracking';
 import { DASH, plural } from './format';
 import { formatDate, statusLabel } from './labels';
@@ -23,38 +24,38 @@ const VelocityAlertsSection = ({ velocity, alerts, onOpenLead }: Props) => (
         </CardTitle>
         <CardDescription>Tempo mediano entre as etapas, para os leads que chegaram nelas</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardPanel className="space-y-4">
         <div>
           <p className="text-xs text-muted-foreground">Lead → avaliação</p>
-          <p className="text-2xl font-semibold">{days(velocity?.lead_to_evaluation_days)}</p>
+          <p className="font-semibold text-2xl tabular-nums">{days(velocity?.lead_to_evaluation_days)}</p>
           <p className="text-xs text-muted-foreground">{plural(velocity?.lead_to_evaluation_count ?? 0, 'lead', 'leads')}</p>
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Avaliação → fechamento</p>
-          <p className="text-2xl font-semibold">{days(velocity?.evaluation_to_close_days)}</p>
+          <p className="font-semibold text-2xl tabular-nums">{days(velocity?.evaluation_to_close_days)}</p>
           <p className="text-xs text-muted-foreground">{plural(velocity?.evaluation_to_close_count ?? 0, 'venda', 'vendas')}</p>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
 
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
-          <UserX className="h-4 w-4 text-amber-500" />
+          <UserX className="h-4 w-4 text-warning-foreground" />
           Leads sem agendamento
-          <Badge variant="outline">{alerts?.stale_leads.count ?? 0}</Badge>
+          <Badge variant={alerts?.stale_leads.count ? 'warning' : 'secondary'} className="tabular-nums">{alerts?.stale_leads.count ?? 0}</Badge>
         </CardTitle>
         <CardDescription>
           Há mais de {alerts?.stale_days ?? 3} dias sem avaliação marcada e fora da etapa de perdidos
         </CardDescription>
       </CardHeader>
-      <CardContent className="max-h-64 overflow-y-auto divide-y divide-border">
+      <CardPanel className="max-h-64 overflow-y-auto divide-y divide-border">
         {(alerts?.stale_leads.sample ?? []).map((lead) => (
           <button
             type="button"
             key={lead.id}
             onClick={() => onOpenLead(lead.id)}
-            className="w-full text-left py-2 hover:bg-muted/40 px-1 rounded"
+            className="w-full rounded-md px-2 py-2 text-left outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
           >
             <p className="text-sm font-medium">{lead.name}</p>
             <p className="text-xs text-muted-foreground">
@@ -63,26 +64,26 @@ const VelocityAlertsSection = ({ velocity, alerts, onOpenLead }: Props) => (
           </button>
         ))}
         {!alerts?.stale_leads.count && <p className="text-sm text-muted-foreground py-2">Nenhum lead parado. 🎉</p>}
-      </CardContent>
+      </CardPanel>
     </Card>
 
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
-          <CalendarX2 className="h-4 w-4 text-amber-500" />
+          <CalendarX2 className="h-4 w-4 text-warning-foreground" />
           Agendamentos sem desfecho
-          <Badge variant="outline">{alerts?.no_outcome.count ?? 0}</Badge>
+          <Badge variant={alerts?.no_outcome.count ? 'warning' : 'secondary'} className="tabular-nums">{alerts?.no_outcome.count ?? 0}</Badge>
         </CardTitle>
         <CardDescription>Data já passou e o status continua agendado ou confirmado</CardDescription>
       </CardHeader>
-      <CardContent className="max-h-64 overflow-y-auto divide-y divide-border">
+      <CardPanel className="max-h-64 overflow-y-auto divide-y divide-border">
         {(alerts?.no_outcome.sample ?? []).map((apt) => (
           <button
             type="button"
             key={apt.id}
             disabled={!apt.contact_id}
             onClick={() => apt.contact_id && onOpenLead(apt.contact_id)}
-            className="w-full text-left py-2 hover:bg-muted/40 px-1 rounded"
+            className="w-full rounded-md px-2 py-2 text-left outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
           >
             <p className="text-sm font-medium">{apt.contact_name ?? 'Sem contato'}</p>
             <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -93,11 +94,11 @@ const VelocityAlertsSection = ({ velocity, alerts, onOpenLead }: Props) => (
           </button>
         ))}
         {!alerts?.no_outcome.count && <p className="text-sm text-muted-foreground py-2">Tudo em dia.</p>}
-      </CardContent>
+      </CardPanel>
     </Card>
 
     {(alerts?.unlinked_sales.count ?? 0) > 0 && (
-      <p className="xl:col-span-3 text-xs text-amber-600 flex items-center gap-1.5">
+      <p className="xl:col-span-3 text-xs text-warning-foreground flex items-center gap-1.5">
         <AlertTriangle className="h-3.5 w-3.5" />
         {plural(alerts!.unlinked_sales.count, 'venda do Bitrix aguarda', 'vendas do Bitrix aguardam')} ligação a um lead
         na aba “Revisão”.

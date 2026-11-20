@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Workflow } from 'lucide-react';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { pipelinesService } from '@/services/pipelines/pipelinesService';
@@ -133,6 +127,12 @@ export function PipelineStageChangedConfiguration({
     onChange({ ...selection, toStageId: value || undefined, toStageName: stage?.name });
   };
 
+  const pipelineItems = pipelines.map(p => ({ value: p.id, label: p.name }));
+  const stageItems = [
+    { value: ANY_STAGE_VALUE, label: t('triggerComponents.pipelineStageChanged.anyStage') },
+    ...stages.map(s => ({ value: s.id, label: s.name })),
+  ];
+
   const noFilters = !selection.pipelineId && !selection.fromStageId && !selection.toStageId;
 
   return (
@@ -143,17 +143,18 @@ export function PipelineStageChangedConfiguration({
         </FlowFeedbackBanner>
       )}
 
-      <div className="space-y-2">
-        <Label className="text-sidebar-foreground font-medium">
+      <Field>
+        <FieldLabel>
           {t('triggerComponents.pipelineStageChanged.pipeline')}
-        </Label>
+        </FieldLabel>
         <Select
-          value={selection.pipelineId || ''}
-          onValueChange={handlePipelineChange}
+          items={pipelineItems}
+          value={selection.pipelineId || null}
+          onValueChange={v => handlePipelineChange(String(v ?? ''))}
           disabled={loadingPipelines}
         >
           <SelectTrigger
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             aria-label={t('triggerComponents.pipelineStageChanged.pipeline')}
           >
             <SelectValue
@@ -164,32 +165,33 @@ export function PipelineStageChangedConfiguration({
               }
             />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {pipelines.map(p => (
-              <SelectItem key={p.id} value={p.id} className="text-sidebar-foreground">
+              <SelectItem key={p.id} value={p.id}>
                 {p.name}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
         {!loadingPipelines && pipelines.length === 0 && !loadError && (
-          <p className="text-sm text-sidebar-foreground/60">
+          <FieldDescription>
             {t('triggerComponents.pipelineStageChanged.noPipelinesFound')}
-          </p>
+          </FieldDescription>
         )}
-      </div>
+      </Field>
 
-      <div className="space-y-2">
-        <Label className="text-sidebar-foreground font-medium">
+      <Field>
+        <FieldLabel>
           {t('triggerComponents.pipelineStageChanged.fromStage')}
-        </Label>
+        </FieldLabel>
         <Select
           value={selection.fromStageId || ANY_STAGE_VALUE}
-          onValueChange={handleFromStageChange}
+          items={stageItems}
+          onValueChange={v => handleFromStageChange(String(v ?? ''))}
           disabled={!selection.pipelineId || loadingStages}
         >
           <SelectTrigger
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             aria-label={t('triggerComponents.pipelineStageChanged.fromStage')}
           >
             <SelectValue
@@ -200,30 +202,31 @@ export function PipelineStageChangedConfiguration({
               }
             />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
-            <SelectItem value={ANY_STAGE_VALUE} className="text-sidebar-foreground">
+          <SelectPopup alignItemWithTrigger={false}>
+            <SelectItem value={ANY_STAGE_VALUE}>
               {t('triggerComponents.pipelineStageChanged.anyStage')}
             </SelectItem>
             {stages.map(s => (
-              <SelectItem key={s.id} value={s.id} className="text-sidebar-foreground">
+              <SelectItem key={s.id} value={s.id}>
                 {s.name}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
-      <div className="space-y-2">
-        <Label className="text-sidebar-foreground font-medium">
+      <Field>
+        <FieldLabel>
           {t('triggerComponents.pipelineStageChanged.toStage')}
-        </Label>
+        </FieldLabel>
         <Select
           value={selection.toStageId || ANY_STAGE_VALUE}
-          onValueChange={handleToStageChange}
+          items={stageItems}
+          onValueChange={v => handleToStageChange(String(v ?? ''))}
           disabled={!selection.pipelineId || loadingStages}
         >
           <SelectTrigger
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             aria-label={t('triggerComponents.pipelineStageChanged.toStage')}
           >
             <SelectValue
@@ -234,30 +237,30 @@ export function PipelineStageChangedConfiguration({
               }
             />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
-            <SelectItem value={ANY_STAGE_VALUE} className="text-sidebar-foreground">
+          <SelectPopup alignItemWithTrigger={false}>
+            <SelectItem value={ANY_STAGE_VALUE}>
               {t('triggerComponents.pipelineStageChanged.anyStage')}
             </SelectItem>
             {stages.map(s => (
-              <SelectItem key={s.id} value={s.id} className="text-sidebar-foreground">
+              <SelectItem key={s.id} value={s.id}>
                 {s.name}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {noFilters ? (
         <FlowFeedbackBanner variant="info">
           <div className="flex items-center gap-2">
-            <Workflow className="w-4 h-4" />
+            <Workflow className="size-4" />
             <span>{t('triggerComponents.pipelineStageChanged.anyStageTransition')}</span>
           </div>
         </FlowFeedbackBanner>
       ) : (
         <FlowFeedbackBanner variant="info">
           <div className="flex items-center gap-2">
-            <Workflow className="w-4 h-4" />
+            <Workflow className="size-4" />
             <span>
               {t('triggerComponents.pipelineStageChanged.summary', {
                 pipeline: selection.pipelineName || t('triggerComponents.pipelineStageChanged.anyPipeline'),

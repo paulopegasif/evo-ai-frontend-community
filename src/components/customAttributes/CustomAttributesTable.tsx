@@ -2,6 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { Edit, Trash2 } from 'lucide-react';
 import BaseTable from '@/components/base/BaseTable';
+import { Badge } from '@/components/ui/badge';
 import { CustomAttributeDefinition, ATTRIBUTE_TYPE_OPTIONS, AttributeModel } from '@/types/settings';
 
 interface CustomAttributesTableProps {
@@ -60,20 +61,14 @@ export default function CustomAttributesTable({
       key: 'attribute_display_type',
       label: t('table.columns.type'),
       render: (attribute: CustomAttributeDefinition) => (
-        <div className="flex items-center">
-          <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-            {getAttributeTypeLabel(attribute.attribute_display_type)}
-          </span>
-        </div>
+        <Badge variant="info">{getAttributeTypeLabel(attribute.attribute_display_type)}</Badge>
       ),
     },
     {
       key: 'attribute_key',
       label: t('table.columns.key'),
       render: (attribute: CustomAttributeDefinition) => (
-        <div className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded border">
-          {attribute.attribute_key}
-        </div>
+        <code className="rounded-md border bg-muted/48 px-1.5 py-0.5 font-mono text-xs">{attribute.attribute_key}</code>
       ),
     },
     {
@@ -84,17 +79,14 @@ export default function CustomAttributesTable({
           {attribute.attribute_values && attribute.attribute_values.length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {attribute.attribute_values.slice(0, 2).map((value, index) => (
-                <span
-                  key={index}
-                  className="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 rounded truncate"
-                >
+                <Badge key={index} variant="secondary" className="max-w-full truncate">
                   {value}
-                </span>
+                </Badge>
               ))}
               {attribute.attribute_values.length > 2 && (
-                <span className="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 rounded">
+                <Badge variant="outline">
                   {t('table.moreValues', { count: attribute.attribute_values.length - 2 })}
-                </span>
+                </Badge>
               )}
             </div>
           ) : (
@@ -107,15 +99,11 @@ export default function CustomAttributesTable({
       key: 'regex_pattern',
       label: t('table.columns.regex'),
       render: (attribute: CustomAttributeDefinition) => (
-        <div className="flex items-center">
-          {attribute.regex_pattern ? (
-            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-              {t('table.regexBadge.yes')}
-            </span>
-          ) : (
-            <span className="text-muted-foreground text-sm">{t('table.noRegex')}</span>
-          )}
-        </div>
+        attribute.regex_pattern ? (
+          <Badge variant="success">{t('table.regexBadge.yes')}</Badge>
+        ) : (
+          <span className="text-muted-foreground text-sm">{t('table.noRegex')}</span>
+        )
       ),
     },
     {

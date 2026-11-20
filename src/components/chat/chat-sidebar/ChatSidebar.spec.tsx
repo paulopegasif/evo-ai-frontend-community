@@ -514,21 +514,21 @@ describe('ChatSidebar scroll pagination (EVO-1407)', () => {
   it('renders "Carregar mais" button when has_next_page is true', async () => {
     overrideContext = makePaginatedContext(true);
     render(<ChatSidebar {...defaultProps} />);
-    expect(await screen.findByText('Carregar mais')).toBeInTheDocument();
+    expect(await screen.findByText('chatSidebar.loadMore')).toBeInTheDocument();
   });
 
   it('does not render "Carregar mais" button when has_next_page is false', async () => {
     overrideContext = makePaginatedContext(false);
     render(<ChatSidebar {...defaultProps} />);
     await screen.findByText('Test Contact');
-    expect(screen.queryByText('Carregar mais')).not.toBeInTheDocument();
+    expect(screen.queryByText('chatSidebar.loadMore')).not.toBeInTheDocument();
   });
 
   it('button click triggers loadMoreConversations (CB-1)', async () => {
     const loadMore = vi.fn().mockResolvedValue(undefined);
     overrideContext = makePaginatedContext(true, loadMore);
     render(<ChatSidebar {...defaultProps} />);
-    const btn = await screen.findByText('Carregar mais');
+    const btn = await screen.findByText('chatSidebar.loadMore');
     await act(async () => { fireEvent.click(btn); });
     expect(loadMore).toHaveBeenCalledTimes(1);
   });
@@ -538,12 +538,12 @@ describe('ChatSidebar scroll pagination (EVO-1407)', () => {
     const loadMore = vi.fn().mockReturnValue(new Promise<void>(res => { resolveFn = res; }));
     overrideContext = makePaginatedContext(true, loadMore);
     render(<ChatSidebar {...defaultProps} />);
-    const btn = await screen.findByText('Carregar mais');
+    const btn = await screen.findByText('chatSidebar.loadMore');
 
     act(() => { fireEvent.click(btn); });
 
     await waitFor(() => expect(screen.getByTestId('skeleton')).toBeInTheDocument());
-    expect(screen.queryByText('Carregar mais')).not.toBeInTheDocument();
+    expect(screen.queryByText('chatSidebar.loadMore')).not.toBeInTheDocument();
 
     await act(async () => { resolveFn(); });
   });
@@ -611,7 +611,7 @@ describe('ChatSidebar scroll pagination (EVO-1407)', () => {
     const loadMore = vi.fn().mockReturnValue(new Promise<void>(res => { resolveFn = res; }));
     overrideContext = makePaginatedContext(true, loadMore);
     render(<ChatSidebar {...defaultProps} />);
-    const btn = await screen.findByText('Carregar mais');
+    const btn = await screen.findByText('chatSidebar.loadMore');
 
     act(() => { fireEvent.click(btn); });
 

@@ -1,15 +1,9 @@
 import { useEffect } from 'react';
 import { Controller, type Control, useWatch, useFormContext } from 'react-hook-form';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Button,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import OptionSelect from './OptionSelect';
 import { Trash2 } from 'lucide-react';
 import {
   type AutomationRuleFormData,
@@ -116,18 +110,15 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
   ) => {
     if (descriptor?.dataType === 'boolean') {
       return (
-        <Select
+        <OptionSelect
+          items={[
+            { value: 'true', label: t('form.fields.boolean.true') },
+            { value: 'false', label: t('form.fields.boolean.false') },
+          ]}
           value={currentValue != null ? String(currentValue) : ''}
           onValueChange={(v) => onChange([v])}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t(placeholderKey)} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="true">{t('form.fields.boolean.true')}</SelectItem>
-            <SelectItem value="false">{t('form.fields.boolean.false')}</SelectItem>
-          </SelectContent>
-        </Select>
+          placeholder={t(placeholderKey)}
+        />
       );
     }
     if (options.length === 0) {
@@ -141,43 +132,28 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
       );
     }
     return (
-      <Select
+      <OptionSelect
+        items={options.map((opt) => ({ value: String(opt.id), label: opt.name }))}
         value={currentValue != null ? String(currentValue) : ''}
         onValueChange={(v) => onChange([v])}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder={t(placeholderKey)} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((opt) => (
-            <SelectItem key={String(opt.id)} value={String(opt.id)}>
-              {opt.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        placeholder={t(placeholderKey)}
+      />
     );
   };
 
   return (
-    <div className="flex items-start gap-2 p-3 border rounded-md">
-      <div className="flex-1 grid grid-cols-3 gap-2">
+    <div className="flex items-start gap-2 rounded-xl border bg-muted/24 p-3">
+      <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-3">
         <Controller
           control={control}
           name={`conditions.${index}.attribute_key`}
           render={({ field }) => (
-            <Select value={field.value ?? ''} onValueChange={field.onChange}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('form.fields.conditionRow.attribute')} />
-              </SelectTrigger>
-              <SelectContent>
-                {availableAttributes.map((attr) => (
-                  <SelectItem key={attr.attributeKey} value={attr.attributeKey}>
-                    {t(attr.i18nKey)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <OptionSelect
+              items={availableAttributes.map((attr) => ({ value: attr.attributeKey, label: t(attr.i18nKey) }))}
+              value={field.value ?? ''}
+              onValueChange={field.onChange}
+              placeholder={t('form.fields.conditionRow.attribute')}
+            />
           )}
         />
 
@@ -185,28 +161,17 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
           control={control}
           name={`conditions.${index}.filter_operator`}
           render={({ field }) => (
-            <Select
+            <OptionSelect
+              items={availableOperators.map((op) => {
+                const specificKey = `form.fields.operators.${attributeKey}.${op}`;
+                const specific = t(specificKey);
+                return { value: op, label: specific === specificKey ? t(`form.fields.operators.${op}`) : specific };
+              })}
               value={field.value ?? ''}
               onValueChange={field.onChange}
               disabled={!descriptor}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('form.fields.conditionRow.operator')} />
-              </SelectTrigger>
-              <SelectContent>
-                {availableOperators.map((op) => {
-                  const specificKey = `form.fields.operators.${attributeKey}.${op}`;
-                  const genericKey = `form.fields.operators.${op}`;
-                  const specific = t(specificKey);
-                  const label = specific === specificKey ? t(genericKey) : specific;
-                  return (
-                    <SelectItem key={op} value={op}>
-                      {label}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+              placeholder={t('form.fields.conditionRow.operator')}
+            />
           )}
         />
 
@@ -216,7 +181,7 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
           render={({ field }) => {
             if (valueless) {
               return (
-                <div className="flex items-center text-xs text-muted-foreground italic">
+                <div className="flex min-h-9 items-center text-muted-foreground text-xs sm:min-h-8">
                   {t('form.fields.conditionRow.noValueNeeded')}
                 </div>
               );
@@ -228,7 +193,7 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
                   : { from: [], to: [] };
               return (
                 <div className="grid grid-cols-2 gap-2 col-span-1">
-                  <div className="space-y-1">
+                  <div className="flex flex-col gap-1">
                     <label className="text-xs text-muted-foreground">
                       {t('form.fields.conditionRow.from')}
                     </label>
@@ -238,7 +203,7 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
                       'form.fields.conditionRow.from',
                     )}
                   </div>
-                  <div className="space-y-1">
+                  <div className="flex flex-col gap-1">
                     <label className="text-xs text-muted-foreground">
                       {t('form.fields.conditionRow.to')}
                     </label>
@@ -262,11 +227,12 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size="icon-sm"
+        className="shrink-0 text-muted-foreground hover:text-destructive-foreground"
         onClick={onRemove}
         aria-label={t('form.fields.conditionRow.remove')}
       >
-        <Trash2 className="h-4 w-4" />
+        <Trash2 />
       </Button>
     </div>
   );

@@ -70,6 +70,10 @@
       "name": "Canva",
       "description": "Crie e edite designs, apresentações e materiais visuais com o Canva"
     },
+    "meta_conversions": {
+      "name": "Conversões da Meta",
+      "description": "Envie leads, leads qualificados e vendas de volta para a Meta e otimize os anúncios de WhatsApp."
+    },
     "meta_ads": {
       "name": "Meta Ads",
       "description": "Campanhas, investimento e desempenho de leads da sua conta de anúncios da Meta."
@@ -100,7 +104,9 @@
     "visitOfficialSite": "Visitar site oficial",
     "delete": "Excluir",
     "reconnect": "Reconectar",
-    "backToIntegrations": "Voltar para Integrações"
+    "backToIntegrations": "Voltar para Integrações",
+    "showSecret": "Mostrar",
+    "hideSecret": "Ocultar"
   },
   "status": {
     "active": "Ativo",
@@ -1353,5 +1359,10 @@
   "email": {
     "name": "Email",
     "description": "Suporte via email integrado"
+  },
+  "confirmDisconnect": {
+    "title": "Desconectar {{name}}?",
+    "description": "A integração para de funcionar até ser conectada de novo. Os dados salvos são mantidos.",
+    "cancel": "Cancelar"
   }
 }

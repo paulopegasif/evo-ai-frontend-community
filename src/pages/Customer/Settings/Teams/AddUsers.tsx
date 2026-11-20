@@ -2,7 +2,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { Badge, Button, Checkbox, Avatar, AvatarFallback, AvatarImage } from '@evoapi/design-system';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
+import EmptyState from '@/components/base/EmptyState';
+import ListSkeleton from '@/components/base/ListSkeleton';
 import { ArrowLeft, Users, Save } from 'lucide-react';
 import BaseHeader from '@/components/base/BaseHeader';
 import BaseTable, { TableColumn } from '@/components/base/BaseTable';
@@ -142,13 +148,13 @@ const AddUsers: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'bg-green-500';
+        return 'bg-success';
       case 'busy':
-        return 'bg-red-500';
+        return 'bg-warning';
       case 'offline':
-        return 'bg-gray-400';
+        return 'bg-muted-foreground/60';
       default:
-        return 'bg-gray-400';
+        return 'bg-muted-foreground/60';
     }
   };
 
@@ -194,7 +200,7 @@ const AddUsers: React.FC = () => {
         return (
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Avatar className="h-8 w-8">
+              <Avatar className="size-8">
                 {user.avatar_url || user.thumbnail ? (
                   <AvatarImage src={user.avatar_url || user.thumbnail} />
                 ) : null}
@@ -203,21 +209,22 @@ const AddUsers: React.FC = () => {
                 </AvatarFallback>
               </Avatar>
               <div
-                className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background ${getStatusColor(
+                aria-hidden="true"
+                className={`absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 border-background ${getStatusColor(
                   user.availability,
                 )}`}
               />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-medium">{user.name}</p>
+                <p className="font-medium text-sm">{user.name}</p>
                 {isMember && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="info">
                     {t('addUsers.alreadyMemberBadge')}
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground capitalize">
+              <p className="text-muted-foreground text-xs capitalize">
                 {getStatusLabel(user.availability)}
               </p>
             </div>
@@ -228,44 +235,41 @@ const AddUsers: React.FC = () => {
     {
       key: 'email',
       label: t('addUsers.table.email'),
-      render: user => <span className="text-muted-foreground">{user.email || '---'}</span>,
+      render: user => <span className="text-muted-foreground text-sm">{user.email || '---'}</span>,
     },
   ];
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" onClick={handleGoBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div className="h-8 w-64 bg-muted animate-pulse rounded" />
-          </div>
-          <div className="h-64 bg-muted animate-pulse rounded" />
+      <div className="flex flex-col gap-6 p-4 md:p-6" aria-busy="true">
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-64" />
+          <Skeleton className="h-4 w-80 max-w-full" />
         </div>
+        <Skeleton className="h-16 rounded-xl" />
+        <ListSkeleton rows={6} />
       </div>
     );
   }
 
   if (!team) {
     return (
-      <div className="p-6">
-        <div className="text-center py-12">
-          <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">{t('addUsers.notFound.title')}</h3>
-          <p className="text-muted-foreground mb-4">{t('addUsers.notFound.description')}</p>
-          <Button onClick={handleGoBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('addUsers.notFound.action')}
-          </Button>
-        </div>
+      <div className="p-4 md:p-6">
+        <EmptyState
+          icon={Users}
+          title={t('addUsers.notFound.title')}
+          description={t('addUsers.notFound.description')}
+          action={{ label: t('addUsers.notFound.action'), onClick: handleGoBack }}
+          className="py-16"
+        />
       </div>
     );
   }
 
+  const allSelected = users.length > 0 && selectedIds.length === users.length;
+
   return (
-    <div className="p-6">
+    <div className="flex h-full flex-col p-4 md:p-6">
       <BaseHeader
         title={t('addUsers.title', { name: team.name })}
         subtitle={t('addUsers.subtitle')}
@@ -279,38 +283,29 @@ const AddUsers: React.FC = () => {
         ]}
       />
 
-      <div className="space-y-6">
+      <div className="mt-4 flex flex-1 flex-col gap-4">
         {/* Selection Summary */}
-        <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground">
+        <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-background/92 px-4 py-3 shadow-xs/5 backdrop-blur">
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge variant="secondary" className="tabular-nums">
               {t('addUsers.summary', { selected: selectedIds.length, total: users.length })}
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSelectAll}
-              disabled={users.length === 0}
-            >
-              {selectedIds.length === users.length
-                ? t('actions.deselectAll')
-                : t('actions.selectAll')}
+            </Badge>
+            <Button variant="outline" size="sm" onClick={handleSelectAll} disabled={users.length === 0}>
+              {allSelected ? t('actions.deselectAll') : t('actions.selectAll')}
             </Button>
           </div>
-          <Button
-            onClick={handleSave}
-            disabled={!hasPendingChanges || isSaving}
-            className="min-w-[140px]"
-          >
-            {isSaving ? (
-              t('actions.saving')
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                {t('actions.save')}
-              </>
-            )}
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="flex items-center gap-2 text-muted-foreground text-sm">
+              {hasPendingChanges && <span className="size-2 rounded-full bg-warning" aria-hidden="true" />}
+              {hasPendingChanges
+                ? t('addUsers.pendingChanges', { added: addedIds.length, removed: removedIds.length })
+                : t('addUsers.noPendingChanges')}
+            </span>
+            <Button onClick={handleSave} disabled={!hasPendingChanges} loading={isSaving}>
+              {!isSaving && <Save />}
+              {isSaving ? t('actions.saving') : t('actions.save')}
+            </Button>
+          </div>
         </div>
 
         {/* Users Table */}
@@ -322,7 +317,6 @@ const AddUsers: React.FC = () => {
           emptyDescription={t('addUsers.empty.description')}
           emptyIcon={Users}
           getRowKey={user => user.id.toString()}
-          className="border rounded-lg"
         />
       </div>
     </div>

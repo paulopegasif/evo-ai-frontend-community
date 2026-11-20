@@ -180,12 +180,13 @@ import { FlowFeedbackBanner } from '@/components/journey/_ui';
 
 ## Button contract — for Flow Builder modals and panels
 
-EVO-1253 does **not** ship a `<FlowButton>`. The Flow Builder reuses `<Button>` from `@evoapi/design-system` directly. Building a flow-specific button would duplicate the design system without an external consumer (against the promotion criterion below).
+EVO-1253 does **not** ship a `<FlowButton>`. The Flow Builder reuses the coss ui `<Button>` (`@/components/ui/button`) directly. Building a flow-specific button would duplicate the design system without an external consumer (against the promotion criterion below).
 
-**Available `<Button>` API** (from `@evoapi/design-system`):
+**Available `<Button>` API** (coss ui, `@/components/ui/button`):
 
-- `variant`: `default | destructive | outline | secondary | ghost | link`
-- `size`: `default | sm | lg | icon`
+- `variant`: `default | destructive | destructive-outline | outline | secondary | ghost | link`
+- `size`: `xs | sm | default | lg | xl | icon | icon-xs | icon-sm | icon-lg`
+- `loading` shows a spinner and disables the button; `render` replaces Radix's `asChild`.
 
 **Canonical mapping for Flow Builder modals** (matches existing precedent in `src/components/journey/nodes/**`):
 
@@ -215,7 +216,7 @@ EVO-1253 does **not** declare new typography tokens. Tailwind v4's built-in `tex
 
 | Role | Classes | Source / example |
 |---|---|---|
-| **Modal title** | `text-lg leading-none font-semibold` | Automatic when using `<DialogTitle>` from `@evoapi/design-system`. Do not override. |
+| **Modal title** | `text-lg leading-none font-semibold` | Automatic when using `<DialogTitle>` from `@/components/ui/dialog` (coss ui). Do not override. |
 | **Modal description / subtitle** | `text-sm text-muted-foreground` | Automatic via `<DialogDescription>` from design system. |
 | **Section header inside form** | `text-sm font-medium` | Used in `WaitEventConfig`, `RemoveLabelPanel`, `TransferJourneyPanel`, etc. |
 | **Form label** | `text-sm font-medium` | `<Label className="text-sm font-medium">` — matches existing pattern. Plain `<Label>` (no size prop) defaults to the same. |
@@ -291,15 +292,15 @@ Davidson (or the reviewer) walks this list before approving.
 
 ---
 
-## Promotion criterion — when a bridge graduates to `@evoapi/design-system`
+## Promotion criterion — when a bridge graduates to `src/components/ui`
 
-A `_ui/` bridge becomes a candidate for promotion to the external `@evoapi/design-system` package ONLY when ALL of these are true:
+A `_ui/` bridge becomes a candidate for promotion to the shared `src/components/ui` primitives ONLY when ALL of these are true:
 
 1. A second feature outside the Flow Builder genuinely needs the same component (not "might be useful one day").
 2. The API can be generalised without leaking flow-specific concepts (e.g. node category names) into the public surface.
 3. The colour tokens it consumes can be expressed in the design system's existing semantic token vocabulary (or promotable alongside the component).
 
-If 1–3 hold, the promotion is a separate PR against `@evoapi/design-system`, NOT a sneaky pull-up inside another card.
+If 1–3 hold, the promotion is a separate PR that adds it to `src/components/ui`, NOT a sneaky pull-up inside another card.
 
 Until then, bridges stay in `journey/_ui/`. "It might be useful" is not a sufficient reason — duplicated component noise in the package is worse than a small wrapper in the consumer repo.
 
@@ -311,7 +312,7 @@ These Epic 10 cards consume tokens / bridges from this directory:
 
 | Card | Consumes | Notes |
 |---|---|---|
-| EVO-1264 [10.11] NodeConfigModal | `--color-flow-panel-*` tokens | ✅ Delivered. Lives at `src/components/journey/shared/NodeConfigModal/` with 3 variants (simple / tabs / disclosure). Consumes `Dialog`, `Tabs`, `Collapsible`, `Button` from `@evoapi/design-system` + flow-panel chrome tokens. See sibling story tree "Flow Builder / NodeConfigModal" in Storybook. |
+| EVO-1264 [10.11] NodeConfigModal | `--color-flow-panel-*` tokens | ✅ Delivered. Lives at `src/components/journey/shared/NodeConfigModal/` with 3 variants (simple / tabs / disclosure). Consumes coss ui `Dialog`, `Tabs`, `Collapsible`, `Button` (`@/components/ui/*`) + flow-panel chrome tokens. See sibling story tree "Flow Builder / NodeConfigModal" in Storybook. |
 | EVO-1274 [10.4] Refazer modais | Wraps EVO-1264's `<NodeConfigModal>`, uses `<FlowFeedbackBanner>` for inline alerts | Application work — does not declare new tokens. Formally unblocked since EVO-1264 landed. |
 | EVO-1271 [10.6] Trigger Event UX | Uses `<FlowNode variant="trigger">` + tokens | Plus its own dependency EVO-1261 (event manifesto). |
 | EVO-1270 [10.21] Light mode | All token light variants | Audits the rest of the Flow Builder and applies light-mode tokens to existing surfaces. |

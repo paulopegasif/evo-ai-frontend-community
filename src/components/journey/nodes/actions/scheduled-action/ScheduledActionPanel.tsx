@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Clock } from 'lucide-react';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import {
-  Label,
-  Separator,
-  Input,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -18,6 +19,11 @@ import InboxesService from '@/services/channels/inboxesService';
 import type { Journey } from '@/types/automation';
 import type { Inbox } from '@/types/channels/inbox';
 import { ScheduledActionNodeData } from './ScheduledActionNode';
+
+const WEBHOOK_METHOD_ITEMS = ['GET', 'POST', 'PUT', 'DELETE'].map(method => ({
+  value: method,
+  label: method,
+}));
 
 interface ScheduledActionPanelProps {
   nodeId: string;
@@ -138,17 +144,17 @@ export function ScheduledActionPanel({
     });
   };
 
-  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleUnitChange = (value: string) => {
     setFormData({
       ...formData,
-      delayUnit: e.target.value as 'minutes' | 'hours' | 'days' | 'weeks',
+      delayUnit: value as 'minutes' | 'hours' | 'days' | 'weeks',
     });
   };
 
-  const handleActionTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleActionTypeChange = (value: string) => {
     setFormData({
       ...formData,
-      actionType: e.target.value,
+      actionType: value,
       actionConfig: {},
     });
   };
@@ -231,6 +237,25 @@ export function ScheduledActionPanel({
     [formData, originalData],
   );
 
+  const unitItems = (['minutes', 'hours', 'days', 'weeks'] as const).map(unit => ({
+    value: unit,
+    label: t(`panels.scheduledAction.units.${unit}`),
+  }));
+  const actionTypeItems = (
+    ['send_message', 'execute_webhook', 'trigger_journey', 'create_task'] as const
+  ).map(action => ({ value: action, label: t(`panels.scheduledAction.actions.${action}`) }));
+  const channelItems = availableInboxes.flatMap(inbox => {
+    const channelValue = CHANNEL_TYPE_MAP[inbox.channel_type];
+    return channelValue
+      ? [
+          {
+            value: channelValue,
+            label: `${inbox.name} (${getChannelDisplayName(inbox.channel_type)})`,
+          },
+        ]
+      : [];
+  });
+
   return (
     <NodeConfigModal
       open
@@ -251,9 +276,9 @@ export function ScheduledActionPanel({
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label>{t('panels.scheduledAction.delayDuration')}</Label>
-          <div className="flex gap-2">
+        <Field>
+          <FieldLabel>{t('panels.scheduledAction.delayDuration')}</FieldLabel>
+          <div className="flex w-full gap-2">
             <Input
               type="number"
               min="1"
@@ -263,54 +288,65 @@ export function ScheduledActionPanel({
               placeholder="1"
               className="flex-1"
             />
-            <select
+            <Select
+              items={unitItems}
               value={formData.delayUnit || 'hours'}
-              onChange={handleUnitChange}
-              className="flex-1 px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
+              onValueChange={v => handleUnitChange(String(v ?? ''))}
             >
-              <option value="minutes">{t('panels.scheduledAction.units.minutes')}</option>
-              <option value="hours">{t('panels.scheduledAction.units.hours')}</option>
-              <option value="days">{t('panels.scheduledAction.units.days')}</option>
-              <option value="weeks">{t('panels.scheduledAction.units.weeks')}</option>
-            </select>
+              <SelectTrigger className="flex-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectPopup alignItemWithTrigger={false}>
+                {unitItems.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectPopup>
+            </Select>
           </div>
-        </div>
+        </Field>
 
         <Separator />
 
-        <div className="space-y-2">
-          <Label>{t('panels.scheduledAction.actionType')}</Label>
-          <select
-            value={formData.actionType || ''}
-            onChange={handleActionTypeChange}
-            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
+        <Field>
+          <FieldLabel>{t('panels.scheduledAction.actionType')}</FieldLabel>
+          <Select
+            items={actionTypeItems}
+            value={formData.actionType || null}
+            onValueChange={v => handleActionTypeChange(String(v ?? ''))}
           >
-            <option value="">{t('panels.scheduledAction.placeholders.selectAction')}</option>
-            <option value="send_message">{t('panels.scheduledAction.actions.send_message')}</option>
-            <option value="execute_webhook">
-              {t('panels.scheduledAction.actions.execute_webhook')}
-            </option>
-            <option value="trigger_journey">
-              {t('panels.scheduledAction.actions.trigger_journey')}
-            </option>
-            <option value="create_task">{t('panels.scheduledAction.actions.create_task')}</option>
-          </select>
-        </div>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t('panels.scheduledAction.placeholders.selectAction')} />
+            </SelectTrigger>
+            <SelectPopup alignItemWithTrigger={false}>
+              {actionTypeItems.map(item => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectPopup>
+          </Select>
+        </Field>
 
         {formData.actionType === 'send_message' && (
           <>
             <Separator />
             <div className="space-y-3">
-              <div className="space-y-2">
-                <Label>{t('panels.scheduledAction.labels.channel')}</Label>
+              <Field>
+                <FieldLabel>{t('panels.scheduledAction.labels.channel')}</FieldLabel>
                 <Select
-                  value={formData.actionConfig?.channel || ''}
+                  items={channelItems}
+                  value={formData.actionConfig?.channel || null}
                   onValueChange={value =>
-                    handleSendMessageChange(value, formData.actionConfig?.message || '')
+                    handleSendMessageChange(
+                      String(value ?? ''),
+                      formData.actionConfig?.message || '',
+                    )
                   }
                   disabled={loadingInboxes || availableInboxes.length === 0}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue
                       placeholder={
                         loadingInboxes
@@ -319,7 +355,7 @@ export function ScheduledActionPanel({
                       }
                     />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     {availableInboxes.length === 0 && !loadingInboxes && (
                       <div className="px-2 py-1.5 text-sm text-muted-foreground">
                         {t('panels.scheduledAction.messages.noChannelsConfiguredInline')}
@@ -335,7 +371,7 @@ export function ScheduledActionPanel({
                         </SelectItem>
                       );
                     })}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
                 {availableInboxes.length === 0 && !loadingInboxes && (
                   <FlowFeedbackBanner variant="warn">
@@ -344,24 +380,24 @@ export function ScheduledActionPanel({
                     </p>
                   </FlowFeedbackBanner>
                 )}
-              </div>
-              <div className="space-y-2">
-                <Label>{t('panels.scheduledAction.labels.message')}</Label>
-                <textarea
+              </Field>
+              <Field>
+                <FieldLabel>{t('panels.scheduledAction.labels.message')}</FieldLabel>
+                <Textarea
                   value={formData.actionConfig?.message || ''}
                   onChange={e =>
                     handleSendMessageChange(formData.actionConfig?.channel || '', e.target.value)
                   }
                   placeholder={t('panels.scheduledAction.placeholders.message')}
                   rows={3}
-                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm font-mono"
+                  className="font-mono"
                 />
-                <p className="text-xs text-muted-foreground">
+                <FieldDescription>
                   {t('panels.scheduledAction.hints.characterCount', {
                     count: formData.actionConfig?.message?.length || 0,
                   })}
-                </p>
-              </div>
+                </FieldDescription>
+              </Field>
             </div>
           </>
         )}
@@ -370,8 +406,8 @@ export function ScheduledActionPanel({
           <>
             <Separator />
             <div className="space-y-3">
-              <div className="space-y-2">
-                <Label>{t('panels.scheduledAction.labels.webhookUrl')}</Label>
+              <Field>
+                <FieldLabel>{t('panels.scheduledAction.labels.webhookUrl')}</FieldLabel>
                 <Input
                   type="url"
                   value={formData.actionConfig?.webhook_url || ''}
@@ -383,22 +419,28 @@ export function ScheduledActionPanel({
                   }
                   placeholder={t('panels.scheduledAction.placeholders.webhookUrl')}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('panels.scheduledAction.labels.webhookMethod')}</Label>
-                <select
+              </Field>
+              <Field>
+                <FieldLabel>{t('panels.scheduledAction.labels.webhookMethod')}</FieldLabel>
+                <Select
+                  items={WEBHOOK_METHOD_ITEMS}
                   value={formData.actionConfig?.webhook_method || 'POST'}
-                  onChange={e =>
-                    handleWebhookChange(formData.actionConfig?.webhook_url || '', e.target.value)
+                  onValueChange={v =>
+                    handleWebhookChange(formData.actionConfig?.webhook_url || '', String(v ?? ''))
                   }
-                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
                 >
-                  <option value="GET">GET</option>
-                  <option value="POST">POST</option>
-                  <option value="PUT">PUT</option>
-                  <option value="DELETE">DELETE</option>
-                </select>
-              </div>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup alignItemWithTrigger={false}>
+                    {WEBHOOK_METHOD_ITEMS.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
             </div>
           </>
         )}
@@ -406,29 +448,36 @@ export function ScheduledActionPanel({
         {formData.actionType === 'trigger_journey' && (
           <>
             <Separator />
-            <div className="space-y-2">
-              <Label>{t('panels.scheduledAction.labels.journeyId')}</Label>
-              <select
-                value={formData.actionConfig?.journey_id || ''}
-                onChange={e => handleTriggerJourneyChange(e.target.value)}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
+            <Field>
+              <FieldLabel>{t('panels.scheduledAction.labels.journeyId')}</FieldLabel>
+              <Select
+                items={journeys.map(journey => ({
+                  value: String(journey.id),
+                  label: journey.name,
+                }))}
+                value={formData.actionConfig?.journey_id || null}
+                onValueChange={v => handleTriggerJourneyChange(String(v ?? ''))}
                 disabled={loadingJourneys}
               >
-                <option value="">
-                  {loadingJourneys
-                    ? t('panels.scheduledAction.placeholders.loadingJourneys')
-                    : t('panels.scheduledAction.placeholders.journeyId')}
-                </option>
-                {journeys.map(journey => (
-                  <option key={journey.id} value={journey.id}>
-                    {journey.name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-muted-foreground">
-                {t('panels.scheduledAction.hints.journeyId')}
-              </p>
-            </div>
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      loadingJourneys
+                        ? t('panels.scheduledAction.placeholders.loadingJourneys')
+                        : t('panels.scheduledAction.placeholders.journeyId')
+                    }
+                  />
+                </SelectTrigger>
+                <SelectPopup alignItemWithTrigger={false}>
+                  {journeys.map(journey => (
+                    <SelectItem key={journey.id} value={String(journey.id)}>
+                      {journey.name}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+              <FieldDescription>{t('panels.scheduledAction.hints.journeyId')}</FieldDescription>
+            </Field>
           </>
         )}
 
@@ -436,8 +485,8 @@ export function ScheduledActionPanel({
           <>
             <Separator />
             <div className="space-y-3">
-              <div className="space-y-2">
-                <Label>{t('panels.scheduledAction.labels.taskTitle')}</Label>
+              <Field>
+                <FieldLabel>{t('panels.scheduledAction.labels.taskTitle')}</FieldLabel>
                 <Input
                   type="text"
                   value={formData.actionConfig?.task_title || ''}
@@ -449,19 +498,18 @@ export function ScheduledActionPanel({
                   }
                   placeholder={t('panels.scheduledAction.placeholders.taskTitle')}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('panels.scheduledAction.labels.taskDescription')}</Label>
-                <textarea
+              </Field>
+              <Field>
+                <FieldLabel>{t('panels.scheduledAction.labels.taskDescription')}</FieldLabel>
+                <Textarea
                   value={formData.actionConfig?.task_description || ''}
                   onChange={e =>
                     handleCreateTaskChange(formData.actionConfig?.task_title || '', e.target.value)
                   }
                   placeholder={t('panels.scheduledAction.placeholders.taskDescription')}
                   rows={3}
-                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm"
                 />
-              </div>
+              </Field>
             </div>
           </>
         )}

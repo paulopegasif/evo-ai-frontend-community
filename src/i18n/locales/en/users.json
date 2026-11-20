@@ -235,5 +235,9 @@
       "deleting": "Deleting...",
       "confirm": "Delete All"
     }
+  },
+  "viewMode": {
+    "cards": "Card view",
+    "table": "Table view"
   }
 }

@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandList,
-} from '@evoapi/design-system';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { SearchX } from 'lucide-react';
+import { Command, CommandGroup, CommandGroupLabel, CommandList } from '@/components/ui/command';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Kbd } from '@/components/ui/kbd';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
 import { useLanguage } from '@/hooks/useLanguage';
 import useGlobalSearch from '@/hooks/chat/useGlobalSearch';
 import SearchResultConversation from './SearchResultConversation';
@@ -27,7 +27,19 @@ interface Props {
   onSelectConversation: (item: SearchConversationResult) => void;
   onSelectContact: (item: SearchContactResult) => void;
   onSelectMessage: (item: SearchMessageResult) => void;
+  /**
+   * The search field (`GlobalSearchInput`). Rendering it here puts it inside
+   * the same combobox as the results, so ArrowUp/ArrowDown move through them
+   * and Enter opens the highlighted one.
+   */
+  children?: ReactNode;
+  /** Called when the user types in the search field. */
+  onInputValueChange?: (value: string) => void;
 }
+
+const SectionEmpty = ({ children }: { children: ReactNode }) => (
+  <div className="px-2 py-1.5 text-muted-foreground text-xs">{children}</div>
+);
 
 export default function GlobalSearchPanel({
   isOpen,
@@ -37,9 +49,11 @@ export default function GlobalSearchPanel({
   onSelectConversation,
   onSelectContact,
   onSelectMessage,
+  children,
+  onInputValueChange,
 }: Props) {
   const { t } = useLanguage('chat');
-  const panelRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const { status, error, conversations, contacts, messages, isEmpty, term } =
     useGlobalSearch(searchTerm);
 
@@ -53,7 +67,7 @@ export default function GlobalSearchPanel({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -67,115 +81,166 @@ export default function GlobalSearchPanel({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !children) return null;
 
   const limitedConversations = conversations.slice(0, SECTION_DISPLAY_LIMIT);
   const limitedContacts = contacts.slice(0, SECTION_DISPLAY_LIMIT);
   const limitedMessages = messages.slice(0, SECTION_DISPLAY_LIMIT);
+  const trimmedInput = rawInputValue.trim();
+  const hasResults = status === 'success' && !isEmpty;
+
+  const select = <T,>(handler: (item: T) => void) => (item: T) => {
+    handler(item);
+    onClose();
+  };
 
   return (
-    <div
-      ref={panelRef}
-      className="absolute top-full left-0 right-0 mt-1 z-50 rounded-md border bg-popover text-popover-foreground shadow-lg overflow-hidden"
-      role="dialog"
-      aria-label={t('globalSearch.ariaLabel')}
+    <Command
+      // Results come from the server already filtered; the list renders them as-is.
+      filter={null}
+      autoHighlight={false}
+      keepHighlight={false}
+      value={rawInputValue}
+      onValueChange={(value, details) => {
+        // Picking an item would otherwise write its value into the field.
+        if (details.reason === 'item-press') return;
+        onInputValueChange?.(value);
+      }}
     >
-      <Command shouldFilter={false} className="max-h-[60vh]">
-        {status === 'loading' && (
-          <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground border-b">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            <span>{t('globalSearch.loading')}</span>
+      <div ref={rootRef} className="relative">
+        {children}
+
+        {isOpen && (
+          <div
+            className="absolute inset-x-0 top-full z-50 mt-1.5 flex max-h-[60vh] flex-col overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg/5"
+            role="dialog"
+            aria-label={t('globalSearch.ariaLabel')}
+          >
+            {status === 'loading' && (
+              <div aria-busy="true" className="border-b">
+                <div className="flex items-center gap-2 px-3 py-2 text-muted-foreground text-xs">
+                  <Spinner className="size-3.5" />
+                  <span>{t('globalSearch.loading')}</span>
+                </div>
+                <div className="space-y-2.5 px-3 pb-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                      <Skeleton className="size-6 rounded-md" />
+                      <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-3 w-2/5" />
+                        <Skeleton className="h-2.5 w-4/5" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {status === 'error' && (
+              <div className="p-2">
+                <Alert variant="error">
+                  <AlertDescription>{error || t('globalSearch.error')}</AlertDescription>
+                </Alert>
+              </div>
+            )}
+
+            {status === 'idle' && trimmedInput.length > 0 && trimmedInput.length < 2 && (
+              <p className="px-3 py-4 text-center text-muted-foreground text-sm">
+                {t('globalSearch.typeMoreHint')}
+              </p>
+            )}
+
+            {status === 'idle' && trimmedInput.length === 0 && (
+              <p className="px-3 py-4 text-center text-muted-foreground text-sm">
+                {t('globalSearch.emptyHint')}
+              </p>
+            )}
+
+            {status === 'success' && isEmpty && (
+              <Empty className="gap-3 p-6">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <SearchX />
+                  </EmptyMedia>
+                  <EmptyDescription>{t('globalSearch.noResults')}</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            )}
+
+            <CommandList className={hasResults ? 'p-1.5' : 'hidden'}>
+              {hasResults && (
+                <>
+                  <CommandGroup>
+                    <CommandGroupLabel>{t('globalSearch.sections.conversations')}</CommandGroupLabel>
+                    {limitedConversations.length === 0 ? (
+                      <SectionEmpty>{t('globalSearch.sections.conversationsEmpty')}</SectionEmpty>
+                    ) : (
+                      limitedConversations.map(item => (
+                        <SearchResultConversation
+                          key={`conv-${item.id}`}
+                          item={item}
+                          query={term}
+                          onSelect={select(onSelectConversation)}
+                        />
+                      ))
+                    )}
+                  </CommandGroup>
+
+                  <CommandGroup>
+                    <CommandGroupLabel>{t('globalSearch.sections.contacts')}</CommandGroupLabel>
+                    {limitedContacts.length === 0 ? (
+                      <SectionEmpty>{t('globalSearch.sections.contactsEmpty')}</SectionEmpty>
+                    ) : (
+                      limitedContacts.map(item => (
+                        <SearchResultContact
+                          key={`contact-${item.id}`}
+                          item={item}
+                          query={term}
+                          onSelect={select(onSelectContact)}
+                        />
+                      ))
+                    )}
+                  </CommandGroup>
+
+                  <CommandGroup>
+                    <CommandGroupLabel>{t('globalSearch.sections.messages')}</CommandGroupLabel>
+                    {limitedMessages.length === 0 ? (
+                      <SectionEmpty>{t('globalSearch.sections.messagesEmpty')}</SectionEmpty>
+                    ) : (
+                      limitedMessages.map(item => (
+                        <SearchResultMessage
+                          key={`msg-${item.id}`}
+                          item={item}
+                          query={term}
+                          onSelect={select(onSelectMessage)}
+                        />
+                      ))
+                    )}
+                  </CommandGroup>
+                </>
+              )}
+            </CommandList>
+
+            {hasResults && (
+              <div className="flex items-center gap-3 border-t px-3 py-1.5 text-muted-foreground text-xs">
+                <span className="flex items-center gap-1">
+                  <Kbd>↑</Kbd>
+                  <Kbd>↓</Kbd>
+                  {t('globalSearch.hints.navigate', 'navegar')}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>Enter</Kbd>
+                  {t('globalSearch.hints.open', 'abrir')}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>Esc</Kbd>
+                  {t('globalSearch.hints.close', 'fechar')}
+                </span>
+              </div>
+            )}
           </div>
         )}
-
-        {status === 'error' && (
-          <div className="px-3 py-2 text-sm text-destructive border-b">
-            {error || t('globalSearch.error')}
-          </div>
-        )}
-
-        {status === 'idle' && rawInputValue.trim().length > 0 && rawInputValue.trim().length < 2 && (
-          <div className="px-3 py-4 text-sm text-muted-foreground text-center">
-            {t('globalSearch.typeMoreHint')}
-          </div>
-        )}
-
-        {status === 'idle' && rawInputValue.trim().length === 0 && (
-          <div className="px-3 py-4 text-sm text-muted-foreground text-center">
-            {t('globalSearch.emptyHint')}
-          </div>
-        )}
-
-        <CommandList>
-          {status === 'success' && isEmpty && (
-            <CommandEmpty>{t('globalSearch.noResults')}</CommandEmpty>
-          )}
-
-          {status === 'success' && !isEmpty && (
-            <>
-              <CommandGroup heading={t('globalSearch.sections.conversations')}>
-                {limitedConversations.length === 0 ? (
-                  <div className="px-3 py-2 text-xs text-muted-foreground">
-                    {t('globalSearch.sections.conversationsEmpty')}
-                  </div>
-                ) : (
-                  limitedConversations.map(item => (
-                    <SearchResultConversation
-                      key={`conv-${item.id}`}
-                      item={item}
-                      query={term}
-                      onSelect={result => {
-                        onSelectConversation(result);
-                        onClose();
-                      }}
-                    />
-                  ))
-                )}
-              </CommandGroup>
-
-              <CommandGroup heading={t('globalSearch.sections.contacts')}>
-                {limitedContacts.length === 0 ? (
-                  <div className="px-3 py-2 text-xs text-muted-foreground">
-                    {t('globalSearch.sections.contactsEmpty')}
-                  </div>
-                ) : (
-                  limitedContacts.map(item => (
-                    <SearchResultContact
-                      key={`contact-${item.id}`}
-                      item={item}
-                      query={term}
-                      onSelect={result => {
-                        onSelectContact(result);
-                        onClose();
-                      }}
-                    />
-                  ))
-                )}
-              </CommandGroup>
-
-              <CommandGroup heading={t('globalSearch.sections.messages')}>
-                {limitedMessages.length === 0 ? (
-                  <div className="px-3 py-2 text-xs text-muted-foreground">
-                    {t('globalSearch.sections.messagesEmpty')}
-                  </div>
-                ) : (
-                  limitedMessages.map(item => (
-                    <SearchResultMessage
-                      key={`msg-${item.id}`}
-                      item={item}
-                      query={term}
-                      onSelect={result => {
-                        onSelectMessage(result);
-                        onClose();
-                      }}
-                    />
-                  ))
-                )}
-              </CommandGroup>
-            </>
-          )}
-        </CommandList>
-      </Command>
-    </div>
+      </div>
+    </Command>
   );
 }

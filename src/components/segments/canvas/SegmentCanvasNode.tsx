@@ -28,7 +28,7 @@ function SegmentCanvasNodeComponent({ type, selected }: NodeProps) {
         <Icon className="h-4 w-4 mt-0.5" />
         <div className="min-w-0">
           <p className="text-sm font-medium text-neutral-100">{label}</p>
-          <p className="truncate text-xs text-neutral-400">{description}</p>
+          <p className="truncate text-xs text-muted-foreground">{description}</p>
         </div>
       </div>
     </BaseFlowNode>

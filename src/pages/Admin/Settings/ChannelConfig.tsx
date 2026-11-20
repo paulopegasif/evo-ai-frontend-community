@@ -2,20 +2,21 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useForm, Controller, UseFormRegister, Path } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Button,
-  Card,
-  CardContent,
-  Switch,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@evoapi/design-system';
 import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
+import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import {
+  CardSaveFooter,
+  SecretField as SecretInput,
+  SettingsHeader,
+  SettingsSkeleton,
+  TextField as TextInput,
+  ToggleGroupBox,
+  ToggleRow,
+} from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -251,53 +252,23 @@ function SecretField<TData extends Record<string, unknown>>({
   error,
 }: SecretFieldProps<TData>) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Label htmlFor={fieldName}>{label}</Label>
-          {required && <span className="text-destructive ml-1" aria-hidden="true">*</span>}
-        </div>
-        {!secretModified[fieldName] && (
-          secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
-              <Lock className="h-3 w-3" />
-              {t('channels.secretConfigured')}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t('channels.secretNotConfigured')}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={fieldName}
-          type="password"
-          autoComplete="off"
-          placeholder={placeholder}
-          aria-required={required || undefined}
-          aria-invalid={error ? true : undefined}
-          {...register(fieldName as Path<TData>, {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              onSecretModifiedChange((prev) => ({ ...prev, [fieldName]: e.target.value.length > 0 })),
-          })}
-        />
-        {secretConfigured[fieldName] && !secretModified[fieldName] && (
-          <button
-            type="button"
-            onClick={onClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t('channels.clearSecret')}
-            aria-label={t('channels.clearSecret')}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
+    <SecretInput
+      id={fieldName}
+      label={label}
+      placeholder={placeholder}
+      required={required}
+      error={error}
+      registration={register(fieldName as Path<TData>, {
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+          onSecretModifiedChange((prev) => ({ ...prev, [fieldName]: e.target.value.length > 0 })),
+      })}
+      configured={Boolean(secretConfigured[fieldName])}
+      modified={Boolean(secretModified[fieldName])}
+      onClear={onClear}
+      configuredLabel={t('channels.secretConfigured')}
+      notConfiguredLabel={t('channels.secretNotConfigured')}
+      clearLabel={t('channels.clearSecret')}
+    />
   );
 }
 
@@ -317,23 +288,16 @@ interface TextFieldProps {
 
 function TextField({ id, label, placeholder, register, error, type, readOnly, required }: TextFieldProps) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center">
-        <Label htmlFor={id}>{label}</Label>
-        {required && <span className="text-destructive ml-1" aria-hidden="true">*</span>}
-      </div>
-      <Input
-        id={id}
-        placeholder={placeholder}
-        type={type}
-        readOnly={readOnly}
-        aria-required={required || undefined}
-        aria-invalid={error ? true : undefined}
-        className={readOnly ? 'bg-muted cursor-not-allowed' : undefined}
-        {...register}
-      />
-      {error && <p className="text-xs text-destructive">{error.message}</p>}
-    </div>
+    <TextInput
+      id={id}
+      label={label}
+      placeholder={placeholder}
+      registration={register}
+      error={error?.message}
+      type={type}
+      readOnly={readOnly}
+      required={required}
+    />
   );
 }
 
@@ -343,6 +307,7 @@ interface ChannelFormCardProps {
   onSubmit: () => void;
   saving: boolean;
   canSubmit: boolean;
+  dirty?: boolean;
   saveError: string | null;
   onDismissError: () => void;
   t: (key: string) => string;
@@ -352,40 +317,65 @@ interface ChannelFormCardProps {
   onCleared?: () => void;
 }
 
-function ChannelFormCard({ onSubmit, saving, canSubmit, saveError, onDismissError, t, children, clearConfigType, clearConfigLabel, onCleared }: ChannelFormCardProps) {
+function ChannelFormCard({ onSubmit, saving, canSubmit, dirty, saveError, onDismissError, t, children, clearConfigType, clearConfigLabel, onCleared }: ChannelFormCardProps) {
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={onSubmit}>
+      <Card>
+        <CardPanel className="flex flex-col gap-5 pt-6">
           {saveError && (
-            <div
-              role="alert"
-              className="flex items-start justify-between gap-3 rounded-md border-2 border-destructive bg-destructive/20 p-4 text-sm font-medium text-destructive shadow-sm"
-            >
-              <span className="whitespace-pre-wrap break-words select-text">{saveError}</span>
-              <button
-                type="button"
-                onClick={onDismissError}
-                aria-label={t('channels.dismissError')}
-                className="shrink-0 rounded p-0.5 text-destructive hover:bg-destructive/20"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+            <Alert variant="error">
+              <AlertCircle />
+              <AlertDescription className="whitespace-pre-wrap break-words text-destructive-foreground">
+                {saveError}
+              </AlertDescription>
+              <AlertAction>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={onDismissError}
+                  aria-label={t('channels.dismissError')}
+                >
+                  <X />
+                </Button>
+              </AlertAction>
+            </Alert>
           )}
           {children}
-          <div className="pt-2 flex gap-3">
-            <Button type="submit" disabled={saving || !canSubmit}>
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {saving ? t('channels.saving') : t('channels.save')}
-            </Button>
-            {clearConfigType && clearConfigLabel && (
-              <ClearConfigButton configType={clearConfigType} configLabel={clearConfigLabel} onCleared={onCleared} />
-            )}
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardPanel>
+        <SubmitFooter saving={saving} canSubmit={canSubmit} dirty={dirty} t={t}>
+          {clearConfigType && clearConfigLabel && (
+            <ClearConfigButton configType={clearConfigType} configLabel={clearConfigLabel} onCleared={onCleared} />
+          )}
+        </SubmitFooter>
+      </Card>
+    </form>
+  );
+}
+
+function SubmitFooter({
+  saving,
+  canSubmit,
+  dirty,
+  t,
+  children,
+}: {
+  saving: boolean;
+  canSubmit: boolean;
+  dirty?: boolean;
+  t: (key: string) => string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <CardSaveFooter
+      dirty={dirty}
+      saving={saving}
+      disabled={!canSubmit}
+      saveLabel={t('channels.save')}
+      savingLabel={t('channels.saving')}
+    >
+      {children}
+    </CardSaveFooter>
   );
 }
 
@@ -404,14 +394,7 @@ function ToggleField({ name, label, control }: ToggleFieldProps) {
       name={name}
       control={control}
       render={({ field }) => (
-        <div className="flex items-center justify-between">
-          <Label htmlFor={name}>{label}</Label>
-          <Switch
-            id={name}
-            checked={toBool(field.value)}
-            onCheckedChange={field.onChange}
-          />
-        </div>
+        <ToggleRow id={name} label={label} checked={toBool(field.value)} onCheckedChange={field.onChange} />
       )}
     />
   );
@@ -683,11 +666,7 @@ export default function ChannelConfig() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <SettingsSkeleton cards={1} fields={4} />;
   }
 
   // submitCount>0 gates inline error rendering; default reValidateMode ('onChange')
@@ -706,31 +685,29 @@ export default function ChannelConfig() {
   const twShowErrors = twitterForm.formState.submitCount > 0;
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-sidebar-foreground">{t('channels.title')}</h2>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('channels.description')}</p>
-      </div>
+    <div className="flex max-w-3xl flex-col gap-6">
+      <SettingsHeader title={t('channels.title')} description={t('channels.description')} />
 
       <Tabs defaultValue="facebook">
-        <TabsList className="flex w-full flex-wrap gap-1">
-          <TabsTrigger value="facebook">{t('channels.facebook.tabTitle')}</TabsTrigger>
-          <TabsTrigger value="whatsapp">{t('channels.whatsapp.tabTitle')}</TabsTrigger>
-          <TabsTrigger value="instagram">{t('channels.instagram.tabTitle')}</TabsTrigger>
-          <TabsTrigger value="evolution">{t('channels.evolution.tabTitle')}</TabsTrigger>
-          <TabsTrigger value="evolution_go">{t('channels.evolutionGo.tabTitle')}</TabsTrigger>
-          <TabsTrigger value="email">{t('channels.email.tabTitle')}</TabsTrigger>
+        <TabsList variant="underline" className="w-full justify-start overflow-x-auto border-b">
+          <TabsTab value="facebook">{t('channels.facebook.tabTitle')}</TabsTab>
+          <TabsTab value="whatsapp">{t('channels.whatsapp.tabTitle')}</TabsTab>
+          <TabsTab value="instagram">{t('channels.instagram.tabTitle')}</TabsTab>
+          <TabsTab value="evolution">{t('channels.evolution.tabTitle')}</TabsTab>
+          <TabsTab value="evolution_go">{t('channels.evolutionGo.tabTitle')}</TabsTab>
+          <TabsTab value="email">{t('channels.email.tabTitle')}</TabsTab>
           {/* Twitter tab intentionally hidden — channel deprecated in customer-facing flow.
               Form, schema and submit handler are kept below so any installation that already
               has Twitter credentials configured can still load the page without runtime errors. */}
         </TabsList>
 
         {/* Facebook Tab */}
-        <TabsContent value="facebook" className="mt-4">
+        <TabsPanel value="facebook" className="mt-4">
           <ChannelFormCard
             onSubmit={facebookForm.handleSubmit(onSubmitFacebook)}
             saving={savingFacebook}
             canSubmit={facebookForm.formState.isValid}
+            dirty={facebookForm.formState.isDirty}
             saveError={fbSaveError}
             onDismissError={() => setFbSaveError(null)}
             t={t}
@@ -772,7 +749,7 @@ export default function ChannelConfig() {
               register={facebookForm.register('FACEBOOK_API_VERSION')}
               error={fbShowErrors ? fbErrors.FACEBOOK_API_VERSION : undefined}
             />
-            <div className="space-y-3 rounded-md border p-4">
+            <ToggleGroupBox>
               <ToggleField
                 name="ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT"
                 label={t('channels.facebook.fields.humanAgent')}
@@ -783,16 +760,17 @@ export default function ChannelConfig() {
                 label={t('channels.facebook.fields.feedComments')}
                 control={facebookForm.control}
               />
-            </div>
+            </ToggleGroupBox>
           </ChannelFormCard>
-        </TabsContent>
+        </TabsPanel>
 
         {/* WhatsApp Tab */}
-        <TabsContent value="whatsapp" className="mt-4">
+        <TabsPanel value="whatsapp" className="mt-4">
           <ChannelFormCard
             onSubmit={whatsappForm.handleSubmit(onSubmitWhatsapp)}
             saving={savingWhatsapp}
             canSubmit={whatsappForm.formState.isValid}
+            dirty={whatsappForm.formState.isDirty}
             saveError={wpSaveError}
             onDismissError={() => setWpSaveError(null)}
             t={t}
@@ -843,14 +821,15 @@ export default function ChannelConfig() {
               error={wpShowErrors ? wpErrors.WP_API_VERSION : undefined}
             />
           </ChannelFormCard>
-        </TabsContent>
+        </TabsPanel>
 
         {/* Instagram Tab */}
-        <TabsContent value="instagram" className="mt-4">
+        <TabsPanel value="instagram" className="mt-4">
           <ChannelFormCard
             onSubmit={instagramForm.handleSubmit(onSubmitInstagram)}
             saving={savingInstagram}
             canSubmit={instagramForm.formState.isValid}
+            dirty={instagramForm.formState.isDirty}
             saveError={igSaveError}
             onDismissError={() => setIgSaveError(null)}
             t={t}
@@ -892,22 +871,23 @@ export default function ChannelConfig() {
               register={instagramForm.register('INSTAGRAM_API_VERSION')}
               readOnly
             />
-            <div className="space-y-3 rounded-md border p-4">
+            <ToggleGroupBox>
               <ToggleField
                 name="ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT"
                 label={t('channels.instagram.fields.humanAgent')}
                 control={instagramForm.control}
               />
-            </div>
+            </ToggleGroupBox>
           </ChannelFormCard>
-        </TabsContent>
+        </TabsPanel>
 
         {/* Evolution Tab */}
-        <TabsContent value="evolution" className="mt-4">
+        <TabsPanel value="evolution" className="mt-4">
           <ChannelFormCard
             onSubmit={evolutionForm.handleSubmit(onSubmitEvolution)}
             saving={savingEvolution}
             canSubmit={evolutionForm.formState.isValid}
+            dirty={evolutionForm.formState.isDirty}
             saveError={evoSaveError}
             onDismissError={() => setEvoSaveError(null)}
             t={t}
@@ -937,14 +917,15 @@ export default function ChannelConfig() {
               error={evoShowErrors ? evoErrors.EVOLUTION_ADMIN_SECRET?.message : undefined}
             />
           </ChannelFormCard>
-        </TabsContent>
+        </TabsPanel>
 
         {/* Evolution Go Tab */}
-        <TabsContent value="evolution_go" className="mt-4">
+        <TabsPanel value="evolution_go" className="mt-4">
           <ChannelFormCard
             onSubmit={evolutionGoForm.handleSubmit(onSubmitEvolutionGo)}
             saving={savingEvolutionGo}
             canSubmit={evolutionGoForm.formState.isValid}
+            dirty={evolutionGoForm.formState.isDirty}
             saveError={evoGoSaveError}
             onDismissError={() => setEvoGoSaveError(null)}
             t={t}
@@ -974,14 +955,15 @@ export default function ChannelConfig() {
               error={evoGoShowErrors ? evoGoErrors.EVOLUTION_GO_ADMIN_SECRET?.message : undefined}
             />
           </ChannelFormCard>
-        </TabsContent>
+        </TabsPanel>
 
         {/* Twitter Tab */}
-        <TabsContent value="twitter" className="mt-4">
+        <TabsPanel value="twitter" className="mt-4">
           <ChannelFormCard
             onSubmit={twitterForm.handleSubmit(onSubmitTwitter)}
             saving={savingTwitter}
             canSubmit={twitterForm.formState.isValid}
+            dirty={twitterForm.formState.isDirty}
             saveError={twSaveError}
             onDismissError={() => setTwSaveError(null)}
             t={t}
@@ -1024,17 +1006,17 @@ export default function ChannelConfig() {
               required
             />
           </ChannelFormCard>
-        </TabsContent>
+        </TabsPanel>
 
         {/* Email Tab — provider OAuth credentials (B1: Google/Microsoft) + inbound
             email receiving (B4). Both relocated here from standalone Admin Settings
             menus; each section self-loads its own config_type. */}
-        <TabsContent value="email" className="mt-4">
-          <div className="space-y-10">
+        <TabsPanel value="email" className="mt-4">
+          <div className="flex flex-col gap-10">
             <SocialLoginConfig />
             <InboundEmailConfig />
           </div>
-        </TabsContent>
+        </TabsPanel>
       </Tabs>
     </div>
   );

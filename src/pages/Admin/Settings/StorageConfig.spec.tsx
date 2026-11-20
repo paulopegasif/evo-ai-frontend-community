@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import StorageConfig from './StorageConfig';
@@ -187,10 +188,8 @@ describe('StorageConfig', () => {
     await act(async () => {
       fireEvent.click(selectTrigger);
     });
-    const s3Option = screen.getByRole('option', { name: 'storage.provider.s3Compatible' });
-    await act(async () => {
-      fireEvent.click(s3Option);
-    });
+    const s3Option = await screen.findByRole('option', { name: 'storage.provider.s3Compatible' });
+    await userEvent.click(s3Option);
 
     // Bucket should still have value after switching
     const bucketAfterSwitch = screen.getByLabelText('storage.fields.bucketName') as HTMLInputElement;
@@ -212,10 +211,8 @@ describe('StorageConfig', () => {
     await act(async () => {
       fireEvent.click(selectTrigger);
     });
-    const localOption = screen.getByRole('option', { name: 'storage.provider.local' });
-    await act(async () => {
-      fireEvent.click(localOption);
-    });
+    const localOption = await screen.findByRole('option', { name: 'storage.provider.local' });
+    await userEvent.click(localOption);
 
     // Cloud fields should be hidden
     expect(screen.queryByLabelText('storage.fields.bucketName')).not.toBeInTheDocument();

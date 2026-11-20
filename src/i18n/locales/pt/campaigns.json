@@ -197,7 +197,13 @@
       "contactSelectionRequired": "Selecione uma opção",
       "scheduleOptionRequired": "Selecione uma opção",
       "scheduleDateRequired": "Data e hora são obrigatórias",
-      "scheduleDateFuture": "Data deve ser no futuro"
+      "scheduleDateFuture": "Data deve ser no futuro",
+      "triggerRequired": "Configure o gatilho para campanhas com gatilho",
+      "triggerEventRequired": "Indique o nome do evento",
+      "triggerSegmentRequired": "Selecione um segmento",
+      "triggerLabelRequired": "Selecione uma etiqueta",
+      "triggerAttributeRequired": "Selecione um atributo personalizado",
+      "triggerWebhookRequired": "Indique o URL do webhook"
     },
     "progress": {
       "basicInfo": "Informações Básicas",
@@ -217,7 +223,10 @@
       "typeLabel": "Tipo de Campanha",
       "typePlaceholder": "Selecione o tipo",
       "channelLabel": "Canal de Comunicação",
-      "channelPlaceholder": "Selecione o canal"
+      "channelPlaceholder": "Selecione o canal",
+      "descriptionLabel": "Descrição",
+      "descriptionPlaceholder": "Descreva brevemente o objetivo desta campanha...",
+      "optional": "Opcional"
     },
     "step2": {
       "title": "Audiência",
@@ -236,7 +245,11 @@
       "activeFilters": "Filtros Ativos",
       "noFiltersAdded": "Nenhum filtro adicionado. Adicione filtros para segmentar sua audiência.",
       "totalContacts": "Total de contatos na base",
-      "basedOnFilters": "Baseado em {{count}} filtro(s) aplicado(s)"
+      "basedOnFilters": "Baseado em {{count}} filtro(s) aplicado(s)",
+      "addFilter": "Adicionar filtro",
+      "removeFilter": "Remover filtro {{label}}",
+      "operatorLabel": "Operador",
+      "typeLabel": "Tipo de filtro"
     },
     "step3": {
       "title": "Conteúdo",
@@ -246,7 +259,11 @@
       "inboxDescription": "Selecione apenas 1 inbox para esta campanha",
       "health": "saúde",
       "templatesLabel": "Templates",
-      "templatesSelected": "{{count}} selecionado(s)"
+      "templatesSelected": "{{count}} selecionado(s)",
+      "noContentPreview": "Sem pré-visualização do conteúdo",
+      "noInboxes": "Nenhuma caixa de entrada disponível para este canal",
+      "selectInboxFirst": "Selecione primeiro uma caixa de entrada",
+      "noTemplates": "Nenhum modelo disponível para esta caixa de entrada"
     },
     "step4": {
       "title": "Configurações",
@@ -296,13 +313,101 @@
       "noLimitDescription": "Sem limite - Enviar o mais rápido possível",
       "hours": "{{count}} horas",
       "hoursDay": "{{count}} horas ({{days}} dia)",
-      "hoursDays": "{{count}} horas ({{days}} dias)"
+      "hoursDays": "{{count}} horas ({{days}} dias)",
+      "ui": {
+        "sendStrategy": "Estratégia de envio",
+        "sendStrategyDescription": "Como os templates selecionados são distribuídos pelos contactos",
+        "distributionStrategy": "Estratégia de distribuição",
+        "strategyOptions": {
+          "round_robin": "Sequencial",
+          "weighted": "Ponderado",
+          "random": "Aleatório",
+          "ab_test": "Teste A/B"
+        },
+        "weightPerTemplate": "Distribuição por template (%)",
+        "templateFallback": "Modelo {{id}}",
+        "weightFor": "Peso de {{name}}",
+        "total": "Total",
+        "winnerCriteria": "Critério de vencedor",
+        "openRate": "Taxa de abertura",
+        "clickRate": "Taxa de cliques",
+        "testSample": "Amostra do teste",
+        "baseMessage": "Mensagem base: {{value}}%",
+        "remainderWinner": "Restante (vencedor): {{value}}%",
+        "testSuffix": "(teste)",
+        "winnerMessage": "Mensagem vencedora",
+        "skipWinner": "Não enviar automaticamente",
+        "sendAt": "Enviar em",
+        "advancedOptions": "Opções avançadas",
+        "advancedOptionsDescription": "Ritmo de envio, horários permitidos e novas tentativas",
+        "spreadWindow": "Janela de distribuição",
+        "spreadWindowDescription": "Intervalo entre os envios da campanha",
+        "spread": {
+          "none": "Sem intervalo",
+          "minutes": "{{count}} minutos",
+          "hours": "{{count}} horas",
+          "hoursMinutes": "{{hours}} h {{minutes}} min"
+        },
+        "timeWindowsHint": "Restringir envios ao horário e aos dias permitidos",
+        "retry": "Tentativas automáticas",
+        "retryDescription": "Tentar reenviar em caso de falha"
+      }
     },
     "actions": {
       "continue": "Continuar",
       "back": "Voltar",
       "create": "Criar Campanha",
       "save": "Salvar Campanha"
+    },
+    "stepOf": "Passo {{current}} de {{total}}",
+    "success": {
+      "createdTitle": "Campanha criada",
+      "updatedTitle": "Campanha atualizada",
+      "createdDescription": "A sua campanha foi criada e está pronta.",
+      "updatedDescription": "A sua campanha foi atualizada com sucesso.",
+      "nextSteps": "Próximos passos",
+      "steps": {
+        "track": "Acompanhe o progresso da campanha no painel",
+        "monitor": "Monitorize as estatísticas de envio e envolvimento",
+        "pause": "Pode pausar ou editar a campanha a qualquer momento"
+      },
+      "viewCampaigns": "Ver campanhas",
+      "newCampaign": "Nova campanha",
+      "keepEditing": "Continuar a editar"
+    },
+    "step5": {
+      "general": "Informações gerais",
+      "name": "Nome",
+      "description": "Descrição",
+      "channelAndType": "Canal e tipo",
+      "audience": "Audiência",
+      "selection": "Seleção",
+      "estimatedContacts": "Contactos estimados",
+      "content": "Conteúdo",
+      "inbox": "Caixa de entrada",
+      "inboxSelected": "Caixa selecionada",
+      "noneSelected": "Nenhuma selecionada",
+      "templates": "Templates",
+      "templatesSelected": "{{count}} selecionado(s)",
+      "settings": "Definições",
+      "scheduling": "Agendamento",
+      "sendImmediately": "Envio imediato",
+      "notAvailable": "N/D",
+      "distributionStrategy": "Estratégia de distribuição",
+      "weightsPerTemplate": "Pesos por template",
+      "winnerCriteria": "Critério de vencedor",
+      "sampleSize": "Tamanho da amostra",
+      "sampleOfContacts": "{{value}}% dos contactos",
+      "testPhase": "Fase de teste",
+      "immediate": "Imediato",
+      "winnerSend": "Envio do vencedor",
+      "manual": "Manual",
+      "winnerNotAutomatic": "O vencedor não será enviado automaticamente",
+      "sendInterval": "Intervalo de envio",
+      "allowedHours": "Horário permitido",
+      "noTimeRestriction": "Sem restrição de horário",
+      "rateLimit": "Limite de taxa",
+      "retriesEnabled": "Novas tentativas ativas"
     }
   }
 }

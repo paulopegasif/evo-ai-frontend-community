@@ -19,6 +19,7 @@ interface AgentsHeaderProps {
   onFilter?: () => void;
   activeFilters?: HeaderFilter[];
   showFilters?: boolean;
+  children?: React.ReactNode;
 }
 
 export default function AgentsHeader({
@@ -33,6 +34,7 @@ export default function AgentsHeader({
   onFilter,
   activeFilters = [],
   showFilters = true,
+  children,
 }: AgentsHeaderProps) {
   const { t } = useLanguage('agents');
   const { can, isReady } = usePermissions();
@@ -79,6 +81,8 @@ export default function AgentsHeader({
       onFilterClick={onFilter ?? (() => {})}
       showFilters={showFilters}
       onClearSelection={onClearSelection}
-    />
+    >
+      {children}
+    </BaseHeader>
   );
 }

@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
-import { Button, Badge, Card, CardContent, CardHeader } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
 import { Wrench, Plus, Settings, X } from 'lucide-react';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -69,7 +71,7 @@ const SystemToolsSection = ({
         <CollapsibleHeader
           title={t('tools.systemTools.title')}
           description={t('tools.systemTools.description')}
-          icon={<Wrench className="h-5 w-5 text-emerald-500" />}
+          icon={<Wrench className="h-5 w-5 text-success" />}
           count={tools.length}
           isOpen={isOpen}
           onToggle={onToggle}
@@ -77,7 +79,7 @@ const SystemToolsSection = ({
       </CardHeader>
 
       {isOpen && (
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           {tools.length > 0 ? (
             <div className="space-y-3">
               {tools.map(tool => (
@@ -87,7 +89,7 @@ const SystemToolsSection = ({
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <Wrench className="h-4 w-4 text-emerald-500" />
+                      <Wrench className="h-4 w-4 text-success" />
                       <span className="font-medium">{tool.name}</span>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">{tool.description}</p>
@@ -153,7 +155,7 @@ const SystemToolsSection = ({
               )}
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       )}
 
       {/* Modal de Ferramentas */}

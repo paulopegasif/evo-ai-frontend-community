@@ -30,10 +30,10 @@ export const TelegramForm = ({ form, onFormChange }: TelegramFormProps) => {
 
       <FormSection
         title={t('howToCreate.title')}
-        className="bg-blue-50/10 border-blue-200/20"
+        className="bg-info/8 border-info/24"
         data-tour="telegram-instructions"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p><strong>1.</strong> {t('howToCreate.step1')}</p>
           <p><strong>2.</strong> {t('howToCreate.step2')}</p>
           <p><strong>3.</strong> {t('howToCreate.step3')}</p>

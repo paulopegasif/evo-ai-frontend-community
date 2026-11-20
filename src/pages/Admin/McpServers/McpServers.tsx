@@ -1,24 +1,17 @@
 import { useState, useEffect } from 'react';
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  Badge,
-} from '@evoapi/design-system';
+import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Server,
   Plus,
   Settings,
   Trash2,
-  Loader2,
   MoreHorizontal,
   Eye,
   Edit,
@@ -73,266 +66,195 @@ const McpServers = () => {
     }).length,
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col h-full">
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-              <p className="text-muted-foreground">{t('subtitle')}</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span>{t('messages.loading')}</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const percent = (n: number) =>
+    t('stats.percentOfTotal', { percent: stats.total > 0 ? Math.round((n / stats.total) * 100) : 0 });
 
-  if (error) {
-    return (
-      <div className="flex flex-col h-full">
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-              <p className="text-muted-foreground">{t('subtitle')}</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>{t('buttons.tryAgain')}</Button>
-          </div>
-        </div>
+  const statCards = [
+    {
+      key: 'total',
+      icon: Server,
+      label: t('stats.total'),
+      value: stats.total,
+      hint:
+        stats.newThisMonth > 0
+          ? t('stats.newThisMonth', { count: stats.newThisMonth })
+          : t('stats.noNewThisMonth'),
+    },
+    { key: 'official', icon: Server, label: t('stats.official'), value: stats.active, hint: percent(stats.active) },
+    { key: 'community', icon: Settings, label: t('stats.community'), value: stats.inactive, hint: percent(stats.inactive) },
+    { key: 'tools', icon: Wrench, label: t('stats.withTools'), value: stats.withTools, hint: percent(stats.withTools) },
+  ];
+
+  const header = (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h1 className="font-semibold text-xl md:text-2xl">{t('title')}</h1>
+        <p className="mt-1 text-muted-foreground text-sm">{t('subtitle')}</p>
       </div>
-    );
-  }
+      {!isLoading && !error && (
+        <Button>
+          <Plus />
+          {t('buttons.newServer')}
+        </Button>
+      )}
+    </div>
+  );
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-            <p className="text-muted-foreground">{t('subtitle')}</p>
-          </div>
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            {t('buttons.newServer')}
-          </Button>
-        </div>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="flex flex-col gap-6 p-4 md:p-6">
+        {header}
 
-      {/* Content */}
-      <div className="flex-1 p-6 space-y-6">
-        {/* Stats Cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="bg-card rounded-lg border p-4 sm:p-6 min-w-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex-shrink-0">
-                <Server className="h-5 w-5 text-blue-500" />
-              </div>
-              <h3 className="font-semibold text-sm sm:text-base min-w-0 truncate">
-                {t('stats.total')}
-              </h3>
+        {error ? (
+          <Alert variant="error">
+            <AlertTriangle />
+            <AlertDescription>{error}</AlertDescription>
+            <AlertAction>
+              <Button size="sm" variant="outline" onClick={() => window.location.reload()}>
+                {t('buttons.tryAgain')}
+              </Button>
+            </AlertAction>
+          </Alert>
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {statCards.map(card => {
+                const Icon = card.icon;
+                return (
+                  <Card key={card.key} className="min-w-0">
+                    <CardPanel className="flex flex-col gap-2 pt-6">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate text-muted-foreground text-sm">{card.label}</span>
+                        <Icon className="size-4 shrink-0 text-muted-foreground" />
+                      </div>
+                      {isLoading ? (
+                        <Skeleton className="h-8 w-16" />
+                      ) : (
+                        <span className="font-semibold text-2xl tabular-nums">{card.value}</span>
+                      )}
+                      <span className="truncate text-muted-foreground text-xs">
+                        {isLoading ? <Skeleton className="h-3 w-24" /> : card.hint}
+                      </span>
+                    </CardPanel>
+                  </Card>
+                );
+              })}
             </div>
-            <p className="text-xl sm:text-2xl font-bold mt-2">{stats.total}</p>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              {stats.newThisMonth > 0
-                ? t('stats.newThisMonth', { count: stats.newThisMonth })
-                : t('stats.noNewThisMonth')}
-            </p>
-          </div>
 
-          <div className="bg-card rounded-lg border p-4 sm:p-6 min-w-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex-shrink-0">
-                <Server className="h-5 w-5 text-green-500" />
-              </div>
-              <h3 className="font-semibold text-sm sm:text-base min-w-0 truncate">
-                {t('stats.official')}
-              </h3>
-            </div>
-            <p className="text-xl sm:text-2xl font-bold mt-2">{stats.active}</p>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              {stats.total > 0
-                ? t('stats.percentOfTotal', {
-                    percent: Math.round((stats.active / stats.total) * 100),
-                  })
-                : t('stats.percentOfTotal', { percent: 0 })}
-            </p>
-          </div>
-
-          <div className="bg-card rounded-lg border p-4 sm:p-6 min-w-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex-shrink-0">
-                <Settings className="h-5 w-5 text-orange-500" />
-              </div>
-              <h3 className="font-semibold text-sm sm:text-base min-w-0 truncate">
-                {t('stats.community')}
-              </h3>
-            </div>
-            <p className="text-xl sm:text-2xl font-bold mt-2">{stats.inactive}</p>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              {stats.total > 0
-                ? t('stats.percentOfTotal', {
-                    percent: Math.round((stats.inactive / stats.total) * 100),
-                  })
-                : t('stats.percentOfTotal', { percent: 0 })}
-            </p>
-          </div>
-
-          <div className="bg-card rounded-lg border p-4 sm:p-6 min-w-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex-shrink-0">
-                <Wrench className="h-5 w-5 text-purple-500" />
-              </div>
-              <h3 className="font-semibold text-sm sm:text-base min-w-0 truncate">
-                {t('stats.withTools')}
-              </h3>
-            </div>
-            <p className="text-xl sm:text-2xl font-bold mt-2">{stats.withTools}</p>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              {stats.total > 0
-                ? t('stats.percentOfTotal', {
-                    percent: Math.round((stats.withTools / stats.total) * 100),
-                  })
-                : t('stats.percentOfTotal', { percent: 0 })}
-            </p>
-          </div>
-        </div>
-
-        {/* Servers List */}
-        <div className="bg-card rounded-lg border">
-          <div className="border-b p-6">
-            <h2 className="text-lg font-semibold">{t('table.title')}</h2>
-            <p className="text-sm text-muted-foreground">{t('table.description')}</p>
-          </div>
-          <div className="overflow-x-auto">
-            {servers.length === 0 ? (
-              <div className="p-8 text-center">
-                <Server className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t('emptyState.title')}</h3>
-                <p className="text-muted-foreground mb-4">
-                  {t('emptyState.description')}
-                </p>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  {t('emptyState.addFirst')}
-                </Button>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('table.headers.name')}</TableHead>
-                    <TableHead>{t('table.headers.description')}</TableHead>
-                    <TableHead>{t('table.headers.type')}</TableHead>
-                    <TableHead>{t('table.headers.configuration')}</TableHead>
-                    <TableHead>{t('table.headers.tools')}</TableHead>
-                    <TableHead>{t('table.headers.createdAt')}</TableHead>
-                    <TableHead className="text-right">
-                      {t('table.headers.actions')}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {servers.map(server => (
-                    <TableRow key={server.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Server className="h-4 w-4 text-primary" />
-                          </div>
-                          <span className="font-medium">{server.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
-                        {server.description || t('fields.noDescription')}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={
-                            server.type === 'official'
-                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500'
-                              : 'bg-orange-500/10 text-orange-500 border-orange-500'
-                          }
-                        >
-                          {server.type === 'official'
-                            ? t('types.official')
-                            : t('types.community')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={
-                            server.config_type === 'sse'
-                              ? 'bg-blue-500/10 text-blue-500 border-blue-500'
-                              : 'bg-orange-500/10 text-orange-500 border-orange-500'
-                          }
-                        >
-                          {server.config_type?.charAt(0).toUpperCase() +
-                            server.config_type?.slice(1) || 'N/A'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        <div className="flex items-center">
-                          <Wrench className="h-4 w-4 mr-1 text-emerald-400" />
-                          {server.tools?.length || 0}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {new Date(server.created_at).toLocaleDateString('pt-BR')}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">
-                                {t('table.actions.openMenu')}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t('table.title')}</CardTitle>
+                <CardDescription>{t('table.description')}</CardDescription>
+              </CardHeader>
+              <CardPanel className="px-0 pb-0">
+                {isLoading ? (
+                  <div className="flex flex-col gap-3 px-6 pb-6" aria-busy="true">
+                    <span className="sr-only">{t('messages.loading')}</span>
+                    {[0, 1, 2, 3].map(i => (
+                      <Skeleton key={i} className="h-10 w-full" />
+                    ))}
+                  </div>
+                ) : servers.length === 0 ? (
+                  <Empty className="py-12">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Server />
+                      </EmptyMedia>
+                      <EmptyTitle>{t('emptyState.title')}</EmptyTitle>
+                      <EmptyDescription>{t('emptyState.description')}</EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button>
+                        <Plus />
+                        {t('emptyState.addFirst')}
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
+                ) : (
+                  <div className="overflow-x-auto border-t">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="ps-6">{t('table.headers.name')}</TableHead>
+                          <TableHead>{t('table.headers.description')}</TableHead>
+                          <TableHead>{t('table.headers.type')}</TableHead>
+                          <TableHead>{t('table.headers.configuration')}</TableHead>
+                          <TableHead>{t('table.headers.tools')}</TableHead>
+                          <TableHead>{t('table.headers.createdAt')}</TableHead>
+                          <TableHead className="pe-6 text-end">
+                            <span className="sr-only">{t('table.headers.actions')}</span>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {servers.map(server => (
+                          <TableRow key={server.id}>
+                            <TableCell className="ps-6">
+                              <div className="flex items-center gap-3">
+                                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
+                                  <Server className="size-4 text-muted-foreground" />
+                                </span>
+                                <span className="font-medium">{server.name}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="max-w-[220px] truncate text-muted-foreground">
+                              {server.description || t('fields.noDescription')}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={server.type === 'official' ? 'success' : 'warning'}>
+                                {server.type === 'official' ? t('types.official') : t('types.community')}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={server.config_type === 'sse' ? 'info' : 'outline'} className="font-mono">
+                                {server.config_type?.charAt(0).toUpperCase() + server.config_type?.slice(1) || 'N/A'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground tabular-nums">
+                              <span className="inline-flex items-center gap-1.5">
+                                <Wrench className="size-3.5" />
+                                {server.tools?.length || 0}
                               </span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => console.log('Ver detalhes', server.id)}
-                            >
-                              <Eye className="h-4 w-4" />
-                              <span>{t('table.actions.viewDetails')}</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => console.log('Editar', server.id)}>
-                              <Edit className="h-4 w-4" />
-                              <span>{t('table.actions.edit')}</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => console.log('Excluir', server.id)}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              <span>{t('table.actions.delete')}</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-        </div>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {new Date(server.created_at).toLocaleDateString('pt-BR')}
+                            </TableCell>
+                            <TableCell className="pe-6 text-end">
+                              <Menu>
+                                <MenuTrigger
+                                  render={
+                                    <Button variant="ghost" size="icon-sm" aria-label={t('table.actions.openMenu')} />
+                                  }
+                                >
+                                  <MoreHorizontal />
+                                </MenuTrigger>
+                                <MenuPopup align="end">
+                                  <MenuItem onClick={() => console.log('Ver detalhes', server.id)}>
+                                    <Eye />
+                                    {t('table.actions.viewDetails')}
+                                  </MenuItem>
+                                  <MenuItem onClick={() => console.log('Editar', server.id)}>
+                                    <Edit />
+                                    {t('table.actions.edit')}
+                                  </MenuItem>
+                                  <MenuSeparator />
+                                  <MenuItem variant="destructive" onClick={() => console.log('Excluir', server.id)}>
+                                    <Trash2 />
+                                    {t('table.actions.delete')}
+                                  </MenuItem>
+                                </MenuPopup>
+                              </Menu>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardPanel>
+            </Card>
+          </>
+        )}
       </div>
     </div>
   );

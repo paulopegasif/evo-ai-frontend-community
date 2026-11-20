@@ -1,6 +1,16 @@
 import React from 'react';
-import { Button } from '@evoapi/design-system';
 import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Breadcrumb,
+  BreadcrumbItem as BreadcrumbListItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { useLanguage } from '@/hooks/useLanguage';
+import { cn } from '@/utils/cn';
 
 export interface BreadcrumbItem {
   label: string;
@@ -14,42 +24,34 @@ interface ChannelBreadcrumbProps {
   className?: string;
 }
 
-const ChannelBreadcrumb: React.FC<ChannelBreadcrumbProps> = ({
-  items,
-  onBack,
-  className = '',
-}) => {
+const ChannelBreadcrumb: React.FC<ChannelBreadcrumbProps> = ({ items, onBack, className = '' }) => {
+  const { t } = useLanguage('channels');
+
   return (
-    <div className={`flex items-center gap-3 py-4 ${className}`}>
+    <div className={cn('flex items-center gap-2 py-4', className)}>
       {onBack && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="p-2 text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          <ArrowLeft className="h-4 w-4" />
+        <Button variant="ghost" size="icon-sm" onClick={onBack} aria-label={t('newChannel.buttons.back')}>
+          <ArrowLeft />
         </Button>
       )}
-      <div className="flex items-center gap-2 text-sm text-sidebar-foreground/70">
-        {items.map((item, index) => (
-          <React.Fragment key={index}>
-            {index > 0 && <span>/</span>}
-            <span
-              className={`${
-                item.active
-                  ? 'text-sidebar-foreground'
-                  : item.onClick
-                  ? 'cursor-pointer hover:text-sidebar-foreground'
-                  : ''
-              }`}
-              onClick={item.onClick}
-            >
-              {item.label}
-            </span>
-          </React.Fragment>
-        ))}
-      </div>
+      <Breadcrumb>
+        <BreadcrumbList>
+          {items.map((item, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbListItem>
+                {item.active || !item.onClick ? (
+                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink render={<button type="button" />} onClick={item.onClick}>
+                    {item.label}
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbListItem>
+            </React.Fragment>
+          ))}
+        </BreadcrumbList>
+      </Breadcrumb>
     </div>
   );
 };

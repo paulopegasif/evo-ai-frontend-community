@@ -2,21 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsCustomAttributesTour } from '@/tours';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@evoapi/design-system';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import ListSkeleton from '@/components/base/ListSkeleton';
 import { Search, Settings } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
@@ -319,7 +309,7 @@ export default function CustomAttributes() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4" data-tour="settings-custom-attributes-page">
+    <div className="flex h-full flex-col p-4 md:p-6" data-tour="settings-custom-attributes-page">
       <SettingsCustomAttributesTour />
       <div data-tour="settings-custom-attributes-header">
         <CustomAttributesHeader
@@ -337,23 +327,24 @@ export default function CustomAttributes() {
 
       {/* Tabs */}
       <div data-tour="settings-custom-attributes-tabs">
-      <Tabs value={state.activeTab} onValueChange={handleTabChange} className="mt-6">
-        <TabsList className="mb-4">
+      <Tabs value={state.activeTab} onValueChange={value => handleTabChange(value as string)} className="mt-6 gap-4">
+        <TabsList variant="underline" className="w-full justify-start overflow-x-auto border-b">
           {ATTRIBUTE_TABS.map(tab => (
-            <TabsTrigger key={tab.key} value={tab.key}>
+            <TabsTab key={tab.key} value={tab.key}>
               {tab.name}
-            </TabsTrigger>
+            </TabsTab>
           ))}
         </TabsList>
 
         {ATTRIBUTE_TABS.map(tab => (
-          <TabsContent key={tab.key} value={tab.key} className="mt-6 flex flex-col flex-1">
+          <TabsPanel key={tab.key} value={tab.key} className="flex flex-1 flex-col">
             {/* Content */}
             <div className="flex-1 overflow-auto">
               {state.loading.list ? (
-                <div className="flex items-center justify-center py-16">
-                  <div className="text-muted-foreground">{t('loading')}</div>
-                </div>
+                <>
+                  <span className="sr-only">{t('loading')}</span>
+                  <ListSkeleton />
+                </>
               ) : sortedAttributes.length === 0 ? (
                 state.searchQuery.trim() ? (
                   <EmptyState
@@ -418,7 +409,7 @@ export default function CustomAttributes() {
                 />
               )}
             </div>
-          </TabsContent>
+          </TabsPanel>
         ))}
       </Tabs>
       </div>
@@ -439,58 +430,28 @@ export default function CustomAttributes() {
       )}
 
       {/* Delete Custom Attribute Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.delete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.delete.description', { name: attributeToDelete?.attribute_display_name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.delete.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteAttribute}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('dialog.delete.deleting') : t('dialog.delete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.delete.title')}
+        description={t('dialog.delete.description', { name: attributeToDelete?.attribute_display_name })}
+        cancelLabel={t('dialog.delete.cancel')}
+        confirmLabel={t('dialog.delete.confirm')}
+        onConfirm={confirmDeleteAttribute}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedAttributeIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('dialog.bulkDelete.deleting')
-                : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedAttributeIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* Custom Attribute Modal */}
       <CustomAttributeModal

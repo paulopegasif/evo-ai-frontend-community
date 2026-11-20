@@ -1,6 +1,10 @@
 import { format, isToday, isTomorrow, isPast } from 'date-fns';
+import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge, Button, Checkbox } from '@evoapi/design-system';
+import { ConfirmDialog } from '@/components/base';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Phone,
   Mail,
@@ -34,6 +38,8 @@ export default function PipelineTaskItem({
   disabled = false,
 }: PipelineTaskItemProps) {
   const { t } = useLanguage('pipelines');
+  // Complete/reopen confirms through ConfirmDialog (was window.confirm).
+  const [pendingConfirm, setPendingConfirm] = useState<'complete' | 'reopen' | null>(null);
 
   // Get task type icon
   const getTaskTypeIcon = () => {
@@ -54,21 +60,14 @@ export default function PipelineTaskItem({
     }
   };
 
-  // Get priority badge color
-  const getPriorityColor = () => {
-    switch (task.priority) {
-      case 'urgent':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'low':
-        return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
-      default:
-        return 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400';
-    }
-  };
+  const priorityVariant =
+    task.priority === 'urgent'
+      ? ('error' as const)
+      : task.priority === 'high'
+        ? ('warning' as const)
+        : task.priority === 'medium'
+          ? ('info' as const)
+          : ('secondary' as const);
 
   // Format due date
   const formatDueDate = () => {
@@ -94,10 +93,10 @@ export default function PipelineTaskItem({
 
     const date = new Date(task.due_date);
     if (isPast(date) || task.status === 'overdue') {
-      return 'text-red-600 font-semibold dark:text-red-400';
+      return 'text-destructive-foreground font-semibold';
     }
     if (isToday(date)) {
-      return 'text-orange-600 font-medium dark:text-orange-400';
+      return 'text-warning-foreground font-medium';
     }
 
     return 'text-muted-foreground';
@@ -106,41 +105,37 @@ export default function PipelineTaskItem({
   // Get task card classes
   const getTaskCardClasses = () => {
     const baseClasses =
-      'p-4 border rounded-lg transition-all duration-200 hover:shadow-sm';
+      'rounded-lg border p-4 transition-colors';
 
     if (task.status === 'overdue') {
       return cn(
         baseClasses,
-        'border-red-300 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20',
+        'border-destructive/24 bg-destructive/8',
       );
     }
 
     if (task.status === 'completed') {
       return cn(
         baseClasses,
-        'border-green-300 bg-green-50/50 dark:border-green-900/50 dark:bg-green-950/20',
+        'border-success/24 bg-success/8',
       );
     }
 
     if (task.status === 'cancelled') {
       return cn(
         baseClasses,
-        'border-slate-300 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-900/20 opacity-60',
+        'bg-muted/48 opacity-60 dark:bg-muted/24',
       );
     }
 
-    return cn(baseClasses, 'border-border bg-card hover:bg-accent/30');
+    return cn(baseClasses, 'bg-card hover:border-ring/40');
   };
 
   const handleCheckboxChange = (checked: boolean) => {
     if (checked && task.status === 'pending') {
-      if (confirm(t('tasks.messages.completeConfirm'))) {
-        onComplete(task.id);
-      }
+      setPendingConfirm('complete');
     } else if (!checked && task.status === 'completed' && onReopen) {
-      if (confirm(t('tasks.messages.reopenConfirm'))) {
-        onReopen(task.id);
-      }
+      setPendingConfirm('reopen');
     }
   };
 
@@ -177,7 +172,7 @@ export default function PipelineTaskItem({
             </div>
 
             {/* Priority */}
-            <Badge variant="secondary" className={cn('text-xs px-2 py-0.5', getPriorityColor())}>
+            <Badge variant={priorityVariant} size="sm">
               {t(`tasks.priority.${task.priority}`)}
             </Badge>
 
@@ -199,12 +194,12 @@ export default function PipelineTaskItem({
 
             {/* Status badge */}
             {task.status === 'overdue' && (
-              <Badge variant="destructive" className="text-xs">
+              <Badge variant="error" size="sm">
                 {t('tasks.status.overdue')}
               </Badge>
             )}
             {task.status === 'cancelled' && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" size="sm">
                 {t('tasks.status.cancelled')}
               </Badge>
             )}
@@ -223,36 +218,51 @@ export default function PipelineTaskItem({
           {task.status === 'completed' && onReopen && (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={() => onReopen(task.id)}
               disabled={disabled}
-              className="h-8 w-8 p-0"
+              aria-label={t('tasks.confirm.reopenTitle')}
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw />
             </Button>
           )}
           {task.status !== 'completed' && task.status !== 'cancelled' && (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={() => onEdit(task)}
               disabled={disabled}
-              className="h-8 w-8 p-0"
+              aria-label={t('tasks.edit')}
             >
-              <Edit className="h-4 w-4" />
+              <Edit />
             </Button>
           )}
           <Button
             variant="ghost"
-            size="sm"
+            size="icon-sm"
             onClick={() => onDelete(task.id)}
             disabled={disabled}
-            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+            className="text-muted-foreground hover:text-destructive-foreground"
+            aria-label={t('tasks.delete')}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 />
           </Button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={pendingConfirm !== null}
+        onOpenChange={open => !open && setPendingConfirm(null)}
+        title={pendingConfirm === 'reopen' ? t('tasks.confirm.reopenTitle') : t('tasks.confirm.completeTitle')}
+        description={pendingConfirm === 'reopen' ? t('tasks.messages.reopenConfirm') : t('tasks.messages.completeConfirm')}
+        cancelLabel={t('tasks.form.cancel')}
+        confirmLabel={pendingConfirm === 'reopen' ? t('tasks.confirm.reopen') : t('tasks.confirm.complete')}
+        onConfirm={() => {
+          if (pendingConfirm === 'reopen') onReopen?.(task.id);
+          else onComplete(task.id);
+          setPendingConfirm(null);
+        }}
+      />
     </div>
   );
 }

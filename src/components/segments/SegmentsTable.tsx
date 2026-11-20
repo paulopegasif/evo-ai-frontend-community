@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Edit, Trash2, Play, Pause, RefreshCw, List } from 'lucide-react';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import BaseTable from '@/components/base/BaseTable';
 import { Segment } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -50,9 +50,9 @@ export default function SegmentsTable({
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      running: 'default' as const,
-      paused: 'secondary' as const,
-      completed: 'outline' as const,
+      running: 'success' as const,
+      paused: 'warning' as const,
+      completed: 'secondary' as const,
     };
 
     const labels = {
@@ -86,7 +86,7 @@ export default function SegmentsTable({
       render: (segment: Segment) => (
         <div>
           <div className="font-medium text-gray-200">{segment.name}</div>
-          <div className="text-sm text-gray-500">ID: {segment.id}</div>
+          <div className="text-sm text-muted-foreground">ID: {segment.id}</div>
         </div>
       ),
     },
@@ -104,7 +104,7 @@ export default function SegmentsTable({
       key: 'lastComputedAt',
       label: t('table.columns.lastComputed'),
       render: (segment: Segment) => (
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-muted-foreground">
           {segment.lastComputedAt ? formatDate(segment.lastComputedAt) : t('table.never')}
         </div>
       ),
@@ -114,7 +114,7 @@ export default function SegmentsTable({
       label: t('table.columns.createdAt'),
       sortable: true,
       render: (segment: Segment) => (
-        <div className="text-sm text-gray-500">{formatDate(segment.created_at)}</div>
+        <div className="text-sm text-muted-foreground">{formatDate(segment.created_at)}</div>
       ),
     },
   ];

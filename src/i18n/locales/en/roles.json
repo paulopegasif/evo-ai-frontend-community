@@ -64,7 +64,8 @@
       "writeDescription": "Create and change this resource, including every action that modifies it.",
       "delete": "Delete",
       "deleteDescription": "Delete this resource."
-    }
+    },
+    "unsavedChanges": "{{count}} unsaved change(s)"
   },
   "createModal": {
     "title": "Create Role",

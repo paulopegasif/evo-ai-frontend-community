@@ -67,7 +67,7 @@ const SharedFileBubble: React.FC<SharedFileBubbleProps> = ({
             border-2 border-dashed rounded-lg p-4 max-w-sm transition-all duration-200
             ${messageType === 'out'
               ? 'border-white/30 bg-white/5 hover:bg-white/10'
-              : 'border-slate-300 bg-slate-50 hover:bg-slate-100'
+              : 'border-border bg-muted/48 hover:bg-accent'
             }
           `}
         >
@@ -77,7 +77,7 @@ const SharedFileBubble: React.FC<SharedFileBubbleProps> = ({
               flex-shrink-0 p-2 rounded-lg
               ${messageType === 'out'
                 ? 'bg-white/20 text-white/80'
-                : 'bg-slate-200 text-slate-600'
+                : 'bg-muted text-muted-foreground'
               }
             `}>
               {getFileIcon(attachment.file_type)}
@@ -89,13 +89,13 @@ const SharedFileBubble: React.FC<SharedFileBubbleProps> = ({
                 <div className="min-w-0 flex-1">
                   <h4 className={`
                     text-sm font-medium truncate
-                    ${messageType === 'out' ? 'text-white/90' : 'text-slate-700'}
+                    ${messageType === 'out' ? 'text-white/90' : 'text-foreground'}
                   `}>
                     {attachment.fallback_title || t('attachments.file.title')}
                   </h4>
                   <p className={`
                     text-xs mt-1
-                    ${messageType === 'out' ? 'text-white/60' : 'text-slate-500'}
+                    ${messageType === 'out' ? 'text-white/60' : 'text-muted-foreground'}
                   `}>
                     {formatFileSize(attachment.file_size)}
                   </p>
@@ -108,7 +108,7 @@ const SharedFileBubble: React.FC<SharedFileBubbleProps> = ({
                     flex-shrink-0 p-2 rounded-lg transition-all duration-200 hover:scale-105
                     ${messageType === 'out'
                       ? 'bg-white/20 text-white/80 hover:bg-white/30'
-                      : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                      : 'bg-muted text-muted-foreground hover:bg-slate-300'
                     }
                   `}
                   title={t('attachments.file.download')}
@@ -123,7 +123,7 @@ const SharedFileBubble: React.FC<SharedFileBubbleProps> = ({
                   inline-block px-2 py-1 rounded-full text-xs font-medium
                   ${messageType === 'out'
                     ? 'bg-white/20 text-white/80'
-                    : 'bg-slate-200 text-slate-600'
+                    : 'bg-muted text-muted-foreground'
                   }
                 `}>
                   {attachment.file_type.toUpperCase()}

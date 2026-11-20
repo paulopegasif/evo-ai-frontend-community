@@ -1,9 +1,19 @@
 import { useState } from 'react';
+import { ChevronRight, Power } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card, CardContent } from '@evoapi/design-system';
-import { Settings, Power } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Integration } from '@/types/integrations';
-import BaseStatusBadge from '@/components/base/BaseStatusBadge';
 import BrandIcon, { getBrandIcon } from '@/components/BrandIcon';
 
 interface IntegrationCardProps {
@@ -14,6 +24,45 @@ interface IntegrationCardProps {
   configOnly?: boolean; // For integrations that only need configuration
 }
 
+function IntegrationLogo({ integration }: { integration: Integration }) {
+  const [imageError, setImageError] = useState(false);
+  const [darkImageError, setDarkImageError] = useState(false);
+
+  if (getBrandIcon(integration.id)) {
+    return <BrandIcon id={integration.id} size={24} className="size-6" />;
+  }
+
+  if (imageError) {
+    const initials = integration.name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(word => word[0]?.toUpperCase())
+      .join('');
+    return <span className="font-semibold text-muted-foreground text-xs">{initials}</span>;
+  }
+
+  return (
+    <>
+      <img
+        src={`/integrations/${integration.id}.png`}
+        alt=""
+        className={darkImageError ? 'size-full object-contain' : 'size-full object-contain dark:hidden'}
+        onError={() => setImageError(true)}
+      />
+      {!darkImageError && (
+        <img
+          src={`/integrations/${integration.id}-dark.png`}
+          alt=""
+          className="hidden size-full object-contain dark:block"
+          onError={() => setDarkImageError(true)}
+        />
+      )}
+    </>
+  );
+}
+
 export default function IntegrationCard({
   integration,
   onConfigure,
@@ -22,161 +71,87 @@ export default function IntegrationCard({
   configOnly = false,
 }: IntegrationCardProps) {
   const { t } = useLanguage('integrations');
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [imageError, setImageError] = useState(false);
-  const [darkImageError, setDarkImageError] = useState(false);
-
-  const logoPath = `/integrations/${integration.id}.png`;
-  const logoPathDark = `/integrations/${integration.id}-dark.png`;
-
-  const hasBrandIcon = Boolean(getBrandIcon(integration.id));
-
-  const handleImageError = () => setImageError(true);
-  const handleDarkImageError = () => setDarkImageError(true);
-
-  const getInitials = (name: string) =>
-    name
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(word => word[0]?.toUpperCase())
-      .join('');
-
-  // status/text calculados uma vez
-  const status = configOnly ? 'active' : integration.enabled ? 'active' : 'inactive';
+  const connected = configOnly || integration.enabled;
   const statusText = configOnly
     ? t('status.active')
     : integration.enabled
       ? t('status.connected')
       : t('status.disconnected');
 
-  const monoStatusClass =
-    configOnly || integration.enabled
-      ? 'text-green-600 dark:text-green-400'
-      : 'text-gray-500';
-
   return (
-    <Card className="group relative bg-sidebar border-sidebar-border hover:bg-sidebar-accent/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/10 overflow-hidden">
-      <CardContent className="p-0">
-        {/* Header with logo, name and status */}
-        <div className="flex items-center gap-3 p-4 border-b border-sidebar-border">
-          <div className="w-10 h-10 rounded-lg overflow-hidden bg-sidebar-accent/20 flex items-center justify-center flex-shrink-0 relative">
-            {hasBrandIcon ? (
-              <BrandIcon id={integration.id} size={28} className="w-7 h-7" />
-            ) : (
-              <>
-                {/* Logo padrão:
-                    - no light sempre aparece
-                    - no dark só some se existir um dark logo carregado com sucesso */}
-                {!imageError && (
-                  <img
-                    src={logoPath}
-                    alt={integration.name}
-                    className={[
-                      'w-full h-full object-contain',
-                      // se o dark logo NÃO falhou, então esconde no dark (porque o dark logo vai aparecer)
-                      // se o dark logo falhou, não esconde -> vira fallback no dark
-                      !darkImageError ? 'dark:hidden' : '',
-                    ].join(' ')}
-                    onError={handleImageError}
-                  />
-                )}
+    <Card className="group flex flex-col gap-0 transition-shadow hover:shadow-md/5">
+      <button
+        type="button"
+        onClick={configOnly || integration.enabled ? onConfigure : onToggle}
+        disabled={isProcessing || (!configOnly && !integration.enabled && !onToggle)}
+        className="flex flex-1 items-start gap-3 rounded-t-[inherit] p-5 text-start outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-background p-1.5">
+          <IntegrationLogo integration={integration} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center justify-between gap-2">
+            <span className="truncate font-semibold text-sm">{integration.name}</span>
+            <Badge variant={connected ? 'success' : 'outline'} size="sm" className="shrink-0">
+              <span
+                aria-hidden
+                className={connected ? 'size-1.5 rounded-full bg-success' : 'size-1.5 rounded-full bg-muted-foreground/48'}
+              />
+              {statusText}
+            </Badge>
+          </span>
+          <span className="mt-1 line-clamp-2 text-muted-foreground text-sm">{integration.description}</span>
+        </span>
+      </button>
 
-                {/* Logo dark (opcional) */}
-                {!darkImageError && (
-                  <img
-                    src={logoPathDark}
-                    alt={integration.name}
-                    className="w-full h-full object-contain hidden dark:block"
-                    onError={handleDarkImageError}
-                  />
-                )}
-
-                {/* Fallback final: se o normal falhar, não tem imagem nenhuma pra mostrar */}
-                {imageError && (
-                  <div className="w-6 h-6 rounded bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-semibold">
-                    {getInitials(integration.name)}
-                  </div>
-                )}
-              </>
+      <div className="flex items-center justify-end gap-2 border-t px-5 py-3">
+        {configOnly ? (
+          <Button variant="ghost" size="sm" onClick={onConfigure} disabled={isProcessing}>
+            {t('actions.configure')}
+            <ChevronRight />
+          </Button>
+        ) : integration.enabled ? (
+          <>
+            {onToggle && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="me-auto text-destructive-foreground"
+                onClick={() => setConfirmOpen(true)}
+                loading={isProcessing}
+              >
+                <Power />
+                {t('actions.disconnect')}
+              </Button>
             )}
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base truncate text-sidebar-foreground">
-              {integration.name}
-            </h3>
-            <p className="text-xs text-sidebar-foreground/60 truncate">
-              {integration.description}
-            </p>
-          </div>
-
-          <BaseStatusBadge status={status} text={statusText} />
-        </div>
-
-        {/* Details section */}
-        <div className="px-4 py-3 text-xs text-sidebar-foreground/70">
-          <div className="flex items-center justify-between">
-            <span>{t('status.statusLabel')}</span>
-            <span className={`font-mono ${monoStatusClass}`}>{statusText}</span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span>{t('status.typeLabel')}</span>
-            <span className="font-mono capitalize">{integration.id.replace('_', ' ')}</span>
-          </div>
-        </div>
-
-        {/* Action buttons - hover effect like ContactCard */}
-        <div className="flex border-t border-sidebar-border opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {configOnly ? (
-            <Button
-              variant="ghost"
-              className="flex-1 rounded-none h-12 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
-              onClick={onConfigure}
-              disabled={isProcessing}
-            >
-              <Settings className="h-4 w-4 mr-2" />
+            <Button variant="outline" size="sm" onClick={onConfigure} disabled={isProcessing}>
               {t('actions.configure')}
+              <ChevronRight />
             </Button>
-          ) : integration.enabled ? (
-            <>
-              <Button
-                variant="ghost"
-                className="flex-1 rounded-none h-12 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
-                onClick={onConfigure}
-                disabled={isProcessing}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                {t('actions.configure')}
-              </Button>
+          </>
+        ) : (
+          <Button size="sm" onClick={() => onToggle?.()} loading={isProcessing} disabled={!onToggle}>
+            {t('actions.connect')}
+          </Button>
+        )}
+      </div>
 
-              <div className="w-px bg-sidebar-border" />
-
-              <Button
-                variant="ghost"
-                className="flex-1 rounded-none h-12 text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                onClick={() => onToggle?.()}
-                disabled={isProcessing}
-              >
-                <Power className="h-4 w-4 mr-2" />
-                {isProcessing ? t('actions.processing') : t('actions.disconnect')}
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant="ghost"
-              className="flex-1 rounded-none h-12 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/40"
-              onClick={() => onToggle?.()}
-              disabled={isProcessing || !onToggle}
-            >
-              <Power className="h-4 w-4 mr-2" />
-              {isProcessing ? t('actions.processing') : t('actions.connect')}
-            </Button>
-          )}
-        </div>
-      </CardContent>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogPopup>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('confirmDisconnect.title', { name: integration.name })}</AlertDialogTitle>
+            <AlertDialogDescription>{t('confirmDisconnect.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="ghost" />}>{t('confirmDisconnect.cancel')}</AlertDialogClose>
+            <AlertDialogClose render={<Button variant="destructive" />} onClick={() => onToggle?.()}>
+              {t('actions.disconnect')}
+            </AlertDialogClose>
+          </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
     </Card>
   );
 }

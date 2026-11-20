@@ -175,5 +175,19 @@
         "disconnect": "Disconnetti"
       }
     }
+  },
+  "view": {
+    "grid": "Vista a schede",
+    "table": "Vista tabella"
+  },
+  "typeLabels": {
+    "llm": "Nativo",
+    "external": "Esterno",
+    "a2a": "A2A",
+    "sequential": "Agente sequenziale",
+    "parallel": "Agente parallelo",
+    "loop": "Agente loop",
+    "workflow": "Workflow",
+    "task": "Attività"
   }
 }

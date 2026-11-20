@@ -103,8 +103,8 @@ describe('ChannelSettings redesign', () => {
   it('marks the active tab with the primary token pill styling', async () => {
     await renderPage();
     const activeTab = screen.getByRole('tab', { name: /settings\.tabs\.inbox_settings/i });
-    expect(activeTab.className).toContain('data-[state=active]:bg-primary/10');
-    expect(activeTab.className).toContain('data-[state=active]:text-primary');
+    expect(activeTab.className).toContain('data-active:bg-primary/10');
+    expect(activeTab.className).toContain('data-active:text-primary');
   });
 
   it('saves the active snapshot tab from the sticky footer', async () => {
