@@ -1,14 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import {
-  AlertDialog,
-  AlertDialogClose,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogPopup,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -180,63 +172,41 @@ export default function Channels() {
       </div>
 
       {/* Delete confirmation: typing the channel name unlocks the destructive action. */}
-      <AlertDialog
+      <ConfirmDialog
         open={deleteModal.isOpen}
         onOpenChange={open => {
           if (!open && !isDeleting) closeDeleteModal();
         }}
+        icon={<Trash2 />}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: deleteModal.channel?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={
+          isDeleting === deleteModal.channel?.id ? t('deleteDialog.deleting') : t('deleteDialog.confirm')
+        }
+        onConfirm={handleConfirmDelete}
+        loading={isDeleting === deleteModal.channel?.id}
+        confirmDisabled={!isDeleteConfirmationValid}
       >
-        <AlertDialogPopup>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              if (isDeleteConfirmationValid && !isDeleting) void handleConfirmDelete();
+        <Field>
+          <FieldLabel>{t('deleteDialog.confirmLabel')}</FieldLabel>
+          <Input
+            autoFocus
+            autoComplete="off"
+            placeholder={deleteModal.channel?.name || t('deleteDialog.placeholder')}
+            value={deleteModal.confirmationText}
+            onChange={e =>
+              setDeleteModal(prev => ({
+                ...prev,
+                confirmationText: e.target.value,
+              }))
+            }
+            onKeyDown={e => {
+              if (e.key === 'Enter' && isDeleteConfirmationValid && !isDeleting) void handleConfirmDelete();
             }}
-          >
-            <AlertDialogHeader>
-              <AlertDialogTitle>{t('deleteDialog.title')}</AlertDialogTitle>
-              <AlertDialogDescription>
-                {t('deleteDialog.description', { name: deleteModal.channel?.name })}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="px-6 pb-6">
-              <Field>
-                <FieldLabel>{t('deleteDialog.confirmLabel')}</FieldLabel>
-                <Input
-                  autoFocus
-                  autoComplete="off"
-                  placeholder={deleteModal.channel?.name || t('deleteDialog.placeholder')}
-                  value={deleteModal.confirmationText}
-                  onChange={e =>
-                    setDeleteModal(prev => ({
-                      ...prev,
-                      confirmationText: e.target.value,
-                    }))
-                  }
-                />
-              </Field>
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogClose
-                render={<Button type="button" variant="ghost" />}
-                disabled={isDeleting === deleteModal.channel?.id}
-              >
-                {t('deleteDialog.cancel')}
-              </AlertDialogClose>
-              <Button
-                type="submit"
-                variant="destructive"
-                disabled={!isDeleteConfirmationValid}
-                loading={isDeleting === deleteModal.channel?.id}
-              >
-                {isDeleting === deleteModal.channel?.id
-                  ? t('deleteDialog.deleting')
-                  : t('deleteDialog.confirm')}
-              </Button>
-            </AlertDialogFooter>
-          </form>
-        </AlertDialogPopup>
-      </AlertDialog>
+          />
+        </Field>
+      </ConfirmDialog>
     </div>
   );
 }
