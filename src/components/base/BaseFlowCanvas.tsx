@@ -22,7 +22,8 @@ import {
 } from '@xyflow/react';
 import './BaseFlow.css';
 
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/hooks/useLanguage';
 import { PanelRightOpen, PanelRightClose } from 'lucide-react';
 import { useDnD } from '@/contexts/DnDContext';
 import { BaseFlowContextMenu } from './BaseFlowContextMenu';
@@ -172,6 +173,7 @@ export function BaseFlowCanvas({
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
   const { type, setPointerEvents, setType } = useDnD();
+  const { t } = useLanguage('common');
 
   // Estados do canvas
   const [nodes, setNodes, onNodesChangeInternal] = useNodesState(initialNodes);
@@ -667,7 +669,7 @@ export function BaseFlowCanvas({
         {/* Controls */}
         {showControls && (
           <Controls
-            className="bg-sidebar border-sidebar-border"
+            className="border bg-popover"
             showZoom={true}
             showFitView={true}
             showInteractive={true}
@@ -690,15 +692,12 @@ export function BaseFlowCanvas({
           <Panel position="top-right">
             <Button
               variant="outline"
-              size="sm"
+              size="icon-lg"
               onClick={() => setShowNodePanel(!showNodePanel)}
-              className="h-10 w-10 p-0"
+              aria-label={t('base.flow.panel.toggle')}
+              aria-pressed={showNodePanel}
             >
-              {showNodePanel ? (
-                <PanelRightClose className="h-4 w-4" />
-              ) : (
-                <PanelRightOpen className="h-4 w-4" />
-              )}
+              {showNodePanel ? <PanelRightClose /> : <PanelRightOpen />}
             </Button>
           </Panel>
         )}

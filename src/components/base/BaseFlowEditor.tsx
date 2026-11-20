@@ -7,7 +7,8 @@ import { BaseNodePanel, type NodeType, type NodeCategory } from './BaseNodePanel
 
 // Re-exportar os tipos para facilitar o uso
 export type { NodeType, NodeCategory };
-import { Button, Card, CardContent } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Save, Play, Pause, RotateCcw, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -200,11 +201,11 @@ export function BaseFlowEditor({
     !isExecuting;
 
   return (
-    <div className={cn('flex flex-col h-full bg-sidebar', className)}>
+    <div className={cn('flex flex-col h-full bg-background', className)}>
       {/* Header */}
       {showHeader && (
         <div className={cn(
-          'flex-shrink-0 border-b border-sidebar-border bg-sidebar',
+          'flex-shrink-0 border-b bg-background',
           headerClassName
         )}>
           <div className="flex items-center justify-between p-4">
@@ -214,14 +215,14 @@ export function BaseFlowEditor({
             </div>
 
             <div className="flex-1 mx-4">
-              <h1 className="text-xl font-semibold text-sidebar-foreground">
+              <h1 className="text-xl font-semibold text-foreground">
                 {finalTitle}
                 {hasUnsavedChanges && (
-                  <span className="ml-2 text-sm text-orange-500">{t('base.flow.editor.unsaved')}</span>
+                  <span className="ms-2 text-sm text-warning-foreground">{t('base.flow.editor.unsaved')}</span>
                 )}
               </h1>
               {subtitle && (
-                <p className="text-sm text-sidebar-foreground/70 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {subtitle}
                 </p>
               )}
@@ -233,16 +234,15 @@ export function BaseFlowEditor({
 
               {/* Validação */}
               {validationErrors.length > 0 && (
-                <Card className="bg-destructive/8 border-destructive/24">
-                  <CardContent className="p-2">
-                    <div className="flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3 text-destructive" />
-                      <p className="text-xs text-destructive-foreground">
-                        {t('base.flow.editor.errors', { count: validationErrors.length })}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div
+                  role="status"
+                  className="flex items-center gap-1 rounded-lg border border-destructive/24 bg-destructive/8 p-2"
+                >
+                  <AlertCircle className="size-3 text-destructive-foreground" />
+                  <p className="text-xs text-destructive-foreground">
+                    {t('base.flow.editor.errors', { count: validationErrors.length })}
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -252,7 +252,7 @@ export function BaseFlowEditor({
       {/* Toolbar */}
       {showToolbar && (
         <div className={cn(
-          'flex-shrink-0 border-b border-sidebar-border bg-sidebar-accent/30 px-4 py-2',
+          'flex-shrink-0 border-b bg-muted/48 px-4 py-2',
           toolbarClassName
         )}>
           <div className="flex items-center justify-between">
@@ -264,9 +264,8 @@ export function BaseFlowEditor({
                   size="sm"
                   onClick={handleSave}
                   disabled={!hasUnsavedChanges || isSaving}
-                  className="h-8"
                 >
-                  <Save className="h-3 w-3 mr-1" />
+                  <Save />
                   {isSaving ? t('base.flow.editor.saving') : t('base.flow.editor.save')}
                 </Button>
               )}
@@ -277,16 +276,15 @@ export function BaseFlowEditor({
                   size="sm"
                   onClick={isExecuting ? handleStop : handleExecute}
                   disabled={!canExecute && !isExecuting}
-                  className="h-8"
                 >
                   {isExecuting ? (
                     <>
-                      <Pause className="h-3 w-3 mr-1" />
+                      <Pause />
                       {t('base.flow.editor.stop')}
                     </>
                   ) : (
                     <>
-                      <Play className="h-3 w-3 mr-1" />
+                      <Play />
                       {t('base.flow.editor.execute')}
                     </>
                   )}
@@ -299,9 +297,8 @@ export function BaseFlowEditor({
                   size="sm"
                   onClick={handleReset}
                   disabled={isExecuting}
-                  className="h-8"
                 >
-                  <RotateCcw className="h-3 w-3 mr-1" />
+                  <RotateCcw />
                   {t('base.flow.editor.reset')}
                 </Button>
               )}
@@ -320,8 +317,8 @@ export function BaseFlowEditor({
         {isLoading ? (
           <div className="flex items-center justify-center h-full w-full">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-              <p className="text-sm text-sidebar-foreground/70">{t('base.flow.editor.loading')}</p>
+              <Spinner className="mx-auto mb-2 size-8 text-primary" />
+              <p className="text-sm text-muted-foreground">{t('base.flow.editor.loading')}</p>
             </div>
           </div>
         ) : (
