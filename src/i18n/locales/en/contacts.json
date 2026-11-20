@@ -349,7 +349,12 @@
       "info4": "Duplicate contacts will be permanently removed",
       "cancel": "Cancel",
       "confirm": "Merge Contacts",
-      "merging": "Merging..."
+      "merging": "Merging...",
+      "primary": "Primary",
+      "createdAt": "Created on {{date}}",
+      "conversations_one": "{{count}} conversation",
+      "conversations_other": "{{count}} conversations",
+      "company": "Company:"
     },
     "selectContactToMerge": {
       "title": "Select Contact to Merge",

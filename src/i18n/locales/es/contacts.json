@@ -341,7 +341,12 @@
       "info4": "Los contactos duplicados serán eliminados permanentemente",
       "cancel": "Cancelar",
       "confirm": "Fusionar Contactos",
-      "merging": "Fusionando..."
+      "merging": "Fusionando...",
+      "primary": "Principal",
+      "createdAt": "Creado el {{date}}",
+      "conversations_one": "{{count}} conversación",
+      "conversations_other": "{{count}} conversaciones",
+      "company": "Empresa:"
     },
     "selectContactToMerge": {
       "title": "Seleccionar Contacto para Fusionar",

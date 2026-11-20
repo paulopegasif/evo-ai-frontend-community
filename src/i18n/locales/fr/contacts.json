@@ -341,7 +341,12 @@
       "info4": "Les contacts en double seront supprimés définitivement",
       "cancel": "Annuler",
       "confirm": "Fusionner les Contacts",
-      "merging": "Fusion en cours..."
+      "merging": "Fusion en cours...",
+      "primary": "Principal",
+      "createdAt": "Créé le {{date}}",
+      "conversations_one": "{{count}} conversation",
+      "conversations_other": "{{count}} conversations",
+      "company": "Entreprise :"
     },
     "selectContactToMerge": {
       "title": "Sélectionner un Contact à Fusionner",

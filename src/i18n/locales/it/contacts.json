@@ -341,7 +341,12 @@
       "info4": "Questa azione non può essere annullata",
       "cancel": "Annulla",
       "confirm": "Unisci Contatti",
-      "merging": "Unione in corso..."
+      "merging": "Unione in corso...",
+      "primary": "Principale",
+      "createdAt": "Creato il {{date}}",
+      "conversations_one": "{{count}} conversazione",
+      "conversations_other": "{{count}} conversazioni",
+      "company": "Azienda:"
     },
     "selectContactToMerge": {
       "title": "Seleziona Contatto da Unire",

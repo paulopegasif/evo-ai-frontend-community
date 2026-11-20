@@ -349,7 +349,12 @@
       "info4": "Os contatos duplicados serão removidos permanentemente",
       "cancel": "Cancelar",
       "confirm": "Mesclar Contatos",
-      "merging": "Mesclando..."
+      "merging": "Mesclando...",
+      "primary": "Principal",
+      "createdAt": "Criado em {{date}}",
+      "conversations_one": "{{count}} conversa",
+      "conversations_other": "{{count}} conversas",
+      "company": "Empresa:"
     },
     "selectContactToMerge": {
       "title": "Selecionar Contato para Mesclar",
