@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { UserCog } from 'lucide-react';
 import { UpdateContactNodeData } from './UpdateContactNode';
@@ -118,17 +112,21 @@ export function UpdateContactPanel({
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.updateContact.fieldToUpdate')}</Label>
-          <Select value={formData.fieldToUpdate || ''} onValueChange={handleFieldChange}>
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+        <Field>
+          <FieldLabel>{t('panels.updateContact.fieldToUpdate')}</FieldLabel>
+          <Select
+            items={CONTACT_FIELDS.map(field => ({ value: field.id, label: field.label }))}
+            value={formData.fieldToUpdate || null}
+            onValueChange={value => handleFieldChange(String(value ?? ''))}
+          >
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('panels.updateContact.selectFieldPlaceholder')} />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {CONTACT_FIELDS.map(field => (
-                <SelectItem key={field.id} value={field.id} className="text-sidebar-foreground">
+                <SelectItem key={field.id} value={field.id}>
                   <div className="flex items-center gap-2">
-                    <UserCog className="w-4 h-4 text-flow-node-control-fg" />
+                    <UserCog className="size-4 text-flow-node-control-fg" />
                     <div>
                       <div className="font-medium">{field.label}</div>
                       <div className="text-xs text-muted-foreground">{field.placeholder}</div>
@@ -136,13 +134,13 @@ export function UpdateContactPanel({
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         {formData.fieldToUpdate && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('panels.updateContact.newValue')}</Label>
+          <Field className="items-stretch">
+            <FieldLabel>{t('panels.updateContact.newValue')}</FieldLabel>
             <VariableInput
               type={
                 formData.fieldToUpdate === 'email'
@@ -157,10 +155,10 @@ export function UpdateContactPanel({
               }
               value={formData.newValue || ''}
               onChange={e => handleValueChange(e.target.value)}
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               journeyId={journeyId}
             />
-          </div>
+          </Field>
         )}
 
         {isValid && (
@@ -169,7 +167,7 @@ export function UpdateContactPanel({
               <strong>{t('panels.updateContact.preview.title')}:</strong>
             </p>
             <div className="flex items-center gap-2">
-              <UserCog className="w-4 h-4" />
+              <UserCog className="size-4" />
               <span className="font-medium">{formData.fieldLabel}</span>
               <span>→</span>
               <span className="font-medium">{formData.newValue}</span>

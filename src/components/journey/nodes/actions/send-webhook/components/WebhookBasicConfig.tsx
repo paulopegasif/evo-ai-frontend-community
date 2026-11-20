@@ -1,12 +1,12 @@
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import {
-  Label,
-  Input,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -17,16 +17,35 @@ interface WebhookBasicConfigProps {
   journeyId: string;
 }
 
-
 export function WebhookBasicConfig({ data, onChange, journeyId }: WebhookBasicConfigProps) {
   const { t } = useLanguage('journey');
 
   const HTTP_METHODS = [
-    { value: 'GET', label: t('panels.sendWebhook.basic.methods.get.label'), description: t('panels.sendWebhook.basic.methods.get.description') },
-    { value: 'POST', label: t('panels.sendWebhook.basic.methods.post.label'), description: t('panels.sendWebhook.basic.methods.post.description') },
-    { value: 'PUT', label: t('panels.sendWebhook.basic.methods.put.label'), description: t('panels.sendWebhook.basic.methods.put.description') },
-    { value: 'PATCH', label: t('panels.sendWebhook.basic.methods.patch.label'), description: t('panels.sendWebhook.basic.methods.patch.description') },
-    { value: 'DELETE', label: t('panels.sendWebhook.basic.methods.delete.label'), description: t('panels.sendWebhook.basic.methods.delete.description') },
+    {
+      value: 'GET',
+      label: t('panels.sendWebhook.basic.methods.get.label'),
+      description: t('panels.sendWebhook.basic.methods.get.description'),
+    },
+    {
+      value: 'POST',
+      label: t('panels.sendWebhook.basic.methods.post.label'),
+      description: t('panels.sendWebhook.basic.methods.post.description'),
+    },
+    {
+      value: 'PUT',
+      label: t('panels.sendWebhook.basic.methods.put.label'),
+      description: t('panels.sendWebhook.basic.methods.put.description'),
+    },
+    {
+      value: 'PATCH',
+      label: t('panels.sendWebhook.basic.methods.patch.label'),
+      description: t('panels.sendWebhook.basic.methods.patch.description'),
+    },
+    {
+      value: 'DELETE',
+      label: t('panels.sendWebhook.basic.methods.delete.label'),
+      description: t('panels.sendWebhook.basic.methods.delete.description'),
+    },
   ];
   const handleUrlChange = (value: string) => {
     onChange({ webhookUrl: value });
@@ -49,87 +68,88 @@ export function WebhookBasicConfig({ data, onChange, journeyId }: WebhookBasicCo
   return (
     <div className="space-y-4">
       {/* URL do Webhook */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">{t('panels.sendWebhook.basic.endpointUrl')}</Label>
+      <Field className="items-stretch">
+        <FieldLabel>{t('panels.sendWebhook.basic.endpointUrl')}</FieldLabel>
         <VariableInput
           type="url"
           value={data.webhookUrl || ''}
           onChange={e => handleUrlChange(e.target.value)}
           placeholder={t('panels.sendWebhook.basic.urlPlaceholder')}
-          className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+          className="w-full"
           journeyId={journeyId}
         />
-        <p className="text-xs text-muted-foreground">
-          {t('panels.sendWebhook.basic.urlDescription')}
-        </p>
-      </div>
+        <FieldDescription>{t('panels.sendWebhook.basic.urlDescription')}</FieldDescription>
+      </Field>
 
       {/* Método HTTP */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">{t('panels.sendWebhook.basic.httpMethod')}</Label>
-        <Select value={data.method || 'POST'} onValueChange={handleMethodChange}>
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+      <Field>
+        <FieldLabel>{t('panels.sendWebhook.basic.httpMethod')}</FieldLabel>
+        <Select
+          items={HTTP_METHODS.map(method => ({ value: method.value, label: method.label }))}
+          value={data.method || 'POST'}
+          onValueChange={v =>
+            v != null && handleMethodChange(v as NonNullable<SendWebhookNodeData['method']>)
+          }
+        >
+          <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {HTTP_METHODS.map(method => (
-              <SelectItem
-                key={method.value}
-                value={method.value}
-                className="text-sidebar-foreground"
-              >
+              <SelectItem key={method.value} value={method.value}>
                 <div>
                   <div className="font-medium">{method.label}</div>
                   <div className="text-xs text-muted-foreground">{method.description}</div>
                 </div>
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {/* Configurações avançadas */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.sendWebhook.basic.timeout')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.sendWebhook.basic.timeout')}</FieldLabel>
           <Input
             type="number"
             min="1"
             max="300"
             value={data.timeout || 30}
             onChange={e => handleTimeoutChange(e.target.value)}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground"
           />
-          <p className="text-xs text-muted-foreground">
-            {t('panels.sendWebhook.basic.timeoutDescription')}
-          </p>
-        </div>
+          <FieldDescription>{t('panels.sendWebhook.basic.timeoutDescription')}</FieldDescription>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.sendWebhook.basic.retryAttempts')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.sendWebhook.basic.retryAttempts')}</FieldLabel>
           <Input
             type="number"
             min="0"
             max="5"
             value={data.retryAttempts || 0}
             onChange={e => handleRetryChange(e.target.value)}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground"
           />
-          <p className="text-xs text-muted-foreground">
-            {t('panels.sendWebhook.basic.retryDescription')}
-          </p>
-        </div>
+          <FieldDescription>{t('panels.sendWebhook.basic.retryDescription')}</FieldDescription>
+        </Field>
       </div>
 
       {/* Preview da configuração */}
       {data.webhookUrl && (
-        <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/30">
-          <p className="text-sm text-purple-800 dark:text-purple-200">
-            <strong>{t('panels.sendWebhook.basic.summaryTitle')}</strong> {t('panels.sendWebhook.basic.summaryRequest', { method: data.method || 'POST' })}{' '}
+        <div className="rounded-xl border bg-muted/24 p-4">
+          <p className="text-sm text-foreground">
+            <strong>{t('panels.sendWebhook.basic.summaryTitle')}</strong>{' '}
+            {t('panels.sendWebhook.basic.summaryRequest', { method: data.method || 'POST' })}{' '}
             <span className="font-mono text-xs break-all">{data.webhookUrl}</span>
-            {data.timeout !== 30 && <span className="block mt-1">{t('panels.sendWebhook.basic.summaryTimeout', { timeout: data.timeout })}</span>}
+            {data.timeout !== 30 && (
+              <span className="block mt-1">
+                {t('panels.sendWebhook.basic.summaryTimeout', { timeout: data.timeout })}
+              </span>
+            )}
             {data.retryAttempts && data.retryAttempts > 0 && (
-              <span className="block mt-1">{t('panels.sendWebhook.basic.summaryRetries', { retries: data.retryAttempts })}</span>
+              <span className="block mt-1">
+                {t('panels.sendWebhook.basic.summaryRetries', { retries: data.retryAttempts })}
+              </span>
             )}
           </p>
         </div>

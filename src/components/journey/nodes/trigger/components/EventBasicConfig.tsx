@@ -1,15 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  Button,
-  Label,
-  Separator,
-} from '@/components/ui/compat';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Separator } from '@/components/ui/separator';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { EventSelector } from '@/components/journey/shared/EventSelector';
 import { EventPropertiesForm } from '@/components/journey/shared/EventPropertiesForm';
@@ -163,46 +155,44 @@ export function EventBasicConfig({
     <>
       <Separator />
       <div className="space-y-4">
-        <Label className="text-sidebar-foreground font-medium">
+        <h3 className="font-medium text-sm text-foreground">
           {t('triggerComponents.event.configuration')}
-        </Label>
+        </h3>
 
         {/* Nome do evento */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('triggerComponents.event.eventName')}</Label>
-          <EventSelector
-            value={selectorValue || undefined}
-            onChange={handleSelectorChange}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-          />
-          {canonicalDescription && (
-            <p className="text-xs text-muted-foreground">{canonicalDescription}</p>
-          )}
+        <div className="flex flex-col gap-3">
+          <Field className="items-stretch">
+            <FieldLabel>{t('triggerComponents.event.eventName')}</FieldLabel>
+            <EventSelector
+              value={selectorValue || undefined}
+              onChange={handleSelectorChange}
+            />
+            {canonicalDescription && <FieldDescription>{canonicalDescription}</FieldDescription>}
+          </Field>
           {isCustomMode && (
-            <div className="space-y-2 pt-1">
-              <Label htmlFor="custom-event-name" className="text-sm font-medium">
+            <Field className="items-stretch">
+              <FieldLabel htmlFor="custom-event-name">
                 {t('triggerComponents.event.eventName')}
-              </Label>
+              </FieldLabel>
               <VariableInput
                 id="custom-event-name"
                 value={customName}
                 onChange={e => handleCustomNameChange(e.target.value)}
                 placeholder={t('triggerComponents.event.customEventNamePlaceholder')}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
                 journeyId={journeyId}
               />
-              <p className="text-xs text-amber-700 dark:text-amber-300">
+              <FieldDescription className="text-warning-foreground">
                 {t('triggerComponents.event.customEventWarning')}
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
           )}
         </div>
 
         {/* Propriedades do evento */}
         <div className="space-y-3">
-          <Label className="text-sidebar-foreground font-medium text-sm">
+          <h4 className="font-medium text-sm text-foreground">
             {t('triggerComponents.event.eventProperties')}
-          </Label>
+          </h4>
           <EventPropertiesForm
             eventName={formEventName}
             value={record}
@@ -211,34 +201,22 @@ export function EventBasicConfig({
         </div>
       </div>
 
-      {/* Preserve-compatible-values confirm on event switch */}
-      <AlertDialog
+      {/* Preserve-compatible-values confirm on event switch. Dismissing (Esc /
+          Clear) without an explicit Preserve would otherwise strand the newly
+          selected event with the previous event's values, so a close defaults to
+          the safe Clear; Preserve closes via state, not onOpenChange. */}
+      <ConfirmDialog
         open={pendingSwitch !== null}
         onOpenChange={open => {
-          // Dismissing (Esc) without an explicit choice would otherwise strand
-          // the newly-selected event with the previous event's values (incl.
-          // keys absent from the new schema). Default a dismiss to the safe
-          // Clear. Explicit Preserve/Clear close via state, not onOpenChange.
           if (!open) handleClearValues();
         }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('triggerComponents.event.eventSwitch.title')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('triggerComponents.event.eventSwitch.body')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={handleClearValues}>
-              {t('triggerComponents.event.eventSwitch.clear')}
-            </Button>
-            <Button onClick={handlePreserveValues}>
-              {t('triggerComponents.event.eventSwitch.preserve')}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        variant="default"
+        title={t('triggerComponents.event.eventSwitch.title')}
+        description={t('triggerComponents.event.eventSwitch.body')}
+        cancelLabel={t('triggerComponents.event.eventSwitch.clear')}
+        confirmLabel={t('triggerComponents.event.eventSwitch.preserve')}
+        onConfirm={handlePreserveValues}
+      />
     </>
   );
 }

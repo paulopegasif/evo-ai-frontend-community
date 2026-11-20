@@ -1,13 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-} from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Settings as SettingsIcon } from 'lucide-react';
 import { UpdateCustomAttributeNodeData } from './UpdateCustomAttributeNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
@@ -115,6 +110,10 @@ export function UpdateCustomAttributePanel({
   };
 
   const selectedAttribute = attributes.find(attr => attr.id === formData.attributeId);
+  const attributeItems = attributes.map(attribute => ({
+    value: attribute.id,
+    label: attribute.attribute_display_name,
+  }));
   const isValid = Boolean(
     formData.attributeId && formData.newValue !== undefined && formData.newValue !== '',
   );
@@ -138,11 +137,11 @@ export function UpdateCustomAttributePanel({
     switch (selectedAttribute.attribute_display_type) {
       case 'checkbox':
         return (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Switch
               id="checkbox-value"
               checked={formData.newValue === 'true'}
-              onCheckedChange={handleCheckboxChange}
+              onCheckedChange={checked => handleCheckboxChange(checked)}
             />
             <Label htmlFor="checkbox-value" className="text-sm">
               {formData.newValue === 'true'
@@ -154,17 +153,21 @@ export function UpdateCustomAttributePanel({
 
       case 'list':
         return (
-          <Select value={formData.newValue || ''} onValueChange={handleValueChange}>
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+          <Select
+            items={(selectedAttribute.attribute_values ?? []).map(option => ({ value: option, label: option }))}
+            value={formData.newValue || null}
+            onValueChange={v => handleValueChange(String(v ?? ''))}
+          >
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('panels.updateCustomAttribute.listPlaceholder')} />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {selectedAttribute.attribute_values?.map(option => (
-                <SelectItem key={option} value={option} className="text-sidebar-foreground">
+                <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         );
 
@@ -174,7 +177,7 @@ export function UpdateCustomAttributePanel({
             type="date"
             value={formData.newValue || ''}
             onChange={e => handleValueChange(e.target.value)}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             journeyId={journeyId}
           />
         );
@@ -185,7 +188,7 @@ export function UpdateCustomAttributePanel({
             type="datetime-local"
             value={normalizeDateTimeLocalValue(formData.newValue || '')}
             onChange={e => handleValueChange(e.target.value)}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             journeyId={journeyId}
           />
         );
@@ -206,7 +209,7 @@ export function UpdateCustomAttributePanel({
             }
             value={formData.newValue || ''}
             onChange={e => handleValueChange(e.target.value)}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             journeyId={journeyId}
           />
         );
@@ -218,7 +221,7 @@ export function UpdateCustomAttributePanel({
             placeholder={t('panels.updateCustomAttribute.placeholders.link')}
             value={formData.newValue || ''}
             onChange={e => handleValueChange(e.target.value)}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             journeyId={journeyId}
           />
         );
@@ -230,7 +233,7 @@ export function UpdateCustomAttributePanel({
             placeholder={t('panels.updateCustomAttribute.placeholders.text')}
             value={formData.newValue || ''}
             onChange={e => handleValueChange(e.target.value)}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             journeyId={journeyId}
           />
         );
@@ -242,7 +245,7 @@ export function UpdateCustomAttributePanel({
       open
       variant="simple"
       title={t('panels.updateCustomAttribute.title')}
-      icon={<SettingsIcon className="h-5 w-5 text-flow-node-control-fg" />}
+      icon={<SettingsIcon className="size-5 text-flow-node-control-fg" />}
       onCancel={onClose}
       onSave={handleSave}
       dirty={dirty && isValid}
@@ -264,16 +267,17 @@ export function UpdateCustomAttributePanel({
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.updateCustomAttribute.customAttribute')}
-          </Label>
+          </FieldLabel>
           <Select
-            value={formData.attributeId || ''}
-            onValueChange={handleAttributeChange}
+            items={attributeItems}
+            value={formData.attributeId || null}
+            onValueChange={v => handleAttributeChange(String(v ?? ''))}
             disabled={loading}
           >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-full">
               <SelectValue
                 placeholder={
                   loading
@@ -282,12 +286,11 @@ export function UpdateCustomAttributePanel({
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {attributes.map(attribute => (
                 <SelectItem
                   key={attribute.id}
                   value={attribute.id}
-                  className="text-sidebar-foreground"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-sm">
@@ -304,9 +307,9 @@ export function UpdateCustomAttributePanel({
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         {error && (
           <FlowFeedbackBanner variant="error">
@@ -315,17 +318,15 @@ export function UpdateCustomAttributePanel({
         )}
 
         {selectedAttribute && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
+          <Field className="items-stretch">
+            <FieldLabel>
               {t('panels.updateCustomAttribute.newValue')}
-            </Label>
+            </FieldLabel>
             {renderValueInput()}
             {selectedAttribute.attribute_description && (
-              <p className="text-xs text-muted-foreground">
-                {selectedAttribute.attribute_description}
-              </p>
+              <FieldDescription>{selectedAttribute.attribute_description}</FieldDescription>
             )}
-          </div>
+          </Field>
         )}
 
         {isValid && (

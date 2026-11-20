@@ -1,15 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Button,
-  Label,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Badge,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Split, Plus, Trash2 } from 'lucide-react';
 import { SplitNodeData, SplitVariant } from './SplitNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
@@ -134,6 +128,8 @@ export function SplitPanel({ nodeId, data, onUpdate, onClose }: SplitPanelProps)
     }));
   };
 
+  const colorItems = VARIANT_COLORS.map(option => ({ value: option.value, label: option.label }));
+
   const totalPercentage = formData.variants.reduce((sum, variant) => sum + variant.percentage, 0);
   const dirty = useMemo(
     () => JSON.stringify(formData) !== JSON.stringify(originalData),
@@ -142,62 +138,61 @@ export function SplitPanel({ nodeId, data, onUpdate, onClose }: SplitPanelProps)
   const isValid = totalPercentage > 0;
 
   const renderVariant = (variant: SplitVariant) => (
-    <div key={variant.id} className="p-4 border border-border rounded-lg bg-sidebar-accent/10 space-y-3">
-      <div className="grid grid-cols-12 gap-3 items-end">
-        <div className="col-span-4">
-          <Label className="text-xs">{t('panels.split.variants.name')}</Label>
+    <div key={variant.id} className="rounded-xl border bg-muted/24 p-4">
+      <div className="grid grid-cols-12 items-end gap-3">
+        <Field className="col-span-4 items-stretch">
+          <FieldLabel className="text-xs">{t('panels.split.variants.name')}</FieldLabel>
           <Input
             value={variant.name}
             onChange={e => updateVariant(variant.id, { name: e.target.value })}
             placeholder={t('panels.split.placeholders.variantName')}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground"
           />
-        </div>
+        </Field>
 
-        <div className="col-span-3">
-          <Label className="text-xs">{t('panels.split.variants.color')}</Label>
+        <Field className="col-span-3 items-stretch">
+          <FieldLabel className="text-xs">{t('panels.split.variants.color')}</FieldLabel>
           <Select
-            value={variant.color}
-            onValueChange={value => updateVariant(variant.id, { color: value })}
+            items={colorItems}
+            value={variant.color || null}
+            onValueChange={value => updateVariant(variant.id, { color: String(value ?? '') })}
           >
-            <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {VARIANT_COLORS.map(option => (
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className="text-sidebar-foreground"
                 >
                   {option.label}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
-        <div className="col-span-3">
-          <Label className="text-xs">{t('panels.split.variants.percentage')}</Label>
+        <Field className="col-span-3 items-stretch">
+          <FieldLabel className="text-xs">{t('panels.split.variants.percentage')}</FieldLabel>
           <Input
             type="number"
             min="0"
             max="100"
             value={variant.percentage}
             onChange={e => updateVariant(variant.id, { percentage: parseInt(e.target.value) || 0 })}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground"
           />
-        </div>
+        </Field>
 
-        <div className="col-span-2">
+        <div className="col-span-2 flex justify-end">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => removeVariant(variant.id)}
             disabled={formData.variants.length <= 2}
-            className="h-10 w-full p-0 text-flow-feedback-error-fg hover:text-flow-feedback-error-fg disabled:opacity-50"
+            aria-label={t('panels.split.actions.removeVariant')}
+            className="text-destructive-foreground hover:text-destructive-foreground"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 />
           </Button>
         </div>
       </div>
@@ -209,7 +204,7 @@ export function SplitPanel({ nodeId, data, onUpdate, onClose }: SplitPanelProps)
       open
       variant="simple"
       title={t('panels.split.title')}
-      icon={<Split className="h-5 w-5 text-flow-node-condition-fg" />}
+      icon={<Split className="size-5 text-flow-node-condition-fg" />}
       onCancel={onClose}
       onSave={handleSave}
       dirty={dirty && isValid}
@@ -218,13 +213,11 @@ export function SplitPanel({ nodeId, data, onUpdate, onClose }: SplitPanelProps)
       contentClassName="max-w-3xl"
     >
       <div className="space-y-4">
-        <Label className="text-sidebar-foreground font-medium">
-          {t('panels.split.configuration')}
-        </Label>
+        <h3 className="font-medium text-foreground text-sm">{t('panels.split.configuration')}</h3>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={addVariant}>
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('panels.split.actions.addVariant')}
           </Button>
           <Button variant="outline" size="sm" onClick={distributeEqually}>
@@ -236,8 +229,8 @@ export function SplitPanel({ nodeId, data, onUpdate, onClose }: SplitPanelProps)
           {formData.variants && formData.variants.length > 0 ? (
             formData.variants.map(variant => renderVariant(variant))
           ) : (
-            <div className="p-4 rounded-lg border-2 border-dashed border-border bg-muted/40 text-center">
-              <Split className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+            <div className="rounded-xl border border-dashed bg-muted/24 p-4 text-center">
+              <Split className="mx-auto mb-2 size-8 text-muted-foreground" />
               <p className="text-muted-foreground">{t('panels.split.messages.emptyState')}</p>
             </div>
           )}
@@ -264,9 +257,7 @@ export function SplitPanel({ nodeId, data, onUpdate, onClose }: SplitPanelProps)
 
         {formData.variants && formData.variants.length > 0 && (
           <FlowFeedbackBanner variant="info">
-            <Label className="text-sm font-medium mb-2 block">
-              {t('panels.split.status.summary')}:
-            </Label>
+            <p className="mb-2 font-medium text-sm">{t('panels.split.status.summary')}:</p>
             <div className="space-y-1 text-sm">
               {formData.variants.map(variant => (
                 <div key={variant.id}>

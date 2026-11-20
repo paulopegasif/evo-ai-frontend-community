@@ -1,12 +1,14 @@
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Label } from '@/components/ui/label';
 import {
-  Button,
-  Label,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { Plus, X } from 'lucide-react';
 import { WebhookBodyField, WebhookBodyValueType } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';
@@ -22,7 +24,12 @@ interface WebhookBodyBuilderProps {
 
 const VALUE_TYPES: WebhookBodyValueType[] = ['string', 'number', 'boolean'];
 
-export function WebhookBodyBuilder({ fields, bodyType, onChange, journeyId }: WebhookBodyBuilderProps) {
+export function WebhookBodyBuilder({
+  fields,
+  bodyType,
+  onChange,
+  journeyId,
+}: WebhookBodyBuilderProps) {
   const { t } = useLanguage('journey');
   const showTypeColumn = bodyType === 'json';
 
@@ -34,80 +41,96 @@ export function WebhookBodyBuilder({ fields, bodyType, onChange, journeyId }: We
   const removeField = (id: string) => onChange(fields.filter(field => field.id !== id));
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">{t('panels.sendWebhook.body.bodyContent')}</Label>
+        <Label>{t('panels.sendWebhook.body.bodyContent')}</Label>
         <Button variant="outline" size="sm" onClick={addField}>
-          <Plus className="w-4 h-4 mr-1" />
+          <Plus />
           {t('panels.sendWebhook.body.builder.addField')}
         </Button>
       </div>
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         {fields.length === 0 ? (
-          <div className="p-4 rounded-lg border-2 border-dashed border-border bg-muted/48 text-center">
-            <p className="text-sm text-muted-foreground">{t('panels.sendWebhook.body.builder.noFields')}</p>
+          <div className="rounded-xl border border-dashed bg-muted/24 p-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              {t('panels.sendWebhook.body.builder.noFields')}
+            </p>
           </div>
         ) : (
           fields.map(field => (
-            <div key={field.id} className="p-3 border rounded-lg bg-sidebar-accent/10">
-              <div className="grid grid-cols-12 gap-3 items-end">
+            <div key={field.id} className="rounded-xl border bg-muted/24 p-3">
+              <div className="grid grid-cols-12 items-end gap-3">
                 {/* Key */}
-                <div className={showTypeColumn ? 'col-span-4' : 'col-span-5'}>
-                  <Label className="text-xs">{t('panels.sendWebhook.body.builder.keyLabel')}</Label>
+                <Field
+                  className={cn(showTypeColumn ? 'col-span-4' : 'col-span-5', 'items-stretch')}
+                >
+                  <FieldLabel className="text-xs">
+                    {t('panels.sendWebhook.body.builder.keyLabel')}
+                  </FieldLabel>
                   <VariableInput
                     value={field.key}
                     onChange={e => updateField(field.id, { key: e.target.value })}
                     placeholder={t('panels.sendWebhook.body.builder.keyPlaceholder')}
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
                     journeyId={journeyId}
                   />
-                </div>
+                </Field>
 
                 {/* Value */}
-                <div className={showTypeColumn ? 'col-span-4' : 'col-span-6'}>
-                  <Label className="text-xs">{t('panels.sendWebhook.body.builder.valueLabel')}</Label>
+                <Field
+                  className={cn(showTypeColumn ? 'col-span-4' : 'col-span-6', 'items-stretch')}
+                >
+                  <FieldLabel className="text-xs">
+                    {t('panels.sendWebhook.body.builder.valueLabel')}
+                  </FieldLabel>
                   <VariableInput
                     value={field.value}
                     onChange={e => updateField(field.id, { value: e.target.value })}
                     placeholder={t('panels.sendWebhook.body.builder.valuePlaceholder')}
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
                     journeyId={journeyId}
                   />
-                </div>
+                </Field>
 
                 {/* Type (JSON only) */}
                 {showTypeColumn && (
-                  <div className="col-span-3">
-                    <Label className="text-xs">{t('panels.sendWebhook.body.builder.typeLabel')}</Label>
+                  <Field className="col-span-3">
+                    <FieldLabel className="text-xs">
+                      {t('panels.sendWebhook.body.builder.typeLabel')}
+                    </FieldLabel>
                     <Select
+                      items={VALUE_TYPES.map(type => ({
+                        value: type,
+                        label: t(`panels.sendWebhook.body.builder.types.${type}`),
+                      }))}
                       value={field.type}
-                      onValueChange={(value: WebhookBodyValueType) => updateField(field.id, { type: value })}
+                      onValueChange={v =>
+                        v != null && updateField(field.id, { type: v as WebhookBodyValueType })
+                      }
                     >
-                      <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-sidebar border-sidebar-border">
+                      <SelectPopup alignItemWithTrigger={false}>
                         {VALUE_TYPES.map(type => (
-                          <SelectItem key={type} value={type} className="text-sidebar-foreground">
+                          <SelectItem key={type} value={type}>
                             {t(`panels.sendWebhook.body.builder.types.${type}`)}
                           </SelectItem>
                         ))}
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
-                  </div>
+                  </Field>
                 )}
 
                 {/* Remove */}
-                <div className="col-span-1">
+                <div className="col-span-1 flex justify-end">
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => removeField(field.id)}
                     aria-label={t('panels.sendWebhook.body.builder.removeField')}
-                    className="h-10 w-full p-0 text-red-500 hover:text-red-700"
+                    className="text-destructive-foreground hover:text-destructive-foreground"
                   >
-                    <X className="w-4 h-4" />
+                    <X />
                   </Button>
                 </div>
               </div>

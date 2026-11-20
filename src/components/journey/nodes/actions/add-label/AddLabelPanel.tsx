@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tag } from 'lucide-react';
 import { AddLabelNodeData } from './AddLabelNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
@@ -97,14 +91,15 @@ export function AddLabelPanel({ nodeId, data, onUpdate, onClose }: AddLabelPanel
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.addLabel.labelToAdd')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.addLabel.labelToAdd')}</FieldLabel>
           <Select
-            value={formData.labelId || ''}
-            onValueChange={handleLabelChange}
+            items={labels.map(label => ({ value: label.id, label: label.title }))}
+            value={formData.labelId || null}
+            onValueChange={value => handleLabelChange(String(value ?? ''))}
             disabled={loading}
           >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-full">
               <SelectValue
                 placeholder={
                   loading
@@ -113,12 +108,12 @@ export function AddLabelPanel({ nodeId, data, onUpdate, onClose }: AddLabelPanel
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {labels.map(label => (
-                <SelectItem key={label.id} value={label.id} className="text-sidebar-foreground">
+                <SelectItem key={label.id} value={label.id}>
                   <div className="flex items-center gap-2">
                     <div
-                      className="w-3 h-3 rounded-full border"
+                      className="size-3 rounded-full border"
                       style={{ backgroundColor: label.color }}
                     />
                     <div>
@@ -130,9 +125,9 @@ export function AddLabelPanel({ nodeId, data, onUpdate, onClose }: AddLabelPanel
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         {error && (
           <FlowFeedbackBanner variant="error">
@@ -147,7 +142,7 @@ export function AddLabelPanel({ nodeId, data, onUpdate, onClose }: AddLabelPanel
             </p>
             <div className="flex items-center gap-2">
               <div
-                className="w-4 h-4 rounded-full border"
+                className="size-4 rounded-full border"
                 style={{ backgroundColor: formData.labelColor }}
               />
               <span className="font-medium">{formData.labelName}</span>

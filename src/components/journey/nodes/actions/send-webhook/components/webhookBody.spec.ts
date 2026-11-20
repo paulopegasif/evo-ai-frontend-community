@@ -9,7 +9,11 @@ import {
 } from './webhookBody';
 import { WebhookBodyField } from '../SendWebhookNode';
 
-const field = (key: string, value: string, type: WebhookBodyField['type'] = 'string'): WebhookBodyField => ({
+const field = (
+  key: string,
+  value: string,
+  type: WebhookBodyField['type'] = 'string',
+): WebhookBodyField => ({
   id: `${key}-${value}`,
   key,
   value,
@@ -102,7 +106,10 @@ describe('validateFields', () => {
     expect(validateFields([field('', 'x')])).toEqual({ ok: false, error: 'blankKey' });
   });
   it('flags duplicate keys', () => {
-    expect(validateFields([field('a', '1'), field('a', '2')])).toEqual({ ok: false, error: 'duplicateKey' });
+    expect(validateFields([field('a', '1'), field('a', '2')])).toEqual({
+      ok: false,
+      error: 'duplicateKey',
+    });
   });
 });
 
@@ -130,7 +137,9 @@ describe('getEffectiveBodyMode', () => {
     expect(getEffectiveBodyMode({ bodyType: 'json', body: '{"a":1}' })).toBe('raw');
   });
   it('opens existing structured rows in structured', () => {
-    expect(getEffectiveBodyMode({ bodyType: 'json', bodyStructured: [field('a', '1')] })).toBe('structured');
+    expect(getEffectiveBodyMode({ bodyType: 'json', bodyStructured: [field('a', '1')] })).toBe(
+      'structured',
+    );
   });
   it('defaults a brand-new structured-capable node to structured', () => {
     expect(getEffectiveBodyMode({ bodyType: 'json' })).toBe('structured');

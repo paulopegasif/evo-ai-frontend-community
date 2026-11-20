@@ -1,14 +1,8 @@
 import { useState, useEffect } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Button,
-  Separator,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { Plus, X } from 'lucide-react';
 import { VariableInput, VariableMapping, type DataMapping } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -127,20 +121,20 @@ export function ContactConfiguration({
       <Separator />
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label className="text-sidebar-foreground font-medium">
+          <h3 className="font-medium text-sm text-foreground">
             {triggerType === 'contactCreated'
               ? t('triggerComponents.contact.filtersForCreated')
               : t('triggerComponents.contact.fieldsToMonitor')}
-          </Label>
-          <Button onClick={addField} variant="outline" size="sm" className="h-8">
-            <Plus className="w-3 h-3 mr-1" />
+          </h3>
+          <Button onClick={addField} variant="outline" size="sm">
+            <Plus />
             {t('triggerComponents.contact.addField')}
           </Button>
         </div>
 
         {fields.length === 0 ? (
-          <div className="p-4 rounded-lg bg-sidebar-accent/20 border border-sidebar-border/50 text-center">
-            <p className="text-sm text-sidebar-foreground/60">
+          <div className="rounded-xl border bg-muted/24 p-4 text-center">
+            <p className="text-sm text-muted-foreground">
               {triggerType === 'contactCreated'
                 ? t('triggerComponents.contact.noFiltersConfigured')
                 : t('triggerComponents.contact.noSpecificFieldsMonitored')}
@@ -151,95 +145,96 @@ export function ContactConfiguration({
             {fields.map((field, index) => (
               <div
                 key={index}
-                className="p-4 rounded-lg bg-sidebar-accent/10 border border-sidebar-border/30 space-y-3"
+                className="space-y-3 rounded-xl border bg-muted/24 p-4"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-sidebar-foreground">
+                  <span className="text-sm font-medium text-foreground">
                     {t('triggerComponents.contact.fieldNumber', { number: index + 1 })}
                   </span>
                   <Button
                     onClick={() => removeField(index)}
                     variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                    size="icon-xs"
+                    className="text-destructive-foreground hover:text-destructive-foreground"
+                    aria-label={t('triggerComponents.contact.removeField')}
                   >
-                    <X className="w-3 h-3" />
+                    <X />
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {/* Campo */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-medium">
+                  <Field>
+                    <FieldLabel className="text-xs">
                       {t('triggerComponents.contact.field')}
-                    </Label>
+                    </FieldLabel>
                     <Select
-                      value={field.field}
-                      onValueChange={value => updateField(index, { field: value })}
+                      items={CONTACT_FIELD_OPTIONS}
+                      value={field.field || null}
+                      onValueChange={value => updateField(index, { field: String(value ?? '') })}
                     >
-                      <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder={t('triggerComponents.contact.selectField')} />
                       </SelectTrigger>
-                      <SelectContent className="bg-sidebar border-sidebar-border">
+                      <SelectPopup alignItemWithTrigger={false}>
                         {CONTACT_FIELD_OPTIONS.map(option => (
                           <SelectItem
                             key={option.value}
                             value={option.value}
-                            className="text-sidebar-foreground"
                           >
                             {option.label}
                           </SelectItem>
                         ))}
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
-                  </div>
+                  </Field>
 
                   {/* Operador */}
-                  <div className="space-y-2">
-                    <Label className="text-xs font-medium">
+                  <Field>
+                    <FieldLabel className="text-xs">
                       {t('triggerComponents.contact.condition')}
-                    </Label>
+                    </FieldLabel>
                     <Select
-                      value={field.operator}
-                      onValueChange={value => updateField(index, { operator: value })}
+                      items={OPERATOR_OPTIONS}
+                      value={field.operator || null}
+                      onValueChange={value => updateField(index, { operator: String(value ?? '') })}
                     >
-                      <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder={t('triggerComponents.contact.selectCondition')} />
                       </SelectTrigger>
-                      <SelectContent className="bg-sidebar border-sidebar-border">
+                      <SelectPopup alignItemWithTrigger={false}>
                         {OPERATOR_OPTIONS.map(option => (
                           <SelectItem
                             key={option.value}
                             value={option.value}
-                            className="text-sidebar-foreground"
                           >
                             {option.label}
                           </SelectItem>
                         ))}
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
-                  </div>
+                  </Field>
 
                   {/* Valor */}
                   {needsValue(field.operator) && (
-                    <div className="space-y-2">
-                      <Label className="text-xs font-medium">
+                    <Field className="items-stretch">
+                      <FieldLabel className="text-xs">
                         {t('triggerComponents.contact.value')}
-                      </Label>
+                      </FieldLabel>
                       <VariableInput
                         value={typeof field.value === 'string' ? field.value : ''}
                         onChange={e => updateField(index, { value: e.target.value })}
                         placeholder={t('triggerComponents.contact.enterValue')}
-                        className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+                        className="w-full"
                         journeyId={journeyId}
                         onVariableInsert={variable => {
                           console.log('Variable inserted in contact field value:', variable);
                         }}
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <FieldDescription>
                         {t('triggerComponents.contact.useVariablesHint')}
-                      </p>
-                    </div>
+                      </FieldDescription>
+                    </Field>
                   )}
                 </div>
               </div>
@@ -248,8 +243,8 @@ export function ContactConfiguration({
         )}
 
         {/* Descrição da Configuração */}
-        <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
+        <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+          <p className="text-sm text-info-foreground">
             {triggerType === 'contactCreated' ? (
               <>
                 {t('triggerComponents.contact.createdDescription')}{' '}
@@ -267,10 +262,10 @@ export function ContactConfiguration({
           </p>
           {fields.length > 0 && (
             <div className="mt-2">
-              <p className="text-xs font-medium text-blue-800 dark:text-blue-200 mb-1">
+              <p className="mb-1 font-medium text-info-foreground text-xs">
                 {t('triggerComponents.contact.configuredConditions')}:
               </p>
-              <ul className="text-xs text-blue-700 dark:text-blue-300 list-disc list-inside space-y-1">
+              <ul className="list-inside list-disc space-y-1 text-info-foreground text-xs">
                 {fields.map((field, index) => {
                   const fieldLabel =
                     CONTACT_FIELD_OPTIONS.find(f => f.value === field.field)?.label || field.field;
@@ -293,15 +288,15 @@ export function ContactConfiguration({
           <>
             <Separator />
             <div className="space-y-3">
-              <Label className="text-sm font-medium">
+              <h4 className="font-medium text-sm text-foreground">
                 {t('triggerComponents.contact.captureContactData')}
-              </Label>
+              </h4>
               <VariableMapping
                 mappings={variableMappings}
                 onMappingsChange={onVariableMappingsChange}
                 paths={generateContactPaths()}
                 journeyId={journeyId}
-                className="bg-card/50 p-4 rounded-lg border"
+                className="rounded-xl border bg-muted/24 p-4"
               />
             </div>
           </>

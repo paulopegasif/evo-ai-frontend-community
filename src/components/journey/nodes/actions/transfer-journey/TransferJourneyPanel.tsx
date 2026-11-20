@@ -1,15 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Badge,
-  Card,
-  Label,
-} from '@/components/ui/compat';
-import { ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowRight, AlertCircle } from 'lucide-react';
 import { TransferJourneyNodeData } from './TransferJourneyNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
@@ -90,6 +85,8 @@ export function TransferJourneyPanel({
     }
   };
 
+  const journeyItems = journeys.map(journey => ({ value: journey.id || '', label: journey.name }));
+
   const isValid = !!formData.targetJourneyId;
   const dirty = useMemo(
     () => formData.targetJourneyId !== originalTargetId,
@@ -101,7 +98,7 @@ export function TransferJourneyPanel({
       open
       variant="simple"
       title={t('panels.transferJourney.title')}
-      icon={<ArrowRight className="h-5 w-5 text-flow-node-action-pipeline-fg" />}
+      icon={<ArrowRight className="size-5 text-flow-node-action-pipeline-fg" />}
       onCancel={onClose}
       onSave={handleSave}
       dirty={dirty && isValid}
@@ -118,35 +115,39 @@ export function TransferJourneyPanel({
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.transferJourney.destinationJourney')}
-          </Label>
+          </FieldLabel>
 
           {loading ? (
-            <div className="flex items-center justify-center p-8 border-2 border-dashed border-border rounded-lg">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mr-2" />
-              <span className="text-sm text-muted-foreground">
-                {t('panels.transferJourney.loading')}
-              </span>
+            <div className="w-full" aria-busy="true">
+              <Skeleton className="h-9 w-full rounded-lg sm:h-8" />
+              <span className="sr-only">{t('panels.transferJourney.loading')}</span>
             </div>
           ) : journeys.length === 0 ? (
-            <Card className="p-6 text-center">
-              <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-              <p className="text-sm font-medium mb-1">
-                {t('panels.transferJourney.noJourneysAvailable')}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {t('panels.transferJourney.noActiveJourneys')}
-              </p>
-            </Card>
+            <Empty className="w-full rounded-xl border border-dashed p-6">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <AlertCircle />
+                </EmptyMedia>
+                <EmptyTitle className="text-base">
+                  {t('panels.transferJourney.noJourneysAvailable')}
+                </EmptyTitle>
+                <EmptyDescription>{t('panels.transferJourney.noActiveJourneys')}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <>
-              <Select value={formData.targetJourneyId} onValueChange={handleJourneyChange}>
+              <Select
+                items={journeyItems}
+                value={formData.targetJourneyId || null}
+                onValueChange={v => handleJourneyChange(String(v ?? ''))}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('panels.transferJourney.chooseJourney')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup alignItemWithTrigger={false}>
                   {journeys.map(journey => (
                     <SelectItem key={journey.id} value={journey.id || ''}>
                       <div className="flex items-center justify-between w-full gap-3">
@@ -155,21 +156,19 @@ export function TransferJourneyPanel({
                       </div>
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
 
-              <p className="text-xs text-muted-foreground mt-2">
-                {t('panels.transferJourney.onlyActiveJourneys')}
-              </p>
+              <FieldDescription>{t('panels.transferJourney.onlyActiveJourneys')}</FieldDescription>
             </>
           )}
-        </div>
+        </Field>
 
         {formData.targetJourneyId && (
           <FlowFeedbackBanner variant="warn">
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <ArrowRight className="w-4 h-4 mt-1 shrink-0" />
+                <ArrowRight className="mt-1 size-4 shrink-0" />
                 <div className="flex-1">
                   <p className="font-medium">{t('panels.transferJourney.transferConfigured')}</p>
                   <p className="text-sm mt-1">
@@ -183,7 +182,7 @@ export function TransferJourneyPanel({
 
               <div className="border-t border-flow-feedback-warn-border pt-3">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                  <AlertCircle className="mt-0.5 size-4 shrink-0" />
                   <div className="space-y-1">
                     <p className="text-xs font-medium">
                       {t('panels.transferJourney.important')}:

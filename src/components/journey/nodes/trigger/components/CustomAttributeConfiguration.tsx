@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Separator,
-  Badge,
-} from '@/components/ui/compat';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import { CustomAttributeDefinition } from '@/types/settings';
 import { VariableInput, VariableMapping, type DataMapping } from '@/components/journey/environment-manager';
@@ -104,6 +99,10 @@ export function CustomAttributeConfiguration({
   }, [t]);
 
   const selectedAttribute = availableAttributes.find(a => a.attribute_key === attributeName);
+  const attributeItems = availableAttributes.map(attribute => ({
+    value: attribute.attribute_key,
+    label: attribute.attribute_display_name,
+  }));
 
   const needsValue = (operator: string) => {
     return !['exists', 'not_exists', 'is_empty', 'is_not_empty'].includes(operator);
@@ -130,23 +129,25 @@ export function CustomAttributeConfiguration({
     <>
       <Separator />
       <div className="space-y-4">
-        <Label className="text-sidebar-foreground font-medium">
+        <h3 className="font-medium text-sm text-foreground">
           {t('triggerComponents.customAttribute.configuration')}
-        </Label>
+        </h3>
 
         {/* Seleção do Atributo */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
+        <Field>
+          <FieldLabel>
             {t('triggerComponents.customAttribute.customAttribute')}
-          </Label>
+          </FieldLabel>
           {error ? (
-            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/30">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-            </div>
+            <Alert variant="error">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           ) : (
             <Select
-              value={attributeName}
-              onValueChange={selectedAttributeName => {
+              items={attributeItems}
+              value={attributeName || null}
+              onValueChange={value => {
+                const selectedAttributeName = String(value ?? '');
                 const selectedAttribute = availableAttributes.find(
                   a => a.attribute_key === selectedAttributeName,
                 );
@@ -157,7 +158,7 @@ export function CustomAttributeConfiguration({
               }}
               disabled={loadingAttributes}
             >
-              <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+              <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
                     loadingAttributes
@@ -166,13 +167,13 @@ export function CustomAttributeConfiguration({
                   }
                 />
               </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
+              <SelectPopup alignItemWithTrigger={false}>
                 {loadingAttributes ? (
-                  <div className="p-2 text-sm text-sidebar-foreground/60 text-center">
+                  <div className="p-2 text-sm text-muted-foreground text-center">
                     {t('triggerComponents.customAttribute.loading')}
                   </div>
                 ) : availableAttributes.length === 0 ? (
-                  <div className="p-2 text-sm text-sidebar-foreground/60 text-center">
+                  <div className="p-2 text-sm text-muted-foreground text-center">
                     {t('triggerComponents.customAttribute.noAttributesFound')}
                   </div>
                 ) : (
@@ -180,7 +181,6 @@ export function CustomAttributeConfiguration({
                     <SelectItem
                       key={attribute.id}
                       value={attribute.attribute_key}
-                      className="text-sidebar-foreground"
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export function CustomAttributeConfiguration({
                             {getAttributeTypeLabel(attribute.attribute_display_type)}
                           </Badge>
                         </div>
-                        <div className="text-xs text-sidebar-foreground/60">
+                        <div className="text-xs text-muted-foreground">
                           {t('triggerComponents.customAttribute.technicalName')}:{' '}
                           {attribute.attribute_key}
                           {attribute.attribute_model &&
@@ -201,45 +201,48 @@ export function CustomAttributeConfiguration({
                     </SelectItem>
                   ))
                 )}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           )}
-        </div>
+        </Field>
 
         {/* Operador */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
+        <Field>
+          <FieldLabel>
             {t('triggerComponents.customAttribute.condition')}
-          </Label>
-          <Select value={operator} onValueChange={onOperatorChange}>
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+          </FieldLabel>
+          <Select
+            items={OPERATOR_OPTIONS}
+            value={operator || null}
+            onValueChange={v => onOperatorChange(String(v ?? ''))}
+          >
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('triggerComponents.customAttribute.selectCondition')} />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {OPERATOR_OPTIONS.map(option => (
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className="text-sidebar-foreground"
                 >
                   {option.label}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         {/* Valor */}
         {needsValue(operator) && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
+          <Field className="items-stretch">
+            <FieldLabel>
               {t('triggerComponents.customAttribute.value')}
-            </Label>
+            </FieldLabel>
             <VariableInput
               value={value}
               onChange={e => onValueChange(e.target.value)}
               placeholder={t('triggerComponents.customAttribute.enterValue')}
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               type={
                 selectedAttribute?.attribute_display_type === 'number'
                   ? 'number'
@@ -254,19 +257,19 @@ export function CustomAttributeConfiguration({
                 console.log('Variable inserted in custom attribute value:', variable);
               }}
             />
-            <p className="text-xs text-muted-foreground">
+            <FieldDescription>
               {t('triggerComponents.customAttribute.useVariablesHint')}
-            </p>
-          </div>
+            </FieldDescription>
+          </Field>
         )}
 
         {/* Informações do Atributo Selecionado */}
         {selectedAttribute && (
-          <div className="p-4 rounded-lg bg-sidebar-accent/20 border border-sidebar-border/50">
-            <h4 className="text-sm font-medium text-sidebar-foreground mb-2">
+          <div className="rounded-xl border bg-muted/24 p-4">
+            <h4 className="text-sm font-medium text-foreground mb-2">
               {t('triggerComponents.customAttribute.selectedAttribute')}
             </h4>
-            <div className="space-y-2 text-sm text-sidebar-foreground/70">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex justify-between">
                 <span>{t('triggerComponents.customAttribute.name')}:</span>
                 <span className="font-medium">{selectedAttribute.attribute_display_name}</span>
@@ -298,8 +301,8 @@ export function CustomAttributeConfiguration({
         )}
 
         {/* Descrição da Configuração */}
-        <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
+        <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+          <p className="text-sm text-info-foreground">
             {t('triggerComponents.customAttribute.description')}
             {selectedAttribute && (
               <span className="block mt-1 font-medium">
@@ -322,15 +325,15 @@ export function CustomAttributeConfiguration({
           <>
             <Separator />
             <div className="space-y-3">
-              <Label className="text-sm font-medium">
+              <h4 className="font-medium text-sm text-foreground">
                 {t('triggerComponents.customAttribute.captureAttributeData')}
-              </Label>
+              </h4>
               <VariableMapping
                 mappings={variableMappings}
                 onMappingsChange={onVariableMappingsChange}
                 paths={generateCustomAttributePaths()}
                 journeyId={journeyId}
-                className="bg-card/50 p-4 rounded-lg border"
+                className="rounded-xl border bg-muted/24 p-4"
               />
             </div>
           </>

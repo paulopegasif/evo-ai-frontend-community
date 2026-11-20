@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, Workflow } from 'lucide-react';
 import { AssignToPipelineNodeData, AssignToPipelinePipelineOption } from './AssignToPipelineNode';
 import { pipelinesService } from '@/services/pipelines/pipelinesService';
@@ -90,18 +84,23 @@ export function AssignToPipelinePanel({
         {loadError && (
           <FlowFeedbackBanner variant="error">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="size-4" />
               <span>{t('panels.assignToPipeline.loadErrorBanner')}</span>
             </div>
           </FlowFeedbackBanner>
         )}
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.assignToPipeline.pipeline')}
-          </Label>
-          <Select value={pipelineId} onValueChange={setPipelineId} disabled={loading}>
+          </FieldLabel>
+          <Select
+            items={pipelines.map(pipeline => ({ value: pipeline.id, label: pipeline.name }))}
+            value={pipelineId || null}
+            onValueChange={value => setPipelineId(String(value ?? ''))}
+            disabled={loading}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.assignToPipeline.pipeline')}
             >
               <SelectValue
@@ -112,35 +111,34 @@ export function AssignToPipelinePanel({
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {pipelines.map(pipeline => (
                 <SelectItem
                   key={pipeline.id}
                   value={pipeline.id}
-                  className="text-sidebar-foreground"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-md bg-flow-node-action-pipeline-bg text-flow-node-action-pipeline-fg flex items-center justify-center">
-                      <Workflow className="w-4 h-4" />
+                    <div className="size-8 rounded-md bg-flow-node-action-pipeline-bg text-flow-node-action-pipeline-fg flex items-center justify-center">
+                      <Workflow className="size-4" />
                     </div>
                     <div className="font-medium">{pipeline.name}</div>
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {!loading && pipelines.length === 0 && (
-            <p className="text-sm text-sidebar-foreground/60">
+            <FieldDescription className="text-sm">
               {t('panels.assignToPipeline.noPipelinesFound')}
-            </p>
+            </FieldDescription>
           )}
-        </div>
+        </Field>
 
         {pipelineId && (
           <FlowFeedbackBanner variant="info">
             <div className="flex items-center gap-2">
-              <Workflow className="w-4 h-4" />
+              <Workflow className="size-4" />
               <span>
                 {t('panels.assignToPipeline.conversationWillBeAssigned')}{' '}
                 <strong>

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Label, Separator } from '@/components/ui/compat';
+import { Separator } from '@/components/ui/separator';
 import { VariableMapping, type DataMapping } from '@/components/journey/environment-manager';
 import { propertiesToRecord, type EventProperty } from '@/lib/events-manifest';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -37,15 +37,15 @@ export function EventAdvancedConfig({
     <>
       <Separator />
       <div className="space-y-3">
-        <Label className="text-sm font-medium">
+        <h4 className="font-medium text-sm text-foreground">
           {t('triggerComponents.event.captureEventData')}
-        </Label>
+        </h4>
         <VariableMapping
           mappings={variableMappings}
           onMappingsChange={onVariableMappingsChange}
           paths={paths}
           journeyId={journeyId}
-          className="bg-card/50 p-4 rounded-lg border"
+          className="rounded-xl border bg-muted/24 p-4"
         />
       </div>
     </>

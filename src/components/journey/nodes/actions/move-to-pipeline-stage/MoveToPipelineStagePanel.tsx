@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, Workflow } from 'lucide-react';
 import {
   MoveToPipelineStageNodeData,
@@ -129,19 +123,24 @@ export function MoveToPipelineStagePanel({
         {loadError && (
           <FlowFeedbackBanner variant="error">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="size-4" />
               <span>{t('panels.moveToPipelineStage.loadErrorBanner')}</span>
             </div>
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.moveToPipelineStage.pipeline')}
-          </Label>
-          <Select value={pipelineId} onValueChange={handlePipelineChange} disabled={loading}>
+          </FieldLabel>
+          <Select
+            items={pipelines.map(pipeline => ({ value: pipeline.id, label: pipeline.name }))}
+            value={pipelineId || null}
+            onValueChange={value => handlePipelineChange(String(value ?? ''))}
+            disabled={loading}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.moveToPipelineStage.pipeline')}
             >
               <SelectValue
@@ -152,27 +151,31 @@ export function MoveToPipelineStagePanel({
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {pipelines.map(pipeline => (
                 <SelectItem
                   key={pipeline.id}
                   value={pipeline.id}
-                  className="text-sidebar-foreground"
                 >
                   {pipeline.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.moveToPipelineStage.stage')}
-          </Label>
-          <Select value={stageId} onValueChange={setStageId} disabled={!pipelineId || loadingStages}>
+          </FieldLabel>
+          <Select
+            items={stages.map(stage => ({ value: stage.id, label: stage.name }))}
+            value={stageId || null}
+            onValueChange={value => setStageId(String(value ?? ''))}
+            disabled={!pipelineId || loadingStages}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.moveToPipelineStage.stage')}
             >
               <SelectValue
@@ -183,26 +186,26 @@ export function MoveToPipelineStagePanel({
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {stages.map(stage => (
-                <SelectItem key={stage.id} value={stage.id} className="text-sidebar-foreground">
+                <SelectItem key={stage.id} value={stage.id}>
                   {stage.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {!loadingStages && pipelineId && stages.length === 0 && (
-            <p className="text-sm text-sidebar-foreground/60">
+            <FieldDescription className="text-sm">
               {t('panels.moveToPipelineStage.noStagesFound')}
-            </p>
+            </FieldDescription>
           )}
-        </div>
+        </Field>
 
         {stageId && (
           <FlowFeedbackBanner variant="info">
             <div className="flex items-center gap-2">
-              <Workflow className="w-4 h-4" />
+              <Workflow className="size-4" />
               <span>
                 {t('panels.moveToPipelineStage.conversationWillMove')}{' '}
                 <strong>{stages.find(s => s.id === stageId)?.name}</strong>

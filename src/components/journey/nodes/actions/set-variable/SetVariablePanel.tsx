@@ -1,18 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import {
-  Label,
   Select,
-  SelectContent,
+  SelectGroup,
+  SelectGroupLabel,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { Settings, Hash, Calendar } from 'lucide-react';
 import { SetVariableNodeData } from './SetVariableNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { VariableInput, VariableSelect } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';
+
+const OPERATION_GROUPS = [
+  { key: 'custom', icon: Settings },
+  { key: 'numeric', icon: Hash },
+  { key: 'datetime', icon: Calendar },
+  { key: 'functions', icon: Hash },
+] as const;
 
 interface SetVariablePanelProps {
   nodeId: string;
@@ -110,7 +119,11 @@ export function SetVariablePanel({
   const ID_CATEGORIES = [
     { value: 'uuid', label: t('panels.setVariable.idCategories.uuid'), description: '' },
     { value: 'numeric', label: t('panels.setVariable.idCategories.numeric'), description: '' },
-    { value: 'alphanumeric', label: t('panels.setVariable.idCategories.alphanumeric'), description: '' },
+    {
+      value: 'alphanumeric',
+      label: t('panels.setVariable.idCategories.alphanumeric'),
+      description: '',
+    },
     { value: 'timestamp', label: t('panels.setVariable.idCategories.timestamp'), description: '' },
   ];
 
@@ -142,8 +155,8 @@ export function SetVariablePanel({
   const selectedOperation = OPERATIONS.find(op => op.value === formData.operation);
   const isValid = Boolean(
     formData.variableName &&
-      (!selectedOperation?.needsValue || formData.value) &&
-      (!selectedOperation?.needsCategory || formData.category),
+    (!selectedOperation?.needsValue || formData.value) &&
+    (!selectedOperation?.needsCategory || formData.category),
   );
   const dirty = useMemo(
     () => JSON.stringify(formData) !== JSON.stringify(originalData),
@@ -163,7 +176,6 @@ export function SetVariablePanel({
             value={formData.value || '1'}
             onChange={e => setFormData(prev => ({ ...prev, value: e.target.value }))}
             placeholder={t('panels.setVariable.placeholders.numericAmount')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
             journeyId={journeyId}
             onVariableInsert={variable => {
               console.log('Variable inserted in numeric operation:', variable);
@@ -177,7 +189,6 @@ export function SetVariablePanel({
             value={formData.value || ''}
             onChange={e => setFormData(prev => ({ ...prev, value: e.target.value }))}
             placeholder={t('panels.setVariable.placeholders.customValue')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
             journeyId={journeyId}
             onVariableInsert={variable => {
               console.log('Variable inserted in custom value:', variable);
@@ -234,8 +245,8 @@ export function SetVariablePanel({
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.setVariable.variable')}</Label>
+        <Field className="items-stretch">
+          <FieldLabel>{t('panels.setVariable.variable')}</FieldLabel>
           <VariableSelect
             value={formData.variableName || ''}
             onValueChange={value => setFormData(prev => ({ ...prev, variableName: value }))}
@@ -245,164 +256,101 @@ export function SetVariablePanel({
             showSystemVariables={false}
           />
           {formData.variableName && (
-            <p className="text-xs text-muted-foreground">
+            <FieldDescription>
               {t('panels.setVariable.variable')}: {formData.variableName}
-            </p>
+            </FieldDescription>
           )}
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.setVariable.operation')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.setVariable.operation')}</FieldLabel>
           <Select
+            items={OPERATIONS.map(op => ({ value: op.value, label: `${op.icon} ${op.label}` }))}
             value={formData.operation || 'set'}
             onValueChange={value =>
               setFormData(prev => ({
                 ...prev,
-                operation: value as SetVariableNodeData['operation'],
+                operation: String(value ?? '') as SetVariableNodeData['operation'],
               }))
             }
           >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('panels.setVariable.placeholders.selectOperation')} />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border max-h-[400px]">
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
-                <div className="flex items-center gap-2">
-                  <Settings className="w-3 h-3" />
-                  {t('panels.setVariable.operationCategories.custom')}
-                </div>
-              </div>
-              {categories.custom.map(operation => (
-                <SelectItem
-                  key={operation.value}
-                  value={operation.value}
-                  className="text-sidebar-foreground"
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{operation.icon}</span>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{operation.label}</span>
-                      <span className="text-xs text-muted-foreground">{operation.description}</span>
-                    </div>
-                  </div>
-                </SelectItem>
+            <SelectPopup alignItemWithTrigger={false} className="max-h-[400px]">
+              {OPERATION_GROUPS.map(group => (
+                <SelectGroup key={group.key}>
+                  <SelectGroupLabel className="flex items-center gap-2">
+                    <group.icon className="size-3" />
+                    {t(`panels.setVariable.operationCategories.${group.key}`)}
+                  </SelectGroupLabel>
+                  {categories[group.key].map(operation => (
+                    <SelectItem key={operation.value} value={operation.value}>
+                      <div className="flex items-center gap-2">
+                        <span>{operation.icon}</span>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{operation.label}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {operation.description}
+                          </span>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               ))}
-
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 mt-2">
-                <div className="flex items-center gap-2">
-                  <Hash className="w-3 h-3" />
-                  {t('panels.setVariable.operationCategories.numeric')}
-                </div>
-              </div>
-              {categories.numeric.map(operation => (
-                <SelectItem
-                  key={operation.value}
-                  value={operation.value}
-                  className="text-sidebar-foreground"
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{operation.icon}</span>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{operation.label}</span>
-                      <span className="text-xs text-muted-foreground">{operation.description}</span>
-                    </div>
-                  </div>
-                </SelectItem>
-              ))}
-
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 mt-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-3 h-3" />
-                  {t('panels.setVariable.operationCategories.datetime')}
-                </div>
-              </div>
-              {categories.datetime.map(operation => (
-                <SelectItem
-                  key={operation.value}
-                  value={operation.value}
-                  className="text-sidebar-foreground"
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{operation.icon}</span>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{operation.label}</span>
-                      <span className="text-xs text-muted-foreground">{operation.description}</span>
-                    </div>
-                  </div>
-                </SelectItem>
-              ))}
-
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 mt-2">
-                <div className="flex items-center gap-2">
-                  <Hash className="w-3 h-3" />
-                  {t('panels.setVariable.operationCategories.functions')}
-                </div>
-              </div>
-              {categories.functions.map(operation => (
-                <SelectItem
-                  key={operation.value}
-                  value={operation.value}
-                  className="text-sidebar-foreground"
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{operation.icon}</span>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{operation.label}</span>
-                      <span className="text-xs text-muted-foreground">{operation.description}</span>
-                    </div>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {selectedOperation && (
-            <p className="text-xs text-muted-foreground">{selectedOperation.description}</p>
+            <FieldDescription>{selectedOperation.description}</FieldDescription>
           )}
-        </div>
+        </Field>
 
         {selectedOperation?.needsValue && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
+          <Field className="items-stretch">
+            <FieldLabel>
               {formData.operation === 'increase' || formData.operation === 'decrease'
                 ? t('panels.setVariable.amount')
                 : t('panels.setVariable.value')}
-            </Label>
+            </FieldLabel>
             {renderValueInput()}
-            <p className="text-xs text-muted-foreground">
-              {t('panels.setVariable.helperTexts.customValue')}
-            </p>
-          </div>
+            <FieldDescription>{t('panels.setVariable.helperTexts.customValue')}</FieldDescription>
+          </Field>
         )}
 
         {selectedOperation?.needsCategory && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('panels.setVariable.idCategory')}</Label>
+          <Field>
+            <FieldLabel>{t('panels.setVariable.idCategory')}</FieldLabel>
             <Select
-              value={formData.category || ''}
-              onValueChange={value => setFormData(prev => ({ ...prev, category: value }))}
+              items={ID_CATEGORIES.map(category => ({
+                value: category.value,
+                label: category.label,
+              }))}
+              value={formData.category || null}
+              onValueChange={value =>
+                setFormData(prev => ({ ...prev, category: String(value ?? '') }))
+              }
             >
-              <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('panels.setVariable.placeholders.selectIdCategory')} />
               </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
+              <SelectPopup alignItemWithTrigger={false}>
                 {ID_CATEGORIES.map(category => (
-                  <SelectItem
-                    key={category.value}
-                    value={category.value}
-                    className="text-sidebar-foreground"
-                  >
+                  <SelectItem key={category.value} value={category.value}>
                     <div className="flex flex-col gap-1">
                       <span className="font-medium">{category.label}</span>
-                      <span className="text-xs text-sidebar-foreground/60">
-                        {category.description}
-                      </span>
+                      {category.description && (
+                        <span className="text-xs text-muted-foreground">
+                          {category.description}
+                        </span>
+                      )}
                     </div>
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
-          </div>
+          </Field>
         )}
 
         {isValid && (

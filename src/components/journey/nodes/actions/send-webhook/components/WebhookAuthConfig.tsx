@@ -1,14 +1,14 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import {
-  Label,
-  Input,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Button,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { Shield, Eye, EyeOff, Lock } from 'lucide-react';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';
@@ -81,34 +81,32 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
       case 'bearer':
         return (
           <div className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">{t('panels.sendWebhook.auth.bearerToken')}</Label>
-              <div className="relative">
-                <Input
+            <Field>
+              <FieldLabel>{t('panels.sendWebhook.auth.bearerToken')}</FieldLabel>
+              <InputGroup>
+                <InputGroupInput
                   type={showSensitive.token ? 'text' : 'password'}
                   value={data.authToken || ''}
                   onChange={e => onChange({ authToken: e.target.value })}
                   placeholder={t('panels.sendWebhook.auth.bearerPlaceholder')}
-                  className="bg-sidebar border-sidebar-border text-sidebar-foreground pr-8"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleShowSensitive('token')}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                >
-                  {showSensitive.token ? (
-                    <EyeOff className="h-3 w-3" />
-                  ) : (
-                    <Eye className="h-3 w-3" />
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t('panels.sendWebhook.auth.bearerDescription')}
-              </p>
-            </div>
+                <InputGroupAddon align="inline-end">
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => toggleShowSensitive('token')}
+                    aria-label={
+                      showSensitive.token
+                        ? t('panels.sendWebhook.auth.hideValue')
+                        : t('panels.sendWebhook.auth.showValue')
+                    }
+                  >
+                    {showSensitive.token ? <EyeOff /> : <Eye />}
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription>{t('panels.sendWebhook.auth.bearerDescription')}</FieldDescription>
+            </Field>
           </div>
         );
 
@@ -116,41 +114,40 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
         return (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">{t('panels.sendWebhook.auth.username')}</Label>
+              <Field className="items-stretch">
+                <FieldLabel>{t('panels.sendWebhook.auth.username')}</FieldLabel>
                 <VariableInput
                   value={data.authUsername || ''}
                   onChange={e => onChange({ authUsername: e.target.value })}
                   placeholder={t('panels.sendWebhook.auth.usernamePlaceholder')}
-                  className="bg-sidebar border-sidebar-border text-sidebar-foreground"
                   journeyId={journeyId}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">{t('panels.sendWebhook.auth.password')}</Label>
-                <div className="relative">
-                  <Input
+              </Field>
+              <Field>
+                <FieldLabel>{t('panels.sendWebhook.auth.password')}</FieldLabel>
+                <InputGroup>
+                  <InputGroupInput
                     type={showSensitive.password ? 'text' : 'password'}
                     value={data.authPassword || ''}
                     onChange={e => onChange({ authPassword: e.target.value })}
                     placeholder={t('panels.sendWebhook.auth.passwordPlaceholder')}
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground pr-8"
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleShowSensitive('password')}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                  >
-                    {showSensitive.password ? (
-                      <EyeOff className="h-3 w-3" />
-                    ) : (
-                      <Eye className="h-3 w-3" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+                  <InputGroupAddon align="inline-end">
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={() => toggleShowSensitive('password')}
+                      aria-label={
+                        showSensitive.password
+                          ? t('panels.sendWebhook.auth.hideValue')
+                          : t('panels.sendWebhook.auth.showValue')
+                      }
+                    >
+                      {showSensitive.password ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Field>
             </div>
             <p className="text-xs text-muted-foreground">
               {t('panels.sendWebhook.auth.basicDescription')}
@@ -161,55 +158,54 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
       case 'api_key':
         return (
           <div className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">{t('panels.sendWebhook.auth.headerName')}</Label>
+            <Field className="items-stretch">
+              <FieldLabel>{t('panels.sendWebhook.auth.headerName')}</FieldLabel>
               <VariableInput
                 value={data.authApiKeyHeader || ''}
                 onChange={e => onChange({ authApiKeyHeader: e.target.value })}
                 placeholder={t('panels.sendWebhook.auth.headerNamePlaceholder')}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
                 journeyId={journeyId}
               />
-              <p className="text-xs text-muted-foreground">
+              <FieldDescription>
                 {t('panels.sendWebhook.auth.headerNameDescription')}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">{t('panels.sendWebhook.auth.apiKey')}</Label>
-              <div className="relative">
-                <Input
+              </FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>{t('panels.sendWebhook.auth.apiKey')}</FieldLabel>
+              <InputGroup>
+                <InputGroupInput
                   type={showSensitive.apiKey ? 'text' : 'password'}
                   value={data.authApiKey || ''}
                   onChange={e => onChange({ authApiKey: e.target.value })}
                   placeholder={t('panels.sendWebhook.auth.apiKeyPlaceholder')}
-                  className="bg-sidebar border-sidebar-border text-sidebar-foreground pr-8"
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleShowSensitive('apiKey')}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                >
-                  {showSensitive.apiKey ? (
-                    <EyeOff className="h-3 w-3" />
-                  ) : (
-                    <Eye className="h-3 w-3" />
-                  )}
-                </Button>
-              </div>
-            </div>
+                <InputGroupAddon align="inline-end">
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => toggleShowSensitive('apiKey')}
+                    aria-label={
+                      showSensitive.apiKey
+                        ? t('panels.sendWebhook.auth.hideValue')
+                        : t('panels.sendWebhook.auth.showValue')
+                    }
+                  >
+                    {showSensitive.apiKey ? <EyeOff /> : <Eye />}
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+            </Field>
           </div>
         );
 
       default:
         return (
-          <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/30 text-center">
-            <Shield className="h-6 w-6 text-green-500 mx-auto mb-2" />
-            <p className="text-sm text-green-700 dark:text-green-300">
+          <div className="rounded-xl border border-success/24 bg-success/8 p-4 text-center">
+            <Shield className="mx-auto mb-2 size-6 text-success" />
+            <p className="text-sm text-success-foreground">
               {t('panels.sendWebhook.auth.noAuthMessage')}
             </p>
-            <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+            <p className="mt-1 text-xs text-success-foreground/80">
               {t('panels.sendWebhook.auth.noAuthDescription')}
             </p>
           </div>
@@ -222,7 +218,9 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
 
     switch (authType) {
       case 'bearer':
-        return data.authToken ? t('panels.sendWebhook.auth.tokenConfigured') : t('panels.sendWebhook.auth.tokenNotConfigured');
+        return data.authToken
+          ? t('panels.sendWebhook.auth.tokenConfigured')
+          : t('panels.sendWebhook.auth.tokenNotConfigured');
       case 'basic':
         return data.authUsername && data.authPassword
           ? t('panels.sendWebhook.auth.basicAuth', { username: data.authUsername })
@@ -239,15 +237,24 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
   return (
     <div className="space-y-4">
       {/* Tipo de Autenticação */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">{t('panels.sendWebhook.auth.authType')}</Label>
-        <Select value={data.authenticationType || 'none'} onValueChange={handleAuthTypeChange}>
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+      <Field>
+        <FieldLabel>{t('panels.sendWebhook.auth.authType')}</FieldLabel>
+        <Select
+          items={AUTH_TYPES.map(type => ({
+            value: type.value,
+            label: `${type.icon} ${type.label}`,
+          }))}
+          value={data.authenticationType || 'none'}
+          onValueChange={v =>
+            v != null && handleAuthTypeChange(v as 'none' | 'bearer' | 'basic' | 'api_key')
+          }
+        >
+          <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {AUTH_TYPES.map(type => (
-              <SelectItem key={type.value} value={type.value} className="text-sidebar-foreground">
+              <SelectItem key={type.value} value={type.value}>
                 <div className="flex items-center gap-2">
                   <span>{type.icon}</span>
                   <div>
@@ -257,24 +264,24 @@ export function WebhookAuthConfig({ data, onChange, journeyId }: WebhookAuthConf
                 </div>
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {/* Campos de autenticação */}
       {renderAuthFields()}
 
       {/* Resumo da configuração */}
-      <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/30">
-        <div className="flex items-center gap-2 mb-2">
-          <Lock className="h-4 w-4 text-purple-600" />
-          <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+      <div className="rounded-xl border bg-muted/24 p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <Lock className="size-4 text-muted-foreground" />
+          <p className="font-medium text-foreground text-sm">
             {t('panels.sendWebhook.auth.configTitle')}
           </p>
         </div>
-        <p className="text-sm text-purple-700 dark:text-purple-300">{getAuthSummary()}</p>
+        <p className="text-muted-foreground text-sm">{getAuthSummary()}</p>
         {data.authenticationType !== 'none' && (
-          <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+          <p className="mt-1 text-muted-foreground text-xs">
             🔒 {t('panels.sendWebhook.auth.sensitiveDataEncrypted')}
           </p>
         )}

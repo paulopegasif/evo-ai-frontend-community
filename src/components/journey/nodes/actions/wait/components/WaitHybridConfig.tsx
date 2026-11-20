@@ -1,16 +1,7 @@
 import { useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/compat';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { WaitNodeData } from '../WaitNode';
 import { WaitEventConfig } from './WaitEventConfig';
 import { WaitConditionConfig } from './WaitConditionConfig';
@@ -104,87 +95,87 @@ export function WaitHybridConfig({ data, onChange, journeyId }: WaitHybridConfig
   return (
     <div className="space-y-4">
       {/* Tempo Máximo de Espera (obrigatório) */}
-      <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/30">
-        <Label className="text-sm font-medium text-purple-800 dark:text-purple-200 mb-3 block">
-          {t('panels.waitComponents.hybrid.maxWaitTimeLabel')}
-        </Label>
+      <div className="flex flex-col gap-3 rounded-lg border bg-background p-4">
+        <h4 className="font-medium text-sm">{t('panels.waitComponents.hybrid.maxWaitTimeLabel')}</h4>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label className="text-xs">{t('panels.waitComponents.hybrid.timeLabel')}</Label>
+          <Field className="items-stretch">
+            <FieldLabel className="text-xs">{t('panels.waitComponents.hybrid.timeLabel')}</FieldLabel>
             <VariableInput
               type="number"
               min="1"
               value={data.maxWaitTime?.toString() || '1'}
               onChange={e => handleMaxWaitTimeChange(e.target.value)}
               placeholder={t('panels.waitComponents.hybrid.timePlaceholder')}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground"
               journeyId={journeyId}
               onVariableInsert={variable => {
                 console.log('Variable inserted in hybrid max wait time:', variable);
               }}
             />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-xs">{t('panels.waitComponents.hybrid.unitLabel')}</Label>
-            <Select value={data.maxWaitUnit || 'hours'} onValueChange={handleMaxWaitUnitChange}>
-              <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+          </Field>
+          <Field>
+            <FieldLabel className="text-xs">{t('panels.waitComponents.hybrid.unitLabel')}</FieldLabel>
+            <Select
+              items={TIME_UNIT_OPTIONS}
+              value={data.maxWaitUnit || 'hours'}
+              onValueChange={value =>
+                value != null && handleMaxWaitUnitChange(value as 'minutes' | 'hours' | 'days')
+              }
+            >
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
+              <SelectPopup alignItemWithTrigger={false}>
                 {TIME_UNIT_OPTIONS.map(option => (
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    className="text-sidebar-foreground"
                   >
                     {option.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
-          </div>
+          </Field>
         </div>
       </div>
 
       {/* Condição ou Evento */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">
-          {t('panels.waitComponents.hybrid.stopConditionLabel')}
-        </Label>
+      <div className="flex flex-col gap-3">
+        <h4 className="font-medium text-sm">{t('panels.waitComponents.hybrid.stopConditionLabel')}</h4>
 
         <Tabs
           value={triggerType}
-          onValueChange={(value: string) => handleTriggerTypeChange(value as 'event' | 'condition')}
+          onValueChange={value => handleTriggerTypeChange(String(value) as 'event' | 'condition')}
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="event">{t('panels.waitComponents.hybrid.tabs.event')}</TabsTrigger>
-            <TabsTrigger value="condition">
+            <TabsTab value="event">{t('panels.waitComponents.hybrid.tabs.event')}</TabsTab>
+            <TabsTab value="condition">
               {t('panels.waitComponents.hybrid.tabs.condition')}
-            </TabsTrigger>
+            </TabsTab>
           </TabsList>
 
-          <TabsContent value="event" className="mt-4">
+          <TabsPanel value="event" className="mt-4">
             <WaitEventConfig
               data={{ ...data, hasTimeout: false }} // Remove timeout pois já está configurado acima
               onChange={onChange}
               journeyId={journeyId}
             />
-          </TabsContent>
+          </TabsPanel>
 
-          <TabsContent value="condition" className="mt-4">
+          <TabsPanel value="condition" className="mt-4">
             <WaitConditionConfig
               data={{ ...data, hasTimeout: false }} // Remove timeout pois já está configurado acima
               onChange={onChange}
               journeyId={journeyId}
             />
-          </TabsContent>
+          </TabsPanel>
         </Tabs>
       </div>
 
       {/* Preview */}
-      <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/30">
-        <p className="text-sm text-purple-800 dark:text-purple-200">
+      <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+        <p className="text-sm text-info-foreground">
           <strong>{t('panels.waitComponents.hybrid.summaryLabel')}:</strong>{' '}
           {t('panels.waitComponents.hybrid.summaryText', {
             time: getTimeSummary(),
@@ -192,7 +183,7 @@ export function WaitHybridConfig({ data, onChange, journeyId }: WaitHybridConfig
           })}
         </p>
 
-        <div className="mt-2 text-xs text-purple-600 dark:text-purple-400">
+        <div className="mt-2 text-xs text-info-foreground/80">
           {t('panels.waitComponents.hybrid.pathDescription1')}
           <br />
           {t('panels.waitComponents.hybrid.pathDescription2')}
