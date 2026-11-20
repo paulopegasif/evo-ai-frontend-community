@@ -1,17 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/compat';
-import { Check, ChevronsUpDown, Loader2, X } from 'lucide-react';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { campaignsService } from '@/services/campaigns/campaignsService';
@@ -126,9 +119,7 @@ export function CampaignFilterAutocomplete({
     setSearch('');
   };
 
-  const handleClear = (e: React.MouseEvent) => {
-    // Stop the trigger from opening when the user just wants to clear.
-    e.stopPropagation();
+  const handleClear = () => {
     setSelectedLabel(undefined);
     onChange(undefined);
   };
@@ -140,79 +131,74 @@ export function CampaignFilterAutocomplete({
   if (!canReadCampaigns) return null;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          id={id}
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled}
-          className="w-full justify-between font-normal"
-          data-testid="campaign-filter-trigger"
+    <div className="relative w-full">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <Button
+              id={id}
+              type="button"
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              disabled={disabled}
+              className={cn('w-full justify-between font-normal', value && !disabled && 'pe-14')}
+              data-testid="campaign-filter-trigger"
+            />
+          }
         >
-          <span className="truncate text-left">{triggerLabel}</span>
-          <span className="ml-2 flex items-center gap-1">
-            {value && !disabled && (
-              <X
-                role="button"
-                aria-label={t('events.filters.clearCampaign')}
-                tabIndex={0}
-                onClick={handleClear}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') handleClear(e as unknown as React.MouseEvent);
-                }}
-                className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground"
-              />
-            )}
-            <ChevronsUpDown className="h-3.5 w-3.5 opacity-50" />
-          </span>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder={t('events.filters.campaignSearchPlaceholder')}
+          <span className={cn('truncate text-left', !value && 'text-muted-foreground')}>{triggerLabel}</span>
+          <ChevronsUpDown className="absolute end-2.5 opacity-56" />
+        </PopoverTrigger>
+        <PopoverPopup
+          className="w-(--anchor-width) [--viewport-inline-padding:0] **:data-[slot=popover-viewport]:py-0"
+          align="start"
+        >
+          <Command
+            filter={null}
             value={search}
-            onValueChange={setSearch}
-          />
-          <CommandList>
-            {isLoading && (
-              <div className="flex items-center justify-center gap-2 py-3 text-xs text-muted-foreground">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            onValueChange={(next, details) => {
+              if (details.reason === 'item-press') return;
+              setSearch(next);
+            }}
+          >
+            <CommandInput placeholder={t('events.filters.campaignSearchPlaceholder')} />
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2 border-t py-3 text-muted-foreground text-xs">
+                <Spinner className="size-3.5" />
                 {t('events.filters.campaignLoading')}
               </div>
-            )}
-            {!isLoading && options.length === 0 && (
-              <CommandEmpty>{t('events.filters.campaignEmpty')}</CommandEmpty>
-            )}
-            {!isLoading && options.length > 0 && (
-              <CommandGroup>
-                {options.map((campaign) => {
+            ) : options.length === 0 ? (
+              <p className="border-t py-6 text-center text-muted-foreground text-sm">{t('events.filters.campaignEmpty')}</p>
+            ) : (
+              <CommandList className="max-h-64 border-t">
+                {options.map(campaign => {
                   const label = campaign.title || campaign.name || campaign.id;
                   return (
-                    <CommandItem
-                      key={campaign.id}
-                      value={campaign.id}
-                      onSelect={() => handleSelect(campaign)}
-                    >
-                      <Check
-                        className={
-                          'mr-2 h-3.5 w-3.5 ' +
-                          (value === campaign.id ? 'opacity-100' : 'opacity-0')
-                        }
-                      />
+                    <CommandItem key={campaign.id} value={campaign.id} onClick={() => handleSelect(campaign)}>
+                      <Check className={cn('size-3.5', value === campaign.id ? 'opacity-100' : 'opacity-0')} />
                       <span className="truncate">{label}</span>
                     </CommandItem>
                   );
                 })}
-              </CommandGroup>
+              </CommandList>
             )}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          </Command>
+        </PopoverPopup>
+      </Popover>
+      {value && !disabled && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          className="absolute end-7 top-1/2 -translate-y-1/2 text-muted-foreground"
+          aria-label={t('events.filters.clearCampaign')}
+          onClick={handleClear}
+        >
+          <X />
+        </Button>
+      )}
+    </div>
   );
 }
 
