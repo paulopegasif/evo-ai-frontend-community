@@ -768,6 +768,10 @@
       "updateError": "Error updating note",
       "deleteSuccess": "Note deleted",
       "deleteError": "Error deleting note"
+    },
+    "deleteConfirm": {
+      "title": "Delete note?",
+      "description": "This note will be permanently deleted."
     }
   }
 }
