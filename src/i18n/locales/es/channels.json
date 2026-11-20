@@ -958,7 +958,8 @@
             "errors": {
               "apiUrlRequired": "La URL Base es obligatoria",
               "updateError": "Error al actualizar la configuración de conexión"
-            }
+            },
+            "adminTokenSet": "Ya hay una clave configurada. Déjalo en blanco para mantenerla."
           },
           "actions": {
             "title": "Acciones de la Instancia",

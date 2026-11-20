@@ -976,7 +976,8 @@
             "errors": {
               "apiUrlRequired": "Base URL is required",
               "updateError": "Error updating connection settings"
-            }
+            },
+            "adminTokenSet": "A key is already configured. Leave blank to keep it."
           },
           "actions": {
             "title": "Instance Actions",

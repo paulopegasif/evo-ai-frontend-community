@@ -705,7 +705,9 @@
         "snoozed": "Snoozed"
       },
       "valueLabel": "Total Value:",
-      "system": "System"
+      "system": "System",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing"
     },
     "messages": {
       "itemMoved": "Item moved successfully",
@@ -732,7 +734,9 @@
       "conversationUpdated": "Item updated successfully",
       "conversationUpdateError": "Error updating item",
       "itemHiddenByFilter": "Card moved — it may be hidden by the active filters",
-      "newItemMayBeHidden": "Card added — it may be hidden by the active filters"
+      "newItemMayBeHidden": "Card added — it may be hidden by the active filters",
+      "notInPipeline": "This contact is not in any pipeline",
+      "conversationNotInPipeline": "This conversation is not in any pipeline"
     },
     "tasks": {
       "pending": "pending",

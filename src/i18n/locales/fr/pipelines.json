@@ -645,7 +645,9 @@
         "snoozed": "Reporté"
       },
       "valueLabel": "Valeur Totale :",
-      "system": "Système"
+      "system": "Système",
+      "incoming": "Entrant",
+      "outgoing": "Sortant"
     },
     "messages": {
       "conversationMoved": "Conversation déplacée avec succès",
@@ -670,7 +672,9 @@
       "conversationUpdated": "Élément mis à jour avec succès",
       "conversationUpdateError": "Erreur lors de la mise à jour de l'élément",
       "itemHiddenByFilter": "Carte déplacée — elle peut être masquée par les filtres actifs",
-      "newItemMayBeHidden": "Carte ajoutée — elle peut être masquée par les filtres actifs"
+      "newItemMayBeHidden": "Carte ajoutée — elle peut être masquée par les filtres actifs",
+      "notInPipeline": "Ce contact n'est dans aucun pipeline",
+      "conversationNotInPipeline": "Cette conversation n'est dans aucun pipeline"
     },
     "tasks": {
       "pending": "en attente",

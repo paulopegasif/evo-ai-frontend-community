@@ -261,7 +261,8 @@
     "paused": "(pausado)",
     "send": "Enviar",
     "preparingConverter": "Preparando convertidor de audio...",
-    "maxDurationReached": "Duración máxima de grabación alcanzada (5 min). Audio detenido automáticamente."
+    "maxDurationReached": "Duración máxima de grabación alcanzada (5 min). Audio detenido automáticamente.",
+    "cancel": "Cancelar"
   },
   "cannedResponses": {
     "loading": "Cargando respuestas predefinidas...",
@@ -285,7 +286,8 @@
       "cannotReply": "No puedes responder porque",
       "linkText": "Restricciones de ventana de mensajería de 24 horas",
       "zapiDisconnected": "WhatsApp desconectado. Conecta el número para enviar mensajes.",
-      "readOnlyMirror": "Copia de las conversaciones de Bitrix24, solo lectura. Responde desde Bitrix24 hasta que WhatsApp se conecte aquí."
+      "readOnlyMirror": "Copia de las conversaciones de Bitrix24, solo lectura. Responde desde Bitrix24 hasta que WhatsApp se conecte aquí.",
+      "whatsappDisconnected": "WhatsApp desconectado. Conecta el número para enviar mensajes."
     },
     "noteBanner": {
       "title": "Nota de la atención",
@@ -316,7 +318,8 @@
       "bulkStatusSuccess": "{{count}} conversación(es) actualizada(s)",
       "bulkStatusPartialSuccess": "{{success}} actualizada(s), {{failed}} fallida(s)",
       "bulkStatusError": "Error al actualizar conversaciones",
-      "bulkStatusNoPermission": "No tienes permiso para actualizar conversaciones"
+      "bulkStatusNoPermission": "No tienes permiso para actualizar conversaciones",
+      "priorityLabel": "Prioridad"
     },
     "contactNoName": "Contacto sin nombre",
     "status": "Estado:",
@@ -324,7 +327,9 @@
       "open": "Abrir",
       "complete": "Completar",
       "reopen": "Reabrir",
-      "more": "Más opciones de estado"
+      "more": "Más opciones de estado",
+      "openFull": "Abrir atención",
+      "pause": "Pausar conversación"
     },
     "statusPill": {
       "open": "Atención en Curso",
@@ -712,7 +717,8 @@
       "helper": "Guarda notas importantes en la conversación para que otros usuarios puedan verlas después.",
       "placeholder": "Agregar una nota a la conversación...",
       "save": "Guardar",
-      "saving": "Guardando..."
+      "saving": "Guardando...",
+      "cancel": "Cancelar"
     },
     "emojiPicker": {
       "searchPlaceholder": "Buscar emojis..."
@@ -1051,7 +1057,8 @@
     "send": "Enviar",
     "recordAudio": "Grabar audio",
     "moreActions": "Más acciones",
-    "back": "Volver"
+    "back": "Volver",
+    "remove": "Quitar"
   },
   "globalSearch": {
     "hints": {

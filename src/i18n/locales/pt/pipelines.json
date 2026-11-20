@@ -672,7 +672,9 @@
         "snoozed": "Adiado"
       },
       "valueLabel": "Valor Total:",
-      "system": "Sistema"
+      "system": "Sistema",
+      "incoming": "Entrada",
+      "outgoing": "Saída"
     },
     "messages": {
       "conversationMoved": "Conversa movida com sucesso",
@@ -697,7 +699,9 @@
       "conversationUpdated": "Item atualizado com sucesso",
       "conversationUpdateError": "Erro ao atualizar item",
       "itemHiddenByFilter": "Card movido — pode estar oculto pelos filtros ativos",
-      "newItemMayBeHidden": "Card adicionado — pode estar oculto pelos filtros ativos"
+      "newItemMayBeHidden": "Card adicionado — pode estar oculto pelos filtros ativos",
+      "notInPipeline": "Este contacto não está em nenhum pipeline",
+      "conversationNotInPipeline": "Esta conversa não está em nenhum pipeline"
     },
     "tasks": {
       "pending": "pendentes",

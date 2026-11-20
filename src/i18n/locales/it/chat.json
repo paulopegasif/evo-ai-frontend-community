@@ -261,7 +261,8 @@
     "paused": "(in pausa)",
     "send": "Invia",
     "preparingConverter": "Preparazione convertitore audio...",
-    "maxDurationReached": "Durata massima di registrazione raggiunta (5 min). Audio interrotto automaticamente."
+    "maxDurationReached": "Durata massima di registrazione raggiunta (5 min). Audio interrotto automaticamente.",
+    "cancel": "Annulla"
   },
   "cannedResponses": {
     "loading": "Caricamento risposte predefinite...",
@@ -285,7 +286,8 @@
       "cannotReply": "Non puoi rispondere perché",
       "linkText": "Restrizioni della finestra di messaggistica di 24 ore",
       "zapiDisconnected": "WhatsApp disconnesso. Connetti il numero per inviare messaggi.",
-      "readOnlyMirror": "Copia in sola lettura delle conversazioni Bitrix24. Rispondi da Bitrix24 finché WhatsApp non viene collegato qui."
+      "readOnlyMirror": "Copia in sola lettura delle conversazioni Bitrix24. Rispondi da Bitrix24 finché WhatsApp non viene collegato qui.",
+      "whatsappDisconnected": "WhatsApp disconnesso. Collega il numero per inviare messaggi."
     },
     "noteBanner": {
       "title": "Nota dell'assistenza",
@@ -316,7 +318,8 @@
       "bulkStatusSuccess": "{{count}} conversazione/i aggiornata/e",
       "bulkStatusPartialSuccess": "{{success}} aggiornata/e, {{failed}} fallita/e",
       "bulkStatusError": "Errore nell'aggiornamento delle conversazioni",
-      "bulkStatusNoPermission": "Non hai il permesso di aggiornare le conversazioni"
+      "bulkStatusNoPermission": "Non hai il permesso di aggiornare le conversazioni",
+      "priorityLabel": "Priorità"
     },
     "contactNoName": "Contatto senza nome",
     "status": "Stato:",
@@ -324,7 +327,9 @@
       "open": "Apri",
       "complete": "Completa",
       "reopen": "Riapri",
-      "more": "Altre opzioni di stato"
+      "more": "Altre opzioni di stato",
+      "openFull": "Apri conversazione",
+      "pause": "Metti in pausa"
     },
     "statusPill": {
       "open": "Assistenza in Corso",
@@ -712,7 +717,8 @@
       "helper": "Salva note importanti sulla conversazione in modo che altri utenti possano vederle in futuro.",
       "placeholder": "Aggiungi una nota alla conversazione...",
       "save": "Salva",
-      "saving": "Salvataggio..."
+      "saving": "Salvataggio...",
+      "cancel": "Annulla"
     },
     "emojiPicker": {
       "searchPlaceholder": "Cerca emoji..."
@@ -1051,7 +1057,8 @@
     "send": "Invia",
     "recordAudio": "Registra audio",
     "moreActions": "Altre azioni",
-    "back": "Indietro"
+    "back": "Indietro",
+    "remove": "Rimuovi"
   },
   "globalSearch": {
     "hints": {

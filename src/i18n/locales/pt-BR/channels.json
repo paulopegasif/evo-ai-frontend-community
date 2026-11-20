@@ -976,7 +976,8 @@
             "errors": {
               "apiUrlRequired": "URL Base é obrigatória",
               "updateError": "Erro ao atualizar configurações de conexão"
-            }
+            },
+            "adminTokenSet": "Já existe uma chave configurada. Deixe em branco para mantê-la."
           },
           "actions": {
             "title": "Ações da Instância",

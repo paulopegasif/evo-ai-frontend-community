@@ -918,7 +918,8 @@
             "errors": {
               "apiUrlRequired": "L'URL Base è obbligatoria",
               "updateError": "Errore durante l'aggiornamento delle impostazioni di connessione"
-            }
+            },
+            "adminTokenSet": "È già configurata una chiave. Lascia vuoto per mantenerla."
           },
           "actions": {
             "title": "Azioni dell'Istanza",

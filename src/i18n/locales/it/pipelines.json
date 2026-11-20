@@ -642,7 +642,9 @@
         "snoozed": "Rimandato"
       },
       "valueLabel": "Valore Totale:",
-      "system": "Sistema"
+      "system": "Sistema",
+      "incoming": "In entrata",
+      "outgoing": "In uscita"
     },
     "messages": {
       "conversationMoved": "Conversazione spostata con successo",
@@ -667,7 +669,9 @@
       "conversationUpdated": "Elemento aggiornato con successo",
       "conversationUpdateError": "Errore nell'aggiornamento dell'elemento",
       "itemHiddenByFilter": "Scheda spostata — potrebbe essere nascosta dai filtri attivi",
-      "newItemMayBeHidden": "Scheda aggiunta — potrebbe essere nascosta dai filtri attivi"
+      "newItemMayBeHidden": "Scheda aggiunta — potrebbe essere nascosta dai filtri attivi",
+      "notInPipeline": "Questo contatto non è in nessuna pipeline",
+      "conversationNotInPipeline": "Questa conversazione non è in nessuna pipeline"
     },
     "tasks": {
       "pending": "in sospeso",

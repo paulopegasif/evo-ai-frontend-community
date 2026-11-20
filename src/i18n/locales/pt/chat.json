@@ -261,7 +261,8 @@
     "paused": "(pausado)",
     "send": "Enviar",
     "preparingConverter": "Preparando conversor de áudio...",
-    "maxDurationReached": "Duração máxima de gravação atingida (5 min). Áudio parado automaticamente."
+    "maxDurationReached": "Duração máxima de gravação atingida (5 min). Áudio parado automaticamente.",
+    "cancel": "Cancelar"
   },
   "cannedResponses": {
     "loading": "Carregando respostas prontas...",
@@ -285,7 +286,8 @@
       "cannotReply": "Você não pode responder porque",
       "linkText": "Restrições de janela de mensagem de 24 horas",
       "zapiDisconnected": "WhatsApp desconectado. Conecte o número para enviar mensagens.",
-      "readOnlyMirror": "Cópia das conversas do Bitrix24, apenas de leitura. Responda pelo Bitrix24 até o WhatsApp ser ligado aqui."
+      "readOnlyMirror": "Cópia das conversas do Bitrix24, apenas de leitura. Responda pelo Bitrix24 até o WhatsApp ser ligado aqui.",
+      "whatsappDisconnected": "WhatsApp desligado. Ligue o número para enviar mensagens."
     },
     "noteBanner": {
       "title": "Nota do atendimento",
@@ -316,7 +318,8 @@
       "bulkStatusSuccess": "{{count}} conversa(s) atualizada(s)",
       "bulkStatusPartialSuccess": "{{success}} atualizada(s), {{failed}} falhada(s)",
       "bulkStatusError": "Erro ao atualizar conversas em lote",
-      "bulkStatusNoPermission": "Não tem permissão para atualizar conversas"
+      "bulkStatusNoPermission": "Não tem permissão para atualizar conversas",
+      "priorityLabel": "Prioridade"
     },
     "contactNoName": "Contato sem nome",
     "status": "Status:",
@@ -324,7 +327,9 @@
       "open": "Abrir",
       "complete": "Concluir",
       "reopen": "Reabrir",
-      "more": "Mais opções de estado"
+      "more": "Mais opções de estado",
+      "openFull": "Abrir atendimento",
+      "pause": "Pausar conversa"
     },
     "statusPill": {
       "open": "Atendimento em Aberto",
@@ -712,7 +717,8 @@
       "helper": "Guarde notas importantes na conversa para que outros utilizadores as possam ver no futuro.",
       "placeholder": "Adicionar nota ao atendimento...",
       "save": "Guardar",
-      "saving": "A guardar..."
+      "saving": "A guardar...",
+      "cancel": "Cancelar"
     },
     "emojiPicker": {
       "searchPlaceholder": "Buscar emojis..."
@@ -1054,7 +1060,8 @@
     "send": "Enviar",
     "recordAudio": "Gravar áudio",
     "moreActions": "Mais ações",
-    "back": "Voltar"
+    "back": "Voltar",
+    "remove": "Remover"
   },
   "globalSearch": {
     "hints": {
