@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Integration } from '@/types/integrations';
-import BrandIcon from '@/components/BrandIcon';
+import BrandIcon, { getBrandIcon } from '@/components/BrandIcon';
 import { AgentIntegrationDialog } from '../agentConfig/AgentIntegrationDialog';
 
 interface IntegrationModalProps {
@@ -40,7 +40,7 @@ export default function IntegrationModal({
       onOpenChange={next => {
         if (!next) onClose();
       }}
-      icon={integration ? <BrandIcon id={integration.id} size={20} /> : undefined}
+      icon={integration && getBrandIcon(integration.id) ? <BrandIcon id={integration.id} size={20} /> : undefined}
       title={modalTitle}
       description={description}
       loading={loading}

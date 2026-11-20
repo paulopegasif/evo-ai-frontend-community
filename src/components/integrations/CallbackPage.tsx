@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/compat';
+import { ArrowLeft, CircleCheck, TriangleAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import i18n from '@/i18n/config';
@@ -117,79 +119,79 @@ export default function CallbackPage({ integrationName, onCallback, onSuccess, r
 
   const BrandIconComponent = integrationId ? getBrandIcon(integrationId) : undefined;
 
+  const title =
+    status === 'processing'
+      ? t('callback.processing.title')
+      : status === 'success'
+        ? t('callback.success.title', { name: integrationName })
+        : t('callback.error.title');
+  const body =
+    status === 'processing'
+      ? message || t('callback.processing.message', { name: integrationName })
+      : message;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-6">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <AppLogo className="h-12" />
-        </div>
+    <main className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="flex w-full max-w-md flex-col items-center gap-8">
+        <AppLogo className="h-10" />
 
-        {/* Status Card */}
-        <div className="bg-card border border-border rounded-lg p-8 space-y-4 text-center">
-          {status === 'processing' && (
-            <>
-              <div className="flex justify-center">
-                <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              </div>
-              <h2 className="text-xl font-semibold">{t('callback.processing.title')}</h2>
-              <p className="text-muted-foreground">{message || t('callback.processing.message', { name: integrationName })}</p>
-            </>
-          )}
-
-          {status === 'success' && (
-            <>
-              <div className="flex justify-center">
-                <div className="rounded-full bg-success/12 p-3">
-                  <CheckCircle className="h-12 w-12 text-success-foreground" />
-                </div>
-              </div>
-              <h2 className="text-xl font-semibold">{t('callback.success.title', { name: integrationName })}</h2>
-              <p className="text-muted-foreground">{message}</p>
-              {BrandIconComponent ? (
-                <div className="flex justify-center">
-                  <BrandIconComponent size={32} className="h-8 w-8" />
-                </div>
-              ) : iconPath && (
-                <>
-                  <img
-                    src={iconPath}
-                    alt={integrationName}
-                    className={cn("h-8 w-8", iconPathDark && "dark:hidden")}
-                  />
-                  {iconPathDark && (
-                    <img
-                      src={iconPathDark}
-                      alt={integrationName}
-                      className="h-8 w-8 hidden dark:block"
-                    />
-                  )}
-                </>
-              )}
-            </>
-          )}
-
-          {status === 'error' && (
-            <>
-              <div className="flex justify-center">
-                <div className="rounded-full bg-destructive/12 p-3">
-                  <AlertTriangle className="h-12 w-12 text-destructive-foreground" />
-                </div>
-              </div>
-              <h2 className="text-xl font-semibold">{t('callback.error.title')}</h2>
-              <p className="text-muted-foreground">{message}</p>
-              <Button
-                onClick={() => navigate('/agents')}
-                variant="outline"
-                className="mt-4"
+        <Card className="w-full">
+          <CardPanel
+            className="flex flex-col items-center gap-4 px-8 py-10 text-center"
+            aria-live="polite"
+            aria-busy={status === 'processing'}
+          >
+            <div className="relative">
+              <span
+                className={cn(
+                  'flex size-14 items-center justify-center rounded-2xl border [&_svg]:size-7',
+                  status === 'processing' && 'bg-muted/48 text-muted-foreground',
+                  status === 'success' && 'border-success/24 bg-success/8 text-success-foreground',
+                  status === 'error' && 'border-destructive/24 bg-destructive/8 text-destructive-foreground',
+                )}
               >
+                {status === 'processing' && <Spinner aria-label={t('callback.processing.title')} />}
+                {status === 'success' && <CircleCheck />}
+                {status === 'error' && <TriangleAlert />}
+              </span>
+              {status === 'success' && (BrandIconComponent || iconPath) && (
+                <span className="absolute -end-2 -bottom-2 flex size-7 items-center justify-center rounded-lg border bg-card shadow-xs/5">
+                  {BrandIconComponent ? (
+                    <BrandIconComponent size={16} className="size-4" />
+                  ) : (
+                    <>
+                      <img
+                        src={iconPath}
+                        alt={integrationName}
+                        className={cn('size-4 object-contain', iconPathDark && 'dark:hidden')}
+                      />
+                      {iconPathDark && (
+                        <img
+                          src={iconPathDark}
+                          alt={integrationName}
+                          className="hidden size-4 object-contain dark:block"
+                        />
+                      )}
+                    </>
+                  )}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <h1 className="font-semibold text-lg">{title}</h1>
+              {body && <p className="text-muted-foreground text-sm">{body}</p>}
+            </div>
+
+            {status === 'error' && (
+              <Button onClick={() => navigate('/agents')} variant="outline" className="mt-2">
+                <ArrowLeft />
                 {t('callback.error.backToAgents')}
               </Button>
-            </>
-          )}
-        </div>
+            )}
+          </CardPanel>
+        </Card>
       </div>
-    </div>
+    </main>
   );
 }
-
