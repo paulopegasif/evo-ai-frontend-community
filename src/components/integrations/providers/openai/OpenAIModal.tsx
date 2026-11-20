@@ -1,19 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Card,
-  Switch,
-  Label
-} from '@/components/ui/compat';
-import { Brain, AlertCircle, ExternalLink } from 'lucide-react';
+import { Brain, Check, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DialogClose } from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Switch } from '@/components/ui/switch';
 import { OpenAIHook, OpenAIFormData, IntegrationHook } from '@/types/integrations';
+import { AgentIntegrationDialog, SettingRow } from '../../agentConfig/AgentIntegrationDialog';
+import IntegrationNotice from '../../shared/IntegrationNotice';
+import SecretInput from '../../shared/SecretInput';
 
 interface OpenAIModalProps {
   hook?: IntegrationHook;
@@ -33,6 +28,7 @@ export default function OpenAIModal({
   loading: submitting = false
 }: OpenAIModalProps) {
   const { t } = useLanguage('integrations');
+  const formId = useId();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<OpenAIFormData>({
     api_key: '',
@@ -89,109 +85,94 @@ export default function OpenAIModal({
     window.open('https://platform.openai.com/api-keys', '_blank');
   };
 
+  const saving = loading || submitting;
+  const features = ['suggestions', 'summaries', 'improvement', 'correction', 'labels'];
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Brain className="w-5 h-5" />
-            {hook ? t('openai.modal.updateTitle') : t('openai.modal.title')}
-          </DialogTitle>
-          <DialogDescription>{t('openai.modal.description')}</DialogDescription>
-        </DialogHeader>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<Brain className="text-muted-foreground" />}
+      title={hook ? t('openai.modal.updateTitle') : t('openai.modal.title')}
+      description={t('openai.modal.description')}
+      footerStart={
+        <Button type="button" variant="ghost" onClick={openOpenAIDoc}>
+          <ExternalLink />
+          {t('openai.modal.actions.help')}
+        </Button>
+      }
+      footer={
+        <>
+          <DialogClose render={<Button type="button" variant="ghost" />} disabled={saving}>
+            {t('openai.modal.actions.cancel')}
+          </DialogClose>
+          <Button type="submit" form={formId} loading={saving}>
+            {saving
+              ? t('openai.modal.actions.saving')
+              : hook
+                ? t('openai.modal.actions.update')
+                : t('openai.modal.actions.configure')}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('openai.modal.apiConfig')}</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* API Key Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('openai.modal.apiConfig')}</h4>
+          <Field invalid={Boolean(errors.api_key)}>
+            <FieldLabel htmlFor="openai-api-key">
+              {t('openai.modal.fields.apiKey.label')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <SecretInput
+              id="openai-api-key"
+              placeholder={t('openai.modal.fields.apiKey.placeholder')}
+              value={formData.api_key}
+              onChange={e => {
+                setFormData(prev => ({ ...prev, api_key: e.target.value }));
+                if (errors.api_key) setErrors(prev => ({ ...prev, api_key: '' }));
+              }}
+              aria-invalid={errors.api_key ? true : undefined}
+            />
+            {errors.api_key ? (
+              <FieldError match>{errors.api_key}</FieldError>
+            ) : (
+              <FieldDescription>{t('openai.modal.fields.apiKey.hint')}</FieldDescription>
+            )}
+          </Field>
 
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="api_key" className="block text-sm font-medium text-foreground mb-1">
-                  {t('openai.modal.fields.apiKey.label')} *
-                </label>
-                <Input
-                  id="api_key"
-                  type="password"
-                  placeholder={t('openai.modal.fields.apiKey.placeholder')}
-                  value={formData.api_key}
-                  onChange={(e) => setFormData(prev => ({ ...prev, api_key: e.target.value }))}
-                  className={errors.api_key ? 'border-destructive' : ''}
-                />
-                {errors.api_key && (
-                  <p className="text-sm text-destructive-foreground mt-1">{errors.api_key}</p>
-                )}
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t('openai.modal.fields.apiKey.hint')}
-                </p>
-              </div>
+          <SettingRow
+            htmlFor="enable_audio_transcription"
+            title={t('openai.modal.fields.enableAudioTranscription.label')}
+            description={t('openai.modal.fields.enableAudioTranscription.description')}
+            control={
+              <Switch
+                id="enable_audio_transcription"
+                checked={formData.enable_audio_transcription || false}
+                onCheckedChange={checked =>
+                  setFormData(prev => ({ ...prev, enable_audio_transcription: checked }))
+                }
+              />
+            }
+          />
+        </section>
 
-              {/* Audio Transcription Toggle */}
-              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/48">
-                <div className="flex-1">
-                  <Label htmlFor="enable_audio_transcription" className="text-sm font-medium text-foreground">
-                    {t('openai.modal.fields.enableAudioTranscription.label')}
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t('openai.modal.fields.enableAudioTranscription.description')}
-                  </p>
-                </div>
-                <Switch
-                  id="enable_audio_transcription"
-                  checked={formData.enable_audio_transcription || false}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_audio_transcription: checked }))}
-                />
-              </div>
-            </div>
-          </Card>
+        <section className="flex flex-col gap-3 rounded-xl border bg-muted/24 p-4">
+          <h3 className="font-medium text-sm">{t('openai.modal.features.title')}</h3>
+          <ul className="grid gap-2 text-muted-foreground text-sm sm:grid-cols-2">
+            {features.map(key => (
+              <li key={key} className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                {t(`openai.modal.features.${key}`)}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-          {/* Features Info */}
-          <Card className="p-4 bg-info/8 border-info/24">
-            <h4 className="font-semibold mb-3 text-info-foreground">
-              {t('openai.modal.features.title')}
-            </h4>
-            <ul className="text-sm text-info-foreground space-y-2">
-              <li>• {t('openai.modal.features.suggestions')}</li>
-              <li>• {t('openai.modal.features.summaries')}</li>
-              <li>• {t('openai.modal.features.improvement')}</li>
-              <li>• {t('openai.modal.features.correction')}</li>
-              <li>• {t('openai.modal.features.labels')}</li>
-            </ul>
-          </Card>
-
-          {/* Security Warning */}
-          <Card className="p-4 bg-warning/8 border-warning/24">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-warning-foreground mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-warning-foreground">
-                <strong>{t('openai.modal.security.title')}</strong> {t('openai.modal.security.description')}
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-between pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={openOpenAIDoc}
-              className="flex items-center gap-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              {t('openai.modal.actions.help')}
-            </Button>
-
-            <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t('openai.modal.actions.cancel')}
-              </Button>
-              <Button type="submit" disabled={loading || submitting}>
-                {loading || submitting ? t('openai.modal.actions.saving') : (hook ? t('openai.modal.actions.update') : t('openai.modal.actions.configure'))}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <IntegrationNotice variant="warning" title={t('openai.modal.security.title')}>
+          {t('openai.modal.security.description')}
+        </IntegrationNotice>
+      </form>
+    </AgentIntegrationDialog>
   );
 }

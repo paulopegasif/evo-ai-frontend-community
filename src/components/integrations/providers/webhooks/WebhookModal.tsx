@@ -1,19 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Switch,
-  Textarea,
-  Checkbox,
-  Card
-} from '@/components/ui/compat';
-import { Globe, AlertCircle } from 'lucide-react';
+import { Globe } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DialogClose } from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Webhook } from '@/types/integrations';
+import { AgentIntegrationDialog, SettingRow } from '../../agentConfig/AgentIntegrationDialog';
+import IntegrationNotice from '../../shared/IntegrationNotice';
 
 interface WebhookModalProps {
   webhook?: Webhook | null;
@@ -57,6 +55,7 @@ const EVENT_IDS = [
 
 export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, loading: submitting = false }: WebhookModalProps) {
   const { t } = useLanguage('integrations');
+  const formId = useId();
 
   const AVAILABLE_EVENTS = EVENT_IDS.map(id => ({
     id,
@@ -130,7 +129,13 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
     }
   };
 
+  const updateField = (field: 'url' | 'description', value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
   const handleEventToggle = (eventId: string, checked: boolean) => {
+    if (errors.subscriptions) setErrors(prev => ({ ...prev, subscriptions: '' }));
     setFormData(prev => ({
       ...prev,
       subscriptions: checked
@@ -140,6 +145,7 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
   };
 
   const handleSelectAll = () => {
+    if (errors.subscriptions) setErrors(prev => ({ ...prev, subscriptions: '' }));
     const allEventIds = AVAILABLE_EVENTS.map(e => e.id);
     const allSelected = allEventIds.every(id => formData.subscriptions.includes(id));
 
@@ -149,143 +155,132 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
     }));
   };
 
+  const allSelected = AVAILABLE_EVENTS.every(e => formData.subscriptions.includes(e.id));
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
-          <DialogTitle className="flex items-center gap-2">
-            <Globe className="w-5 h-5" />
-            {webhook ? t('webhooks.modal.updateTitle') : t('webhooks.modal.title')}
-          </DialogTitle>
-        </DialogHeader>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<Globe className="text-muted-foreground" />}
+      title={webhook ? t('webhooks.modal.updateTitle') : t('webhooks.modal.title')}
+      className="sm:max-w-2xl"
+      footer={
+        <>
+          <DialogClose render={<Button type="button" variant="ghost" />} disabled={submitting}>
+            {t('webhooks.modal.actions.cancel')}
+          </DialogClose>
+          <Button type="submit" form={formId} loading={submitting}>
+            {submitting
+              ? t('webhooks.modal.actions.saving')
+              : webhook
+                ? t('webhooks.modal.actions.update')
+                : t('webhooks.modal.actions.create')}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        {/* Basic configuration */}
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('webhooks.modal.basicConfig')}</h3>
 
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto px-6 space-y-6">
-            {/* Basic Configuration */}
-            <Card className="p-4">
-              <h4 className="font-semibold mb-4">{t('webhooks.modal.basicConfig')}</h4>
+          <Field invalid={Boolean(errors.url)}>
+            <FieldLabel htmlFor="webhook-url">
+              {t('webhooks.modal.fields.url.label')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Input
+              id="webhook-url"
+              type="url"
+              inputMode="url"
+              placeholder={t('webhooks.modal.fields.url.placeholder')}
+              value={formData.url}
+              onChange={e => updateField('url', e.target.value)}
+              aria-invalid={errors.url ? true : undefined}
+              autoFocus={!webhook}
+            />
+            {errors.url ? (
+              <FieldError match>{errors.url}</FieldError>
+            ) : (
+              <FieldDescription>{t('webhooks.modal.fields.url.hint')}</FieldDescription>
+            )}
+          </Field>
 
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="url" className="block text-sm font-medium text-foreground mb-1">
-                    {t('webhooks.modal.fields.url.label')} *
-                  </label>
-                  <Input
-                    id="url"
-                    placeholder={t('webhooks.modal.fields.url.placeholder')}
-                    value={formData.url}
-                    onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-                    className={errors.url ? 'border-destructive' : ''}
-                  />
-                  {errors.url && (
-                    <p className="text-sm text-destructive-foreground mt-1">{errors.url}</p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t('webhooks.modal.fields.url.hint')}
-                  </p>
-                </div>
+          <Field>
+            <FieldLabel htmlFor="webhook-description">{t('webhooks.modal.fields.description.label')}</FieldLabel>
+            <Textarea
+              id="webhook-description"
+              placeholder={t('webhooks.modal.fields.description.placeholder')}
+              value={formData.description}
+              onChange={e => updateField('description', e.target.value)}
+              rows={3}
+            />
+          </Field>
 
-                <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
-                    {t('webhooks.modal.fields.description.label')}
-                  </label>
-                  <Textarea
-                    id="description"
-                    placeholder={t('webhooks.modal.fields.description.placeholder')}
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    rows={3}
-                  />
-                </div>
+          <SettingRow
+            htmlFor="webhook-enabled"
+            title={t('webhooks.modal.fields.enabled.label')}
+            description={t('webhooks.modal.fields.enabled.description')}
+            control={
+              <Switch
+                id="webhook-enabled"
+                checked={formData.enabled}
+                onCheckedChange={checked => setFormData(prev => ({ ...prev, enabled: checked }))}
+              />
+            }
+          />
+        </section>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="block text-sm font-medium text-foreground">
-                      {t('webhooks.modal.fields.enabled.label')}
-                    </span>
-                    <p className="text-xs text-muted-foreground">
-                      {t('webhooks.modal.fields.enabled.description')}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.enabled}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enabled: checked }))}
-                  />
-                </div>
-              </div>
-            </Card>
+        {/* Events */}
+        <section className="flex flex-col gap-3" aria-labelledby={`${formId}-events`}>
+          <div className="flex items-center justify-between gap-2">
+            <h3 id={`${formId}-events`} className="flex items-center gap-2 font-medium text-sm">
+              {t('webhooks.modal.events')}
+              <Badge variant={formData.subscriptions.length ? 'secondary' : 'outline'} size="sm">
+                {formData.subscriptions.length}/{AVAILABLE_EVENTS.length}
+              </Badge>
+            </h3>
+            <Button type="button" variant="ghost" size="sm" onClick={handleSelectAll}>
+              {allSelected
+                ? t('webhooks.modal.eventList.deselectAll')
+                : t('webhooks.modal.eventList.selectAll')}
+            </Button>
+          </div>
 
-            {/* Events Configuration */}
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold">{t('webhooks.modal.events')}</h4>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSelectAll}
+          {errors.subscriptions && (
+            <IntegrationNotice variant="error">{errors.subscriptions}</IntegrationNotice>
+          )}
+
+          <div
+            className={`divide-y overflow-hidden rounded-lg border bg-card ${
+              errors.subscriptions ? 'border-destructive/36' : ''
+            }`}
+          >
+            {AVAILABLE_EVENTS.map(event => {
+              const checked = formData.subscriptions.includes(event.id);
+              return (
+                <label
+                  key={event.id}
+                  className="flex cursor-pointer items-start gap-3 px-3.5 py-3 transition-colors hover:bg-accent/50"
                 >
-                  {AVAILABLE_EVENTS.every(e => formData.subscriptions.includes(e.id))
-                    ? t('webhooks.modal.eventList.deselectAll')
-                    : t('webhooks.modal.eventList.selectAll')}
-                </Button>
-              </div>
-
-              {errors.subscriptions && (
-                <div className="mb-4 p-3 bg-destructive/8 border border-destructive/24 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-destructive-foreground" />
-                    <span className="text-sm text-destructive-foreground">
-                      {errors.subscriptions}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                {AVAILABLE_EVENTS.map((event) => (
-                  <div key={event.id} className="flex items-start gap-3 p-3 border border-border rounded-lg">
-                    <Checkbox
-                      id={event.id}
-                      checked={formData.subscriptions.includes(event.id)}
-                      onCheckedChange={(checked) => handleEventToggle(event.id, checked as boolean)}
-                      className="mt-1"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <label htmlFor={event.id} className="font-medium cursor-pointer block">
-                        {event.name}
-                      </label>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {event.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* Info Box */}
-            <Card className="p-4 bg-info/8 border-info/24">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-info-foreground mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-info-foreground">
-                  <strong>{t('webhooks.modal.info.title')}</strong> {t('webhooks.modal.info.description')}
-                </div>
-              </div>
-            </Card>
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={value => handleEventToggle(event.id, value)}
+                    className="mt-0.5"
+                  />
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <span className="font-medium text-sm">{event.name}</span>
+                    <span className="text-muted-foreground text-xs">{event.description}</span>
+                  </span>
+                </label>
+              );
+            })}
           </div>
+        </section>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t mt-4 flex-shrink-0">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t('webhooks.modal.actions.cancel')}
-            </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? t('webhooks.modal.actions.saving') : (webhook ? t('webhooks.modal.actions.update') : t('webhooks.modal.actions.create'))}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <IntegrationNotice variant="info" title={t('webhooks.modal.info.title')}>
+          {t('webhooks.modal.info.description')}
+        </IntegrationNotice>
+      </form>
+    </AgentIntegrationDialog>
   );
 }

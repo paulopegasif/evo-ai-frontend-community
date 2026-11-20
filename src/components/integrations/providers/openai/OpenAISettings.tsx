@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card } from '@/components/ui/compat';
-import { Brain, Settings, CheckCircle, XCircle, Trash2 } from 'lucide-react';
-import EmptyState from '@/components/base/EmptyState';
+import { Check, Power, Settings, Brain } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { OpenAIConfig, OpenAIHook } from '@/types/integrations';
 
-import IntegrationBackButton from '../../shared/IntegrationBackButton';
+import IntegrationPageHeader from '../../shared/IntegrationPageHeader';
 import OpenAIModal from './OpenAIModal';
 
 interface OpenAISettingsProps {
@@ -120,169 +123,125 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="flex-none p-4 pb-0">
-        <div className="flex items-center gap-4 mb-6">
-          <IntegrationBackButton onBack={onBack} />
-          <div className="flex items-center gap-3">
-            <Brain className="w-6 h-6 text-primary" />
-            <div>
-              <h1 className="text-2xl font-semibold">{t('openai.header.title')}</h1>
-              <p className="text-muted-foreground text-sm">{t('openai.header.subtitle')}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        <IntegrationPageHeader
+          icon={Brain}
+          title={t('openai.header.title')}
+          description={t('openai.header.subtitle')}
+          loading={loading.get}
+          status={
+            hook
+              ? hook.status
+                ? { label: t('openai.settings.status.active'), variant: 'success' }
+                : { label: t('openai.settings.status.inactive'), variant: 'error' }
+              : null
+          }
+          onBack={onBack}
+          actions={
+            hook && (
+              <>
+                <Button variant="outline" size="sm" onClick={handleConfigure}>
+                  <Settings />
+                  {t('openai.settings.configuration.actions.edit')}
+                </Button>
+                <Button variant="destructive-outline" size="sm" onClick={handleDeleteIntegration}>
+                  <Power />
+                  {t('openai.settings.configuration.actions.remove')}
+                </Button>
+              </>
+            )
+          }
+        />
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
         {loading.get ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('openai.settings.loading')}</div>
-          </div>
+          <SettingsSkeleton />
         ) : !hook ? (
-          <EmptyState
-            icon={Brain}
-            title={t('openai.settings.notConfigured.title')}
-            description={t('openai.settings.notConfigured.description')}
-            action={{
-              label: t('openai.settings.notConfigured.action'),
-              onClick: handleConfigure,
-            }}
-            className="h-full"
-          />
+          <Card>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Brain />
+                </EmptyMedia>
+                <EmptyTitle>{t('openai.settings.notConfigured.title')}</EmptyTitle>
+                <EmptyDescription>{t('openai.settings.notConfigured.description')}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={handleConfigure}>{t('openai.settings.notConfigured.action')}</Button>
+              </EmptyContent>
+            </Empty>
+          </Card>
         ) : (
-          <div className="space-y-6 max-w-2xl">
-            {/* Status Card */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  {t('openai.settings.status.title')}
-                </h3>
-                <div className="flex items-center gap-2 text-sm">
-                  {hook.status ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 text-success-foreground" />
-                      <span className="text-success-foreground font-medium">
-                        {t('openai.settings.status.active')}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-4 h-4 text-destructive-foreground" />
-                      <span className="text-destructive-foreground font-medium">
-                        {t('openai.settings.status.inactive')}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="flex flex-col gap-6 lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">{t('openai.settings.status.title')}</CardTitle>
+                </CardHeader>
+                <CardPanel>
+                  <dl className="grid gap-4 sm:grid-cols-2">
+                    <DetailItem label={t('openai.settings.status.configuredAt')}>{formatDateTime(hook.created_at)}</DetailItem>
+                    <DetailItem label={t('openai.settings.status.lastUpdate')}>{formatDateTime(hook.updated_at)}</DetailItem>
+                  </dl>
+                </CardPanel>
+              </Card>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-muted-foreground">
-                    {t('openai.settings.status.configuredAt')}
-                  </label>
-                  <p className="text-sm font-medium">
-                    {new Date(hook.created_at).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">
-                    {t('openai.settings.status.lastUpdate')}
-                  </label>
-                  <p className="text-sm font-medium">
-                    {new Date(hook.updated_at).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Configuration Card */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">
-                  {t('openai.settings.configuration.title')}
-                </h3>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleConfigure}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    {t('openai.settings.configuration.actions.edit')}
-                  </Button>
-                  <Button variant="destructive" onClick={handleDeleteIntegration}>
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    {t('openai.settings.configuration.actions.remove')}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs text-muted-foreground">
-                    {t('openai.settings.configuration.apiKey')}
-                  </label>
-                  <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
-                    {hook.settings?.api_key
-                      ? '••••••••••••••••'
-                      : t('openai.settings.configuration.notConfigured')}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/48">
-                  <div>
-                    <label className="text-sm font-medium text-foreground">
-                      {t('openai.modal.fields.enableAudioTranscription.label')}
-                    </label>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('openai.modal.fields.enableAudioTranscription.description')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {hook.settings?.enable_audio_transcription ? (
-                      <span className="text-sm text-success-foreground font-medium">
-                        {t('openai.settings.status.active')}
-                      </span>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">{t('openai.settings.configuration.title')}</CardTitle>
+                </CardHeader>
+                <CardPanel className="flex flex-col gap-4">
+                  <DetailItem label={t('openai.settings.configuration.apiKey')}>
+                    {hook.settings?.api_key ? (
+                      <code className="rounded-md bg-muted px-2 py-1 font-mono text-sm">••••••••••••••••</code>
                     ) : (
-                      <span className="text-sm text-muted-foreground">
-                        {t('openai.settings.status.inactive')}
+                      <span className="text-muted-foreground">{t('openai.settings.configuration.notConfigured')}</span>
+                    )}
+                  </DetailItem>
+                  <div className="flex items-center justify-between gap-4 rounded-lg border bg-card px-3.5 py-3">
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                      <span className="font-medium text-sm">
+                        {t('openai.modal.fields.enableAudioTranscription.label')}
                       </span>
+                      <span className="text-muted-foreground text-xs">
+                        {t('openai.modal.fields.enableAudioTranscription.description')}
+                      </span>
+                    </div>
+                    {hook.settings?.enable_audio_transcription ? (
+                      <Badge variant="success">{t('openai.settings.status.active')}</Badge>
+                    ) : (
+                      <Badge variant="outline">{t('openai.settings.status.inactive')}</Badge>
                     )}
                   </div>
-                </div>
-              </div>
-            </Card>
+                </CardPanel>
+              </Card>
+            </div>
 
-            {/* Features Card */}
-            <Card className="p-6 bg-info/8 border-info/24">
-              <h3 className="text-lg font-semibold mb-4 text-info-foreground">
-                {t('openai.settings.features.title')}
-              </h3>
-              <ul className="text-sm text-info-foreground space-y-2">
-                <li>• {t('openai.settings.features.suggestions')}</li>
-                <li>• {t('openai.settings.features.summaries')}</li>
-                <li>• {t('openai.settings.features.improvement')}</li>
-                <li>• {t('openai.settings.features.correction')}</li>
-                <li>• {t('openai.settings.features.labels')}</li>
-              </ul>
+            <Card className="self-start">
+              <CardHeader>
+                <CardTitle className="text-base">{t('openai.settings.features.title')}</CardTitle>
+              </CardHeader>
+              <CardPanel>
+                <ul className="flex flex-col gap-2.5 text-sm">
+                  {[
+                  'openai.settings.features.suggestions',
+                  'openai.settings.features.summaries',
+                  'openai.settings.features.improvement',
+                  'openai.settings.features.correction',
+                  'openai.settings.features.labels',
+                  ].map(key => (
+                    <li key={key} className="flex items-start gap-2">
+                      <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                      <CardDescription className="text-foreground">{t(key)}</CardDescription>
+                    </li>
+                  ))}
+                </ul>
+              </CardPanel>
             </Card>
           </div>
         )}
       </div>
 
-      {/* Delete Dialog */}
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
@@ -294,7 +253,6 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
         loading={loading.delete}
       />
 
-      {/* Config Modal */}
       <OpenAIModal
         hook={hook || undefined}
         open={configModalOpen}
@@ -303,6 +261,55 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
         isNew={!hook}
         loading={loading.create || loading.update}
       />
+    </div>
+  );
+}
+
+const formatDateTime = (value: string) =>
+  new Date(value).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+function DetailItem({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <dt className="text-muted-foreground text-xs">{label}</dt>
+      <dd className="font-medium text-sm">{children}</dd>
+    </div>
+  );
+}
+
+function SettingsSkeleton() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-3" aria-busy="true">
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardPanel className="grid gap-4 sm:grid-cols-2">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="flex flex-col gap-1.5">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          ))}
+        </CardPanel>
+      </Card>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-32" />
+        </CardHeader>
+        <CardPanel className="flex flex-col gap-2.5">
+          {[0, 1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-4 w-full" />
+          ))}
+        </CardPanel>
+      </Card>
     </div>
   );
 }

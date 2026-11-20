@@ -84,7 +84,9 @@
     "visitOfficialSite": "Visiter le site officiel",
     "delete": "Supprimer",
     "reconnect": "Reconnecter",
-    "backToIntegrations": "Retour aux intégrations"
+    "backToIntegrations": "Retour aux intégrations",
+    "showSecret": "Afficher",
+    "hideSecret": "Masquer"
   },
   "status": {
     "active": "Actif",

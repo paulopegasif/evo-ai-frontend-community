@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Card } from '@/components/ui/compat';
-import { Key, Copy } from 'lucide-react';
+import { Key, Copy, EyeOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import EmptyState from '@/components/base/EmptyState';
 import ListSkeleton from '@/components/base/ListSkeleton';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
@@ -398,66 +401,43 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
             {/* Credentials Display */}
             {state.apps.length > 0 &&
               Object.keys(state.showSecrets).some(id => state.showSecrets[id]) && (
-                <Card className="p-6">
-                  <h4 className="font-semibold mb-4">{t('oauth.credentials.title')}</h4>
-                  <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">{t('oauth.credentials.title')}</CardTitle>
+                  </CardHeader>
+                  <CardPanel className="flex flex-col gap-3">
                     {state.apps
                       .filter(app => state.showSecrets[app.uid])
                       .map(app => (
-                        <Card key={app.uid} className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <h5 className="font-medium">{app.name}</h5>
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                        <div key={app.uid} className="flex flex-col gap-3 rounded-xl border bg-muted/24 p-4">
+                          <div className="flex items-center justify-between gap-2">
+                            <CardDescription className="font-medium text-foreground">{app.name}</CardDescription>
+                            <IconAction
+                              label={t('oauth.table.actions.hideSecret')}
                               onClick={() => handleToggleSecret(app.uid)}
                             >
-                              <Copy className="w-4 h-4" />
-                            </Button>
+                              <EyeOff />
+                            </IconAction>
                           </div>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-xs text-muted-foreground">
-                                {t('oauth.credentials.clientId')}
-                              </label>
-                              <div className="flex items-center gap-2">
-                                <code className="text-sm bg-muted px-2 py-1 rounded flex-1 min-w-0 truncate">
-                                  {app.uid}
-                                </code>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="p-1 h-7 w-7"
-                                  onClick={() => handleCopyToClipboard(app.uid, false)}
-                                >
-                                  <Copy className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            </div>
+                          <div className="grid gap-3 md:grid-cols-2">
+                            <CredentialField
+                              label={t('oauth.credentials.clientId')}
+                              value={app.uid}
+                              copyLabel={t('oauth.table.actions.copyClientId')}
+                              onCopy={() => handleCopyToClipboard(app.uid, false)}
+                            />
                             {app.secret && (
-                              <div>
-                                <label className="text-xs text-muted-foreground">
-                                  {t('oauth.credentials.clientSecret')}
-                                </label>
-                                <div className="flex items-center gap-2">
-                                  <code className="text-sm bg-muted px-2 py-1 rounded flex-1 min-w-0 truncate">
-                                    {app.secret}
-                                  </code>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="p-1 h-7 w-7"
-                                    onClick={() => handleCopyToClipboard(app.secret!, true)}
-                                  >
-                                    <Copy className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                              </div>
+                              <CredentialField
+                                label={t('oauth.credentials.clientSecret')}
+                                value={app.secret}
+                                copyLabel={t('oauth.table.actions.copySecret')}
+                                onCopy={() => handleCopyToClipboard(app.secret!, true)}
+                              />
                             )}
                           </div>
-                        </Card>
+                        </div>
                       ))}
-                  </div>
+                  </CardPanel>
                 </Card>
               )}
           </div>
@@ -512,6 +492,53 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
         isNew={!editingApp}
         loading={state.loading.create || state.loading.update}
       />
+    </div>
+  );
+}
+
+function IconAction({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={<Button type="button" variant="ghost" size="icon-xs" aria-label={label} onClick={onClick} />}
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipPopup>{label}</TooltipPopup>
+    </Tooltip>
+  );
+}
+
+function CredentialField({
+  label,
+  value,
+  copyLabel,
+  onCopy,
+}: {
+  label: string;
+  value: string;
+  copyLabel: string;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="text-muted-foreground text-xs">{label}</span>
+      <InputGroup>
+        <InputGroupInput readOnly value={value} aria-label={label} className="font-mono" />
+        <InputGroupAddon align="inline-end">
+          <IconAction label={copyLabel} onClick={onCopy}>
+            <Copy />
+          </IconAction>
+        </InputGroupAddon>
+      </InputGroup>
     </div>
   );
 }

@@ -104,7 +104,9 @@
     "visitOfficialSite": "Visitar site oficial",
     "delete": "Excluir",
     "reconnect": "Reconectar",
-    "backToIntegrations": "Voltar para Integrações"
+    "backToIntegrations": "Voltar para Integrações",
+    "showSecret": "Mostrar",
+    "hideSecret": "Ocultar"
   },
   "status": {
     "active": "Ativo",
