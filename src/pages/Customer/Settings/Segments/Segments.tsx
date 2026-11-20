@@ -2,16 +2,19 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-} from '@/components/ui/compat';
-import { Target } from 'lucide-react';
+} from '@/components/ui/dialog';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import { Copy, Target } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 
@@ -288,7 +291,7 @@ export default function Segments() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       <SegmentsHeader
         totalCount={state.meta.pagination.total}
         selectedCount={state.selectedSegmentIds.length}
@@ -305,9 +308,10 @@ export default function Segments() {
       {/* Content */}
       <div className="flex-1 overflow-auto mt-6">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading')}</div>
-          </div>
+          <>
+            <span className="sr-only">{t('loading')}</span>
+            <ListSkeleton />
+          </>
         ) : state.segments.length === 0 ? (
           <EmptyState
             icon={Target}
@@ -392,20 +396,16 @@ export default function Segments() {
 
       {/* Contact IDs Dialog */}
       <Dialog open={contactIdsDialogOpen} onOpenChange={setContactIdsDialogOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogPopup className="sm:max-w-4xl">
           <DialogHeader>
-            <DialogTitle>
-              {t('dialog.contactIds.title', { name: selectedSegmentForIds?.name })}
-            </DialogTitle>
-            <DialogDescription>
-              {t('dialog.contactIds.description', { count: contactIds.length })}
-            </DialogDescription>
+            <DialogTitle>{t('dialog.contactIds.title', { name: selectedSegmentForIds?.name })}</DialogTitle>
+            <DialogDescription>{t('dialog.contactIds.description', { count: contactIds.length })}</DialogDescription>
           </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto border rounded-md">
-            <pre className="text-xs bg-gray-900 p-4 whitespace-pre-wrap">
+          <DialogPanel>
+            <pre className="whitespace-pre-wrap rounded-xl border bg-muted/40 p-4 font-mono text-xs">
               {JSON.stringify(contactIds, null, 2)}
             </pre>
-          </div>
+          </DialogPanel>
           <DialogFooter>
             <Button
               variant="outline"
@@ -414,11 +414,12 @@ export default function Segments() {
                 toast.success(t('messages.idsCopied'));
               }}
             >
+              <Copy />
               {t('actions.copyJson')}
             </Button>
-            <Button onClick={() => setContactIdsDialogOpen(false)}>{t('actions.close')}</Button>
+            <DialogClose render={<Button />}>{t('actions.close')}</DialogClose>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </div>
   );
