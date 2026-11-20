@@ -839,7 +839,9 @@
         "apiKeyHeader": "API Key in header: {{header}}",
         "apiKeyNotConfigured": "API Key not configured",
         "noAuth": "No authentication",
-        "sensitiveDataEncrypted": "Sensitive data will be encrypted when saving"
+        "sensitiveDataEncrypted": "Sensitive data will be encrypted when saving",
+        "showValue": "Show value",
+        "hideValue": "Hide value"
       },
       "basic": {
         "endpointUrl": "Endpoint URL *",
@@ -948,7 +950,8 @@
         "suggestedHeaders": "Suggested Headers:",
         "summaryTitle": "Summary:",
         "headersConfigured": "{{count}} header{{plural}} configured{{plural}}",
-        "containsSensitive": "Contains sensitive headers - will be encrypted when saving"
+        "containsSensitive": "Contains sensitive headers - will be encrypted when saving",
+        "removeHeader": "Remove header"
       }
     },
     "assignBot": {
@@ -1196,7 +1199,10 @@
       "placeholders": {
         "selectVariable": "Select variable...",
         "selectStage": "Select a stage..."
-      }
+      },
+      "removeCondition": "Remove condition",
+      "duplicatePath": "Duplicate path",
+      "removePath": "Remove path"
     },
     "deferConversation": {
       "title": "Configure Deferment of Conversation",
@@ -1510,7 +1516,8 @@
         "addVariant": "Add Variant",
         "distributeEqually": "Distribute Equally",
         "cancel": "Cancel",
-        "save": "Save"
+        "save": "Save",
+        "removeVariant": "Remove variant"
       },
       "status": {
         "total": "Total",
@@ -1876,7 +1883,8 @@
         "ultima_atividade": "Last Activity",
         "criado": "Created",
         "atualizado": "Updated"
-      }
+      },
+      "removeField": "Remove field"
     },
     "pipelineStageChanged": {
       "pipeline": "Pipeline",
@@ -2024,7 +2032,9 @@
       "method": "Method",
       "headersCount": "header(s) custom(s)",
       "captureWebhookData": "Capture Webhook Data",
-      "urlCopied": "Webhook URL copied to clipboard"
+      "urlCopied": "Webhook URL copied to clipboard",
+      "copyUrl": "Copy URL",
+      "removeHeader": "Remove header"
     }
   },
   "sessions": {
@@ -2067,7 +2077,8 @@
         "delete": "Delete",
         "viewDetails": "View Details",
         "confirmCancel": "Are you sure you want to cancel this session?",
-        "confirmDelete": "Are you sure you want to delete this session?"
+        "confirmDelete": "Are you sure you want to delete this session?",
+        "close": "Close"
       },
       "details": {
         "title": "Session Details",
@@ -2090,6 +2101,12 @@
         "deleteSuccess": "Session deleted successfully",
         "deleteError": "Error deleting session",
         "loadError": "Error loading journey sessions"
+      },
+      "confirm": {
+        "deleteTitle": "Delete session?",
+        "cancelTitle": "Cancel session?",
+        "cancelConfirm": "Cancel session",
+        "back": "Go back"
       }
     }
   }

@@ -1,25 +1,23 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
   DialogTrigger,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/compat';
-import { Settings, Plus, Edit, Trash2, Copy, Search, Lock, SlidersHorizontal, User, Zap, Globe, Target, CircleAlert } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Settings, Plus, Edit, Trash2, Copy, Search, Lock, SlidersHorizontal, User, Zap, Globe, Target, CircleAlert, X } from 'lucide-react';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';
@@ -275,6 +273,19 @@ export function EnvironmentManager({
     cat => cat.variables.length > 0,
   );
 
+  const variableTypeItems: { value: JourneyVariable['type']; label: string }[] = [
+    { value: 'text', label: `📝 ${t('environmentManager.form.fields.type.text')}` },
+    { value: 'number', label: `🔢 ${t('environmentManager.form.fields.type.number')}` },
+    { value: 'boolean', label: `☑️ ${t('environmentManager.form.fields.type.boolean')}` },
+    { value: 'date', label: `📅 ${t('environmentManager.form.fields.type.date')}` },
+  ];
+
+  const resetForm = () => {
+    setShowCreateForm(false);
+    setEditingVariable(null);
+    setNewVariable({ name: '', type: 'text', defaultValue: '', description: '' });
+  };
+
   const filteredCustomVariables = variables.filter(
     v =>
       v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -283,39 +294,38 @@ export function EnvironmentManager({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Settings className="w-4 h-4" />
-          ENV
-        </Button>
+      <DialogTrigger render={<Button variant="outline" size="sm" />}>
+        <Settings />
+        ENV
       </DialogTrigger>
-      <DialogContent className="max-w-5xl max-h-[85vh] overflow-hidden flex flex-col border-border">
-        <DialogHeader className="pb-4">
+      <DialogPopup className="max-h-[85vh] max-w-5xl">
+        <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-foreground">
-            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Settings className="w-4 h-4 text-primary" />
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+              <Settings className="size-4 text-primary" aria-hidden="true" />
             </div>
             {t('environmentManager.title')}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            {t('environmentManager.description')}
-          </DialogDescription>
+          <DialogDescription>{t('environmentManager.description')}</DialogDescription>
         </DialogHeader>
 
         {/* Barra de busca */}
-        <div className="pb-4">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
+        <div className="px-6 pb-4">
+          <InputGroup className="max-w-md">
+            <InputGroupAddon>
+              <Search aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              type="search"
               placeholder={t('environmentManager.searchPlaceholder')}
+              aria-label={t('environmentManager.searchPlaceholder')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-10 bg-muted/48 border-border"
             />
-          </div>
+          </InputGroup>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <DialogPanel>
           {/* Loading indicator */}
           {loading && (
             <div className="flex flex-col gap-2 py-4" aria-busy="true" aria-label={t('environmentManager.loading')}>
@@ -337,101 +347,80 @@ export function EnvironmentManager({
 
           {/* Formulário de Criar/Editar - No topo quando ativo */}
           {showCreateForm && (
-            <div className="mb-6 p-4 rounded-lg bg-muted/48 border border-border">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-foreground">
+            <div className="mb-6 rounded-xl border bg-muted/24 p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="font-semibold text-foreground text-lg">
                   {editingVariable ? `✏️ ${t('environmentManager.form.edit.title')}` : `➕ ${t('environmentManager.form.create.title')}`}
                 </h3>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowCreateForm(false);
-                    setEditingVariable(null);
-                    setNewVariable({ name: '', type: 'text', defaultValue: '', description: '' });
-                  }}
+                  size="icon-sm"
+                  onClick={resetForm}
+                  aria-label={t('environmentManager.form.actions.cancel')}
                 >
-                  ✕
+                  <X />
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
-                    {t('environmentManager.form.fields.name.label')}
-                  </Label>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>{t('environmentManager.form.fields.name.label')}</FieldLabel>
                   <Input
                     placeholder={t('environmentManager.form.fields.name.placeholder')}
                     value={newVariable.name}
                     onChange={e => setNewVariable(prev => ({ ...prev, name: e.target.value }))}
-                    className="border-border"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t('environmentManager.form.fields.name.help')}
-                  </p>
-                </div>
+                  <FieldDescription>{t('environmentManager.form.fields.name.help')}</FieldDescription>
+                </Field>
 
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
-                    {t('environmentManager.form.fields.type.label')}
-                  </Label>
+                <Field>
+                  <FieldLabel>{t('environmentManager.form.fields.type.label')}</FieldLabel>
                   <Select
+                    items={variableTypeItems}
                     value={newVariable.type}
-                    onValueChange={(value: 'text' | 'number' | 'boolean' | 'date') =>
-                      setNewVariable(prev => ({ ...prev, type: value }))
+                    onValueChange={value =>
+                      value != null &&
+                      setNewVariable(prev => ({ ...prev, type: value as JourneyVariable['type'] }))
                     }
                   >
-                    <SelectTrigger className="border-border">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="text">📝 {t('environmentManager.form.fields.type.text')}</SelectItem>
-                      <SelectItem value="number">🔢 {t('environmentManager.form.fields.type.number')}</SelectItem>
-                      <SelectItem value="boolean">☑️ {t('environmentManager.form.fields.type.boolean')}</SelectItem>
-                      <SelectItem value="date">📅 {t('environmentManager.form.fields.type.date')}</SelectItem>
-                    </SelectContent>
+                    <SelectPopup alignItemWithTrigger={false}>
+                      {variableTypeItems.map(item => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectPopup>
                   </Select>
-                </div>
+                </Field>
 
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
-                    {t('environmentManager.form.fields.description.label')}
-                  </Label>
+                <Field>
+                  <FieldLabel>{t('environmentManager.form.fields.description.label')}</FieldLabel>
                   <Input
                     placeholder={t('environmentManager.form.fields.description.placeholder')}
                     value={newVariable.description}
                     onChange={e =>
                       setNewVariable(prev => ({ ...prev, description: e.target.value }))
                     }
-                    className="border-border"
                   />
-                </div>
+                </Field>
 
-                <div>
-                  <Label className="text-sm font-medium text-foreground mb-2 block">
-                    {t('environmentManager.form.fields.defaultValue.label')}
-                  </Label>
+                <Field>
+                  <FieldLabel>{t('environmentManager.form.fields.defaultValue.label')}</FieldLabel>
                   <Input
                     placeholder={t('environmentManager.form.fields.defaultValue.placeholder')}
                     value={newVariable.defaultValue}
                     onChange={e =>
                       setNewVariable(prev => ({ ...prev, defaultValue: e.target.value }))
                     }
-                    className="border-border"
                   />
-                </div>
+                </Field>
               </div>
 
-              <div className="flex gap-3 mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowCreateForm(false);
-                    setEditingVariable(null);
-                    setNewVariable({ name: '', type: 'text', defaultValue: '', description: '' });
-                  }}
-                  className="border-border"
-                >
+              <div className="mt-4 flex gap-3">
+                <Button variant="outline" onClick={resetForm}>
                   {t('environmentManager.form.actions.cancel')}
                 </Button>
                 <Button onClick={editingVariable ? handleUpdateVariable : handleCreateVariable}>
@@ -442,18 +431,18 @@ export function EnvironmentManager({
           )}
 
           <Tabs defaultValue="system" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="system" className="flex items-center gap-2">
+            <TabsList className="w-full">
+              <TabsTab value="system" className="flex items-center gap-2">
                 <Lock className="size-3.5" aria-hidden="true" />
                 {t('environmentManager.tabs.system')}
-              </TabsTrigger>
-              <TabsTrigger value="custom" className="flex items-center gap-2">
+              </TabsTab>
+              <TabsTab value="custom" className="flex items-center gap-2">
                 <SlidersHorizontal className="size-3.5" aria-hidden="true" />
                 {t('environmentManager.tabs.custom', { count: filteredCustomVariables.length })}
-              </TabsTrigger>
+              </TabsTab>
             </TabsList>
 
-            <TabsContent value="system" className="mt-6 space-y-4">
+            <TabsPanel value="system" className="mt-4 space-y-4">
               <div className="space-y-3">
                 {filteredSystemVariables.map(category => (
                   <div key={category.category}>
@@ -480,12 +469,13 @@ export function EnvironmentManager({
                                 </code>
                                 <Button
                                   variant="ghost"
-                                  size="sm"
+                                  size="icon-xs"
                                   onClick={() => copyToClipboard(variable.name)}
-                                  className="opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 h-7 w-7 p-0 transition-opacity"
+                                  className="opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
+                                  aria-label={t('environmentManager.customVariables.actions.copy')}
                                   title={t('environmentManager.customVariables.actions.copy')}
                                 >
-                                  <Copy className="w-3 h-3" />
+                                  <Copy />
                                 </Button>
                               </div>
                               <p className="text-xs text-muted-foreground mb-1">
@@ -502,9 +492,9 @@ export function EnvironmentManager({
                   </div>
                 ))}
               </div>
-            </TabsContent>
+            </TabsPanel>
 
-            <TabsContent value="custom" className="mt-6 space-y-4">
+            <TabsPanel value="custom" className="mt-4 space-y-4">
               {/* Header com botão de nova variável */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -514,27 +504,24 @@ export function EnvironmentManager({
                       : t('environmentManager.customVariables.empty.count', { count: filteredCustomVariables.length })}
                   </h3>
                 </div>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => setShowCreateForm(true)}
-                  className="gap-2"
-                >
-                  <Plus className="w-4 h-4" />
+                <Button size="sm" onClick={() => setShowCreateForm(true)}>
+                  <Plus />
                   {t('environmentManager.customVariables.actions.new')}
                 </Button>
               </div>
 
               <div className="space-y-2">
                 {filteredCustomVariables.length === 0 && !showCreateForm && (
-                  <div className="text-center py-8">
-                    <div className="w-12 h-12 bg-muted/48 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Plus className="w-6 h-6 text-muted-foreground" />
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      {t('environmentManager.customVariables.empty.subtitle')}
-                    </p>
-                  </div>
+                  <Empty className="py-8 md:py-8">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <SlidersHorizontal />
+                      </EmptyMedia>
+                      <EmptyDescription>
+                        {t('environmentManager.customVariables.empty.subtitle')}
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
                 )}
 
                 {filteredCustomVariables.map(variable => (
@@ -557,12 +544,13 @@ export function EnvironmentManager({
                           </span>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon-xs"
                             onClick={() => copyToClipboard(variable.name)}
-                            className="opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 h-7 w-7 p-0 transition-opacity"
+                            className="opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
+                            aria-label={t('environmentManager.customVariables.actions.copy')}
                             title={t('environmentManager.customVariables.actions.copy')}
                           >
-                            <Copy className="w-3 h-3" />
+                            <Copy />
                           </Button>
                         </div>
                         {variable.description && (
@@ -579,48 +567,40 @@ export function EnvironmentManager({
                       <div className="flex gap-1 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon-sm"
                           onClick={() => handleEditVariable(variable)}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                          className="text-muted-foreground hover:text-foreground"
                           aria-label={t('environmentManager.customVariables.actions.edit')}
                           title={t('environmentManager.customVariables.actions.edit')}
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit />
                         </Button>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon-sm"
                           onClick={() => handleDeleteVariable(variable)}
-                          className="h-8 w-8 p-0 text-muted-foreground hover:bg-destructive/8 hover:text-destructive-foreground"
+                          className="text-muted-foreground hover:bg-destructive/8 hover:text-destructive-foreground"
                           aria-label={t('environmentManager.customVariables.actions.delete')}
                           title={t('environmentManager.customVariables.actions.delete')}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 />
                         </Button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </TabsContent>
+            </TabsPanel>
           </Tabs>
-        </div>
+        </DialogPanel>
 
-        <div className="pt-4 border-t border-border">
-          <div className="flex justify-between items-center">
-            <div className="text-xs text-muted-foreground">
-              {t('environmentManager.footer.tip')}
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => setIsOpen(false)}
-              className="border-border"
-            >
-              {t('environmentManager.form.actions.close')}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
+        <DialogFooter className="sm:items-center sm:justify-between">
+          <p className="text-muted-foreground text-xs">{t('environmentManager.footer.tip')}</p>
+          <DialogClose render={<Button variant="outline" />}>
+            {t('environmentManager.form.actions.close')}
+          </DialogClose>
+        </DialogFooter>
+      </DialogPopup>
 
       {/* Dialog de confirmação de exclusão */}
       <ConfirmDialog

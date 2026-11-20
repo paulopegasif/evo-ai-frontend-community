@@ -1,19 +1,25 @@
 import { forwardRef, useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
-  Separator,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';
@@ -143,42 +149,71 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
       }
     };
 
+    const sortedContactAttributes = contactAttributes
+      .slice()
+      .sort((a, b) =>
+        (a.attribute_display_name || a.attribute_key || '').localeCompare(
+          b.attribute_display_name || b.attribute_key || '',
+        ),
+      );
+
+    // Base UI renders the selected label from `items`, so list every option here.
+    const selectItems: { value: string; label: string }[] = [
+      ...(showCreateOption
+        ? [{ value: '__new__', label: t('environmentManager.customVariables.actions.new') }]
+        : []),
+      ...(showSystemVariables
+        ? SYSTEM_VARIABLES.map(variable => ({ value: variable.value, label: variable.label }))
+        : []),
+      ...(showContactAttributes
+        ? sortedContactAttributes.map(attribute => ({
+            value: `{{contact.customAttributes.${attribute.attribute_key}}}`,
+            label: attribute.attribute_display_name,
+          }))
+        : []),
+      ...variables.map(variable => ({ value: `{{${variable.name}}}`, label: variable.name })),
+    ];
+
+    const variableTypeItems: { value: 'text' | 'number' | 'boolean' | 'date'; label: string }[] = [
+      { value: 'text', label: `📝 ${t('environmentManager.form.fields.type.text')}` },
+      { value: 'number', label: `🔢 ${t('environmentManager.form.fields.type.number')}` },
+      { value: 'boolean', label: `☑️ ${t('environmentManager.form.fields.type.boolean')}` },
+      { value: 'date', label: `📅 ${t('environmentManager.form.fields.type.date')}` },
+    ];
+
     return (
       <>
         <Select
           key={`select-${JSON.stringify(variables.map(v => v.id))}`}
-          value={value}
-          onValueChange={handleValueChange}
-          onOpenChange={() => {}}
+          items={selectItems}
+          value={value || null}
+          onValueChange={next => handleValueChange(next == null ? '' : String(next))}
           disabled={disabled}
           {...props}
         >
           <SelectTrigger
             ref={ref}
             data-testid={triggerTestId}
-            className={cn(
-              'w-full bg-sidebar border-sidebar-border text-sidebar-foreground',
-              className,
-            )}
+            className={cn('w-full', className)}
           >
             <SelectValue
               placeholder={placeholder || t('environmentManager.form.fields.name.placeholder')}
             />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border max-h-[400px]">
+          <SelectPopup alignItemWithTrigger={false} className="max-h-[400px]">
             {/* Opção de criar nova variável */}
             {showCreateOption && (
               <>
-                <SelectItem value="__new__" className="text-sidebar-foreground">
+                <SelectItem value="__new__">
                   <div className="flex items-center gap-2">
-                    <Plus className="w-4 h-4" />
+                    <Plus />
                     <span className="font-medium">
                       {t('environmentManager.customVariables.actions.new')}
                     </span>
                   </div>
                 </SelectItem>
 
-                {(variables.length > 0 || showSystemVariables) && <Separator className="my-2" />}
+                {(variables.length > 0 || showSystemVariables) && <SelectSeparator />}
               </>
             )}
 
@@ -205,7 +240,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                         <SelectItem
                           key={variable.value}
                           value={variable.value}
-                          className="text-sidebar-foreground"
+                         
                         >
                           <div className="flex flex-col gap-0.5">
                             <span className="font-medium">{variable.label}</span>
@@ -216,7 +251,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                   );
                 })}
 
-                {variables.length > 0 && <Separator className="my-2" />}
+                {variables.length > 0 && <SelectSeparator />}
               </>
             )}
 
@@ -227,23 +262,16 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                     not already render its trailing one (which it does iff there
                     are custom journey variables) — avoids a double separator. */}
                 {showSystemVariables && variables.length === 0 && (
-                  <Separator className="my-2" />
+                  <SelectSeparator />
                 )}
                 <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
                   {t('environmentManager.categories.contactAttributes')}
                 </div>
-                {contactAttributes
-                  .slice()
-                  .sort((a, b) =>
-                    (a.attribute_display_name || a.attribute_key || '').localeCompare(
-                      b.attribute_display_name || b.attribute_key || '',
-                    ),
-                  )
-                  .map(attribute => (
+                {sortedContactAttributes.map(attribute => (
                   <SelectItem
                     key={attribute.id}
                     value={`{{contact.customAttributes.${attribute.attribute_key}}}`}
-                    className="text-sidebar-foreground"
+                   
                   >
                     <div className="flex flex-col gap-0.5">
                       <span className="font-medium">{attribute.attribute_display_name}</span>
@@ -251,7 +279,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                   </SelectItem>
                 ))}
 
-                {variables.length > 0 && <Separator className="my-2" />}
+                {variables.length > 0 && <SelectSeparator />}
               </>
             )}
 
@@ -265,7 +293,7 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                   <SelectItem
                     key={variable.id}
                     value={`{{${variable.name}}}`}
-                    className="text-sidebar-foreground"
+                   
                   >
                     <div className="flex flex-col gap-0.5">
                       <span className="font-medium">{variable.name}</span>
@@ -281,109 +309,85 @@ const VariableSelect = forwardRef<HTMLButtonElement, VariableSelectProps>(
                 {t('environmentManager.customVariables.empty.title')}
               </div>
             )}
-          </SelectContent>
+          </SelectPopup>
         </Select>
 
         {/* Modal de Criação de Variável */}
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-          <DialogContent className="max-w-md">
+          <DialogPopup className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Plus className="w-4 h-4 text-primary" />
+                <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                  <Plus className="size-4 text-primary" aria-hidden="true" />
                 </div>
                 {t('environmentManager.form.create.title')}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                {t('environmentManager.description')}
+              </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium">
-                  {t('environmentManager.form.fields.name.label')}
-                </Label>
+            <DialogPanel className="flex flex-col gap-4">
+              <Field>
+                <FieldLabel>{t('environmentManager.form.fields.name.label')}</FieldLabel>
                 <Input
                   value={newVariableName}
                   onChange={e => setNewVariableName(e.target.value)}
                   placeholder={t('environmentManager.form.fields.name.placeholder')}
-                  className="mt-1"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t('environmentManager.form.fields.name.help')}
-                </p>
-              </div>
+                <FieldDescription>{t('environmentManager.form.fields.name.help')}</FieldDescription>
+              </Field>
 
-              <div>
-                <Label className="text-sm font-medium">
-                  {t('environmentManager.form.fields.type.label')}
-                </Label>
+              <Field>
+                <FieldLabel>{t('environmentManager.form.fields.type.label')}</FieldLabel>
                 <Select
+                  items={variableTypeItems}
                   value={newVariableType}
-                  onValueChange={(value: 'text' | 'number' | 'boolean' | 'date') =>
-                    setNewVariableType(value)
+                  onValueChange={next =>
+                    next != null && setNewVariableType(next as 'text' | 'number' | 'boolean' | 'date')
                   }
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="text">
-                      📝 {t('environmentManager.form.fields.type.text')}
-                    </SelectItem>
-                    <SelectItem value="number">
-                      🔢 {t('environmentManager.form.fields.type.number')}
-                    </SelectItem>
-                    <SelectItem value="boolean">
-                      ☑️ {t('environmentManager.form.fields.type.boolean')}
-                    </SelectItem>
-                    <SelectItem value="date">
-                      📅 {t('environmentManager.form.fields.type.date')}
-                    </SelectItem>
-                  </SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
+                    {variableTypeItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
                 </Select>
-              </div>
+              </Field>
 
-              <div>
-                <Label className="text-sm font-medium">
-                  {t('environmentManager.form.fields.description.label')}
-                </Label>
+              <Field>
+                <FieldLabel>{t('environmentManager.form.fields.description.label')}</FieldLabel>
                 <Input
                   value={newVariableDescription}
                   onChange={e => setNewVariableDescription(e.target.value)}
                   placeholder={t('environmentManager.form.fields.description.placeholder')}
-                  className="mt-1"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <Label className="text-sm font-medium">
-                  {t('environmentManager.form.fields.defaultValue.label')}
-                </Label>
+              <Field>
+                <FieldLabel>{t('environmentManager.form.fields.defaultValue.label')}</FieldLabel>
                 <Input
                   value={newVariableDefaultValue}
                   onChange={e => setNewVariableDefaultValue(e.target.value)}
                   placeholder={t('environmentManager.form.fields.defaultValue.placeholder')}
-                  className="mt-1"
                 />
-              </div>
-            </div>
+              </Field>
+            </DialogPanel>
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowCreateModal(false)}
-                className="flex-1"
-              >
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline" />}>
                 {t('environmentManager.form.actions.cancel')}
-              </Button>
-              <Button
-                onClick={handleCreateVariable}
-                className="flex-1"
-                disabled={!newVariableName.trim()}
-              >
+              </DialogClose>
+              <Button onClick={handleCreateVariable} disabled={!newVariableName.trim()}>
                 {t('environmentManager.form.create.button')}
               </Button>
-            </div>
-          </DialogContent>
+            </DialogFooter>
+          </DialogPopup>
         </Dialog>
       </>
     );

@@ -1,20 +1,20 @@
 import { useId, useMemo, useState, useEffect } from 'react';
 import { Plus, X, AlertTriangle, ChevronsUpDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+// cmdk-based Command (typeahead list) — kept from the compat module on purpose:
+// it carries cmdk filtering behavior, not just a re-export.
 import {
-  Button,
-  Checkbox,
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  Input,
-  Label,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/compat';
+} from '@/components/ui/compat/command';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { getEvent, isCustomEvent, type FieldSpec } from '@/lib/events-manifest';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -221,7 +221,7 @@ function SchemaField({
     <div className="space-y-1">
       <Label htmlFor={id} className="text-sm">
         {field}
-        {required && <span className="ml-0.5 text-destructive">*</span>}
+        {required && <span className="ms-0.5 text-destructive-foreground">*</span>}
       </Label>
       <FieldInput
         id={id}
@@ -234,7 +234,7 @@ function SchemaField({
         <p className="text-xs text-muted-foreground">{spec.description}</p>
       )}
       {missing && (
-        <p className="text-xs text-destructive">{t('propertiesForm.requiredFieldMissing')}</p>
+        <p className="text-destructive-foreground text-xs">{t('propertiesForm.requiredFieldMissing')}</p>
       )}
     </div>
   );
@@ -327,21 +327,26 @@ function OptionalFieldPicker({
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          aria-haspopup="listbox"
-          disabled={disabled}
-          className="w-full justify-between font-normal text-muted-foreground"
-        >
-          <span>{label}</span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            disabled={disabled}
+            className="w-full justify-between font-normal text-muted-foreground"
+          />
+        }
+      >
+        <span>{label}</span>
+        <ChevronsUpDown className="ms-2 size-4 shrink-0 opacity-50" aria-hidden="true" />
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverPopup
+        className="w-(--anchor-width) p-0 **:data-[slot=popover-viewport]:p-0"
+        align="start"
+      >
         {/* F6 fix: key={open} remounts the Command on each open, clearing any
             leftover CommandInput query from the previous open. */}
         <Command key={String(open)}>
@@ -364,7 +369,7 @@ function OptionalFieldPicker({
             </CommandGroup>
           </CommandList>
         </Command>
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }
@@ -433,7 +438,7 @@ function CustomKeyValueEditor({
   return (
     <div className={cn('space-y-3', className)}>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+        <AlertTriangle className="size-3.5" aria-hidden="true" />
         <span>{t('propertiesForm.customWarning')}</span>
       </div>
       <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
@@ -463,12 +468,12 @@ function CustomKeyValueEditor({
             disabled={disabled}
             aria-label={t('propertiesForm.customRemoveAriaLabel')}
           >
-            <X className="h-4 w-4" aria-hidden="true" />
+            <X aria-hidden="true" />
           </Button>
         </div>
       ))}
       <Button type="button" variant="outline" size="sm" onClick={add} disabled={disabled}>
-        <Plus className="mr-1 h-3 w-3" aria-hidden="true" />
+        <Plus aria-hidden="true" />
         {t('propertiesForm.customAddLabel')}
       </Button>
     </div>
