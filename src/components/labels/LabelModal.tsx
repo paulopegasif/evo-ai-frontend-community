@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-  Label as UILabel,
-  Textarea,
-  Switch,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Label as UILabel } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/types/settings';
 import { usePermissions } from '@/contexts/PermissionsContext';
 
@@ -129,119 +134,123 @@ export default function LabelModal({
     }
   };
 
+  const canSave = can('labels', isNew ? 'create' : 'update');
+  const preview = formData.title.trim().toLowerCase() || t('modal.placeholders.name');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {isNew ? t('modal.title.create') : t('modal.title.edit')}
-          </DialogTitle>
-          <DialogDescription>
-            {isNew ? t('modal.description.create') : t('modal.description.edit')}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogPopup className="sm:max-w-md">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-col">
+          <DialogHeader>
+            <DialogTitle>{isNew ? t('modal.title.create') : t('modal.title.edit')}</DialogTitle>
+            <DialogDescription>
+              {isNew ? t('modal.description.create') : t('modal.description.edit')}
+            </DialogDescription>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <UILabel htmlFor="title">
-              {t('modal.labels.name')} <span className="text-destructive">*</span>
-            </UILabel>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder={t('modal.placeholders.name')}
-              className={errors.title ? 'border-destructive' : ''}
-              style={{ textTransform: 'lowercase' }}
-            />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title}</p>
-            )}
-          </div>
+          <DialogPanel className="flex flex-col gap-5">
+            {/* Live preview of the label chip */}
+            <div className="flex items-center justify-center rounded-xl border bg-muted/24 py-4">
+              <span
+                className="inline-flex max-w-full items-center gap-1.5 truncate rounded-md border px-2 py-0.5 font-medium text-sm"
+                style={{ borderColor: `${formData.color}55`, backgroundColor: `${formData.color}14` }}
+              >
+                <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: formData.color }} />
+                {preview}
+              </span>
+            </div>
 
-          <div className="space-y-2">
-            <UILabel htmlFor="description">{t('modal.labels.description')}</UILabel>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder={t('modal.placeholders.description')}
-              className="resize-none"
-              rows={3}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <UILabel htmlFor="color">
-              {t('modal.labels.color')} <span className="text-destructive">*</span>
-            </UILabel>
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded border border-input"
-                style={{ backgroundColor: formData.color }}
-              />
+            <Field invalid={Boolean(errors.title)}>
+              <FieldLabel htmlFor="title">
+                {t('modal.labels.name')} <span className="text-destructive-foreground">*</span>
+              </FieldLabel>
               <Input
-                id="color"
-                type="text"
-                value={formData.color}
-                onChange={(e) => handleInputChange('color', e.target.value)}
-                placeholder={t('modal.placeholders.color')}
-                className={`font-mono ${errors.color ? 'border-destructive' : ''}`}
+                id="title"
+                value={formData.title}
+                onChange={e => handleInputChange('title', e.target.value)}
+                placeholder={t('modal.placeholders.name')}
+                aria-invalid={errors.title ? true : undefined}
+                style={{ textTransform: 'lowercase' }}
+              />
+              {errors.title && <FieldError match>{errors.title}</FieldError>}
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="description">{t('modal.labels.description')}</FieldLabel>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={e => handleInputChange('description', e.target.value)}
+                placeholder={t('modal.placeholders.description')}
+                rows={3}
+              />
+            </Field>
+
+            <Field invalid={Boolean(errors.color)}>
+              <FieldLabel htmlFor="color">
+                {t('modal.labels.color')} <span className="text-destructive-foreground">*</span>
+              </FieldLabel>
+              <InputGroup>
+                <InputGroupAddon>
+                  <span className="size-4 rounded-sm border" style={{ backgroundColor: formData.color }} />
+                </InputGroupAddon>
+                <InputGroupInput
+                  id="color"
+                  type="text"
+                  value={formData.color}
+                  onChange={e => handleInputChange('color', e.target.value)}
+                  placeholder={t('modal.placeholders.color')}
+                  aria-invalid={errors.color ? true : undefined}
+                  className="font-mono"
+                />
+              </InputGroup>
+              {errors.color && <FieldError match>{errors.color}</FieldError>}
+              <div className="flex flex-wrap gap-1.5 pt-1" role="listbox" aria-label={t('modal.labels.color')}>
+                {DEFAULT_COLORS.map(color => {
+                  const active = formData.color.toLowerCase() === color;
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      role="option"
+                      aria-selected={active}
+                      aria-label={color}
+                      className={`flex size-6 items-center justify-center rounded-md outline-none ring-offset-2 ring-offset-background transition-shadow focus-visible:ring-2 focus-visible:ring-ring ${
+                        active ? 'ring-2 ring-foreground/40' : ''
+                      }`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => handleInputChange('color', color)}
+                    >
+                      {active && <Check className="size-3.5 text-white" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </Field>
+
+            <div className="flex items-center justify-between gap-4 rounded-xl border bg-muted/24 px-4 py-3">
+              <div className="flex flex-col gap-0.5">
+                <UILabel htmlFor="show_on_sidebar">{t('modal.labels.showOnSidebar')}</UILabel>
+                <p className="text-muted-foreground text-xs">{t('modal.hints.showOnSidebar')}</p>
+              </div>
+              <Switch
+                id="show_on_sidebar"
+                checked={formData.show_on_sidebar}
+                onCheckedChange={checked => handleInputChange('show_on_sidebar', checked)}
               />
             </div>
-            {errors.color && (
-              <p className="text-sm text-destructive">{errors.color}</p>
-            )}
+          </DialogPanel>
 
-            {/* Color presets */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              {DEFAULT_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`w-6 h-6 rounded border-2 ${
-                    formData.color === color ? 'border-primary' : 'border-input'
-                  }`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => handleInputChange('color', color)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <UILabel htmlFor="show_on_sidebar">{t('modal.labels.showOnSidebar')}</UILabel>
-              <p className="text-sm text-muted-foreground">
-                {t('modal.hints.showOnSidebar')}
-              </p>
-            </div>
-            <Switch
-              id="show_on_sidebar"
-              checked={formData.show_on_sidebar}
-              onCheckedChange={(checked) => handleInputChange('show_on_sidebar', checked)}
-            />
-          </div>
+          <DialogFooter>
+            <DialogClose render={<Button type="button" variant="ghost" />} disabled={loading}>
+              {t('modal.buttons.cancel')}
+            </DialogClose>
+            <Button type="submit" disabled={!canSave} loading={loading}>
+              {loading ? t('modal.buttons.saving') : isNew ? t('modal.buttons.create') : t('modal.buttons.update')}
+            </Button>
+          </DialogFooter>
         </form>
-
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            {t('modal.buttons.cancel')}
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={loading || !can('labels', isNew ? 'create' : 'update')}
-          >
-            {loading ? t('modal.buttons.saving') : isNew ? t('modal.buttons.create') : t('modal.buttons.update')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }
