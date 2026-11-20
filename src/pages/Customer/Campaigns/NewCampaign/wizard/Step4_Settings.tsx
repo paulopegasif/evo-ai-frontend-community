@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/compat';
+import WizardStepLayout from './WizardStepLayout';
+import { useLanguage } from '@/hooks/useLanguage';
 import { ArrowRight, ArrowLeft, Settings2, Calendar, Clock, Zap, CheckCircle2 } from 'lucide-react';
 
 interface Step4Props {
@@ -56,6 +58,7 @@ interface Step4Props {
 }
 
 const Step4_Settings = ({ data, availableTemplates = [], onChange, onNext, onBack }: Step4Props) => {
+  const { t } = useLanguage('campaigns');
 
   const handleNext = () => {
     const scheduleOption = data.template_strategy === 'ab_test' ? data.ab_test_schedule_option : data.schedule_option;
@@ -86,9 +89,21 @@ const Step4_Settings = ({ data, availableTemplates = [], onChange, onNext, onBac
   const showStrategySelector = (data.template_ids?.length || 0) > 1;
 
   return (
-    <div className="flex flex-col max-w-4xl mx-auto h-full text-foreground px-6">
-      <div className="flex-1 overflow-y-auto pb-12">
-        <div className="w-full space-y-8 max-w-2xl mx-auto">
+    <WizardStepLayout
+      footer={
+        <>
+          <Button variant="ghost" className="me-auto" onClick={onBack}>
+            <ArrowLeft />
+            {t('wizard.actions.back')}
+          </Button>
+          <Button onClick={handleNext} disabled={!isValid}>
+            {t('wizard.actions.continue')}
+            <ArrowRight />
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-6">
 
           {/* 1. DISTRIBUIÇÃO DE TEMPLATES (Condicional) */}
           {showStrategySelector && (
@@ -460,26 +475,8 @@ const Step4_Settings = ({ data, availableTemplates = [], onChange, onNext, onBac
             </div>
           </div>
 
-        </div>
       </div>
-
-      {/* FOOTER ACTIONS */}
-      <div className="flex justify-between items-center py-6 border-t border-border mt-auto">
-        <Button variant="outline" className="px-6" onClick={onBack}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-        </Button>
-        <Button
-          className={`h-11 px-8 rounded-lg font-bold transition-all ${isValid
-            ? 'bg-primary text-primary-foreground hover:opacity-90 shadow-md'
-            : 'bg-muted text-muted-foreground cursor-not-allowed'
-            }`}
-          onClick={handleNext}
-          disabled={!isValid}
-        >
-          Continuar <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+    </WizardStepLayout>
   );
 };
 

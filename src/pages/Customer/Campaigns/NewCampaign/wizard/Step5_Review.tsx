@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { Button, Label } from '@/components/ui/compat';
 import { ArrowLeft, Check, CheckCircle2, Megaphone, Users, MessageSquare, Settings2, Calendar, Zap, Clock } from 'lucide-react';
+import WizardStepLayout from './WizardStepLayout';
+import { Card } from '@/components/ui/card';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 
@@ -77,64 +87,65 @@ const Step5_Review = ({
   // SUCCESS STATE
   if (isSuccess) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-6 py-12">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-lg animate-in zoom-in duration-500">
-            <CheckCircle2 className="h-10 w-10 text-white" />
-          </div>
-
-          <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-3xl font-bold text-success-foreground">
-              {isEditMode ? 'Campanha Atualizada!' : 'Campanha Criada!'}
-            </h1>
-            <p className="text-muted-foreground">
-              {isEditMode
-                ? 'Sua campanha foi atualizada com sucesso.'
-                : 'Sua campanha foi criada com sucesso e está pronta'}
-            </p>
-          </div>
-
-          <div className="bg-success/8 border border-success/24 rounded-lg p-6 space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-            <h3 className="font-semibold text-success-foreground">Próximos Passos</h3>
-            <div className="space-y-2 text-sm text-success-foreground">
-              <div className="flex items-start gap-2">
-                <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Acompanhe o progresso da campanha no painel</span>
+      <div className="flex h-full items-center justify-center p-4 md:p-6">
+        <Card className="w-full max-w-lg">
+          <Empty className="py-10">
+            <EmptyHeader>
+              <EmptyMedia variant="icon" className="bg-success/8 text-success">
+                <CheckCircle2 />
+              </EmptyMedia>
+              <EmptyTitle>{isEditMode ? t('wizard.success.updatedTitle') : t('wizard.success.createdTitle')}</EmptyTitle>
+              <EmptyDescription>
+                {isEditMode ? t('wizard.success.updatedDescription') : t('wizard.success.createdDescription')}
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent className="max-w-sm">
+              <ul className="flex w-full flex-col gap-2 rounded-xl border bg-muted/24 p-4 text-left text-sm">
+                <li className="font-medium">{t('wizard.success.nextSteps')}</li>
+                {(['track', 'monitor', 'pause'] as const).map(key => (
+                  <li key={key} className="flex items-start gap-2 text-muted-foreground">
+                    <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                    <span>{t(`wizard.success.steps.${key}`)}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex w-full flex-col-reverse gap-2 sm:flex-row">
+                <Button variant="outline" className="flex-1" onClick={() => navigate('/campaigns')}>
+                  {t('wizard.success.viewCampaigns')}
+                </Button>
+                <Button className="flex-1" onClick={() => window.location.reload()}>
+                  {isEditMode ? t('wizard.success.keepEditing') : t('wizard.success.newCampaign')}
+                </Button>
               </div>
-              <div className="flex items-start gap-2">
-                <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Monitorize as estatísticas de envio e envolvimento</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Pode pausar ou editar a campanha a qualquer momento</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-            <Button variant="outline" className="flex-1" onClick={() => navigate('/campaigns')}>
-              Ver Campanhas
-            </Button>
-            <Button className="flex-1" onClick={() => window.location.reload()}>
-              {isEditMode ? 'Continuar editando' : 'Nova Campanha'}
-            </Button>
-          </div>
-        </div>
+            </EmptyContent>
+          </Empty>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col max-w-4xl mx-auto py-6 px-6 h-full">
-      <div className="flex-1 overflow-y-auto min-h-0 px-1">
-        <div className="w-full space-y-6 max-w-2xl mx-auto pb-4">
+    <WizardStepLayout
+      footer={
+        <>
+          <Button variant="ghost" className="me-auto" onClick={onBack} disabled={isCreating}>
+            <ArrowLeft />
+            {t('wizard.actions.back')}
+          </Button>
+          <Button onClick={handleCreate} loading={isCreating}>
+            {isEditMode ? t('wizard.actions.save') : t('wizard.actions.create')}
+            {!isCreating && <Check />}
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-6">
 
           {/* GERAL */}
           <div className="border border-border bg-card rounded-xl p-5 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-                <Megaphone className="h-5 w-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center">
+                <Megaphone className="h-5 w-5 text-primary" />
               </div>
               <Label className="text-lg font-bold">Informações Gerais</Label>
             </div>
@@ -368,7 +379,7 @@ const Step5_Review = ({
                     </span>
                   )}
                   {data.enable_retry && (
-                    <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-[10px] font-bold rounded uppercase tracking-wider">
+                    <span className="px-2 py-1 bg-info/8 text-info-foreground dark:bg-info/16 text-[10px] font-bold rounded uppercase tracking-wider">
                       Retentativas Ativas
                     </span>
                   )}
@@ -376,20 +387,8 @@ const Step5_Review = ({
               </div>
             </div>
           </div>
-        </div>
       </div>
-
-      <div className="flex justify-between flex-shrink-0 pt-4 border-t mt-6">
-        <Button variant="outline" className="px-6 gap-2" onClick={onBack} disabled={isCreating}>
-          <ArrowLeft className="h-4 w-4" />
-          {t('wizard.actions.back')}
-        </Button>
-        <Button className="px-6 gap-2" onClick={handleCreate} disabled={isCreating}>
-          {isCreating ? 'Salvando...' : isEditMode ? t('wizard.actions.save') : t('wizard.actions.create')}
-          {!isCreating && <Check className="h-4 w-4" />}
-        </Button>
-      </div>
-    </div>
+    </WizardStepLayout>
   );
 };
 

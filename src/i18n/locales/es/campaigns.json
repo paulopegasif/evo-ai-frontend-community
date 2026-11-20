@@ -141,7 +141,13 @@
       "contactSelectionRequired": "Seleccione una opción",
       "scheduleOptionRequired": "Seleccione una opción",
       "scheduleDateRequired": "Fecha y hora son obligatorias",
-      "scheduleDateFuture": "La fecha debe ser futura"
+      "scheduleDateFuture": "La fecha debe ser futura",
+      "triggerRequired": "Configura el disparador para campañas con disparador",
+      "triggerEventRequired": "Indica el nombre del evento",
+      "triggerSegmentRequired": "Selecciona un segmento",
+      "triggerLabelRequired": "Selecciona una etiqueta",
+      "triggerAttributeRequired": "Selecciona un atributo personalizado",
+      "triggerWebhookRequired": "Indica la URL del webhook"
     },
     "progress": {
       "basicInfo": "Información Básica",
@@ -161,7 +167,10 @@
       "typeLabel": "Tipo de Campaña",
       "typePlaceholder": "Seleccione el tipo",
       "channelLabel": "Canal de Comunicación",
-      "channelPlaceholder": "Seleccione el canal"
+      "channelPlaceholder": "Seleccione el canal",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Describe brevemente el objetivo de esta campaña...",
+      "optional": "Opcional"
     },
     "step2_inboxes": {
       "title": "Selección de Inboxes",
@@ -285,17 +294,30 @@
     "success": {
       "title": "¡Campaña Creada con Éxito!",
       "subtitle": "Su campaña ha sido creada y está lista",
-      "nextSteps": "Próximos Pasos",
+      "nextSteps": "Próximos pasos",
       "step1": "Realice un seguimiento del progreso de la campaña en el panel",
       "step2": "Monitoree las estadísticas de envío e interacción",
       "step3": "Puede pausar o editar la campaña en cualquier momento",
       "backToList": "Volver a Campañas",
-      "viewCampaign": "Ver Campaña"
+      "viewCampaign": "Ver Campaña",
+      "createdTitle": "Campaña creada",
+      "updatedTitle": "Campaña actualizada",
+      "createdDescription": "Tu campaña se creó y está lista.",
+      "updatedDescription": "Tu campaña se actualizó correctamente.",
+      "steps": {
+        "track": "Sigue el progreso de la campaña en el panel",
+        "monitor": "Supervisa las estadísticas de envío y participación",
+        "pause": "Puedes pausar o editar la campaña en cualquier momento"
+      },
+      "viewCampaigns": "Ver campañas",
+      "newCampaign": "Nueva campaña",
+      "keepEditing": "Seguir editando"
     },
     "actions": {
       "continue": "Continuar",
       "back": "Atrás",
       "create": "Crear Campaña"
-    }
+    },
+    "stepOf": "Paso {{current}} de {{total}}"
   }
 }

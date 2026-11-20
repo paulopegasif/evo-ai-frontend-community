@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, Users, Plus, X, Tag as TagIcon, Target } from 'lucide-react';
+import WizardStepLayout from './WizardStepLayout';
 import { useLanguage } from '@/hooks/useLanguage';
 import { contactsService } from '@/services/contacts';
 import { segmentsService } from '@/services/segments/segmentsService';
@@ -236,9 +237,21 @@ const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
   const isValid = useAllContacts || filters.length > 0;
 
   return (
-    <div className="flex flex-col max-w-4xl mx-auto py-6 px-6 h-full">
-      <div className="flex-1 overflow-y-auto min-h-0 px-1">
-        <div className="w-full space-y-6 max-w-2xl mx-auto pb-4">
+    <WizardStepLayout
+      footer={
+        <>
+          <Button variant="ghost" className="me-auto" onClick={onBack}>
+            <ArrowLeft />
+            {t('wizard.actions.back')}
+          </Button>
+          <Button onClick={handleNext} disabled={!isValid}>
+            {t('wizard.actions.continue')}
+            <ArrowRight />
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-6">
           {/* Header */}
           <div>
             <h3 className="text-lg font-semibold mb-2">{t('wizard.step2.selectAudience')}</h3>
@@ -376,20 +389,8 @@ const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
               )}
             </div>
           )}
-        </div>
       </div>
-
-      <div className="flex justify-between flex-shrink-0 pt-4 border-t mt-6">
-        <Button variant="outline" className="px-6 gap-2" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
-          {t('wizard.actions.back')}
-        </Button>
-        <Button className="px-6 gap-2" onClick={handleNext} disabled={!isValid}>
-          {t('wizard.actions.continue')}
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+    </WizardStepLayout>
   );
 };
 

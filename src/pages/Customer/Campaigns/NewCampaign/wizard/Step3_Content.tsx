@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button, Label, Checkbox, RadioGroup, RadioGroupItem } from '@/components/ui/compat';
 import { ArrowRight, ArrowLeft, MessageSquare, FileText, Mail, MessageCircle, Smartphone, CheckCircle2 } from 'lucide-react';
+import WizardStepLayout from './WizardStepLayout';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CampaignChannelType } from '@/types/campaigns';
 import InboxesService from '@/services/channels/inboxesService';
@@ -156,10 +158,21 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
   const isValid = !!data.inbox_id && data.template_ids?.length > 0;
 
   return (
-    <div className="flex flex-col max-w-4xl mx-auto py-6 px-6 h-full">
-
-      <div className="flex-1 overflow-y-auto min-h-0 px-1">
-        <div className="w-full space-y-8 max-w-2xl mx-auto pb-4">
+    <WizardStepLayout
+      footer={
+        <>
+          <Button variant="ghost" className="me-auto" onClick={onBack}>
+            <ArrowLeft />
+            {t('wizard.actions.back')}
+          </Button>
+          <Button onClick={handleNext} disabled={!isValid}>
+            {t('wizard.actions.continue')}
+            <ArrowRight />
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-6">
           {/* SECTION 1: Seleção de Canal */}
           <div>
             <div className="flex items-center gap-3 mb-4">
@@ -214,7 +227,10 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                   {t('wizard.step3.inboxDescription')}
                 </p>
                 {loadingInboxes ? (
-                  <div className="text-center py-4 text-muted-foreground">Loading inboxes...</div>
+                  <div className="flex flex-col gap-2" aria-busy="true">
+                    <Skeleton className="h-12 w-full rounded-lg" />
+                    <Skeleton className="h-12 w-full rounded-lg" />
+                  </div>
                 ) : filteredInboxes.length === 0 ? (
                   <div className="text-center py-4 text-muted-foreground">
                     {t('wizard.step3.noInboxes', 'No inboxes available for this channel')}
@@ -264,8 +280,8 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
           {/* SECTION 2: Templates */}
           <div className="pt-6 border-t">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center">
+                <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <Label className="text-lg font-semibold block">
@@ -283,7 +299,10 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                   {t('wizard.step3.selectInboxFirst', 'Please select an inbox first')}
                 </div>
               ) : loadingTemplates ? (
-                <div className="text-center py-8 text-muted-foreground">Loading templates...</div>
+                <div className="grid gap-3" aria-busy="true">
+                  <Skeleton className="h-20 w-full rounded-xl" />
+                  <Skeleton className="h-20 w-full rounded-xl" />
+                </div>
               ) : templates.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   {t('wizard.step3.noTemplates', 'No templates available for this inbox')}
@@ -296,7 +315,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                     <div
                       key={template.id}
                       className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer ${data.template_ids?.includes(templateId)
-                        ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-950/20'
+                        ? 'border-primary bg-primary/4'
                         : ''
                         }`}
                       onClick={() => handleToggleTemplate(templateId)}
@@ -310,7 +329,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <Label className="text-base font-semibold cursor-pointer flex items-center gap-2">
                             {data.template_ids?.includes(templateId) && (
-                              <CheckCircle2 className="h-4 w-4 text-purple-600" />
+                              <CheckCircle2 className="h-4 w-4 text-primary" />
                             )}
                             {template.name}
                           </Label>
@@ -329,20 +348,8 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
             </div>
             {errors.template_ids && <p className="text-sm text-destructive-foreground mt-2">{errors.template_ids}</p>}
           </div>
-        </div>
       </div>
-
-      <div className="flex justify-between flex-shrink-0 pt-4 border-t mt-6">
-        <Button variant="outline" className="px-6 gap-2" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
-          {t('wizard.actions.back')}
-        </Button>
-        <Button className="px-6 gap-2" onClick={handleNext} disabled={!isValid}>
-          {t('wizard.actions.continue')}
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+    </WizardStepLayout>
   );
 };
 
