@@ -1,11 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Card, Button, Badge, Input, Switch } from '@/components/ui/compat';
-import { Users, Hash, Bell, Settings, AlertCircle } from 'lucide-react';
-import { IntegrationHeader, IntegrationStatus, IntegrationActions } from '../../base';
+import { AlertCircle, AlertTriangle, Bell, ExternalLink, Hash, Power, RefreshCw, Users } from 'lucide-react';
+import { toast } from 'sonner';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import IntegrationPageHeader, { type IntegrationPageStatus } from '../../shared/IntegrationPageHeader';
 import { Integration, SlackConfiguration } from '@/types/integrations';
 import { integrationsService } from '@/services/integrations';
-import { toast } from 'sonner';
 
 interface SlackIntegrationProps {
   integration: Integration;
@@ -16,6 +33,7 @@ export default function SlackIntegration({ integration, onBack }: SlackIntegrati
   const { t } = useLanguage('integrations');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [config, setConfig] = useState<SlackConfiguration | null>(null);
   const [formData, setFormData] = useState({
     webhook_url: '',
@@ -82,248 +100,249 @@ export default function SlackIntegration({ integration, onBack }: SlackIntegrati
     return 'connected';
   };
 
-  const getConnectionInfo = () => {
-    if (!config) return undefined;
 
-    return {
-      account: config.team_name,
-      workspace: config.channel_name,
-      permissions: ['messages:read', 'messages:write', 'channels:read'],
-    };
-  };
-
-  if (loading) {
-    return (
-      <div className="h-full flex flex-col p-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded mb-4 w-1/4"></div>
-          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-6 w-1/2"></div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            </div>
-            <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const statusType = getStatusType();
+  const status: IntegrationPageStatus =
+    statusType === 'connected'
+      ? { label: t('status.connected'), variant: 'success' }
+      : statusType === 'pending'
+        ? { label: t('status.pending'), variant: 'warning' }
+        : { label: t('status.disconnected'), variant: 'outline' };
+  const disabled = !integration.enabled;
 
   return (
-    <div className="h-full flex flex-col p-6">
-      <IntegrationHeader
-        integration={integration}
-        onBack={onBack}
-        subtitle={t('slack.subtitle')}
-        onExternalLink={() => window.open('https://slack.com', '_blank')}
-      >
-        <IntegrationActions
-          integration={integration}
-          onToggle={integration.enabled ? handleDisconnect : undefined}
-          isProcessing={saving}
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        <IntegrationPageHeader
+          brandId={integration.id}
+          logoSrc={integration.logo || `/integrations/${integration.id}.png`}
+          title={integration.name}
+          description={t('slack.subtitle')}
+          status={status}
+          loading={loading}
+          onBack={onBack}
+          topActions={
+            <Button variant="outline" size="sm" render={<a href="https://slack.com" target="_blank" rel="noreferrer" />}>
+              {t('actions.visitOfficialSite')}
+              <ExternalLink />
+            </Button>
+          }
+          actions={
+            integration.enabled && (
+              <Button variant="destructive-outline" size="sm" onClick={() => setConfirmOpen(true)} loading={saving}>
+                <Power />
+                {t('actions.disconnect')}
+              </Button>
+            )
+          }
         />
-      </IntegrationHeader>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-        {/* Configuration Form */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Settings className="w-5 h-5" />
-              <h3 className="text-lg font-semibold">{t('slack.configuration.title')}</h3>
-            </div>
+        {loading ? (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+            <Skeleton className="h-72 rounded-2xl" />
+            <Skeleton className="h-40 rounded-2xl" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="flex flex-col gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('slack.configuration.title')}</CardTitle>
+                </CardHeader>
+                <CardPanel className="flex flex-col gap-5">
+                  <Field>
+                    <FieldLabel>{t('slack.configuration.webhookUrl.label')} *</FieldLabel>
+                    <Input
+                      id="webhook_url"
+                      placeholder={t('slack.configuration.webhookUrl.placeholder')}
+                      value={formData.webhook_url}
+                      onChange={e => setFormData(prev => ({ ...prev, webhook_url: e.target.value }))}
+                      disabled={disabled}
+                    />
+                    <FieldDescription>{t('slack.configuration.webhookUrl.hint')}</FieldDescription>
+                  </Field>
 
-            <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="webhook_url"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                >
-                  {t('slack.configuration.webhookUrl.label')} *
-                </label>
-                <Input
-                  id="webhook_url"
-                  placeholder={t('slack.configuration.webhookUrl.placeholder')}
-                  value={formData.webhook_url}
-                  onChange={e => setFormData(prev => ({ ...prev, webhook_url: e.target.value }))}
-                  disabled={!integration.enabled}
-                />
-                <p className="text-xs text-slate-500 mt-1">
-                  {t('slack.configuration.webhookUrl.hint')}
-                </p>
-              </div>
+                  <Field>
+                    <FieldLabel>{t('slack.configuration.referenceId.label')}</FieldLabel>
+                    <Input
+                      id="reference_id"
+                      placeholder={t('slack.configuration.referenceId.placeholder')}
+                      value={formData.reference_id}
+                      onChange={e => setFormData(prev => ({ ...prev, reference_id: e.target.value }))}
+                      disabled={disabled}
+                    />
+                  </Field>
 
-              <div>
-                <label
-                  htmlFor="reference_id"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                >
-                  {t('slack.configuration.referenceId.label')}
-                </label>
-                <Input
-                  id="reference_id"
-                  placeholder={t('slack.configuration.referenceId.placeholder')}
-                  value={formData.reference_id}
-                  onChange={e => setFormData(prev => ({ ...prev, reference_id: e.target.value }))}
-                  disabled={!integration.enabled}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {t('slack.configuration.flagReferenceId.label')}
-                  </span>
-                  <p className="text-xs text-slate-500">
-                    {t('slack.configuration.flagReferenceId.description')}
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.flag_reference_id}
-                  onCheckedChange={checked =>
-                    setFormData(prev => ({ ...prev, flag_reference_id: checked }))
-                  }
-                  disabled={!integration.enabled}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {t('slack.configuration.enableNotifications.label')}
-                  </span>
-                  <p className="text-xs text-slate-500">
-                    {t('slack.configuration.enableNotifications.description')}
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.enable_notifications}
-                  onCheckedChange={checked =>
-                    setFormData(prev => ({ ...prev, enable_notifications: checked }))
-                  }
-                  disabled={!integration.enabled}
-                />
-              </div>
-            </div>
-
-            {integration.enabled && (
-              <div className="flex justify-end pt-4 border-t mt-6">
-                <Button onClick={handleSave} disabled={saving || !formData.webhook_url}>
-                  {saving ? t('slack.configuration.saving') : t('slack.configuration.saveButton')}
-                </Button>
-              </div>
-            )}
-          </Card>
-
-          {/* Channel Configuration */}
-          {config && (
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Hash className="w-5 h-5" />
-                <h3 className="text-lg font-semibold">{t('slack.channels.title')}</h3>
-              </div>
-
-              <div className="space-y-3">
-                {config.available_channels?.map(channel => (
-                  <div
-                    key={channel.id}
-                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Hash className="w-4 h-4 text-slate-500" />
-                      <div>
-                        <div className="font-medium">{channel.name}</div>
-                        <div className="text-xs text-slate-500">
-                          {channel.is_private
-                            ? t('slack.channels.private')
-                            : t('slack.channels.public')}
-                        </div>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={formData.selected_channels.includes(channel.id)}
-                      onCheckedChange={checked => {
-                        setFormData(prev => ({
-                          ...prev,
-                          selected_channels: checked
-                            ? [...prev.selected_channels, channel.id]
-                            : prev.selected_channels.filter(id => id !== channel.id),
-                        }));
-                      }}
-                      disabled={!integration.enabled}
+                  <div className="flex flex-col gap-2">
+                    <ToggleRow
+                      title={t('slack.configuration.flagReferenceId.label')}
+                      description={t('slack.configuration.flagReferenceId.description')}
+                      checked={formData.flag_reference_id}
+                      onCheckedChange={checked => setFormData(prev => ({ ...prev, flag_reference_id: checked }))}
+                      disabled={disabled}
+                    />
+                    <ToggleRow
+                      title={t('slack.configuration.enableNotifications.label')}
+                      description={t('slack.configuration.enableNotifications.description')}
+                      checked={formData.enable_notifications}
+                      onCheckedChange={checked => setFormData(prev => ({ ...prev, enable_notifications: checked }))}
+                      disabled={disabled}
                     />
                   </div>
-                ))}
-              </div>
-            </Card>
-          )}
-        </div>
+                </CardPanel>
+                {integration.enabled && (
+                  <CardFooter className="justify-end border-t">
+                    <Button onClick={handleSave} disabled={!formData.webhook_url} loading={saving}>
+                      {t('slack.configuration.saveButton')}
+                    </Button>
+                  </CardFooter>
+                )}
+              </Card>
 
-        {/* Status Sidebar */}
-        <div className="space-y-6">
-          <IntegrationStatus
-            status={getStatusType()}
-            connection={getConnectionInfo()}
-            lastSyncAt={config?.updated_at}
-            onRefresh={loadSlackConfiguration}
-            onReconnect={() => (window.location.href = integration.action || '')}
-            errorMessage={!config?.webhook_url ? t('slack.status.errorMessage') : undefined}
-          />
-
-          {/* Stats */}
-          {config && (
-            <Card className="p-4">
-              <h4 className="font-semibold mb-3">{t('slack.stats.title')}</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm">{t('slack.stats.members')}</span>
-                  </div>
-                  <span className="font-medium">{config.member_count || 0}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Hash className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm">{t('slack.stats.channels')}</span>
-                  </div>
-                  <span className="font-medium">{config.available_channels?.length || 0}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-slate-500" />
-                    <span className="text-sm">{t('slack.stats.notifications')}</span>
-                  </div>
-                  <Badge variant={formData.enable_notifications ? 'success' : 'secondary'}>
-                    {formData.enable_notifications
-                      ? t('slack.stats.active')
-                      : t('slack.stats.inactive')}
-                  </Badge>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          {/* Help */}
-          <Card className="p-4">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-              <div>
-                <h4 className="font-semibold text-sm mb-1">{t('slack.help.title')}</h4>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {t('slack.help.step1')}
-                  <br />
-                  {t('slack.help.step2')}
-                  <br />
-                  {t('slack.help.step3')}
-                  <br />
-                  {t('slack.help.step4')}
-                </p>
-              </div>
+              {config && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('slack.channels.title')}</CardTitle>
+                  </CardHeader>
+                  <CardPanel className="flex flex-col gap-2">
+                    {config.available_channels?.map(channel => (
+                      <Label
+                        key={channel.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border p-3 has-data-checked:border-primary/48 has-data-checked:bg-primary/4"
+                      >
+                        <span className="flex items-center gap-3">
+                          <Hash className="size-4 text-muted-foreground" />
+                          <span className="flex flex-col">
+                            <span className="font-medium text-sm">{channel.name}</span>
+                            <span className="font-normal text-muted-foreground text-xs">
+                              {channel.is_private ? t('slack.channels.private') : t('slack.channels.public')}
+                            </span>
+                          </span>
+                        </span>
+                        <Switch
+                          checked={formData.selected_channels.includes(channel.id)}
+                          onCheckedChange={checked => {
+                            setFormData(prev => ({
+                              ...prev,
+                              selected_channels: checked
+                                ? [...prev.selected_channels, channel.id]
+                                : prev.selected_channels.filter(id => id !== channel.id),
+                            }));
+                          }}
+                          disabled={disabled}
+                        />
+                      </Label>
+                    ))}
+                  </CardPanel>
+                </Card>
+              )}
             </div>
-          </Card>
-        </div>
+
+            <div className="flex flex-col gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('status.statusLabel')}</CardTitle>
+                  <CardAction>
+                    <Button variant="ghost" size="icon-sm" onClick={loadSlackConfiguration} aria-label={t('actions.refresh')}>
+                      <RefreshCw />
+                    </Button>
+                  </CardAction>
+                </CardHeader>
+                <CardPanel className="flex flex-col gap-4">
+                  <dl className="flex flex-col gap-2.5 text-sm">
+                    <InfoRow label="Workspace" value={config?.team_name} />
+                    <InfoRow label={t('slack.stats.members')} value={config ? String(config.member_count || 0) : null} />
+                    <InfoRow
+                      label={t('slack.stats.channels')}
+                      value={config ? String(config.available_channels?.length || 0) : null}
+                    />
+                  </dl>
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="flex items-center gap-2 text-muted-foreground">
+                      <Bell className="size-4" />
+                      {t('slack.stats.notifications')}
+                    </span>
+                    <Badge variant={formData.enable_notifications ? 'success' : 'outline'}>
+                      {formData.enable_notifications ? t('slack.stats.active') : t('slack.stats.inactive')}
+                    </Badge>
+                  </div>
+                  {integration.enabled && !config?.webhook_url && (
+                    <Alert variant="warning">
+                      <AlertTriangle />
+                      <AlertDescription>{t('slack.status.errorMessage')}</AlertDescription>
+                    </Alert>
+                  )}
+                  {!integration.enabled && integration.action && (
+                    <Button variant="outline" onClick={() => (window.location.href = integration.action || '')}>
+                      <Users />
+                      {t('actions.reconnect')}
+                    </Button>
+                  )}
+                </CardPanel>
+              </Card>
+
+              <Alert variant="info">
+                <AlertCircle />
+                <AlertTitle>{t('slack.help.title')}</AlertTitle>
+                <AlertDescription>
+                  <p>{t('slack.help.step1')}</p>
+                  <p>{t('slack.help.step2')}</p>
+                  <p>{t('slack.help.step3')}</p>
+                  <p>{t('slack.help.step4')}</p>
+                </AlertDescription>
+              </Alert>
+            </div>
+          </div>
+        )}
       </div>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogPopup>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('confirmDisconnect.title', { name: integration.name })}</AlertDialogTitle>
+            <AlertDialogDescription>{t('confirmDisconnect.description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="ghost" />}>{t('confirmDisconnect.cancel')}</AlertDialogClose>
+            <AlertDialogClose render={<Button variant="destructive" />} onClick={handleDisconnect}>
+              {t('actions.disconnect')}
+            </AlertDialogClose>
+          </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function ToggleRow({
+  title,
+  description,
+  checked,
+  onCheckedChange,
+  disabled,
+}: {
+  title: string;
+  description: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <Label className="flex items-start justify-between gap-4 rounded-lg border p-3 has-disabled:opacity-64 has-data-checked:border-primary/48 has-data-checked:bg-primary/4">
+      <span className="flex flex-col gap-1">
+        <span className="font-medium text-sm">{title}</span>
+        <span className="font-normal text-muted-foreground text-xs">{description}</span>
+      </span>
+      <Switch checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
+    </Label>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="truncate text-end font-medium">{value || '—'}</dd>
     </div>
   );
 }

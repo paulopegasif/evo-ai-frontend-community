@@ -1,22 +1,32 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
+import { Power, Settings, type LucideIcon } from 'lucide-react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@/components/ui/compat';
-import { Settings, LucideIcon } from 'lucide-react';
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { integrationsService } from '@/services/integrations';
 import { Integration } from '@/types/integrations';
 
-import IntegrationBackButton from '../shared/IntegrationBackButton';
+import IntegrationPageHeader from '../shared/IntegrationPageHeader';
 
 interface OAuthIntegrationSettingsProps {
   integrationId: string;
@@ -106,95 +116,95 @@ export default function OAuthIntegrationSettings({
 
   const integrationAction = integration?.enabled ? 'disconnect' : integration?.action;
 
-  return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="flex-none p-4 pb-0">
-        <div className="flex items-center gap-4 mb-6">
-          <IntegrationBackButton onBack={onBack} />
-          <div className="flex items-center gap-3">
-            <Icon className="w-6 h-6 text-primary" />
-            <div>
-              <h1 className="text-2xl font-semibold">
-                {t('oauthSettings.title', { name: displayName })}
-              </h1>
-              <p className="text-muted-foreground text-sm">{description}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+  const connected = Boolean(integration?.enabled);
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
+  return (
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        <IntegrationPageHeader
+          brandId={integrationId}
+          icon={Icon}
+          title={t('oauthSettings.title', { name: displayName })}
+          description={integration?.description || description}
+          loading={loading.get}
+          status={
+            connected
+              ? { label: t('status.connected'), variant: 'success' }
+              : { label: t('status.notConfigured'), variant: 'outline' }
+          }
+          onBack={onBack}
+          actions={
+            connected && (
+              <>
+                <Button variant="destructive-outline" size="sm" onClick={handleDisconnect}>
+                  <Power />
+                  {t('oauthSettings.disconnect')}
+                </Button>
+              </>
+            )
+          }
+        />
+
         {loading.get ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('oauthSettings.loadingConfig')}</div>
-          </div>
+          <Card className="p-6">
+            <Skeleton className="h-5 w-48" />
+            <Skeleton className="mt-3 h-4 w-80" />
+          </Card>
+        ) : connected ? (
+          <Card>
+            <CardPanel className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <span className="flex items-center gap-3">
+                <span aria-hidden className="size-2 shrink-0 rounded-full bg-success" />
+                <span className="text-sm">{t('status.connected')}</span>
+              </span>
+              {integrationAction !== 'disconnect' && (
+                <Button variant="outline" size="sm" onClick={handleConfigure}>
+                  <Settings />
+                  {t('oauthSettings.configure')}
+                </Button>
+              )}
+            </CardPanel>
+          </Card>
         ) : (
-          integration && (
-            <Card className="p-4">
-              <div className="flex items-center">
-                <div className="flex h-16 w-16 items-center justify-center mr-4">
-                  <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                    <Icon className="w-10 h-10 text-primary" />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-medium mb-1">{integration.name || displayName}</h3>
-                  <p className="text-muted-foreground text-sm">
-                    {integration.description || description}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {integration.enabled ? (
-                    <>
-                      {integrationAction !== 'disconnect' && (
-                        <Button variant="outline" onClick={handleConfigure}>
-                          <Settings className="w-4 h-4 mr-2" />
-                          {t('oauthSettings.configure')}
-                        </Button>
-                      )}
-                      <Button variant="destructive" onClick={handleDisconnect}>
-                        {t('oauthSettings.disconnect')}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button onClick={handleConnect}>{t('oauthSettings.connect')}</Button>
-                  )}
-                </div>
-              </div>
-            </Card>
-          )
+          <Card>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Icon />
+                </EmptyMedia>
+                <EmptyTitle>{integration?.name || displayName}</EmptyTitle>
+                <EmptyDescription>{integration?.description || description}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={handleConnect} disabled={!integration?.action}>
+                  {t('oauthSettings.connect')}
+                </Button>
+              </EmptyContent>
+            </Empty>
+          </Card>
         )}
       </div>
 
-      {/* Disconnect Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogPopup>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
               {t('oauthSettings.dialog.disconnectTitle', { name: displayName })}
-            </DialogTitle>
-            <DialogDescription>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               {t('oauthSettings.dialog.disconnectDescription', { name: displayName })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={loading.delete}
-            >
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="ghost" />} disabled={loading.delete}>
               {t('oauthSettings.dialog.cancel')}
+            </AlertDialogClose>
+            <Button variant="destructive" onClick={confirmDisconnect} loading={loading.delete}>
+              {t('oauthSettings.dialog.disconnect')}
             </Button>
-            <Button variant="destructive" onClick={confirmDisconnect} disabled={loading.delete}>
-              {loading.delete
-                ? t('oauthSettings.dialog.disconnecting')
-                : t('oauthSettings.dialog.disconnect')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
     </div>
   );
 }
