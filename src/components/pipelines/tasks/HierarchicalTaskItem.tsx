@@ -1,15 +1,10 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Badge,
-  Button,
-  Checkbox,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ConfirmDialog } from '@/components/base';
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import {
   ChevronRight,
   ChevronDown,
@@ -28,6 +23,7 @@ import {
   CornerDownRight,
   CornerUpLeft,
 } from 'lucide-react';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { PipelineTask } from '@/types/analytics';
 import { format } from 'date-fns';
@@ -60,6 +56,8 @@ export default function HierarchicalTaskItem({
 }: HierarchicalTaskItemProps) {
   const { t } = useLanguage('pipelines');
   const [isExpanded, setIsExpanded] = useState(true);
+  // Cascading complete/reopen confirms through ConfirmDialog (was window.confirm).
+  const [pendingConfirm, setPendingConfirm] = useState<{ kind: 'complete' | 'reopen'; count: number } | null>(null);
 
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
   const maxDepth = 2; // 0 = root, 1 = level 1, 2 = level 2
@@ -177,10 +175,8 @@ export default function HierarchicalTaskItem({
       const pendingDescendants = allDescendants.filter(d => d.status !== 'completed').length;
       
       if (pendingDescendants > 0) {
-        const confirmed = window.confirm(
-          t('tasks.messages.completeWithAllDescendantsConfirm', { count: pendingDescendants })
-        );
-        if (!confirmed) return;
+        setPendingConfirm({ kind: 'complete', count: pendingDescendants });
+        return;
       }
       onComplete(task.id);
     } else if (onReopen) {
@@ -189,10 +185,8 @@ export default function HierarchicalTaskItem({
       const completedDescendants = allDescendants.filter(d => d.status === 'completed').length;
       
       if (completedDescendants > 0) {
-        const confirmed = window.confirm(
-          t('tasks.messages.reopenWithAllDescendantsConfirm', { count: completedDescendants })
-        );
-        if (!confirmed) return;
+        setPendingConfirm({ kind: 'reopen', count: completedDescendants });
+        return;
       }
       onReopen(task.id);
     }
@@ -216,33 +210,31 @@ export default function HierarchicalTaskItem({
     }
   };
 
-  const getPriorityColor = () => {
+  const priorityVariant = (() => {
     switch (task.priority) {
       case 'urgent':
-        return 'bg-destructive/12 text-destructive-foreground';
+        return 'error' as const;
       case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+        return 'warning' as const;
       case 'medium':
-        return 'bg-warning/12 text-warning-foreground';
-      case 'low':
-        return 'bg-muted text-foreground';
+        return 'info' as const;
       default:
-        return 'bg-muted text-foreground';
+        return 'secondary' as const;
     }
-  };
+  })();
 
-  const getStatusColor = () => {
+  const statusVariant = (() => {
     switch (task.status) {
       case 'completed':
-        return 'bg-success/12 text-success-foreground';
+        return 'success' as const;
       case 'overdue':
-        return 'bg-destructive/12 text-destructive-foreground';
+        return 'error' as const;
       case 'cancelled':
-        return 'bg-muted text-foreground';
+        return 'secondary' as const;
       default:
-        return 'bg-info/12 text-info-foreground';
+        return 'info' as const;
     }
-  };
+  })();
 
   const formatDueDate = (dateString: string) => {
     try {
@@ -258,7 +250,7 @@ export default function HierarchicalTaskItem({
       {/* Main Task Card */}
       <div
         className={cn(
-          'group relative rounded-lg border bg-card p-3 hover:shadow-md transition-all',
+          'group relative rounded-lg border bg-card p-3 transition-colors hover:border-ring/40',
           task.status === 'completed' && 'opacity-60',
           task.overdue && task.status === 'pending' && 'border-destructive/24',
           task.due_soon && task.status === 'pending' && 'border-warning/24',
@@ -274,17 +266,16 @@ export default function HierarchicalTaskItem({
         <div className="flex items-start gap-2">
           {/* Expand/Collapse Button */}
           {hasSubtasks ? (
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 hover:bg-accent rounded transition-colors flex-shrink-0"
+              className="shrink-0"
               aria-label={isExpanded ? t('tasks.actions.collapse') : t('tasks.actions.expand')}
+              aria-expanded={isExpanded}
             >
-              {isExpanded ? (
-                <ChevronDown className="w-4 h-4" />
-              ) : (
-                <ChevronRight className="w-4 h-4" />
-              )}
-            </button>
+              {isExpanded ? <ChevronDown /> : <ChevronRight />}
+            </Button>
           ) : (
             <div className="w-6" /> // Spacer for alignment
           )}
@@ -316,87 +307,107 @@ export default function HierarchicalTaskItem({
               </h4>
 
               {/* Actions */}
-              <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                 {/* Move Menu */}
                 {onMoveTask && canMove && (canPromote || getPossibleParents().length > 0) && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={disabled}
-                        className="h-7 w-7 p-0"
-                        title={t('tasks.actions.move')}
-                      >
-                        <MoreHorizontal className="h-3.5 w-3.5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                  <Menu>
+                    <MenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          disabled={disabled}
+                          aria-label={t('tasks.actions.move')}
+                        />
+                      }
+                    >
+                      <MoreHorizontal />
+                    </MenuTrigger>
+                    <MenuPopup align="end">
                       {/* Promote to Root - only if not already root */}
                       {canPromote && (
                         <>
-                          <DropdownMenuItem onClick={handlePromoteToRoot}>
-                            <CornerUpLeft className="w-4 h-4 mr-2" />
+                          <MenuItem onClick={handlePromoteToRoot}>
+                            <CornerUpLeft />
                             {t('tasks.actions.promoteToRoot')}
-                          </DropdownMenuItem>
-                          {getPossibleParents().length > 0 && <DropdownMenuSeparator />}
+                          </MenuItem>
+                          {getPossibleParents().length > 0 && <MenuSeparator />}
                         </>
                       )}
                       {/* Move to other parents */}
                       {getPossibleParents().length > 0 && (
                         <>
                           {getPossibleParents().map(parent => (
-                            <DropdownMenuItem
+                            <MenuItem
                               key={parent.id}
                               onClick={() => handleMoveToParent(parent.id)}
                             >
-                              <CornerDownRight className="w-4 h-4 mr-2" />
+                              <CornerDownRight />
                               {t('tasks.actions.moveUnder', { parent: parent.title })}
-                            </DropdownMenuItem>
+                            </MenuItem>
                           ))}
                         </>
                       )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    </MenuPopup>
+                  </Menu>
                 )}
 
                 {/* Add Subtask */}
                 {canAddSubtask && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onAddSubtask(task)}
-                    disabled={disabled}
-                    className="h-7 w-7 p-0"
-                    title={t('tasks.actions.addSubtask')}
+                  <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => onAddSubtask(task)}
+                        disabled={disabled}
+                        aria-label={t('tasks.actions.addSubtask')}
+                      />
+                    }
                   >
-                    <Plus className="h-3.5 w-3.5" />
-                  </Button>
+                    <Plus />
+                  </TooltipTrigger>
+                  <TooltipPopup>{t('tasks.actions.addSubtask')}</TooltipPopup>
+                </Tooltip>
                 )}
 
                 {/* Edit */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleEdit}
-                  disabled={disabled || task.status === 'completed'}
-                  className="h-7 w-7 p-0"
-                  title={t('tasks.edit')}
-                >
-                  <Edit className="h-3.5 w-3.5" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={handleEdit}
+                        disabled={disabled || task.status === 'completed'}
+                        aria-label={t('tasks.edit')}
+                      />
+                    }
+                  >
+                    <Edit />
+                  </TooltipTrigger>
+                  <TooltipPopup>{t('tasks.edit')}</TooltipPopup>
+                </Tooltip>
 
                 {/* Delete */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDelete(task.id)}
-                  disabled={disabled || task.status === 'completed'}
-                  className="h-7 w-7 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  title={t('tasks.delete')}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => handleDelete(task.id)}
+                        disabled={disabled || task.status === 'completed'}
+                        className="text-muted-foreground hover:text-destructive-foreground"
+                        aria-label={t('tasks.delete')}
+                      />
+                    }
+                  >
+                    <Trash2 />
+                  </TooltipTrigger>
+                  <TooltipPopup>{t('tasks.delete')}</TooltipPopup>
+                </Tooltip>
               </div>
             </div>
 
@@ -416,20 +427,20 @@ export default function HierarchicalTaskItem({
               </div>
 
               {/* Priority */}
-              <Badge variant="secondary" className={cn('text-xs px-1.5 py-0', getPriorityColor())}>
+              <Badge variant={priorityVariant} size="sm">
                 {t(`tasks.priority.${task.priority}`)}
               </Badge>
 
               {/* Status */}
               {task.status !== 'pending' && (
-                <Badge variant="secondary" className={cn('text-xs px-1.5 py-0', getStatusColor())}>
+                <Badge variant={statusVariant} size="sm">
                   {t(`tasks.status.${task.status}`)}
                 </Badge>
               )}
 
               {/* Subtask Counter */}
               {task.has_subtasks && (
-                <Badge variant="outline" className="text-xs px-1.5 py-0">
+                <Badge variant="outline" size="sm">
                   {task.subtask_count} {task.subtask_count === 1 ? t('tasks.subtask') : t('tasks.subtasks')}
                 </Badge>
               )}
@@ -443,7 +454,7 @@ export default function HierarchicalTaskItem({
                       style={{ width: `${task.completion_percentage}%` }}
                     />
                   </div>
-                  <span className="text-muted-foreground">{task.completion_percentage}%</span>
+                  <span className="text-muted-foreground tabular-nums">{task.completion_percentage}%</span>
                 </div>
               )}
 
@@ -472,6 +483,24 @@ export default function HierarchicalTaskItem({
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={pendingConfirm !== null}
+        onOpenChange={open => !open && setPendingConfirm(null)}
+        title={pendingConfirm?.kind === 'reopen' ? t('tasks.confirm.reopenTitle') : t('tasks.confirm.completeTitle')}
+        description={
+          pendingConfirm?.kind === 'reopen'
+            ? t('tasks.messages.reopenWithAllDescendantsConfirm', { count: pendingConfirm.count })
+            : t('tasks.messages.completeWithAllDescendantsConfirm', { count: pendingConfirm?.count ?? 0 })
+        }
+        cancelLabel={t('tasks.form.cancel')}
+        confirmLabel={pendingConfirm?.kind === 'reopen' ? t('tasks.confirm.reopen') : t('tasks.confirm.complete')}
+        onConfirm={() => {
+          if (pendingConfirm?.kind === 'reopen') onReopen?.(task.id);
+          else onComplete(task.id);
+          setPendingConfirm(null);
+        }}
+      />
 
       {/* Subtasks (Recursive) */}
       {hasSubtasks && isExpanded && (

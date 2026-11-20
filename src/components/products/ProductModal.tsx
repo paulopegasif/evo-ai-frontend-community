@@ -1,26 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
 import type {
   Product,
@@ -190,297 +176,309 @@ export default function ProductModal({ open, product, loading, errors, onOpenCha
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{isEdit ? t('modal.editTitle') : t('modal.createTitle')}</DialogTitle>
           <DialogDescription>{t('modal.subtitle')}</DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-          {/*
-            Media tab intentionally omitted: product image upload is not wired
-            end-to-end — the backend (products_controller#attach_images) only
-            attaches ActiveStorage signed_ids and explicitly drops raw multipart
-            files, which is all the client currently sends. Re-add a
-            <TabsTrigger value="media"> + <TabsContent value="media"> (file picker
-            + product.images preview, see git history) once a direct-upload /
-            signed_id flow exists.
-          */}
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="general">{t('modal.tabs.general')}</TabsTrigger>
-            <TabsTrigger value="variants">{t('modal.tabs.variants')}</TabsTrigger>
-            <TabsTrigger value="labels">{t('modal.tabs.labels')}</TabsTrigger>
-          </TabsList>
+        <DialogPanel>
+          <Tabs value={activeTab} onValueChange={value => setActiveTab(String(value))}>
+            {/*
+              Media tab intentionally omitted: product image upload is not wired
+              end-to-end — the backend (products_controller#attach_images) only
+              attaches ActiveStorage signed_ids and explicitly drops raw multipart
+              files, which is all the client currently sends. Re-add a
+              <TabsTab value="media"> + <TabsPanel value="media"> (file picker
+              + product.images preview, see git history) once a direct-upload /
+              signed_id flow exists.
+            */}
+            <TabsList className="w-full">
+              <TabsTab value="general" className="flex-1">{t('modal.tabs.general')}</TabsTab>
+              <TabsTab value="variants" className="flex-1">{t('modal.tabs.variants')}</TabsTab>
+              <TabsTab value="labels" className="flex-1">{t('modal.tabs.labels')}</TabsTab>
+            </TabsList>
 
-          <TabsContent value="general" className="space-y-4 overflow-y-auto pt-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="p-name">
-                  {t('fields.name')} <span aria-hidden="true">*</span>
-                </Label>
-                <Input
-                  id="p-name"
-                  aria-required="true"
-                  aria-invalid={Boolean(fieldError('name'))}
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  onBlur={() => markTouched('name')}
-                  placeholder={t('fields.namePlaceholder')}
-                />
-                {fieldError('name') && <p className="text-xs text-destructive">{fieldError('name')}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="p-kind">{t('fields.kind')}</Label>
-                <Select
-                  value={form.kind}
-                  onValueChange={(v) => {
-                    const kind = v as ProductKind;
-                    setForm({ ...form, kind, stock_quantity: kind === 'physical' ? form.stock_quantity : null });
-                  }}
-                >
-                  <SelectTrigger id="p-kind">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {KINDS.map((k) => (
-                      <SelectItem key={k} value={k}>
-                        {t(`kind.${k}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {!isPhysical && (
-                  <p className="text-xs text-muted-foreground">{t('fields.digitalNoStockHint')}</p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="p-status">{t('fields.status')}</Label>
-                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as ProductStatus })}>
-                  <SelectTrigger id="p-status">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUSES.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {t(`status.${s}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="col-span-2 grid grid-cols-3 gap-3 items-start">
+            <TabsPanel value="general" className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2 space-y-1.5">
-                  <Label htmlFor="p-price">
-                    {t('fields.defaultPrice')} <span aria-hidden="true">*</span>
+                  <Label htmlFor="p-name">
+                    {t('fields.name')} <span aria-hidden="true">*</span>
                   </Label>
                   <Input
-                    id="p-price"
-                    type="number"
-                    step="0.01"
-                    min={0}
+                    id="p-name"
                     aria-required="true"
-                    aria-invalid={Boolean(fieldError('default_price'))}
-                    value={form.default_price ?? ''}
-                    placeholder="0,00"
-                    onChange={(e) =>
-                      setForm({ ...form, default_price: toNumberOrNull(e.target.value) })
-                    }
-                    onBlur={() => markTouched('default_price')}
+                    aria-invalid={Boolean(fieldError('name'))}
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onBlur={() => markTouched('name')}
+                    placeholder={t('fields.namePlaceholder')}
                   />
-                  {fieldError('default_price') && (
-                    <p className="text-xs text-destructive">{fieldError('default_price')}</p>
+                  {fieldError('name') && <p className="text-destructive-foreground text-xs">{fieldError('name')}</p>}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="p-kind">{t('fields.kind')}</Label>
+                  <Select
+                    items={KINDS.map(k => ({ value: k, label: t(`kind.${k}`) }))}
+                    value={form.kind}
+                    onValueChange={(v) => {
+                      if (v == null) return;
+                      const kind = v as ProductKind;
+                      setForm({ ...form, kind, stock_quantity: kind === 'physical' ? form.stock_quantity : null });
+                    }}
+                  >
+                    <SelectTrigger id="p-kind" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectPopup>
+                      {KINDS.map((k) => (
+                        <SelectItem key={k} value={k}>
+                          {t(`kind.${k}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectPopup>
+                  </Select>
+                  {!isPhysical && (
+                    <p className="text-xs text-muted-foreground">{t('fields.digitalNoStockHint')}</p>
                   )}
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="p-currency">{t('fields.currency')}</Label>
-                  <Select value={form.currency} onValueChange={(v) => setForm({ ...form, currency: v as ProductCurrency })}>
-                    <SelectTrigger id="p-currency">
+                  <Label htmlFor="p-status">{t('fields.status')}</Label>
+                  <Select
+                    items={STATUSES.map(st => ({ value: st, label: t(`status.${st}`) }))}
+                    value={form.status}
+                    onValueChange={(v) => v != null && setForm({ ...form, status: v as ProductStatus })}
+                  >
+                    <SelectTrigger id="p-status" className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      {CURRENCIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {t(`currency.${c}`)}
+                    <SelectPopup>
+                      {STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {t(`status.${s}`)}
                         </SelectItem>
                       ))}
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
-              </div>
 
-              <div className={isPhysical ? 'space-y-1.5' : 'col-span-2 space-y-1.5'}>
-                <Label htmlFor="p-sku">{t('fields.sku')}</Label>
-                <Input
-                  id="p-sku"
-                  aria-invalid={Boolean(fieldError('sku'))}
-                  value={form.sku ?? ''}
-                  onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                  placeholder={t('fields.skuPlaceholder')}
-                />
-                {fieldError('sku') && <p className="text-xs text-destructive">{fieldError('sku')}</p>}
-              </div>
+                <div className="col-span-2 grid grid-cols-3 gap-3 items-start">
+                  <div className="col-span-2 space-y-1.5">
+                    <Label htmlFor="p-price">
+                      {t('fields.defaultPrice')} <span aria-hidden="true">*</span>
+                    </Label>
+                    <Input
+                      id="p-price"
+                      type="number"
+                      step="0.01"
+                      min={0}
+                      aria-required="true"
+                      aria-invalid={Boolean(fieldError('default_price'))}
+                      value={form.default_price ?? ''}
+                      placeholder="0,00"
+                      onChange={(e) =>
+                        setForm({ ...form, default_price: toNumberOrNull(e.target.value) })
+                      }
+                      onBlur={() => markTouched('default_price')}
+                    />
+                    {fieldError('default_price') && (
+                      <p className="text-destructive-foreground text-xs">{fieldError('default_price')}</p>
+                    )}
+                  </div>
 
-              {isPhysical && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="p-stock">{t('fields.stockQuantity')}</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="p-currency">{t('fields.currency')}</Label>
+                    <Select
+                      items={CURRENCIES.map(c => ({ value: c, label: t(`currency.${c}`) }))}
+                      value={form.currency}
+                      onValueChange={(v) => v != null && setForm({ ...form, currency: v as ProductCurrency })}
+                    >
+                      <SelectTrigger id="p-currency" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectPopup>
+                        {CURRENCIES.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {t(`currency.${c}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectPopup>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className={isPhysical ? 'space-y-1.5' : 'col-span-2 space-y-1.5'}>
+                  <Label htmlFor="p-sku">{t('fields.sku')}</Label>
                   <Input
-                    id="p-stock"
-                    type="number"
-                    min={0}
-                    value={form.stock_quantity ?? ''}
-                    onChange={(e) =>
-                      setForm({ ...form, stock_quantity: toNumberOrNull(e.target.value) })
-                    }
+                    id="p-sku"
+                    aria-invalid={Boolean(fieldError('sku'))}
+                    value={form.sku ?? ''}
+                    onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                    placeholder={t('fields.skuPlaceholder')}
+                  />
+                  {fieldError('sku') && <p className="text-destructive-foreground text-xs">{fieldError('sku')}</p>}
+                </div>
+
+                {isPhysical && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="p-stock">{t('fields.stockQuantity')}</Label>
+                    <Input
+                      id="p-stock"
+                      type="number"
+                      min={0}
+                      value={form.stock_quantity ?? ''}
+                      onChange={(e) =>
+                        setForm({ ...form, stock_quantity: toNumberOrNull(e.target.value) })
+                      }
+                    />
+                  </div>
+                )}
+
+                <div className="col-span-2 space-y-1.5">
+                  <Label htmlFor="p-url">{t('fields.purchaseUrl')}</Label>
+                  <Input
+                    id="p-url"
+                    type="url"
+                    aria-invalid={Boolean(fieldError('purchase_url'))}
+                    placeholder={t('fields.purchaseUrlPlaceholder')}
+                    value={form.purchase_url ?? ''}
+                    onChange={(e) => setForm({ ...form, purchase_url: e.target.value })}
+                    onBlur={() => markTouched('purchase_url')}
+                  />
+                  {fieldError('purchase_url') && (
+                    <p className="text-destructive-foreground text-xs">{fieldError('purchase_url')}</p>
+                  )}
+                </div>
+
+                <div className="col-span-2 space-y-1.5">
+                  <Label htmlFor="p-desc">{t('fields.description')}</Label>
+                  <Textarea
+                    id="p-desc"
+                    rows={4}
+                    value={form.description ?? ''}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder={t('fields.descriptionPlaceholder')}
                   />
                 </div>
+              </div>
+            </TabsPanel>
+
+            <TabsPanel value="variants" className="space-y-3 pt-4">
+              {!isPhysical && (
+                <p className="text-xs text-muted-foreground">{t('variants.digitalHint')}</p>
               )}
 
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="p-url">{t('fields.purchaseUrl')}</Label>
-                <Input
-                  id="p-url"
-                  type="url"
-                  aria-invalid={Boolean(fieldError('purchase_url'))}
-                  placeholder={t('fields.purchaseUrlPlaceholder')}
-                  value={form.purchase_url ?? ''}
-                  onChange={(e) => setForm({ ...form, purchase_url: e.target.value })}
-                  onBlur={() => markTouched('purchase_url')}
-                />
-                {fieldError('purchase_url') && (
-                  <p className="text-xs text-destructive">{fieldError('purchase_url')}</p>
+              <div className="space-y-2">
+                {variants.filter((v) => !v._destroy).length === 0 && (
+                  <p className="rounded-lg border border-dashed py-6 text-center text-muted-foreground text-sm">
+                    {t('variants.empty')}
+                  </p>
                 )}
-              </div>
-
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="p-desc">{t('fields.description')}</Label>
-                <Textarea
-                  id="p-desc"
-                  rows={4}
-                  value={form.description ?? ''}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder={t('fields.descriptionPlaceholder')}
-                />
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="variants" className="space-y-3 overflow-y-auto pt-4">
-            {!isPhysical && (
-              <p className="text-xs text-muted-foreground">{t('variants.digitalHint')}</p>
-            )}
-
-            <div className="space-y-2">
-              {variants.filter((v) => !v._destroy).length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 text-center border border-dashed rounded">
-                  {t('variants.empty')}
-                </p>
-              )}
-              {variants.map((variant, idx) => {
-                if (variant._destroy) return null;
-                return (
-                  <div key={variant.id ?? `new-${idx}`} className="grid grid-cols-12 gap-2 items-end border rounded-md p-3">
-                    <div className="col-span-4 space-y-1.5">
-                      <Label htmlFor={`p-variant-${idx}-name`} className="text-xs">{t('variants.name')}</Label>
-                      <Input
-                        id={`p-variant-${idx}-name`}
-                        aria-required="true"
-                        value={variant.name}
-                        onChange={(e) => handleVariantChange(idx, { name: e.target.value })}
-                        placeholder={t('variants.namePlaceholder')}
-                      />
-                    </div>
-                    <div className={isPhysical ? 'col-span-3 space-y-1.5' : 'col-span-5 space-y-1.5'}>
-                      <Label htmlFor={`p-variant-${idx}-sku`} className="text-xs">{t('variants.sku')}</Label>
-                      <Input
-                        id={`p-variant-${idx}-sku`}
-                        value={variant.sku ?? ''}
-                        onChange={(e) => handleVariantChange(idx, { sku: e.target.value })}
-                      />
-                    </div>
-                    <div className={isPhysical ? 'col-span-2 space-y-1.5' : 'col-span-2 space-y-1.5'}>
-                      <Label htmlFor={`p-variant-${idx}-price`} className="text-xs">{t('variants.priceOverride')}</Label>
-                      <Input
-                        id={`p-variant-${idx}-price`}
-                        type="number"
-                        step="0.01"
-                        min={0}
-                        value={variant.price_override ?? ''}
-                        onChange={(e) =>
-                          handleVariantChange(idx, {
-                            price_override: toNumberOrNull(e.target.value),
-                          })
-                        }
-                      />
-                    </div>
-                    {isPhysical && (
-                      <div className="col-span-2 space-y-1.5">
-                        <Label htmlFor={`p-variant-${idx}-stock`} className="text-xs">{t('variants.stock')}</Label>
+                {variants.map((variant, idx) => {
+                  if (variant._destroy) return null;
+                  return (
+                    <div key={variant.id ?? `new-${idx}`} className="grid grid-cols-12 items-end gap-2 rounded-lg border p-3">
+                      <div className="col-span-4 space-y-1.5">
+                        <Label htmlFor={`p-variant-${idx}-name`} className="text-xs">{t('variants.name')}</Label>
                         <Input
-                          id={`p-variant-${idx}-stock`}
+                          id={`p-variant-${idx}-name`}
+                          aria-required="true"
+                          value={variant.name}
+                          onChange={(e) => handleVariantChange(idx, { name: e.target.value })}
+                          placeholder={t('variants.namePlaceholder')}
+                        />
+                      </div>
+                      <div className={isPhysical ? 'col-span-3 space-y-1.5' : 'col-span-5 space-y-1.5'}>
+                        <Label htmlFor={`p-variant-${idx}-sku`} className="text-xs">{t('variants.sku')}</Label>
+                        <Input
+                          id={`p-variant-${idx}-sku`}
+                          value={variant.sku ?? ''}
+                          onChange={(e) => handleVariantChange(idx, { sku: e.target.value })}
+                        />
+                      </div>
+                      <div className={isPhysical ? 'col-span-2 space-y-1.5' : 'col-span-2 space-y-1.5'}>
+                        <Label htmlFor={`p-variant-${idx}-price`} className="text-xs">{t('variants.priceOverride')}</Label>
+                        <Input
+                          id={`p-variant-${idx}-price`}
                           type="number"
+                          step="0.01"
                           min={0}
-                          value={variant.stock_quantity ?? ''}
+                          value={variant.price_override ?? ''}
                           onChange={(e) =>
                             handleVariantChange(idx, {
-                              stock_quantity: toNumberOrNull(e.target.value),
+                              price_override: toNumberOrNull(e.target.value),
                             })
                           }
                         />
                       </div>
-                    )}
-                    <div className="col-span-1 flex justify-end">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleVariantRemove(idx)}
-                        className="text-destructive hover:text-destructive"
-                        aria-label={t('actions.delete')}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {isPhysical && (
+                        <div className="col-span-2 space-y-1.5">
+                          <Label htmlFor={`p-variant-${idx}-stock`} className="text-xs">{t('variants.stock')}</Label>
+                          <Input
+                            id={`p-variant-${idx}-stock`}
+                            type="number"
+                            min={0}
+                            value={variant.stock_quantity ?? ''}
+                            onChange={(e) =>
+                              handleVariantChange(idx, {
+                                stock_quantity: toNumberOrNull(e.target.value),
+                              })
+                            }
+                          />
+                        </div>
+                      )}
+                      <div className="col-span-1 flex justify-end">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleVariantRemove(idx)}
+                          className="text-destructive-foreground"
+                          aria-label={t('actions.delete')}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
 
-            <Button variant="outline" size="sm" onClick={handleAddVariant}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t('variants.add')}
-            </Button>
-          </TabsContent>
+              <Button variant="outline" size="sm" onClick={handleAddVariant}>
+                <Plus />
+                {t('variants.add')}
+              </Button>
+            </TabsPanel>
 
-          <TabsContent value="labels" className="space-y-2 overflow-y-auto pt-4">
-            <Label htmlFor="p-labels">{t('fields.labels')}</Label>
-            <Textarea
-              id="p-labels"
-              rows={3}
-              value={labelsText}
-              onChange={(e) => setLabelsText(e.target.value)}
-              placeholder={t('fields.labelsPlaceholder')}
-            />
-            <p className="text-xs text-muted-foreground">{t('fields.labelsHint')}</p>
-          </TabsContent>
-        </Tabs>
+            <TabsPanel value="labels" className="space-y-2 pt-4">
+              <Label htmlFor="p-labels">{t('fields.labels')}</Label>
+              <Textarea
+                id="p-labels"
+                rows={3}
+                value={labelsText}
+                onChange={(e) => setLabelsText(e.target.value)}
+                placeholder={t('fields.labelsPlaceholder')}
+              />
+              <p className="text-xs text-muted-foreground">{t('fields.labelsHint')}</p>
+            </TabsPanel>
+          </Tabs>
+        </DialogPanel>
 
-        <DialogFooter className="pt-2 items-center">
+        <DialogFooter className="items-center">
           <p
-            className={`text-xs mr-auto ${submitAttempted && !canSubmit ? 'text-destructive' : 'text-muted-foreground'}`}
+            className={`me-auto text-xs ${submitAttempted && !canSubmit ? 'text-destructive-foreground' : 'text-muted-foreground'}`}
           >
             {submitAttempted && !canSubmit ? t('validation.fixErrors') : t('validation.requiredLegend')}
           </p>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
             {t('actions.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? t('actions.saving') : isEdit ? t('actions.update') : t('actions.create')}
+          <Button onClick={handleSubmit} loading={loading}>
+            {isEdit ? t('actions.update') : t('actions.create')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

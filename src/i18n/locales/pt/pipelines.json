@@ -187,7 +187,11 @@
     },
     "pageTitle": "Criando um novo Pipeline",
     "back": "Voltar",
-    "newStageColor": "Cor da etapa"
+    "newStageColor": "Cor da etapa",
+    "teamSelection": {
+      "remove": "Remover {{name}}"
+    },
+    "removeStage": "Remover etapa {{name}}"
   },
   "createStage": {
     "title": "Criar Nova Etapa",
@@ -373,7 +377,10 @@
     "pipelineActive": "Pipeline ativo",
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "save": "Salvar Alterações"
+    "save": "Salvar Alterações",
+    "teamSelection": {
+      "remove": "Remover {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Regras de Automação",
@@ -405,7 +412,8 @@
       "move_to_pipeline": "Mover para outro pipeline",
       "assign_agent": "Atribuir agente",
       "apply_label": "Aplicar etiqueta"
-    }
+    },
+    "removeRule": "Remover regra"
   },
   "editStage": {
     "title": "Editar Etapa",
@@ -443,7 +451,9 @@
     "stageName": "Nome da etapa",
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "save": "Salvar Alterações"
+    "save": "Salvar Alterações",
+    "countsAsQualified": "Conta como lead qualificado",
+    "countsAsQualifiedHint": "No Tracking de Leads, quem chega a esta etapa entra em “qualificados”, mesmo sem avaliação marcada."
   },
   "pipelineCard": {
     "active": "Ativo",
@@ -815,7 +825,16 @@
       "moveSuccess": "Tarefa movida com sucesso",
       "moveError": "Erro ao mover tarefa",
       "addSubtaskSuccess": "Subtarefa adicionada com sucesso",
-      "addSubtaskError": "Erro ao adicionar subtarefa"
+      "addSubtaskError": "Erro ao adicionar subtarefa",
+      "deleteWithSubtasksConfirm": "Esta tarefa tem {{count}} subtarefa(s). Excluir todas?"
+    },
+    "edit": "Editar tarefa",
+    "delete": "Excluir tarefa",
+    "confirm": {
+      "completeTitle": "Concluir tarefa",
+      "reopenTitle": "Reabrir tarefa",
+      "complete": "Concluir",
+      "reopen": "Reabrir"
     }
   },
   "dialog": {
@@ -846,5 +865,8 @@
     "loadError": "Falha ao carregar formulários",
     "saveError": "Falha ao salvar formulário",
     "deleteError": "Falha ao excluir formulário"
+  },
+  "attributes": {
+    "remove": "Remover {{name}}"
   }
 }

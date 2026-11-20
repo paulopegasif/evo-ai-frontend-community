@@ -1,25 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Label,
-  Input,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import type { CreateTaskData, PipelineTask } from '@/types/analytics';
 import type { User } from '@/types/users';
+
+const TASK_TYPES = ['call', 'email', 'meeting', 'follow_up', 'note', 'other'] as const;
+const TASK_PRIORITIES = ['low', 'medium', 'high', 'urgent'] as const;
 
 interface CreateTaskModalProps {
   open: boolean;
@@ -144,7 +135,7 @@ export default function CreateTaskModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogPopup className="max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {parentTask 
@@ -156,72 +147,75 @@ export default function CreateTaskModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="contents">
+          <DialogPanel className="flex flex-col gap-4">
           {/* Title */}
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="title">
-              {t('tasks.form.title')} <span className="text-destructive">*</span>
+              {t('tasks.form.title')} <span className="text-destructive-foreground">*</span>
             </Label>
             <Input
               id="title"
               value={formData.title}
               onChange={e => updateField('title', e.target.value)}
               placeholder={t('tasks.form.titlePlaceholder')}
-              className={errors.title ? 'border-destructive' : ''}
+              aria-invalid={errors.title ? true : undefined}
               disabled={loading}
             />
             {errors.title && (
-              <p className="text-sm text-destructive">{errors.title}</p>
+              <p className="text-destructive-foreground text-xs">{errors.title}</p>
             )}
           </div>
 
           {/* Type and Priority in row */}
           <div className="grid grid-cols-2 gap-4">
             {/* Type */}
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label>{t('tasks.form.type')}</Label>
               <Select
+                items={TASK_TYPES.map(v => ({ value: v, label: t(`tasks.types.${v}`) }))}
                 value={formData.task_type}
-                onValueChange={value => updateField('task_type', value as PipelineTask['task_type'])}
+                onValueChange={value => value != null && updateField('task_type', value as PipelineTask['task_type'])}
                 disabled={loading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   <SelectItem value="call">{t('tasks.types.call')}</SelectItem>
                   <SelectItem value="email">{t('tasks.types.email')}</SelectItem>
                   <SelectItem value="meeting">{t('tasks.types.meeting')}</SelectItem>
                   <SelectItem value="follow_up">{t('tasks.types.follow_up')}</SelectItem>
                   <SelectItem value="note">{t('tasks.types.note')}</SelectItem>
                   <SelectItem value="other">{t('tasks.types.other')}</SelectItem>
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
 
             {/* Priority */}
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label>{t('tasks.form.priority')}</Label>
               <Select
+                items={TASK_PRIORITIES.map(v => ({ value: v, label: t(`tasks.priority.${v}`) }))}
                 value={formData.priority}
-                onValueChange={value => updateField('priority', value as PipelineTask['priority'])}
+                onValueChange={value => value != null && updateField('priority', value as PipelineTask['priority'])}
                 disabled={loading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   <SelectItem value="low">{t('tasks.priority.low')}</SelectItem>
                   <SelectItem value="medium">{t('tasks.priority.medium')}</SelectItem>
                   <SelectItem value="high">{t('tasks.priority.high')}</SelectItem>
                   <SelectItem value="urgent">{t('tasks.priority.urgent')}</SelectItem>
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
           </div>
 
           {/* Due Date */}
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="due_date">{t('tasks.form.dueDate')}</Label>
             <Input
               id="due_date"
@@ -236,36 +230,40 @@ export default function CreateTaskModal({
               </p>
             )}
             {errors.due_date && (
-              <p className="text-xs text-destructive">{errors.due_date}</p>
+              <p className="text-destructive-foreground text-xs">{errors.due_date}</p>
             )}
           </div>
 
           {/* Assigned To */}
           {availableUsers && availableUsers.length > 0 && (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label>{t('tasks.form.assignedTo')}</Label>
               <Select
+                items={[
+                  { value: 'none', label: t('tasks.form.none') || 'Nenhum' },
+                  ...availableUsers.map(user => ({ value: user.id, label: user.name })),
+                ]}
                 value={formData.assigned_to_id || 'none'}
-                onValueChange={value => updateField('assigned_to_id', value === 'none' ? '' : value)}
+                onValueChange={value => value != null && updateField('assigned_to_id', value === 'none' ? '' : value)}
                 disabled={loading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('tasks.form.assignedToPlaceholder') || 'Nenhum'} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   <SelectItem value="none">{t('tasks.form.none') || 'Nenhum'}</SelectItem>
                   {availableUsers.map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.name}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
           )}
 
           {/* Description */}
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="description">{t('tasks.form.description')}</Label>
             <Textarea
               id="description"
@@ -277,22 +275,18 @@ export default function CreateTaskModal({
             />
           </div>
 
+          </DialogPanel>
+
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={loading}
-            >
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               {t('tasks.form.cancel')}
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            <Button type="submit" loading={loading}>
               {t('tasks.form.create')}
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

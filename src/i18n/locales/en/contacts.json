@@ -125,7 +125,8 @@
       "errors": {
         "invalidType": "Please select an image file.",
         "tooLarge": "File too large. Maximum 5MB."
-      }
+      },
+      "remove": "Remove photo"
     },
     "sections": {
       "basicInfo": "Basic Information",
@@ -348,7 +349,12 @@
       "info4": "Duplicate contacts will be permanently removed",
       "cancel": "Cancel",
       "confirm": "Merge Contacts",
-      "merging": "Merging..."
+      "merging": "Merging...",
+      "primary": "Primary",
+      "createdAt": "Created on {{date}}",
+      "conversations_one": "{{count}} conversation",
+      "conversations_other": "{{count}} conversations",
+      "company": "Company:"
     },
     "selectContactToMerge": {
       "title": "Select Contact to Merge",
@@ -437,7 +443,8 @@
       "cancel": "Cancel",
       "import": "Import",
       "importing": "Importing..."
-    }
+    },
+    "removeFile": "Remove file"
   },
   "pagination": {
     "showing": "Showing {{from}} to {{to}} of {{total}} contacts",
@@ -448,7 +455,8 @@
   "labels": {
     "add": "Add Label",
     "search": "Search labels...",
-    "empty": "No labels found."
+    "empty": "No labels found.",
+    "remove": "Remove"
   },
   "modal": {
     "title": {
@@ -536,7 +544,14 @@
         "paused": "Paused",
         "inactive": "Inactive",
         "unknown": "Unknown"
-      }
+      },
+      "select": "Select a template",
+      "selected": "Template: {{name}}",
+      "change": "Change template",
+      "fillVariables": "Fill in the variables",
+      "preview": "Preview",
+      "valueFor": "Value for {{key}}",
+      "visualEmail": "Visual email template. The HTML will be generated automatically."
     },
     "toggle": {
       "label": "Use Template",
@@ -558,7 +573,9 @@
     "emptyDescription": "Create a new scheduled action to get started",
     "pagination": "Page {{page}} of {{totalPages}} ({{total}} total)",
     "messages": {
-      "noChannelsConfigured": "No messaging channels configured. Please configure a WhatsApp, SMS, Email, or Telegram channel first in the Channels settings."
+      "noChannelsConfigured": "No messaging channels configured. Please configure a WhatsApp, SMS, Email, or Telegram channel first in the Channels settings.",
+      "cancelled": "Scheduled action cancelled",
+      "bulkCancelled": "{{count}} actions cancelled"
     },
     "errors": {
       "loadFailed": "Failed to load scheduled actions",
@@ -644,7 +661,14 @@
     "noContactsFound": "No contacts found",
     "clearContact": "Clear contact",
     "loadingChannels": "Loading channels...",
-    "selectChannel": "Select a channel"
+    "selectChannel": "Select a channel",
+    "cancelConfirm": {
+      "title": "Cancel scheduled action?",
+      "titleBulk": "Cancel {{count}} scheduled actions?",
+      "description": "The action will not run. This cannot be undone.",
+      "confirm": "Cancel action",
+      "keep": "Keep"
+    }
   },
   "events": {
     "timeline": {

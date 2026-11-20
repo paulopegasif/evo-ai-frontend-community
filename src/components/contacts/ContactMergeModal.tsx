@@ -1,23 +1,15 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  RadioGroup,
-  RadioGroupItem,
-  Label,
-  ScrollArea,
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from '@/components/ui/compat';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Contact } from '@/types/contacts';
-import { Mail, Phone, Building2, User, Calendar } from 'lucide-react';
+import { Building2, Calendar, Mail, MessageSquare, Phone, TriangleAlert, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { formatContactPhone } from '@/utils/contact/formatContactPhone';
 
 interface ContactMergeModalProps {
@@ -70,136 +62,125 @@ export default function ContactMergeModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">{t('dialog.mergeContacts.title')}</DialogTitle>
+      <DialogPopup className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{t('dialog.mergeContacts.title')}</DialogTitle>
           <DialogDescription>{t('dialog.mergeContacts.description')}</DialogDescription>
         </DialogHeader>
-
-        <ScrollArea className="max-h-[calc(90vh-200px)] px-6 py-4">
-          <div className="space-y-4">
-            <RadioGroup value={selectedParentId} onValueChange={setSelectedParentId}>
-              {contacts.map(contact => (
+        <DialogPanel className="flex flex-col gap-4">
+          <RadioGroup
+            value={selectedParentId}
+            onValueChange={value => setSelectedParentId(String(value))}
+            className="gap-2"
+          >
+            {contacts.map(contact => {
+              const selected = selectedParentId === contact.id;
+              return (
                 <div
                   key={contact.id}
-                  className={`relative flex items-start space-x-4 rounded-lg border p-4 cursor-pointer transition-colors ${
-                    selectedParentId === contact.id
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+                  className={cn(
+                    'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+                    selected ? 'border-primary/64 bg-primary/4 dark:bg-primary/8' : 'hover:border-ring/40',
+                  )}
                   onClick={() => setSelectedParentId(contact.id)}
                 >
-                  <RadioGroupItem value={contact.id} id={contact.id} className="mt-1" />
+                  <RadioGroupItem value={contact.id} id={contact.id} className="mt-3" />
+                  <Label htmlFor={contact.id} className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 font-normal">
+                    <Avatar className="size-10">
+                      <AvatarImage src={contact.avatar_url || contact.thumbnail} />
+                      <AvatarFallback className="bg-primary/10 font-semibold text-primary">
+                        {getInitials(contact.name)}
+                      </AvatarFallback>
+                    </Avatar>
 
-                  <div className="flex-1 space-y-3">
-                    <Label htmlFor={contact.id} className="flex items-center gap-3 cursor-pointer">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={contact.avatar_url || contact.thumbnail} />
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          {getInitials(contact.name)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-lg">{contact.name}</span>
-                          {contact.type === 'company' && (
-                            <Building2 className="h-4 w-4 text-muted-foreground" />
-                          )}
-                          {contact.type === 'person' && (
-                            <User className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm text-muted-foreground">
-                          {contact.email && (
-                            <div className="flex items-center gap-2">
-                              <Mail className="h-3 w-3" />
-                              <span className="truncate">{contact.email}</span>
-                            </div>
-                          )}
-
-                          {contact.phone_number && (
-                            <div className="flex items-center gap-2">
-                              <Phone className="h-3 w-3" />
-                              <span>{formatContactPhone(contact.phone_number)}</span>
-                            </div>
-                          )}
-
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-3 w-3" />
-                            <span>Criado em {formatDate(contact.created_at)}</span>
-                          </div>
-
-                          {contact.conversations_count !== undefined && (
-                            <div className="text-xs">
-                              <span className="font-medium">{contact.conversations_count}</span>{' '}
-                              {contact.conversations_count === 1 ? 'conversa' : 'conversas'}
-                            </div>
-                          )}
-                        </div>
-
-                        {contact.additional_attributes?.company_name && (
-                          <div className="mt-2 text-sm">
-                            <span className="text-muted-foreground">Empresa: </span>
-                            <span className="font-medium">
-                              {contact.additional_attributes.company_name}
-                            </span>
-                          </div>
-                        )}
-
-                        {contact.labels && contact.labels.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {contact.labels.slice(0, 3).map((label, index) => (
-                              <span
-                                key={index}
-                                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
-                              >
-                                {label}
-                              </span>
-                            ))}
-                            {contact.labels.length > 3 && (
-                              <span className="text-xs text-muted-foreground">
-                                +{contact.labels.length - 3} mais
-                              </span>
-                            )}
-                          </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate font-semibold">{contact.name}</span>
+                        {contact.type === 'company' && <Building2 className="size-4 text-muted-foreground" />}
+                        {contact.type === 'person' && <User className="size-4 text-muted-foreground" />}
+                        {selected && (
+                          <Badge variant="success" size="sm">
+                            {t('dialog.mergeContacts.primary')}
+                          </Badge>
                         )}
                       </div>
-                    </Label>
-                  </div>
-                </div>
-              ))}
-            </RadioGroup>
 
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <h4 className="font-semibold text-sm">{t('dialog.mergeContacts.infoTitle')}</h4>
-              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                      <div className="mt-1.5 grid grid-cols-1 gap-x-4 gap-y-1 text-muted-foreground text-xs md:grid-cols-2">
+                        {contact.email && (
+                          <span className="flex min-w-0 items-center gap-1.5">
+                            <Mail className="size-3 shrink-0" />
+                            <span className="truncate">{contact.email}</span>
+                          </span>
+                        )}
+                        {contact.phone_number && (
+                          <span className="flex items-center gap-1.5 tabular-nums">
+                            <Phone className="size-3 shrink-0" />
+                            {formatContactPhone(contact.phone_number)}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="size-3 shrink-0" />
+                          {t('dialog.mergeContacts.createdAt', { date: formatDate(contact.created_at) })}
+                        </span>
+                        {contact.conversations_count !== undefined && (
+                          <span className="flex items-center gap-1.5 tabular-nums">
+                            <MessageSquare className="size-3 shrink-0" />
+                            {t('dialog.mergeContacts.conversations', { count: contact.conversations_count })}
+                          </span>
+                        )}
+                      </div>
+
+                      {contact.additional_attributes?.company_name && (
+                        <p className="mt-1.5 text-xs">
+                          <span className="text-muted-foreground">{t('dialog.mergeContacts.company')} </span>
+                          <span className="font-medium">{contact.additional_attributes.company_name}</span>
+                        </p>
+                      )}
+
+                      {contact.labels && contact.labels.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {contact.labels.slice(0, 3).map((label, index) => (
+                            <Badge key={index} variant="outline" size="sm">
+                              {label}
+                            </Badge>
+                          ))}
+                          {contact.labels.length > 3 && (
+                            <Badge variant="outline" size="sm" className="tabular-nums">
+                              +{contact.labels.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </Label>
+                </div>
+              );
+            })}
+          </RadioGroup>
+
+          <Alert variant="warning">
+            <TriangleAlert />
+            <AlertTitle>{t('dialog.mergeContacts.infoTitle')}</AlertTitle>
+            <AlertDescription>
+              <ul className="list-inside list-disc space-y-0.5">
                 <li>{t('dialog.mergeContacts.info1')}</li>
                 <li>{t('dialog.mergeContacts.info2')}</li>
                 <li>{t('dialog.mergeContacts.info3')}</li>
                 <li>{t('dialog.mergeContacts.info4')}</li>
               </ul>
-            </div>
-          </div>
-        </ScrollArea>
+            </AlertDescription>
+          </Alert>
+        </DialogPanel>
 
-        <DialogFooter className="px-6 py-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
             {t('dialog.mergeContacts.cancel')}
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={loading || !selectedParentId}
-          >
-            {loading ? t('dialog.mergeContacts.merging') : t('dialog.mergeContacts.confirm')}
+          <Button onClick={handleConfirm} disabled={!selectedParentId} loading={loading}>
+            {t('dialog.mergeContacts.confirm')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

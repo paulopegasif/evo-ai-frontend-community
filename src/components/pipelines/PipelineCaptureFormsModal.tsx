@@ -1,15 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  Button,
-} from '@/components/ui/compat';
-import { Plus, Copy, Trash2, Edit, ExternalLink, FileText, Loader2 } from 'lucide-react';
+import { Copy, Edit, ExternalLink, FileText, Plus, Trash2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/base';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { crmFormsService } from '@/services/crmForms/crmFormsService';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import type { CrmForm, CrmFormPayload } from '@/types/crmForms';
@@ -38,6 +37,7 @@ export default function PipelineCaptureFormsModal({
   allPipelines,
 }: PipelineCaptureFormsModalProps) {
   const { t } = useLanguage('pipelines');
+  const { t: tc } = useLanguage('common');
 
   const [forms, setForms] = useState<CrmForm[]>([]);
   const [loading, setLoading] = useState(false);
@@ -108,8 +108,13 @@ export default function PipelineCaptureFormsModal({
     }
   };
 
-  const handleDelete = async (form: CrmForm) => {
-    if (!window.confirm(t('captureForms.deleteConfirm', { name: form.name }))) return;
+  // Deletion confirms through ConfirmDialog (was window.confirm).
+  const [formToDelete, setFormToDelete] = useState<CrmForm | null>(null);
+  const handleDelete = (form: CrmForm) => setFormToDelete(form);
+
+  const confirmDelete = async () => {
+    const form = formToDelete;
+    if (!form) return;
     setDeletingId(form.id);
     try {
       await crmFormsService.remove(form.id);
@@ -119,6 +124,7 @@ export default function PipelineCaptureFormsModal({
       toast.error(t('captureForms.deleteError'));
     } finally {
       setDeletingId(null);
+      setFormToDelete(null);
     }
   };
 
@@ -131,116 +137,159 @@ export default function PipelineCaptureFormsModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
+        <DialogPopup className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              {t('captureForms.title')}
-            </DialogTitle>
-            <DialogDescription>
-              {t('captureForms.subtitle', { pipeline: pipeline?.name ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex items-center justify-end">
-            <Button size="sm" onClick={openCreate}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t('captureForms.newForm')}
-            </Button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto -mx-1 px-1">
-            {loading ? (
-              <div className="flex items-center justify-center py-12 text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin" />
+            <div className="flex items-start justify-between gap-3 pe-9">
+              <div className="flex flex-col gap-1">
+                <DialogTitle className="flex items-center gap-2">
+                  <FileText className="size-5 text-muted-foreground" />
+                  {t('captureForms.title')}
+                </DialogTitle>
+                <DialogDescription>{t('captureForms.subtitle', { pipeline: pipeline?.name ?? '' })}</DialogDescription>
               </div>
-            ) : forms.length === 0 ? (
-              <div className="text-center py-12 border border-dashed border-border rounded-xl">
-                <FileText className="h-8 w-8 mx-auto text-muted-foreground/60 mb-2" />
-                <p className="text-sm text-muted-foreground">{t('captureForms.empty')}</p>
-                <Button variant="outline" size="sm" onClick={openCreate} className="mt-3">
-                  <Plus className="h-4 w-4 mr-2" />
+              {forms.length > 0 && (
+                <Button size="sm" onClick={openCreate} className="shrink-0">
+                  <Plus />
                   {t('captureForms.newForm')}
                 </Button>
+              )}
+            </div>
+          </DialogHeader>
+
+          <DialogPanel>
+            {loading ? (
+              <div className="flex flex-col gap-2" aria-busy="true">
+                {Array.from({ length: 3 }, (_, i) => (
+                  <div key={i} className="flex items-center gap-3 rounded-xl border p-3">
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                    <Skeleton className="h-7 w-28" />
+                  </div>
+                ))}
               </div>
+            ) : forms.length === 0 ? (
+              <Empty className="rounded-xl border border-dashed py-10">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <FileText />
+                  </EmptyMedia>
+                  <EmptyDescription>{t('captureForms.empty')}</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                  <Button variant="outline" size="sm" onClick={openCreate}>
+                    <Plus />
+                    {t('captureForms.newForm')}
+                  </Button>
+                </EmptyContent>
+              </Empty>
             ) : (
-              <div className="space-y-2">
+              <ul className="flex flex-col gap-2">
                 {forms.map(form => (
-                  <div
+                  <li
                     key={form.id}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/30 transition-colors"
+                    className="flex items-center gap-3 rounded-xl border p-3 transition-colors hover:border-ring/40"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground truncate">{form.name}</span>
-                        <span
-                          className={
-                            form.published
-                              ? 'text-[11px] font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary'
-                              : 'text-[11px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground'
-                          }
-                        >
-                          {form.published
-                            ? t('captureForms.published')
-                            : t('captureForms.draft')}
-                        </span>
+                        <span className="truncate font-medium">{form.name}</span>
+                        <Badge variant={form.published ? 'success' : 'secondary'} size="sm">
+                          {form.published ? t('captureForms.published') : t('captureForms.draft')}
+                        </Badge>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        {t('captureForms.leadsCount', { count: form.leads_count ?? 0 })}
+                      <div className="mt-0.5 text-muted-foreground text-xs">
+                        <span className="tabular-nums">{t('captureForms.leadsCount', { count: form.leads_count ?? 0 })}</span>
                         {' · '}
                         {form.slug}
                       </div>
                     </div>
-                    <div className="flex items-center gap-0.5 shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                        onClick={() => copyLink(form)}
-                        title={t('captureForms.copyLink')}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                        onClick={() => window.open(`/f/${form.id}`, '_blank')}
-                        title={t('captureForms.openLink')}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-                        onClick={() => openEdit(form)}
-                        title={t('captureForms.edit')}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDelete(form)}
-                        disabled={deletingId === form.id}
-                        title={t('captureForms.delete')}
-                      >
-                        {deletingId === form.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              className="text-muted-foreground"
+                              onClick={() => copyLink(form)}
+                              aria-label={t('captureForms.copyLink')}
+                            />
+                          }
+                        >
+                          <Copy />
+                        </TooltipTrigger>
+                        <TooltipPopup>{t('captureForms.copyLink')}</TooltipPopup>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              className="text-muted-foreground"
+                              onClick={() => window.open(`/f/${form.id}`, '_blank')}
+                              aria-label={t('captureForms.openLink')}
+                            />
+                          }
+                        >
+                          <ExternalLink />
+                        </TooltipTrigger>
+                        <TooltipPopup>{t('captureForms.openLink')}</TooltipPopup>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              className="text-muted-foreground"
+                              onClick={() => openEdit(form)}
+                              aria-label={t('captureForms.edit')}
+                            />
+                          }
+                        >
+                          <Edit />
+                        </TooltipTrigger>
+                        <TooltipPopup>{t('captureForms.edit')}</TooltipPopup>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              className="text-muted-foreground"
+                              onClick={() => handleDelete(form)}
+                              aria-label={t('captureForms.delete')}
+                              disabled={deletingId === form.id}
+                            />
+                          }
+                        >
+                          <Trash2 />
+                        </TooltipTrigger>
+                        <TooltipPopup>{t('captureForms.delete')}</TooltipPopup>
+                      </Tooltip>
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
-          </div>
-        </DialogContent>
+          </DialogPanel>
+        </DialogPopup>
       </Dialog>
+
+      <ConfirmDialog
+        open={formToDelete !== null}
+        onOpenChange={next => !next && !deletingId && setFormToDelete(null)}
+        title={t('captureForms.delete')}
+        description={formToDelete ? t('captureForms.deleteConfirm', { name: formToDelete.name }) : undefined}
+        cancelLabel={tc('cancel')}
+        confirmLabel={t('captureForms.delete')}
+        onConfirm={confirmDelete}
+        loading={Boolean(deletingId)}
+        variant="destructive"
+      />
 
       {/* Reuse the real form builder. presetPipelineId preselects this pipeline on create. */}
       <CrmFormModal

@@ -109,7 +109,8 @@
       "label": "Teams",
       "placeholder": "Select teams...",
       "required": "Select at least one team",
-      "noTeams": "No teams available"
+      "noTeams": "No teams available",
+      "remove": "Remove {{name}}"
     },
     "stages": "Stages",
     "stagesCount": "{{count}} stages",
@@ -193,7 +194,8 @@
     },
     "pageTitle": "Creating a new Pipeline",
     "back": "Back",
-    "newStageColor": "Stage color"
+    "newStageColor": "Stage color",
+    "removeStage": "Remove stage {{name}}"
   },
   "createStage": {
     "title": "Create New Stage",
@@ -380,7 +382,8 @@
       "label": "Teams",
       "placeholder": "Select teams...",
       "required": "Select at least one team",
-      "noTeams": "No teams available"
+      "noTeams": "No teams available",
+      "remove": "Remove {{name}}"
     },
     "pipelineActive": "Pipeline active",
     "cancel": "Cancel",
@@ -438,7 +441,8 @@
       "send_direct_message": "Direct message",
       "send_template": "Send template",
       "finalize": "End conversation"
-    }
+    },
+    "removeRule": "Remove rule"
   },
   "editStage": {
     "title": "Edit Stage",
@@ -476,7 +480,9 @@
     "stageName": "Stage Name",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "save": "Save Changes"
+    "save": "Save Changes",
+    "countsAsQualified": "Counts as a qualified lead",
+    "countsAsQualifiedHint": "In Lead Tracking, anyone who reaches this stage counts as “qualified”, even without a booked evaluation."
   },
   "pipelineCard": {
     "active": "Active",
@@ -850,7 +856,16 @@
       "moveSuccess": "Task moved successfully",
       "moveError": "Error moving task",
       "addSubtaskSuccess": "Subtask added successfully",
-      "addSubtaskError": "Error adding subtask"
+      "addSubtaskError": "Error adding subtask",
+      "deleteWithSubtasksConfirm": "This task has {{count}} subtask(s). Delete them all?"
+    },
+    "edit": "Edit task",
+    "delete": "Delete task",
+    "confirm": {
+      "completeTitle": "Complete task",
+      "reopenTitle": "Reopen task",
+      "complete": "Complete",
+      "reopen": "Reopen"
     }
   },
   "dialog": {
@@ -881,5 +896,8 @@
     "loadError": "Failed to load forms",
     "saveError": "Failed to save form",
     "deleteError": "Failed to delete form"
+  },
+  "attributes": {
+    "remove": "Remove {{name}}"
   }
 }

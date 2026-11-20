@@ -45,9 +45,3 @@ export const formatCurrency = (value: number) =>
 /** Per-column total: item.value === services_info.total_value server-side. */
 export const calculateStageTotal = (items: PipelineItem[] = []) =>
   items.reduce((total, item) => total + (item.value ?? item.services_info?.total_value ?? 0), 0);
-
-export const initials = (name?: string) => {
-  if (!name) return 'U';
-  const parts = name.trim().split(/\s+/);
-  return ((parts[0]?.[0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase() || 'U';
-};

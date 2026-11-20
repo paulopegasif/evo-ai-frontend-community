@@ -160,7 +160,11 @@
     },
     "pageTitle": "Creazione di una nuova Pipeline",
     "back": "Indietro",
-    "newStageColor": "Colore della fase"
+    "newStageColor": "Colore della fase",
+    "teamSelection": {
+      "remove": "Rimuovi {{name}}"
+    },
+    "removeStage": "Rimuovi fase {{name}}"
   },
   "createStage": {
     "title": "Crea Nuova Fase",
@@ -346,7 +350,10 @@
     "pipelineActive": "Pipeline attiva",
     "cancel": "Annulla",
     "saving": "Salvataggio...",
-    "save": "Salva Modifiche"
+    "save": "Salva Modifiche",
+    "teamSelection": {
+      "remove": "Rimuovi {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Regole di Automazione",
@@ -378,7 +385,8 @@
       "move_to_pipeline": "Sposta in un'altra pipeline",
       "assign_agent": "Assegna agente",
       "apply_label": "Applica etichetta"
-    }
+    },
+    "removeRule": "Rimuovi regola"
   },
   "editStage": {
     "title": "Modifica Fase",
@@ -416,7 +424,9 @@
     "stageName": "Nome della fase",
     "cancel": "Annulla",
     "saving": "Salvataggio...",
-    "save": "Salva Modifiche"
+    "save": "Salva Modifiche",
+    "countsAsQualified": "Conta come lead qualificato",
+    "countsAsQualifiedHint": "Nel Tracking dei lead, chi raggiunge questa fase conta come “qualificato”, anche senza valutazione prenotata."
   },
   "pipelineCard": {
     "active": "Attiva",
@@ -785,7 +795,16 @@
       "moveSuccess": "Attività spostata con successo",
       "moveError": "Errore durante lo spostamento dell'attività",
       "addSubtaskSuccess": "Sottoattività aggiunta con successo",
-      "addSubtaskError": "Errore durante l'aggiunta della sottoattività"
+      "addSubtaskError": "Errore durante l'aggiunta della sottoattività",
+      "deleteWithSubtasksConfirm": "Questa attività ha {{count}} sotto-attività. Eliminarle tutte?"
+    },
+    "edit": "Modifica attività",
+    "delete": "Elimina attività",
+    "confirm": {
+      "completeTitle": "Completa attività",
+      "reopenTitle": "Riapri attività",
+      "complete": "Completa",
+      "reopen": "Riapri"
     }
   },
   "dialog": {
@@ -816,5 +835,8 @@
     "loadError": "Impossibile caricare i moduli",
     "saveError": "Impossibile salvare il modulo",
     "deleteError": "Impossibile eliminare il modulo"
+  },
+  "attributes": {
+    "remove": "Rimuovi {{name}}"
   }
 }

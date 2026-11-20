@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, Clock, AlertCircle, ListTodo } from 'lucide-react';
 import { isPast, isToday, addHours } from 'date-fns';
 import type { PipelineTask } from '@/types/analytics';
@@ -48,20 +48,20 @@ export default function PipelineItemTasksBadge({ tasks, compact = false }: Pipel
     return (
       <div className="flex items-center gap-1">
         {counters.overdue > 0 && (
-          <Badge variant="destructive" className="h-5 px-1.5 text-xs">
-            <AlertCircle className="w-3 h-3 mr-1" />
+          <Badge variant="error" className="tabular-nums">
+            <AlertCircle />
             {counters.overdue}
           </Badge>
         )}
         {counters.dueSoon > 0 && counters.overdue === 0 && (
-          <Badge className="h-5 px-1.5 text-xs bg-warning/12 text-warning-foreground">
-            <Clock className="w-3 h-3 mr-1" />
+          <Badge variant="warning" className="tabular-nums">
+            <Clock />
             {counters.dueSoon}
           </Badge>
         )}
         {counters.pending > 0 && counters.overdue === 0 && counters.dueSoon === 0 && (
-          <Badge variant="secondary" className="h-5 px-1.5 text-xs">
-            <ListTodo className="w-3 h-3 mr-1" />
+          <Badge variant="secondary" className="tabular-nums">
+            <ListTodo />
             {counters.pending}
           </Badge>
         )}
@@ -73,32 +73,32 @@ export default function PipelineItemTasksBadge({ tasks, compact = false }: Pipel
     <div className="flex items-center gap-1.5 flex-wrap">
       {/* Tasks vencidas */}
       {counters.overdue > 0 && (
-        <Badge variant="destructive" className="h-6 px-2 text-xs">
-          <AlertCircle className="w-3 h-3 mr-1" />
+        <Badge variant="error" className="tabular-nums">
+          <AlertCircle />
           {counters.overdue} vencida{counters.overdue > 1 ? 's' : ''}
         </Badge>
       )}
 
       {/* Tasks próximas do vencimento */}
       {counters.dueSoon > 0 && (
-        <Badge className="h-6 px-2 text-xs bg-warning/12 text-warning-foreground">
-          <Clock className="w-3 h-3 mr-1" />
+        <Badge variant="warning" className="tabular-nums">
+          <Clock />
           {counters.dueSoon} próxima{counters.dueSoon > 1 ? 's' : ''}
         </Badge>
       )}
 
       {/* Tasks pendentes */}
       {counters.pending > 0 && (
-        <Badge variant="secondary" className="h-6 px-2 text-xs">
-          <ListTodo className="w-3 h-3 mr-1" />
+        <Badge variant="secondary" className="tabular-nums">
+          <ListTodo />
           {counters.pending} pendente{counters.pending > 1 ? 's' : ''}
         </Badge>
       )}
 
       {/* Tasks concluídas */}
       {counters.completed > 0 && (
-        <Badge className="h-6 px-2 text-xs bg-success/12 text-success-foreground">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
+        <Badge variant="success" className="tabular-nums">
+          <CheckCircle2 />
           {counters.completed}
         </Badge>
       )}

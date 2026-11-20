@@ -125,7 +125,8 @@
       "errors": {
         "invalidType": "Por favor, selecione um arquivo de imagem.",
         "tooLarge": "Arquivo muito grande. Máximo 5MB."
-      }
+      },
+      "remove": "Remover foto"
     },
     "sections": {
       "basicInfo": "Informações Básicas",
@@ -348,7 +349,12 @@
       "info4": "Os contatos duplicados serão removidos permanentemente",
       "cancel": "Cancelar",
       "confirm": "Mesclar Contatos",
-      "merging": "Mesclando..."
+      "merging": "Mesclando...",
+      "primary": "Principal",
+      "createdAt": "Criado em {{date}}",
+      "conversations_one": "{{count}} conversa",
+      "conversations_other": "{{count}} conversas",
+      "company": "Empresa:"
     },
     "selectContactToMerge": {
       "title": "Selecionar Contato para Mesclar",
@@ -437,7 +443,8 @@
       "cancel": "Cancelar",
       "import": "Importar",
       "importing": "Importando..."
-    }
+    },
+    "removeFile": "Remover arquivo"
   },
   "pagination": {
     "showing": "Mostrando {{from}} a {{to}} de {{total}} contatos",
@@ -448,7 +455,8 @@
   "labels": {
     "add": "Adicionar Etiqueta",
     "search": "Buscar etiquetas...",
-    "empty": "Nenhuma etiqueta encontrada."
+    "empty": "Nenhuma etiqueta encontrada.",
+    "remove": "Remover"
   },
   "modal": {
     "title": {
@@ -536,7 +544,14 @@
         "paused": "Pausado",
         "inactive": "Inativo",
         "unknown": "Desconhecido"
-      }
+      },
+      "select": "Selecione um template",
+      "selected": "Template: {{name}}",
+      "change": "Trocar template",
+      "fillVariables": "Preencha as variáveis",
+      "preview": "Pré-visualização",
+      "valueFor": "Valor para {{key}}",
+      "visualEmail": "Template de email visual. O HTML será gerado automaticamente."
     },
     "toggle": {
       "label": "Usar Template",
@@ -558,7 +573,9 @@
     "emptyDescription": "Crie uma nova ação agendada para começar",
     "pagination": "Página {{page}} de {{totalPages}} ({{total}} total)",
     "messages": {
-      "noChannelsConfigured": "Nenhum canal de mensagens configurado. Por favor, configure primeiro um canal de WhatsApp, SMS, Email ou Telegram nas configurações de Canais."
+      "noChannelsConfigured": "Nenhum canal de mensagens configurado. Por favor, configure primeiro um canal de WhatsApp, SMS, Email ou Telegram nas configurações de Canais.",
+      "cancelled": "Ação agendada cancelada",
+      "bulkCancelled": "{{count}} ações canceladas"
     },
     "errors": {
       "loadFailed": "Erro ao carregar ações agendadas",
@@ -644,7 +661,14 @@
     "noContactsFound": "Nenhum contato encontrado",
     "clearContact": "Limpar contato",
     "loadingChannels": "Carregando canais...",
-    "selectChannel": "Selecione um canal"
+    "selectChannel": "Selecione um canal",
+    "cancelConfirm": {
+      "title": "Cancelar ação agendada?",
+      "titleBulk": "Cancelar {{count}} ações agendadas?",
+      "description": "A ação não será executada. Esta operação não pode ser desfeita.",
+      "confirm": "Cancelar ação",
+      "keep": "Manter"
+    }
   },
   "events": {
     "timeline": {

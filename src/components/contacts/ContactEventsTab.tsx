@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { AlertCircle, AlertTriangle, Inbox } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactEvents } from '@/hooks/useContactEvents';

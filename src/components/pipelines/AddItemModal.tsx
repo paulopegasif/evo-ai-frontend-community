@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { Check, Mail, MessageSquare, Phone, Search, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { initials } from './kanban/kanbanUtils';
+import { initials } from '@/lib/initials';
 import { ConversationForModal, PipelineStage } from '@/types/analytics';
 import { pipelinesService } from '@/services/pipelines';
 import { toast } from 'sonner';

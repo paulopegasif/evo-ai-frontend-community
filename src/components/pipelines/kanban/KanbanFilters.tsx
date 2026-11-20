@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PRIORITY_DOT, STATUS_DOT, initials } from './kanbanUtils';
+import { PRIORITY_DOT, STATUS_DOT } from './kanbanUtils';
+import { initials } from '@/lib/initials';
 
 const ALL = '__all__';
 

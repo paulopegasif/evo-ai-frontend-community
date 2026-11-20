@@ -1,19 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Card,
-  CardContent,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-  Switch,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, X, Settings } from 'lucide-react';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import {
@@ -63,6 +58,7 @@ export default function PipelineCustomAttributesForm({
   stageCustomFields,
 }: PipelineCustomAttributesFormProps) {
   const { t } = useLanguage('customAttributes');
+  const { t: tp } = useLanguage('pipelines');
   const [definedAttributes, setDefinedAttributes] = useState<PipelineAttributeDefinition[]>([]);
   const [loading, setLoading] = useState(false);
   const [newAttributeKey, setNewAttributeKey] = useState('');
@@ -470,30 +466,31 @@ export default function PipelineCustomAttributesForm({
       case 'list':
         return (
           <Select
-            value={value}
-            onValueChange={newValue => handleUpdateAttribute(attribute.attribute_key, newValue)}
+            items={(attribute.attribute_values ?? []).map(option => ({ value: option, label: option }))}
+            value={value || null}
+            onValueChange={newValue => newValue != null && handleUpdateAttribute(attribute.attribute_key, newValue)}
             disabled={disabled || !canEdit}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue
                 placeholder={t('placeholders.select', {
                   name: attribute.attribute_display_name.toLowerCase(),
                 })}
               />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {attribute.attribute_values?.map(option => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         );
 
       case 'checkbox':
         return (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Switch
               checked={Boolean(rawValue)}
               onCheckedChange={checked => handleUpdateAttribute(attribute.attribute_key, checked)}
@@ -526,17 +523,22 @@ export default function PipelineCustomAttributesForm({
   return (
     <div className="space-y-4">
       {loading && (
-        <div className="text-center py-4">
-          <div className="text-sm text-muted-foreground">{t('loading')}</div>
+        <div className="flex flex-col gap-2" aria-busy="true" aria-label={t('loading')}>
+          {Array.from({ length: 2 }, (_, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-lg border p-3">
+              <Skeleton className="h-3.5 w-36" />
+              <Skeleton className="h-9 w-full" />
+            </div>
+          ))}
         </div>
       )}
 
       {/* Defined Custom Attributes */}
       {definedAttributes.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-3">
-            <Settings className="h-4 w-4" />
-            <Label className="text-sm font-medium text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Settings className="size-4" />
+            <Label className="font-medium text-muted-foreground text-sm">
               {t('sections.defined')}
             </Label>
           </div>
@@ -549,36 +551,32 @@ export default function PipelineCustomAttributesForm({
               const typeLabel = getAttributeTypeLabel(attribute.attribute_display_type);
 
               return (
-                <div key={attribute.attribute_key} className="rounded-md border border-border/70 p-3">
+                <div key={attribute.attribute_key} className="rounded-lg border p-3">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Label className="text-sm font-medium">
                           {attribute.attribute_display_name}
                         </Label>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded ${isGlobalAttribute
-                            ? 'bg-success/12 text-success-foreground'
-                            : 'bg-muted text-foreground'}`}
-                        >
+                        <Badge variant={isGlobalAttribute ? 'success' : 'secondary'} size="sm">
                           {isGlobalAttribute ? 'Global' : 'Local'}
-                        </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">
+                        </Badge>
+                        <Badge variant="outline" size="sm">
                           {typeLabel}
-                        </span>
+                        </Badge>
                         {/* Show origin tag in item context */}
                         {contextLevel === 'item' && attributeOrigin && (
-                          <span className="text-xs px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
+                          <Badge variant="secondary" size="sm">
                             {attributeOrigin === 'pipeline' && t('fields.attributeScope.attributeOrigin.pipeline')}
                             {attributeOrigin === 'stage' && t('fields.attributeScope.attributeOrigin.stage')}
                             {attributeOrigin === 'item' && t('fields.attributeScope.attributeOrigin.item')}
-                          </span>
+                          </Badge>
                         )}
                         {isShared && (
-                          <span className="text-xs px-2 py-0.5 rounded bg-info/12 text-info-foreground">
+                          <Badge variant="info" size="sm">
                             {attribute.attribute_scope === 'stages'
                               ? t('fields.attributeScope.sharedMessage.labelStages')
                               : t('fields.attributeScope.sharedMessage.label')}
-                          </span>
+                          </Badge>
                         )}
                         {attribute.attribute_description && (
                           <span className="text-xs text-muted-foreground">
@@ -606,9 +604,9 @@ export default function PipelineCustomAttributesForm({
       {/* Ad-hoc Custom Attributes */}
       {adHocAttributes.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-3">
-            <Plus className="h-4 w-4" />
-            <Label className="text-sm font-medium text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Plus className="size-4" />
+            <Label className="font-medium text-muted-foreground text-sm">
               {t('sections.additional')}
             </Label>
           </div>
@@ -625,18 +623,18 @@ export default function PipelineCustomAttributesForm({
               const canEdit = canEditAttributeValue();
 
               return (
-                <div key={key} className="rounded-md border border-border/70 p-3">
+                <div key={key} className="rounded-lg border p-3">
                     <div className="flex items-center gap-3">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Label className="text-sm font-medium">{displayName}</Label>
-                          <span className="text-xs px-2 py-0.5 rounded bg-muted text-foreground">
+                          <Badge variant="secondary" size="sm">
                             Local
-                          </span>
+                          </Badge>
                           {localType && (
-                            <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">
+                            <Badge variant="outline" size="sm">
                               {getAttributeTypeLabel(localType)}
-                            </span>
+                            </Badge>
                           )}
                         </div>
                         {canEdit ? (
@@ -677,11 +675,12 @@ export default function PipelineCustomAttributesForm({
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          size="icon-sm"
                           onClick={() => handleRemoveAttribute(key)}
-                          className="text-destructive hover:text-destructive"
+                          className="text-muted-foreground hover:text-destructive-foreground"
+                          aria-label={tp('attributes.remove', { name: displayName })}
                         >
-                          <X className="h-4 w-4" />
+                          <X />
                         </Button>
                       )}
                     </div>
@@ -696,8 +695,7 @@ export default function PipelineCustomAttributesForm({
       {!disabled && (
         <div>
           {showAddForm ? (
-            <Card>
-              <CardContent className="space-y-4 p-4">
+            <div className="space-y-4 rounded-xl border bg-muted/48 p-4 dark:bg-muted/24">
                 <div className="space-y-2">
                   <Label htmlFor="attribute-key">
                     {contextLevel === 'item'
@@ -738,13 +736,14 @@ export default function PipelineCustomAttributesForm({
                       <div className="space-y-2">
                         <Label htmlFor="attribute-type">{t('modal.fields.displayType.label')}</Label>
                         <Select
+                          items={ATTRIBUTE_TYPE_OPTIONS.map(option => ({ value: option.value, label: getTypeOptionLabel(option) }))}
                           value={newAttributeType}
-                          onValueChange={value => setNewAttributeType(value as AttributeDisplayType)}
+                          onValueChange={value => value != null && setNewAttributeType(value as AttributeDisplayType)}
                         >
-                          <SelectTrigger id="attribute-type">
+                          <SelectTrigger id="attribute-type" className="w-full">
                             <SelectValue placeholder={t('modal.fields.displayType.label')} />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectPopup>
                             {ATTRIBUTE_TYPE_OPTIONS.map(option => (
                               <SelectItem key={option.value} value={option.value}>
                                 <div>
@@ -753,7 +752,7 @@ export default function PipelineCustomAttributesForm({
                                 </div>
                               </SelectItem>
                             ))}
-                          </SelectContent>
+                          </SelectPopup>
                         </Select>
                       </div>
                       {newAttributeType === 'list' && (
@@ -771,7 +770,7 @@ export default function PipelineCustomAttributesForm({
                     </div>
                   );
                 })()}
-                {createError && <p className="text-sm text-destructive">{createError}</p>}
+                {createError && <p className="text-destructive-foreground text-xs">{createError}</p>}
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -785,17 +784,11 @@ export default function PipelineCustomAttributesForm({
                   >
                     {t('actions.add')}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={resetAddForm}
-                  >
+                  <Button type="button" variant="ghost" size="sm" onClick={resetAddForm}>
                     {t('actions.cancel')}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+            </div>
           ) : (
             <Button
               type="button"
@@ -804,7 +797,7 @@ export default function PipelineCustomAttributesForm({
               onClick={() => setShowAddForm(true)}
               className="border-dashed"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus />
               {t('actions.addAttribute')}
             </Button>
           )}
@@ -816,13 +809,17 @@ export default function PipelineCustomAttributesForm({
         attributeEntries.length === 0 &&
         !showAddForm &&
         !loading && (
-          <div className="text-center py-6 text-muted-foreground">
-            <Settings className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">{t('empty.title')}</p>
-            <p className="text-xs mt-1">
-              {!disabled ? t('empty.description') : t('empty.descriptionReadOnly')}
-            </p>
-          </div>
+          <Empty className="gap-4 rounded-xl border border-dashed p-6 md:p-6">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Settings />
+              </EmptyMedia>
+              <EmptyTitle className="text-base">{t('empty.title')}</EmptyTitle>
+              <EmptyDescription>
+                {!disabled ? t('empty.description') : t('empty.descriptionReadOnly')}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         )}
     </div>
   );

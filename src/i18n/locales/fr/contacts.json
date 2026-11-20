@@ -117,7 +117,8 @@
       "errors": {
         "invalidType": "Veuillez sélectionner un fichier image.",
         "tooLarge": "Fichier trop volumineux. Maximum 5 Mo."
-      }
+      },
+      "remove": "Retirer la photo"
     },
     "sections": {
       "basicInfo": "Informations de Base",
@@ -340,7 +341,12 @@
       "info4": "Les contacts en double seront supprimés définitivement",
       "cancel": "Annuler",
       "confirm": "Fusionner les Contacts",
-      "merging": "Fusion en cours..."
+      "merging": "Fusion en cours...",
+      "primary": "Principal",
+      "createdAt": "Créé le {{date}}",
+      "conversations_one": "{{count}} conversation",
+      "conversations_other": "{{count}} conversations",
+      "company": "Entreprise :"
     },
     "selectContactToMerge": {
       "title": "Sélectionner un Contact à Fusionner",
@@ -429,7 +435,8 @@
       "cancel": "Annuler",
       "import": "Importer",
       "importing": "Importation en cours..."
-    }
+    },
+    "removeFile": "Retirer le fichier"
   },
   "pagination": {
     "showing": "Affichage de {{from}} à {{to}} sur {{total}} contacts",
@@ -440,7 +447,8 @@
   "labels": {
     "add": "Ajouter une Étiquette",
     "search": "Rechercher des étiquettes...",
-    "empty": "Aucune étiquette trouvée."
+    "empty": "Aucune étiquette trouvée.",
+    "remove": "Retirer"
   },
   "modal": {
     "title": {
@@ -528,7 +536,14 @@
         "paused": "En pause",
         "inactive": "Inactif",
         "unknown": "Inconnu"
-      }
+      },
+      "select": "Sélectionnez un modèle",
+      "selected": "Modèle : {{name}}",
+      "change": "Changer de modèle",
+      "fillVariables": "Renseignez les variables",
+      "preview": "Aperçu",
+      "valueFor": "Valeur pour {{key}}",
+      "visualEmail": "Modèle d’email visuel. Le HTML sera généré automatiquement."
     },
     "toggle": {
       "label": "Utiliser un Modèle",
@@ -579,7 +594,9 @@
     "emptyDescription": "Créez une nouvelle action programmée pour commencer",
     "pagination": "Page {{page}} sur {{totalPages}} ({{total}} au total)",
     "messages": {
-      "noChannelsConfigured": "Aucun canal de messagerie configuré. Veuillez d'abord configurer un canal WhatsApp, SMS, Email ou Telegram dans les paramètres des Canaux."
+      "noChannelsConfigured": "Aucun canal de messagerie configuré. Veuillez d'abord configurer un canal WhatsApp, SMS, Email ou Telegram dans les paramètres des Canaux.",
+      "cancelled": "Action planifiée annulée",
+      "bulkCancelled": "{{count}} actions annulées"
     },
     "errors": {
       "loadFailed": "Échec du chargement des actions programmées",
@@ -636,7 +653,14 @@
     "noContactsFound": "Aucun contact trouvé",
     "clearContact": "Effacer le contact",
     "loadingChannels": "Chargement des canaux...",
-    "selectChannel": "Sélectionnez un canal"
+    "selectChannel": "Sélectionnez un canal",
+    "cancelConfirm": {
+      "title": "Annuler l’action planifiée ?",
+      "titleBulk": "Annuler {{count}} actions planifiées ?",
+      "description": "L’action ne sera pas exécutée. Cette opération est irréversible.",
+      "confirm": "Annuler l’action",
+      "keep": "Conserver"
+    }
   },
   "events": {
     "timeline": {
