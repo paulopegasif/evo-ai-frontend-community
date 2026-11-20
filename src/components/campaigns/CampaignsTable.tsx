@@ -321,7 +321,6 @@ export default function CampaignsTable({
           : undefined
       }
       getRowKey={campaign => String(campaign.id)}
-      className="border-0 shadow-none"
     />
   );
 }

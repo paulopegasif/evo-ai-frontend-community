@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
-import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/compat';
-import { cn } from '@/utils/cn';
-
+import type { ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { renderIcon } from './renderIcon';
 
 interface PrimaryActionButtonProps {
   label: string;
@@ -24,59 +24,20 @@ export default function PrimaryActionButton({
   disabled = false,
   tooltip,
 }: PrimaryActionButtonProps) {
-  // Render icon correctly - if it's a component, render it as JSX
-  const renderIcon = () => {
-    if (!icon) return null;
-
-    // If it's already a valid React element, render it directly
-    if (React.isValidElement(icon)) {
-      return <span className="mr-2">{icon}</span>;
-    }
-
-    // If it's a component constructor (function), render it as JSX
-    if (typeof icon === 'function') {
-      const IconComponent = icon as React.ComponentType<{ className?: string }>;
-      return (
-        <span className="mr-2">
-          <IconComponent className="h-4 w-4" />
-        </span>
-      );
-    }
-
-    // Otherwise, render as is
-    return <span className="mr-2">{icon}</span>;
-  };
-
   const button = (
-    <Button
-      variant={variant}
-      size={size}
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        variant === 'default' && 'bg-primary hover:bg-primary/85 text-primary-foreground border-0 font-semibold',
-        disabled && 'opacity-50 cursor-not-allowed',
-        className
-      )}
-    >
-      {renderIcon()}
+    <Button variant={variant} size={size} onClick={onClick} disabled={disabled} className={className}>
+      {renderIcon(icon)}
       {label}
     </Button>
   );
 
-  // If there's a tooltip and the button is disabled, wrap it with tooltip
+  // Disabled buttons don't fire pointer events, so the tooltip hangs off a wrapper.
   if (tooltip && disabled) {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {button}
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger render={<span className="inline-flex" />}>{button}</TooltipTrigger>
+        <TooltipPopup>{tooltip}</TooltipPopup>
+      </Tooltip>
     );
   }
 

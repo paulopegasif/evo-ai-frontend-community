@@ -1,17 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 import { Globe } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { webhooksService } from '@/services/integrations';
 import { Webhook } from '@/types/integrations';
@@ -297,7 +290,7 @@ export default function WebhooksList({ onBack }: WebhooksListProps = {}) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-none p-4 pb-0">
+      <div className="flex-none p-4 pb-0 md:px-6 md:pt-6">
         <WebhooksHeader
           totalCount={state.meta.pagination.total}
           selectedCount={state.selectedWebhookIds.length}
@@ -311,11 +304,9 @@ export default function WebhooksList({ onBack }: WebhooksListProps = {}) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
+      <div className="mt-5 flex-1 overflow-auto px-4 pb-4 md:px-6">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('webhooks.messages.loading')}</div>
-          </div>
+          <ListSkeleton />
         ) : state.webhooks.length === 0 ? (
           <EmptyState
             icon={Globe}
@@ -359,7 +350,7 @@ export default function WebhooksList({ onBack }: WebhooksListProps = {}) {
 
       {/* Fixed Pagination at Bottom */}
       {state.meta.pagination.total > 0 && (
-        <div className="flex-none border-t bg-background px-4 py-2">
+        <div className="flex-none border-t bg-background px-4 py-3 md:px-6">
           <WebhooksPagination
             currentPage={state.meta.pagination.page}
             totalPages={state.meta.pagination.total_pages}
@@ -373,62 +364,28 @@ export default function WebhooksList({ onBack }: WebhooksListProps = {}) {
       )}
 
       {/* Delete Webhook Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('webhooks.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('webhooks.deleteDialog.description', { url: webhookToDelete?.url })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('webhooks.deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteWebhook}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('webhooks.deleteDialog.deleting')
-                : t('webhooks.deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('webhooks.deleteDialog.title')}
+        description={t('webhooks.deleteDialog.description', { url: webhookToDelete?.url })}
+        cancelLabel={t('webhooks.deleteDialog.cancel')}
+        confirmLabel={t('webhooks.deleteDialog.confirm')}
+        onConfirm={confirmDeleteWebhook}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('webhooks.bulkDeleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('webhooks.bulkDeleteDialog.description', {
-                count: state.selectedWebhookIds.length,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('webhooks.bulkDeleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('webhooks.bulkDeleteDialog.deleting')
-                : t('webhooks.bulkDeleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('webhooks.bulkDeleteDialog.title')}
+        description={t('webhooks.bulkDeleteDialog.description', { count: state.selectedWebhookIds.length, })}
+        cancelLabel={t('webhooks.bulkDeleteDialog.cancel')}
+        confirmLabel={t('webhooks.bulkDeleteDialog.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* Webhook Modal */}
       <WebhookModal

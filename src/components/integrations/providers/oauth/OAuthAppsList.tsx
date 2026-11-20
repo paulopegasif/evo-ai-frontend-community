@@ -1,18 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@/components/ui/compat';
+import { Button, Card } from '@/components/ui/compat';
 import { Key, Copy } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { OAuthApplication } from '@/types/integrations';
@@ -343,7 +336,7 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-none p-4 pb-0">
+      <div className="flex-none p-4 pb-0 md:px-6 md:pt-6">
         <OAuthAppsHeader
           totalCount={state.meta.pagination.total}
           selectedCount={state.selectedAppIds.length}
@@ -357,11 +350,9 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
+      <div className="mt-5 flex-1 overflow-auto px-4 pb-4 md:px-6">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('oauth.messages.loading')}</div>
-          </div>
+          <ListSkeleton />
         ) : state.apps.length === 0 ? (
           <EmptyState
             icon={Key}
@@ -475,7 +466,7 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
 
       {/* Fixed Pagination at Bottom */}
       {state.meta.pagination.total > 0 && (
-        <div className="flex-none border-t bg-background px-4 py-2">
+        <div className="flex-none border-t bg-background px-4 py-3 md:px-6">
           <OAuthAppsPagination
             currentPage={state.meta.pagination.page}
             totalPages={state.meta.pagination.total_pages}
@@ -489,60 +480,28 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
       )}
 
       {/* Delete App Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('oauth.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('oauth.deleteDialog.description', { name: appToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('oauth.deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteApp}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('oauth.deleteDialog.deleting')
-                : t('oauth.deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('oauth.deleteDialog.title')}
+        description={t('oauth.deleteDialog.description', { name: appToDelete?.name })}
+        cancelLabel={t('oauth.deleteDialog.cancel')}
+        confirmLabel={t('oauth.deleteDialog.confirm')}
+        onConfirm={confirmDeleteApp}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('oauth.bulkDeleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('oauth.bulkDeleteDialog.description', { count: state.selectedAppIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('oauth.bulkDeleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('oauth.bulkDeleteDialog.deleting')
-                : t('oauth.bulkDeleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('oauth.bulkDeleteDialog.title')}
+        description={t('oauth.bulkDeleteDialog.description', { count: state.selectedAppIds.length })}
+        cancelLabel={t('oauth.bulkDeleteDialog.cancel')}
+        confirmLabel={t('oauth.bulkDeleteDialog.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* OAuth App Modal */}
       <OAuthAppModal

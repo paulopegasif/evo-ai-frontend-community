@@ -1,17 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@/components/ui/compat';
 import { Monitor } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { DashboardApp } from '@/types/integrations';
@@ -331,7 +324,7 @@ export default function DashboardAppsList({ onBack }: DashboardAppsListProps = {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-none p-4 pb-0">
+      <div className="flex-none p-4 pb-0 md:px-6 md:pt-6">
         <DashboardAppsHeader
           totalCount={state.meta.pagination.total}
           selectedCount={state.selectedAppIds.length}
@@ -345,11 +338,9 @@ export default function DashboardAppsList({ onBack }: DashboardAppsListProps = {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
+      <div className="mt-5 flex-1 overflow-auto px-4 pb-4 md:px-6">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('dashboardApps.loading')}</div>
-          </div>
+          <ListSkeleton />
         ) : state.apps.length === 0 ? (
           <EmptyState
             icon={Monitor}
@@ -393,7 +384,7 @@ export default function DashboardAppsList({ onBack }: DashboardAppsListProps = {
 
       {/* Fixed Pagination at Bottom */}
       {state.meta.pagination.total > 0 && (
-        <div className="flex-none border-t bg-background px-4 py-2">
+        <div className="flex-none border-t bg-background px-4 py-3 md:px-6">
           <DashboardAppsPagination
             currentPage={state.meta.pagination.page}
             totalPages={state.meta.pagination.total_pages}
@@ -407,62 +398,28 @@ export default function DashboardAppsList({ onBack }: DashboardAppsListProps = {
       )}
 
       {/* Delete App Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dashboardApps.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dashboardApps.deleteDialog.description', { title: appToDelete?.title })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dashboardApps.deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteApp}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('dashboardApps.deleteDialog.deleting')
-                : t('dashboardApps.deleteDialog.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dashboardApps.deleteDialog.title')}
+        description={t('dashboardApps.deleteDialog.description', { title: appToDelete?.title })}
+        cancelLabel={t('dashboardApps.deleteDialog.cancel')}
+        confirmLabel={t('dashboardApps.deleteDialog.delete')}
+        onConfirm={confirmDeleteApp}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dashboardApps.bulkDeleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dashboardApps.bulkDeleteDialog.description', {
-                count: state.selectedAppIds.length,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('dashboardApps.bulkDeleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('dashboardApps.bulkDeleteDialog.deleting')
-                : t('dashboardApps.bulkDeleteDialog.deleteAll')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dashboardApps.bulkDeleteDialog.title')}
+        description={t('dashboardApps.bulkDeleteDialog.description', { count: state.selectedAppIds.length, })}
+        cancelLabel={t('dashboardApps.bulkDeleteDialog.cancel')}
+        confirmLabel={t('dashboardApps.bulkDeleteDialog.deleteAll')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* Dashboard App Modal */}
       <DashboardAppModal

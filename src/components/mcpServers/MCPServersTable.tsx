@@ -118,7 +118,6 @@ export default function MCPServersTable({
       emptyDescription={t('table.empty.description')}
       emptyAction={undefined}
       getRowKey={server => String(server.id)}
-      className="border-0 shadow-none"
     />
   );
 }

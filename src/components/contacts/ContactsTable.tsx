@@ -207,7 +207,6 @@ export default function ContactsTable({
       }
       getRowKey={contact => String(contact.id)}
       getRowLabel={contact => contact.name || contact.email || contact.phone_number || String(contact.id)}
-      className="border-0 shadow-none"
     />
   );
 }

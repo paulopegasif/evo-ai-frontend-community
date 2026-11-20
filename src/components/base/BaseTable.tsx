@@ -1,27 +1,19 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal, type LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Checkbox,
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/compat';
-import { MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown, LucideIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { cn } from '@/utils/cn';
 import EmptyState from './EmptyState';
 
 // The row actions column stays pinned to the right edge, so wide tables that
 // scroll horizontally (e.g. contacts at 1440px) never hide the actions menu.
-// Opaque backgrounds (color-mix of the row tints over the sidebar color) keep
-// scrolled cells from showing through.
-const STICKY_ACTIONS = 'sticky right-0 z-10 shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.18)]';
+// Opaque backgrounds keep scrolled cells from showing through.
+const STICKY_ACTIONS = 'sticky right-0 z-10 bg-card shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.12)]';
+const LOADING_ROWS = 5;
 
 export interface TableColumn<T> {
   key: string;
@@ -71,7 +63,7 @@ export interface BaseTableProps<T> {
   className?: string;
 }
 
-export default function BaseTable<T extends Record<string, any>>({
+export default function BaseTable<T extends Record<string, any>>({ // eslint-disable-line @typescript-eslint/no-explicit-any
   data,
   columns,
   actions,
@@ -119,39 +111,34 @@ export default function BaseTable<T extends Record<string, any>>({
     return selectedItems.some(selected => getRowKey(selected) === key);
   };
 
-  const renderSortIcon = (column: TableColumn<T>) => {
-    if (!column.sortable || !onSort) return null;
+  const hasActions = Boolean(actions && actions.length > 0);
+  const isSomeSelected = selectedItems.length > 0 && !isAllSelected;
 
-    if (sortBy !== column.key) {
-      return (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="ml-2 h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-          onClick={() => onSort(column.key)}
-        >
-          <ArrowUpDown className="h-4 w-4" />
-        </Button>
-      );
-    }
+  const alignClass = (align?: 'left' | 'center' | 'right') =>
+    align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : undefined;
 
+  const renderHeadLabel = (column: TableColumn<T>) => {
+    if (!column.sortable || !onSort) return column.label;
+    const active = sortBy === column.key;
+    const Icon = !active ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
     return (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="ml-2 h-8 px-2 text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
+      <button
+        type="button"
         onClick={() => onSort(column.key)}
+        className={cn(
+          '-mx-1.5 inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
+          active && 'text-foreground',
+        )}
+        aria-sort={active ? (sortOrder === 'asc' ? 'ascending' : 'descending') : undefined}
       >
-        {sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
-      </Button>
+        {column.label}
+        <Icon className={cn('size-3.5', !active && 'opacity-48')} />
+      </button>
     );
   };
 
   const renderCellContent = (item: T, column: TableColumn<T>, index: number) => {
-    if (column.render) {
-      return column.render(item, index);
-    }
-
+    if (column.render) return column.render(item, index);
     const value = item[column.key];
     if (value === null || value === undefined) return '-';
     if (typeof value === 'boolean') return value ? t('base.table.yes') : t('base.table.no');
@@ -159,54 +146,31 @@ export default function BaseTable<T extends Record<string, any>>({
   };
 
   const renderActions = (item: T) => {
-    if (!actions || actions.length === 0) return null;
-
-    const visibleActions = actions.filter(action => !action.show || action.show(item));
-
+    const visibleActions = (actions ?? []).filter(action => !action.show || action.show(item));
     if (visibleActions.length === 0) return null;
 
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-        >
+      <Menu>
+        <MenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label={t('base.table.actions')} />}>
+          <MoreHorizontal />
+        </MenuTrigger>
+        <MenuPopup align="end">
           {visibleActions.map((action, index) => (
-            <DropdownMenuItem
+            <MenuItem
               key={index}
               onClick={() => action.onClick(item)}
-              className={`hover:bg-sidebar-accent ${
-                action.variant === 'destructive' ? 'text-red-400' : 'text-sidebar-foreground'
-              }`}
+              variant={action.variant === 'destructive' ? 'destructive' : 'default'}
             >
-              {action.icon && <span className="mr-2">{action.icon}</span>}
+              {action.icon}
               {action.label}
-            </DropdownMenuItem>
+            </MenuItem>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </MenuPopup>
+      </Menu>
     );
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12 bg-sidebar rounded-lg border border-sidebar-border">
-        <div className="text-sidebar-foreground/70">{t('base.table.loading')}</div>
-      </div>
-    );
-  }
-
-  if (data.length === 0) {
-    // Se temos configuração completa do EmptyState, use o componente
+  if (!loading && data.length === 0) {
     if (emptyIcon && emptyTitle && emptyDescription) {
       return (
         <EmptyState
@@ -219,99 +183,98 @@ export default function BaseTable<T extends Record<string, any>>({
       );
     }
 
-    // Fallback para a mensagem simples
     return (
-      <div className="flex items-center justify-center py-12 bg-sidebar rounded-lg border border-sidebar-border">
-        <div className="text-sidebar-foreground/70">{message}</div>
+      <div className="flex items-center justify-center rounded-xl border bg-card py-12 text-muted-foreground text-sm">
+        {message}
       </div>
     );
   }
 
   return (
-    <div
-      className={`rounded-lg border border-sidebar-border bg-sidebar overflow-x-auto ${className}`}
-    >
+    <div className={cn('overflow-hidden rounded-xl border bg-card shadow-xs/5', className)}>
       <Table>
         <TableHeader>
-          <TableRow className="border-sidebar-border hover:bg-sidebar-accent/50">
+          <TableRow className="hover:bg-transparent">
             {selectable && (
-              <TableHead className="w-12 text-sidebar-foreground bg-sidebar-accent/30">
+              <TableHead className="w-10 ps-4">
                 <Checkbox
                   checked={isAllSelected}
+                  indeterminate={isSomeSelected}
                   onCheckedChange={handleSelectAll}
                   aria-label={t('base.table.selectAll')}
-                  className="border-sidebar-border data-checked:bg-primary data-checked:border-primary"
+                  disabled={loading || data.length === 0}
                 />
               </TableHead>
             )}
             {columns.map(column => (
               <TableHead
                 key={column.key}
-                className={`${column.width ?? ''} ${column.className ?? ''} text-sidebar-foreground bg-sidebar-accent/30 font-medium`}
-                align={column.align}
+                className={cn(column.width, column.className, alignClass(column.align), !selectable && 'first:ps-4')}
               >
-                <div
-                  className={`flex items-center ${
-                    column.align === 'right' ? 'justify-end' : column.align === 'center' ? 'justify-center' : ''
-                  }`}
-                >
-                  {column.label}
-                  {renderSortIcon(column)}
-                </div>
+                {renderHeadLabel(column)}
               </TableHead>
             ))}
-            {actions && actions.length > 0 && (
-              <TableHead className={`w-12 text-sidebar-foreground ${STICKY_ACTIONS} bg-[color-mix(in_srgb,var(--color-sidebar-accent)_30%,var(--color-sidebar))]`}>
-                {t('base.table.actions')}
+            {hasActions && (
+              <TableHead className={cn('w-12 pe-4 text-right', STICKY_ACTIONS)}>
+                <span className="sr-only">{t('base.table.actions')}</span>
               </TableHead>
             )}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item, index) => {
-            const key = getRowKey(item);
-            const isSelected = isItemSelected(item);
+          {loading
+            ? Array.from({ length: LOADING_ROWS }, (_, row) => (
+                <TableRow key={`loading-${row}`} className="hover:bg-transparent">
+                  {selectable && (
+                    <TableCell className="ps-4">
+                      <Skeleton className="size-4 rounded" />
+                    </TableCell>
+                  )}
+                  {columns.map(column => (
+                    <TableCell key={column.key} className={cn(column.className, !selectable && 'first:ps-4')}>
+                      <Skeleton className="h-4 w-full max-w-40" />
+                    </TableCell>
+                  ))}
+                  {hasActions && <TableCell className={cn('pe-4', STICKY_ACTIONS)} />}
+                </TableRow>
+              ))
+            : data.map((item, index) => {
+                const key = getRowKey(item);
+                const isSelected = isItemSelected(item);
 
-            return (
-              <TableRow
-                key={key}
-                className={`group border-sidebar-border hover:bg-sidebar-accent/30 ${
-                  isSelected ? 'bg-sidebar-accent/40' : ''
-                }`}
-              >
-                {selectable && (
-                  <TableCell>
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => handleSelectItem(item)}
-                      aria-label={t('base.table.selectItem', { key: getRowLabel?.(item) ?? key })}
-                      className="border-sidebar-border data-checked:bg-primary data-checked:border-primary"
-                    />
-                  </TableCell>
-                )}
-                {columns.map(column => (
-                  <TableCell
-                    key={column.key}
-                    align={column.align}
-                    className={`text-sidebar-foreground ${column.className ?? ''}`}
-                  >
-                    {renderCellContent(item, column, index)}
-                  </TableCell>
-                ))}
-                {actions && actions.length > 0 && (
-                  <TableCell
-                    className={`${STICKY_ACTIONS} ${
-                      isSelected
-                        ? 'bg-[color-mix(in_srgb,var(--color-sidebar-accent)_40%,var(--color-sidebar))]'
-                        : 'bg-sidebar group-hover:bg-[color-mix(in_srgb,var(--color-sidebar-accent)_30%,var(--color-sidebar))]'
-                    }`}
-                  >
-                    {renderActions(item)}
-                  </TableCell>
-                )}
-              </TableRow>
-            );
-          })}
+                return (
+                  <TableRow key={key} data-state={isSelected ? 'selected' : undefined} className="group">
+                    {selectable && (
+                      <TableCell className="ps-4">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => handleSelectItem(item)}
+                          aria-label={t('base.table.selectItem', { key: getRowLabel?.(item) ?? key })}
+                        />
+                      </TableCell>
+                    )}
+                    {columns.map(column => (
+                      <TableCell
+                        key={column.key}
+                        className={cn(column.className, alignClass(column.align), !selectable && 'first:ps-4')}
+                      >
+                        {renderCellContent(item, column, index)}
+                      </TableCell>
+                    ))}
+                    {hasActions && (
+                      <TableCell
+                        className={cn(
+                          'pe-4 text-right',
+                          STICKY_ACTIONS,
+                          'group-hover:bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)] group-data-[state=selected]:bg-[color-mix(in_srgb,var(--card),var(--color-black)_4%)] dark:group-hover:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]',
+                        )}
+                      >
+                        {renderActions(item)}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })}
         </TableBody>
       </Table>
     </div>

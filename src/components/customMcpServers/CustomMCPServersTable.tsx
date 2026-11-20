@@ -182,7 +182,6 @@ export default function CustomMCPServersTable({
           : undefined
       }
       getRowKey={server => String(server.id)}
-      className="border-0 shadow-none"
     />
   );
 }

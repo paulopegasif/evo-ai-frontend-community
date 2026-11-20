@@ -2,7 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Monitor, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { DashboardApp } from '@/types/integrations';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 
 interface DashboardAppsTableProps {
   apps: DashboardApp[];
@@ -33,7 +33,7 @@ export default function DashboardAppsTable({
   const appsList = apps || [];
 
   const getDisplayTypeColor = (type: string) => {
-    return type === 'sidebar' ? 'default' : 'secondary';
+    return type === 'sidebar' ? 'info' : 'secondary';
   };
 
   const getSidebarMenuLabel = (menu?: string) => {
@@ -91,7 +91,7 @@ export default function DashboardAppsTable({
       label: t('dashboardApps.table.columns.type'),
       sortable: true,
       render: app => (
-        <Badge variant={getDisplayTypeColor(app.display_type)} className="text-xs">
+        <Badge variant={getDisplayTypeColor(app.display_type)}>
           {app.display_type === 'sidebar' ? t('dashboardApps.table.displayType.sidebar') : t('dashboardApps.table.displayType.conversation')}
         </Badge>
       ),
@@ -177,7 +177,6 @@ export default function DashboardAppsTable({
           : undefined
       }
       getRowKey={app => String(app.id)}
-      className="border-0 shadow-none"
     />
   );
 }

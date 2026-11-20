@@ -147,7 +147,6 @@ export default function ToolsTable({
       emptyTitle={t('table.empty.title')}
       emptyDescription={t('table.empty.description')}
       getRowKey={tool => String(tool.id)}
-      className="border-0 shadow-none"
     />
   );
 }

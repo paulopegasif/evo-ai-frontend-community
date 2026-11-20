@@ -199,7 +199,6 @@ export default function CustomToolsTable({
           : undefined
       }
       getRowKey={tool => String(tool.id)}
-      className="border-0 shadow-none"
     />
   );
 }

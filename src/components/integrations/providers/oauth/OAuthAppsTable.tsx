@@ -1,7 +1,7 @@
 import { Key, Edit, Trash2, Copy, Eye, EyeOff, Shield } from 'lucide-react';
 import { OAuthApplication } from '@/types/integrations';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -100,12 +100,12 @@ export default function OAuthAppsTable({
       render: app => (
         <div className="flex flex-wrap gap-1">
           {app.scopes?.slice(0, 2).map((scope) => (
-            <Badge key={scope} variant="secondary" className="text-xs">
+            <Badge key={scope} variant="secondary">
               {scope}
             </Badge>
           ))}
           {app.scopes && app.scopes.length > 2 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary">
               +{app.scopes.length - 2}
             </Badge>
           )}
@@ -120,8 +120,8 @@ export default function OAuthAppsTable({
       label: t('oauth.table.columns.status'),
       sortable: false,
       render: () => (
-        <Badge variant="default" className="text-xs flex items-center gap-1 w-fit">
-          <Shield className="w-3 h-3" />
+        <Badge variant="success">
+          <Shield />
           {t('oauth.table.status.active')}
         </Badge>
       ),
@@ -200,7 +200,6 @@ export default function OAuthAppsTable({
           : undefined
       }
       getRowKey={app => String(app.uid)}
-      className="border-0 shadow-none"
     />
   );
 }
