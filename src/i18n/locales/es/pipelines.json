@@ -814,7 +814,16 @@
       "moveSuccess": "Tarea movida exitosamente",
       "moveError": "Error al mover tarea",
       "addSubtaskSuccess": "Subtarea añadida exitosamente",
-      "addSubtaskError": "Error al añadir subtarea"
+      "addSubtaskError": "Error al añadir subtarea",
+      "deleteWithSubtasksConfirm": "Esta tarea tiene {{count}} subtarea(s). ¿Eliminarlas todas?"
+    },
+    "edit": "Editar tarea",
+    "delete": "Eliminar tarea",
+    "confirm": {
+      "completeTitle": "Completar tarea",
+      "reopenTitle": "Reabrir tarea",
+      "complete": "Completar",
+      "reopen": "Reabrir"
     }
   },
   "dialog": {

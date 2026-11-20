@@ -852,7 +852,16 @@
       "moveSuccess": "Task moved successfully",
       "moveError": "Error moving task",
       "addSubtaskSuccess": "Subtask added successfully",
-      "addSubtaskError": "Error adding subtask"
+      "addSubtaskError": "Error adding subtask",
+      "deleteWithSubtasksConfirm": "This task has {{count}} subtask(s). Delete them all?"
+    },
+    "edit": "Edit task",
+    "delete": "Delete task",
+    "confirm": {
+      "completeTitle": "Complete task",
+      "reopenTitle": "Reopen task",
+      "complete": "Complete",
+      "reopen": "Reopen"
     }
   },
   "dialog": {

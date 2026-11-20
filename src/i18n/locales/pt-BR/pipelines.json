@@ -853,7 +853,16 @@
       "moveSuccess": "Tarefa movida com sucesso",
       "moveError": "Erro ao mover tarefa",
       "addSubtaskSuccess": "Subtarefa adicionada com sucesso",
-      "addSubtaskError": "Erro ao adicionar subtarefa"
+      "addSubtaskError": "Erro ao adicionar subtarefa",
+      "deleteWithSubtasksConfirm": "Esta tarefa tem {{count}} subtarefa(s). Excluir todas?"
+    },
+    "edit": "Editar tarefa",
+    "delete": "Excluir tarefa",
+    "confirm": {
+      "completeTitle": "Concluir tarefa",
+      "reopenTitle": "Reabrir tarefa",
+      "complete": "Concluir",
+      "reopen": "Reabrir"
     }
   },
   "dialog": {

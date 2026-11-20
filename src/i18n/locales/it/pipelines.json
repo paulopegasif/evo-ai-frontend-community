@@ -791,7 +791,16 @@
       "moveSuccess": "Attività spostata con successo",
       "moveError": "Errore durante lo spostamento dell'attività",
       "addSubtaskSuccess": "Sottoattività aggiunta con successo",
-      "addSubtaskError": "Errore durante l'aggiunta della sottoattività"
+      "addSubtaskError": "Errore durante l'aggiunta della sottoattività",
+      "deleteWithSubtasksConfirm": "Questa attività ha {{count}} sotto-attività. Eliminarle tutte?"
+    },
+    "edit": "Modifica attività",
+    "delete": "Elimina attività",
+    "confirm": {
+      "completeTitle": "Completa attività",
+      "reopenTitle": "Riapri attività",
+      "complete": "Completa",
+      "reopen": "Riapri"
     }
   },
   "dialog": {

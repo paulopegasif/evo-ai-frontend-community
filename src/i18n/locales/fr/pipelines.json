@@ -794,7 +794,16 @@
       "moveSuccess": "Tâche déplacée avec succès",
       "moveError": "Erreur lors du déplacement de la tâche",
       "addSubtaskSuccess": "Sous-tâche ajoutée avec succès",
-      "addSubtaskError": "Erreur lors de l'ajout de la sous-tâche"
+      "addSubtaskError": "Erreur lors de l'ajout de la sous-tâche",
+      "deleteWithSubtasksConfirm": "Cette tâche a {{count}} sous-tâche(s). Tout supprimer ?"
+    },
+    "edit": "Modifier la tâche",
+    "delete": "Supprimer la tâche",
+    "confirm": {
+      "completeTitle": "Terminer la tâche",
+      "reopenTitle": "Rouvrir la tâche",
+      "complete": "Terminer",
+      "reopen": "Rouvrir"
     }
   },
   "dialog": {
