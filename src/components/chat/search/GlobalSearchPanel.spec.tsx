@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import GlobalSearchPanel from './GlobalSearchPanel';
+import GlobalSearchInput from './GlobalSearchInput';
 import type { UseGlobalSearchResult } from '@/hooks/chat/useGlobalSearch';
 
 beforeAll(() => {
@@ -219,5 +220,38 @@ describe('GlobalSearchPanel', () => {
 
     const options = screen.getAllByRole('option');
     expect(options).toHaveLength(5);
+  });
+
+  it('opens the highlighted result with ArrowDown + Enter from the search input', async () => {
+    mockUseGlobalSearch.mockReturnValue(
+      buildResult({ conversations: [conversation], contacts: [contact], messages: [message] }),
+    );
+    const props = { ...baseProps, onSelectContact: vi.fn(), onClose: vi.fn() };
+    render(
+      <GlobalSearchPanel {...props}>
+        <GlobalSearchInput aria-label="search" />
+      </GlobalSearchPanel>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'search' });
+    input.focus();
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}');
+
+    expect(props.onSelectContact).toHaveBeenCalledWith(contact);
+    expect(props.onClose).toHaveBeenCalled();
+  });
+
+  it('forwards typing to onInputValueChange and keeps the input when closed', async () => {
+    const onInputValueChange = vi.fn();
+    render(
+      <GlobalSearchPanel {...baseProps} isOpen={false} rawInputValue="" onInputValueChange={onInputValueChange}>
+        <GlobalSearchInput aria-label="search" />
+      </GlobalSearchPanel>,
+    );
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await userEvent.type(screen.getByRole('combobox', { name: 'search' }), 'a');
+
+    expect(onInputValueChange).toHaveBeenCalledWith('a');
   });
 });
