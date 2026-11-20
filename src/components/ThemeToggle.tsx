@@ -1,6 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Sun, Moon } from 'lucide-react';
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDarkMode } from '../hooks/useDarkMode';
 
 export function ThemeToggle() {
@@ -9,26 +10,19 @@ export function ThemeToggle() {
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleTheme}
-          className="h-8 w-8 p-0 cursor-pointer"
-          aria-label={t('base.theme.toggle')}
-        >
-          {/* Mostra lua no light */}
-          <Moon className="h-4 w-4 dark:hidden" />
-          {/* Mostra sol no dark */}
-          <Sun className="h-4 w-4 hidden dark:block" />
-        </Button>
+      <TooltipTrigger
+        render={
+          <Button variant="ghost" size="icon-sm" onClick={toggleTheme} aria-label={t('base.theme.toggle')} />
+        }
+      >
+        {/* Moon in light mode, sun in dark mode (CSS only, no state read) */}
+        <Moon className="dark:hidden" />
+        <Sun className="hidden dark:block" />
       </TooltipTrigger>
-
-      <TooltipContent>
-        {/* Texto também via CSS, sem ler state */}
+      <TooltipPopup>
         <span className="dark:hidden">{t('base.theme.dark')}</span>
         <span className="hidden dark:inline">{t('base.theme.light')}</span>
-      </TooltipContent>
+      </TooltipPopup>
     </Tooltip>
   );
 }
