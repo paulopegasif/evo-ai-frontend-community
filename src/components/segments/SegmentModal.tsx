@@ -14,8 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import RadioCardGroup from '@/components/base/RadioCard';
 import { Plus, Users } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { 
@@ -197,25 +196,13 @@ export default function SegmentModal({
               <span className="font-medium text-sm" id="segment-combination-label">
                 {t('modal.combinationType')}
               </span>
-              <RadioGroup
+              <RadioCardGroup
                 aria-labelledby="segment-combination-label"
                 value={definitionType}
-                onValueChange={value => handleDefinitionTypeChange(value as 'Everyone' | 'And' | 'Or')}
-                className="grid gap-2 sm:grid-cols-3"
-              >
-                {combinationOptions.map(opt => (
-                  <Label
-                    key={opt.value}
-                    htmlFor={`segment-${opt.value}`}
-                    className={`flex cursor-pointer items-start gap-2 rounded-xl border p-3 font-normal transition-colors ${
-                      definitionType === opt.value ? 'border-primary/48 bg-primary/4' : 'hover:bg-accent/50'
-                    }`}
-                  >
-                    <Radio value={opt.value} id={`segment-${opt.value}`} className="mt-0.5" />
-                    <span className="text-sm">{opt.label}</span>
-                  </Label>
-                ))}
-              </RadioGroup>
+                onValueChange={handleDefinitionTypeChange}
+                className="sm:grid-cols-3"
+                options={combinationOptions.map(opt => ({ value: opt.value, title: opt.label }))}
+              />
             </div>
 
             {definitionType === 'Everyone' ? (

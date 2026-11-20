@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, ChangeEvent, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AlertTriangle, BellRing, Check, Keyboard, Mail, Play, Volume2, X } from 'lucide-react';
 import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import RadioCardGroup from '@/components/base/RadioCard';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuthStore } from '@/store/authStore';
@@ -827,38 +828,14 @@ const Profile = () => {
     }
   }, []);
 
-  const hotkeyOption = (value: 'enter' | 'cmd_enter', title: ReactNode, description: string, keys: string[]) => {
-    const active = uiSettings.editor_message_key === value;
-    return (
-      <button
-        type="button"
-        role="radio"
-        aria-checked={active}
-        onClick={() => handleHotKeyChange(value)}
-        className={`flex flex-1 flex-col gap-3 rounded-xl border p-4 text-start outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
-          active ? 'border-primary/48 bg-primary/4' : 'hover:bg-accent/50'
-        }`}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <span className="font-semibold text-sm">{title}</span>
-          <span
-            className={`flex size-4.5 shrink-0 items-center justify-center rounded-full border ${
-              active ? 'border-primary bg-primary text-primary-foreground' : 'border-input'
-            }`}
-          >
-            {active && <Check className="size-3" />}
-          </span>
-        </div>
-        <p className="text-muted-foreground text-sm">{description}</p>
-        <KbdGroup>
-          <Keyboard className="size-4 text-muted-foreground" />
-          {keys.map((k, i) => (
-            <Kbd key={i}>{k}</Kbd>
-          ))}
-        </KbdGroup>
-      </button>
-    );
-  };
+  const hotkeyKeys = (keys: string[]) => (
+    <KbdGroup className="pt-1">
+      <Keyboard className="size-4 text-muted-foreground" />
+      {keys.map((k, i) => (
+        <Kbd key={i}>{k}</Kbd>
+      ))}
+    </KbdGroup>
+  );
 
   const renderInterfaceSettings = () => {
     const fontItems = [
@@ -905,17 +882,25 @@ const Profile = () => {
             <CardDescription>{t('interface.hotkeys.description')}</CardDescription>
           </CardHeader>
           <CardPanel>
-            <div role="radiogroup" aria-label={t('interface.hotkeys.title')} className="flex flex-col gap-3 sm:flex-row">
-              {hotkeyOption('enter', t('interface.hotkeys.enter.title'), t('interface.hotkeys.enter.description'), ['Enter'])}
-              {hotkeyOption(
-                'cmd_enter',
-                <>
-                  {modifierKey} + Enter ({modifierKey === 'Cmd' ? '⌘' : 'Ctrl'} + ↵)
-                </>,
-                t('interface.hotkeys.cmdEnter.description'),
-                [modifierKey, 'Enter'],
-              )}
-            </div>
+            <RadioCardGroup
+              aria-label={t('interface.hotkeys.title')}
+              value={uiSettings.editor_message_key}
+              onValueChange={handleHotKeyChange}
+              options={[
+                {
+                  value: 'enter',
+                  title: t('interface.hotkeys.enter.title'),
+                  description: t('interface.hotkeys.enter.description'),
+                  extra: hotkeyKeys(['Enter']),
+                },
+                {
+                  value: 'cmd_enter',
+                  title: `${modifierKey} + Enter (${modifierKey === 'Cmd' ? '⌘' : 'Ctrl'} + ↵)`,
+                  description: t('interface.hotkeys.cmdEnter.description'),
+                  extra: hotkeyKeys([modifierKey, 'Enter']),
+                },
+              ]}
+            />
           </CardPanel>
         </Card>
 
