@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Dialog, DialogContent } from '@/components/ui/compat';
-import { X } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 import { createAgent, listApiKeys } from '@/services/agents';
 import integrationService from '@/services/agents/integrationService';
 import { ApiKey, AgentCreate } from '@/types/agents';
@@ -9,7 +8,7 @@ import { toast } from 'sonner';
 import { extractBackendErrorMessage } from '@/utils/agentUtils';
 
 // Wizard components - novo fluxo
-import WizardProgress from '@/pages/Customer/Agents/Agent/wizard/WizardProgress';
+import WizardShell from '@/components/agents/wizard/WizardShell';
 import Step1_Name from '@/pages/Customer/Agents/Agent/wizard/Step1_Name';
 import Step2_Type from '@/pages/Customer/Agents/Agent/wizard/Step2_Type';
 import WizardStep3_SubAgents from '@/pages/Customer/Agents/Agent/wizard/WizardStep3_SubAgents';
@@ -668,67 +667,29 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
     return null;
   };
 
-  const wizardContent = (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="flex items-center justify-end px-3 pt-3 pb-0 flex-shrink-0">
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Close wizard"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-      <div className="flex flex-col flex-1 min-h-0">
-        {/* Header */}
-        <div className="border-b bg-transparent p-3 pt-1.5 flex-shrink-0">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold leading-tight">{currentStepHeader.title}</h2>
-            {currentStepHeader.subtitle ? (
-              <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">{currentStepHeader.subtitle}</p>
-            ) : null}
-          </div>
-        </div>
-
-        {/* Progress */}
-        {currentStep < totalSteps && (
-          <div className="py-2 px-4 flex-shrink-0 bg-transparent">
-            <WizardProgress currentStep={currentStep} totalSteps={totalSteps} steps={steps} />
-          </div>
-        )}
-
-        {/* Content - Scrollable apenas quando necessário */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto px-3 min-h-0">
-          {isCreating ? (
-            <div className="flex items-center justify-center h-96">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-lg font-medium">Criando agente...</p>
-              </div>
-            </div>
-          ) : (
-            renderCurrentStep()
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  if (embedded) {
-    return (
-      <div className="w-full h-full min-h-0 bg-background overflow-hidden">
-        {wizardContent}
-      </div>
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!w-[72vw] !max-w-[72vw] h-[94vh] max-h-[94vh] overflow-hidden p-0 sm:!max-w-[72vw]">
-        {wizardContent}
-      </DialogContent>
-    </Dialog>
+    <WizardShell
+      open={open}
+      onOpenChange={onOpenChange}
+      embedded={embedded}
+      title={currentStepHeader.title}
+      subtitle={currentStepHeader.subtitle || undefined}
+      dialogTitle={currentStepHeader.title}
+      steps={steps}
+      currentStep={currentStep}
+      totalSteps={totalSteps}
+      showProgress={currentStep < totalSteps}
+      contentRef={contentRef}
+    >
+      {isCreating ? (
+        <div className="flex h-96 flex-col items-center justify-center gap-4" aria-busy="true">
+          <Spinner className="size-8 text-primary" />
+          <p className="font-medium text-lg">Criando agente...</p>
+        </div>
+      ) : (
+        renderCurrentStep()
+      )}
+    </WizardShell>
   );
 };
 
