@@ -845,5 +845,8 @@
     "loadError": "Error al cargar formularios",
     "saveError": "Error al guardar formulario",
     "deleteError": "Error al eliminar formulario"
+  },
+  "attributes": {
+    "remove": "Quitar {{name}}"
   }
 }

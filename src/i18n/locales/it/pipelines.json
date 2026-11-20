@@ -822,5 +822,8 @@
     "loadError": "Impossibile caricare i moduli",
     "saveError": "Impossibile salvare il modulo",
     "deleteError": "Impossibile eliminare il modulo"
+  },
+  "attributes": {
+    "remove": "Rimuovi {{name}}"
   }
 }

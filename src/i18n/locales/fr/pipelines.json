@@ -825,5 +825,8 @@
     "loadError": "Échec du chargement des formulaires",
     "saveError": "Échec de l'enregistrement",
     "deleteError": "Échec de la suppression"
+  },
+  "attributes": {
+    "remove": "Retirer {{name}}"
   }
 }

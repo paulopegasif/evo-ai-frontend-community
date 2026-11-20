@@ -884,5 +884,8 @@
     "loadError": "Falha ao carregar formulários",
     "saveError": "Falha ao salvar formulário",
     "deleteError": "Falha ao excluir formulário"
+  },
+  "attributes": {
+    "remove": "Remover {{name}}"
   }
 }

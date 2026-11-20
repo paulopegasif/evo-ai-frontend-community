@@ -883,5 +883,8 @@
     "loadError": "Failed to load forms",
     "saveError": "Failed to save form",
     "deleteError": "Failed to delete form"
+  },
+  "attributes": {
+    "remove": "Remove {{name}}"
   }
 }
