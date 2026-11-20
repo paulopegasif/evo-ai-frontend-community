@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { CircleCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/hooks/useLanguage';
 import { widgetService } from '@/services/widget/widgetService';
 
@@ -54,19 +57,17 @@ export const EmailCollectInput = ({
 
   if (isSubmitted) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-success/8 border border-success/24 text-success-foreground text-sm">
-        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
+      <div className="flex items-center gap-2 rounded-lg border border-success/24 bg-success/8 px-3 py-2 text-sm text-success-foreground">
+        <CircleCheck className="size-4 shrink-0" aria-hidden="true" />
         <span>{t('emailCollect.success')}</span>
       </div>
     );
   }
 
   return (
-    <div className="w-full">
+    <div className="flex w-full flex-col gap-1">
       <div className="flex items-center gap-2">
-        <input
+        <Input
           type="email"
           value={email}
           onChange={e => {
@@ -78,20 +79,25 @@ export const EmailCollectInput = ({
           }}
           placeholder={t('emailCollect.placeholder')}
           aria-label={t('emailCollect.placeholder')}
+          aria-invalid={error ? true : undefined}
           disabled={isSubmitting}
-          className="flex-1 px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:border-transparent disabled:opacity-50"
-          style={{ outlineColor: widgetColor }}
+          className="flex-1"
         />
-        <button
+        <Button
           onClick={handleSubmit}
-          disabled={isSubmitting || !email}
-          className="px-4 py-2 text-sm text-white rounded-lg disabled:opacity-50 transition-opacity"
-          style={{ backgroundColor: widgetColor }}
+          disabled={!email}
+          loading={isSubmitting}
+          className="shrink-0 text-white hover:opacity-90"
+          style={{ backgroundColor: widgetColor, borderColor: widgetColor }}
         >
-          {isSubmitting ? '...' : t('emailCollect.button')}
-        </button>
+          {t('emailCollect.button')}
+        </Button>
       </div>
-      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-destructive-foreground text-xs">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

@@ -29,21 +29,11 @@ export const ReplyToMessage: React.FC<ReplyToMessageProps> = ({ replyTo, message
     : replyTo.sender || (replyTo.type === 'out' ? t('replyTo.you') : t('replyTo.agent'));
 
   return (
-    <div
-      className={`flex items-center gap-2 mb-1 text-xs opacity-70 ${
-        messageType === 'out' ? 'justify-end' : 'justify-start'
-      }`}
-    >
-      <Reply size={12} className="text-muted-foreground" />
-      <div className="bg-muted rounded px-2 py-1 border-l-2 border-border">
-        {senderName && (
-          <div className="text-muted-foreground font-medium">{senderName}</div>
-        )}
-        <div
-          className={`text-muted-foreground ${isUnresolved ? 'italic' : ''}`}
-        >
-          {isUnresolved ? replyTo.text : truncateText(replyTo.text)}
-        </div>
+    <div className={`mb-1 flex items-center gap-1.5 text-xs ${messageType === 'out' ? 'justify-end' : 'justify-start'}`}>
+      <Reply className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <div className="min-w-0 rounded-md border-s-2 border-border bg-muted/64 px-2 py-1 text-muted-foreground">
+        {senderName && <p className="font-medium">{senderName}</p>}
+        <p className={isUnresolved ? 'italic' : 'truncate'}>{isUnresolved ? replyTo.text : truncateText(replyTo.text)}</p>
       </div>
     </div>
   );
