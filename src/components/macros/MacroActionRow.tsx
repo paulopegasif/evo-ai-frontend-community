@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Textarea,
-  Button,
-  Label,
-} from '@/components/ui/compat';
-import { Upload, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
+import { Trash2, Upload, X } from 'lucide-react';
 import { MACRO_ACTION_TYPES } from '@/types/automation';
 
 interface ActionRowProps {
@@ -108,32 +104,18 @@ export default function MacroActionRow({
         }
 
         return (
-          <Select
+          <OptionSelect
+            id={`macro-action-config-${index}`}
             value={action.action_params[0]?.toString() || ''}
             onValueChange={value => handleParamsChange([parseInt(value) || value])}
             disabled={disabled}
-          >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
-              <SelectValue placeholder={t('actionRow.selectPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              {selectOptions.length === 0 ? (
-                <SelectItem value="loading" disabled className="text-sidebar-foreground">
-                  {t('actionRow.loadingOptions')}
-                </SelectItem>
-              ) : (
-                selectOptions.map(option => (
-                  <SelectItem
-                    key={option.value || option.id}
-                    value={(option.value || option.id).toString()}
-                    className="text-sidebar-foreground"
-                  >
-                    {option.label || option.name || option.title}
-                  </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
+            placeholder={t('actionRow.selectPlaceholder')}
+            empty={t('actionRow.loadingOptions')}
+            options={selectOptions.map(option => ({
+              value: (option.value || option.id).toString(),
+              label: option.label || option.name || option.title,
+            }))}
+          />
         );
 
       case 'multi_select':
@@ -149,8 +131,9 @@ export default function MacroActionRow({
         }
 
         return (
-          <div className="space-y-2">
-            <Select
+          <div className="flex flex-col gap-2">
+            <OptionSelect
+              id={`macro-action-config-${index}`}
               value=""
               onValueChange={value => {
                 const numValue = parseInt(value) || value;
@@ -159,55 +142,35 @@ export default function MacroActionRow({
                 }
               }}
               disabled={disabled}
-            >
-              <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
-                <SelectValue placeholder={t('actionRow.multiSelectPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
-                {multiSelectOptions.length === 0 ? (
-                  <SelectItem value="loading" disabled className="text-sidebar-foreground">
-                    {t('actionRow.loadingOptions')}
-                  </SelectItem>
-                ) : (
-                  multiSelectOptions.map(option => (
-                    <SelectItem
-                      key={option.value || option.id}
-                      value={(option.value || option.id).toString()}
-                      className="text-sidebar-foreground"
-                    >
-                      {option.label || option.name || option.title}
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
+              placeholder={t('actionRow.multiSelectPlaceholder')}
+              empty={t('actionRow.loadingOptions')}
+              options={multiSelectOptions.map(option => ({
+                value: (option.value || option.id).toString(),
+                label: option.label || option.name || option.title,
+              }))}
+            />
 
             {/* Valores selecionados */}
             {action.action_params.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {action.action_params.map(paramValue => {
                   const option = multiSelectOptions.find(
                     o => (o.value || o.id).toString() === paramValue.toString(),
                   );
+                  const label = option?.label || option?.name || option?.title || paramValue;
                   return (
-                    <div
-                      key={paramValue}
-                      className="flex items-center gap-1 px-2 py-1 bg-sidebar-accent text-sidebar-foreground rounded text-sm"
-                    >
-                      {option?.label || option?.name || option?.title || paramValue}
-                      <Button
+                    <Badge key={paramValue} variant="secondary" className="gap-1 pe-0.5">
+                      {label}
+                      <button
                         type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0 hover:bg-transparent text-sidebar-foreground/60"
-                        onClick={() =>
-                          handleParamsChange(action.action_params.filter(p => p !== paramValue))
-                        }
+                        className="flex size-4 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-64"
+                        onClick={() => handleParamsChange(action.action_params.filter(p => p !== paramValue))}
                         disabled={disabled}
+                        aria-label={t('actionRow.removeValue', { value: String(label) })}
                       >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
                   );
                 })}
               </div>
@@ -221,7 +184,7 @@ export default function MacroActionRow({
             value={action.action_params[0] || ''}
             onChange={e => handleParamsChange([e.target.value])}
             placeholder={t('actionRow.textareaPlaceholder')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            id={`macro-action-config-${index}`}
             disabled={disabled}
             rows={3}
           />
@@ -238,7 +201,7 @@ export default function MacroActionRow({
                 ? t('actionRow.hoursPlaceholder')
                 : t('actionRow.textPlaceholder')
             }
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            id={`macro-action-config-${index}`}
             disabled={disabled}
           />
         );
@@ -250,7 +213,7 @@ export default function MacroActionRow({
             value={action.action_params[0] || ''}
             onChange={e => handleParamsChange([e.target.value])}
             placeholder={t('actionRow.emailPlaceholder')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            id={`macro-action-config-${index}`}
             disabled={disabled}
           />
         );
@@ -262,7 +225,7 @@ export default function MacroActionRow({
             value={action.action_params[0] || ''}
             onChange={e => handleParamsChange([e.target.value])}
             placeholder={t('actionRow.urlPlaceholder')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            id={`macro-action-config-${index}`}
             disabled={disabled}
           />
         );
@@ -276,10 +239,9 @@ export default function MacroActionRow({
                 variant="outline"
                 size="sm"
                 disabled={disabled || uploadingFile}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
                 onClick={() => document.getElementById(`file-${index}`)?.click()}
               >
-                <Upload className="h-4 w-4 mr-2" />
+                <Upload />
                 {uploadingFile ? t('actionRow.fileUploading') : t('actionRow.fileSelectButton')}
               </Button>
 
@@ -293,7 +255,7 @@ export default function MacroActionRow({
             </div>
 
             {action.action_params.length > 0 && (
-              <div className="text-sm text-sidebar-foreground/70">
+              <div className="text-muted-foreground text-sm">
                 {t('actionRow.fileSelected', { filename: action.action_params[0] })}
               </div>
             )}
@@ -302,78 +264,70 @@ export default function MacroActionRow({
 
       default:
         return (
-          <div className="text-sm text-sidebar-foreground/70 italic">{t('actionRow.noConfig')}</div>
+          <div className="text-muted-foreground text-sm italic">{t('actionRow.noConfig')}</div>
         );
     }
   };
 
+  const nameError = errors[`action_${index}_name`];
+  const paramsError = errors[`action_${index}_params`];
+
   return (
-    <div className="p-4 border border-sidebar-border rounded-lg bg-sidebar-accent/30">
-      {/* Layout horizontal com ação e configuração na mesma linha */}
-      <div className="flex items-end gap-4">
+    <div className="rounded-xl border bg-muted/24 p-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         {/* Ação */}
-        <div className="flex-1 space-y-2">
-          <Label className="text-sm text-sidebar-foreground/70">
-            {t('modal.form.actionLabel')}
-          </Label>
-          <Select
+        <Field invalid={Boolean(nameError)} className="flex-1">
+          <FieldLabel htmlFor={`macro-action-${index}`}>{t('modal.form.actionLabel')}</FieldLabel>
+          <OptionSelect
+            id={`macro-action-${index}`}
             value={action.action_name}
             onValueChange={value => handleFieldChange('action_name', value)}
             disabled={disabled}
-          >
-            <SelectTrigger
-              className={`w-full bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                errors[`action_${index}_name`] ? 'border-destructive' : ''
-              }`}
-            >
-              <SelectValue placeholder={t('actionRow.selectPlaceholder')} />
-            </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              {MACRO_ACTION_TYPES.map(actionConfig => (
-                <SelectItem
-                  key={actionConfig.key}
-                  value={actionConfig.key}
-                  className="text-sidebar-foreground"
-                >
-                  <div>
-                    <div className="font-medium">{actionConfig.name}</div>
-                    <div className="text-xs text-sidebar-foreground/60">
-                      {actionConfig.description}
-                    </div>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors[`action_${index}_name`] && (
-            <p className="text-sm text-destructive">{errors[`action_${index}_name`]}</p>
-          )}
-        </div>
+            aria-invalid={Boolean(nameError)}
+            placeholder={t('actionRow.selectPlaceholder')}
+            options={MACRO_ACTION_TYPES.map(actionConfig => ({
+              value: actionConfig.key,
+              label: actionConfig.name,
+              content: (
+                <div className="flex flex-col">
+                  <span className="font-medium">{actionConfig.name}</span>
+                  <span className="text-muted-foreground text-xs">{actionConfig.description}</span>
+                </div>
+              ),
+            }))}
+          />
+          {nameError && <FieldError match>{nameError}</FieldError>}
+        </Field>
 
         {/* Configuração da ação */}
         {selectedActionConfig && selectedActionConfig.inputType && (
-          <div className="flex-1 space-y-2">
-            <Label className="text-sm text-sidebar-foreground/70">
-              {t('modal.form.configLabel')}
-            </Label>
+          <Field invalid={Boolean(paramsError)} className="flex-1">
+            <FieldLabel htmlFor={`macro-action-config-${index}`}>{t('modal.form.configLabel')}</FieldLabel>
             {renderActionInput()}
-          </div>
+            {paramsError && <FieldError match>{paramsError}</FieldError>}
+          </Field>
         )}
 
         {/* Botão de remover */}
         {canRemove && (
-          <div className="pb-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => onRemove(index)}
-              disabled={disabled}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-destructive/10 hover:border-destructive hover:text-destructive"
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onRemove(index)}
+                  disabled={disabled}
+                  aria-label={t('actionRow.removeAction')}
+                  className="self-end sm:mt-6 sm:self-start"
+                />
+              }
             >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+              <Trash2 />
+            </TooltipTrigger>
+            <TooltipPopup>{t('actionRow.removeAction')}</TooltipPopup>
+          </Tooltip>
         )}
       </div>
     </div>
