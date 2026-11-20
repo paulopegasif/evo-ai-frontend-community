@@ -573,7 +573,9 @@
     "emptyDescription": "Create a new scheduled action to get started",
     "pagination": "Page {{page}} of {{totalPages}} ({{total}} total)",
     "messages": {
-      "noChannelsConfigured": "No messaging channels configured. Please configure a WhatsApp, SMS, Email, or Telegram channel first in the Channels settings."
+      "noChannelsConfigured": "No messaging channels configured. Please configure a WhatsApp, SMS, Email, or Telegram channel first in the Channels settings.",
+      "cancelled": "Scheduled action cancelled",
+      "bulkCancelled": "{{count}} actions cancelled"
     },
     "errors": {
       "loadFailed": "Failed to load scheduled actions",
@@ -656,7 +658,14 @@
     },
     "contact": "Contact",
     "contactPlaceholder": "Search for a contact...",
-    "noContactsFound": "No contacts found"
+    "noContactsFound": "No contacts found",
+    "cancelConfirm": {
+      "title": "Cancel scheduled action?",
+      "titleBulk": "Cancel {{count}} scheduled actions?",
+      "description": "The action will not run. This cannot be undone.",
+      "confirm": "Cancel action",
+      "keep": "Keep"
+    }
   },
   "events": {
     "timeline": {

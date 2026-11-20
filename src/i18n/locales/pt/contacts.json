@@ -573,7 +573,9 @@
     "emptyDescription": "Crie uma nova ação agendada para começar",
     "pagination": "Página {{page}} de {{totalPages}} ({{total}} total)",
     "messages": {
-      "noChannelsConfigured": "Nenhum canal de mensagens configurado. Por favor, configure primeiro um canal de WhatsApp, SMS, Email ou Telegram nas configurações de Canais."
+      "noChannelsConfigured": "Nenhum canal de mensagens configurado. Por favor, configure primeiro um canal de WhatsApp, SMS, Email ou Telegram nas configurações de Canais.",
+      "cancelled": "Ação agendada cancelada",
+      "bulkCancelled": "{{count}} ações canceladas"
     },
     "errors": {
       "loadFailed": "Erro ao carregar ações agendadas",
@@ -656,7 +658,14 @@
     },
     "contact": "Contato",
     "contactPlaceholder": "Buscar um contato...",
-    "noContactsFound": "Nenhum contato encontrado"
+    "noContactsFound": "Nenhum contato encontrado",
+    "cancelConfirm": {
+      "title": "Cancelar ação agendada?",
+      "titleBulk": "Cancelar {{count}} ações agendadas?",
+      "description": "A ação não será executada. Esta operação não pode ser desfeita.",
+      "confirm": "Cancelar ação",
+      "keep": "Manter"
+    }
   },
   "events": {
     "timeline": {

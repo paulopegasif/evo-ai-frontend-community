@@ -594,7 +594,9 @@
     "emptyDescription": "Crea una nueva acción programada para comenzar",
     "pagination": "Página {{page}} de {{totalPages}} ({{total}} total)",
     "messages": {
-      "noChannelsConfigured": "No hay canales de mensajería configurados. Por favor, configure primero un canal de WhatsApp, SMS, Email o Telegram en la configuración de Canales."
+      "noChannelsConfigured": "No hay canales de mensajería configurados. Por favor, configure primero un canal de WhatsApp, SMS, Email o Telegram en la configuración de Canales.",
+      "cancelled": "Acción programada cancelada",
+      "bulkCancelled": "{{count}} acciones canceladas"
     },
     "errors": {
       "loadFailed": "Error al cargar acciones programadas",
@@ -648,7 +650,14 @@
     },
     "contact": "Contacto",
     "contactPlaceholder": "Buscar un contacto...",
-    "noContactsFound": "No se encontraron contactos"
+    "noContactsFound": "No se encontraron contactos",
+    "cancelConfirm": {
+      "title": "¿Cancelar acción programada?",
+      "titleBulk": "¿Cancelar {{count}} acciones programadas?",
+      "description": "La acción no se ejecutará. Esta operación no se puede deshacer.",
+      "confirm": "Cancelar acción",
+      "keep": "Mantener"
+    }
   },
   "events": {
     "timeline": {
