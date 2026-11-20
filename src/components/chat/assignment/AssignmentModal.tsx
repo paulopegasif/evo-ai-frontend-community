@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-} from '@/components/ui/compat';
-import { Button } from '@/components/ui/compat';
-import { Input } from '@/components/ui/compat';
-import { Badge } from '@/components/ui/compat';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/compat';
-import { Checkbox } from '@/components/ui/compat';
-import { Search, User, Users, Tag, X, Plus } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Search, User, Users, Tag, X, Plus, Check } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import LabelModal from '@/components/labels/LabelModal';
 
@@ -165,37 +168,51 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
     return (
       <div
         key={option.id}
-        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent ${isSelected ? 'bg-accent border-primary' : 'border-border'
-          }`}
+        role="option"
+        aria-selected={isSelected}
+        tabIndex={0}
+        className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 outline-none transition-colors hover:bg-accent/60 focus-visible:ring-2 focus-visible:ring-ring ${isSelected ? 'border-primary/40 bg-primary/8' : 'border-transparent'}`}
         onClick={() => handleToggleSelection(option.id)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggleSelection(option.id);
+          }
+        }}
       >
         {multiSelect && (
-          <Checkbox checked={isSelected} onChange={() => handleToggleSelection(option.id)} />
+          <Checkbox
+            checked={isSelected}
+            tabIndex={-1}
+            aria-hidden="true"
+            className="pointer-events-none"
+          />
         )}
 
         {type === 'label' ? (
-          <div
-            className="w-4 h-4 rounded-full flex-shrink-0"
-            style={{ backgroundColor: option.color || '#6b7280' }}
+          <span
+            aria-hidden="true"
+            className="size-3 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: option.color || 'var(--muted-foreground)' }}
           />
         ) : (
-          <Avatar className="h-8 w-8 flex-shrink-0">
+          <Avatar className="size-8 flex-shrink-0">
             <AvatarImage src={option.avatar} />
-            <AvatarFallback className="bg-primary/10 text-primary">
+            <AvatarFallback className="bg-primary/10 text-primary text-xs">
               {option.name[0]?.toUpperCase() || getIcon()}
             </AvatarFallback>
           </Avatar>
         )}
 
-        <div className="flex-1 min-w-0">
-          <p className="font-medium truncate">{option.name}</p>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium text-sm">{option.name}</p>
           {option.description && (
-            <p className="text-sm text-muted-foreground truncate">{option.description}</p>
+            <p className="truncate text-muted-foreground text-xs">{option.description}</p>
           )}
         </div>
 
         {!multiSelect && isSelected && (
-          <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
+          <Check aria-hidden="true" className="size-4 flex-shrink-0 text-primary" />
         )}
       </div>
     );
@@ -203,108 +220,116 @@ const AssignmentModal: React.FC<AssignmentModalProps> = ({
 
   return (
     <>
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+    <Dialog open={isOpen} onOpenChange={open => { if (!open) onClose(); }}>
+      <DialogPopup className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {getIcon()}
+            <span className="text-muted-foreground [&_svg]:size-4.5">{getIcon()}</span>
             {title}
           </DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
+        <DialogPanel className="space-y-3">
+          <InputGroup>
+            <InputGroupAddon>
+              <Search aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              type="search"
               placeholder={defaultSearchPlaceholder}
+              aria-label={defaultSearchPlaceholder}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10"
+              autoFocus
             />
-          </div>
+          </InputGroup>
 
-          {/* Current Selection Display */}
           {selectedIds.length > 0 && (
-            <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
-              <span className="text-sm text-muted-foreground">
-                {t('assignmentModal.selected')}
-              </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-muted-foreground text-xs">{t('assignmentModal.selected')}</span>
               {selectedIds.map(id => {
                 const option = allOptions.find(opt => opt.id === id);
                 if (!option) return null;
 
                 return (
-                  <Badge key={id} variant="secondary" className="flex items-center gap-1">
+                  <Badge key={id} variant="secondary" className="gap-1 pe-0.5">
                     {option.name}
-                    <X
-                      className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    <button
+                      type="button"
+                      aria-label={`${t('a11y.remove', 'Remover')} ${option.name}`}
+                      className="inline-flex size-4 items-center justify-center rounded-sm hover:bg-foreground/8 hover:text-destructive-foreground"
                       onClick={e => {
                         e.stopPropagation();
                         handleToggleSelection(id);
                       }}
-                    />
+                    >
+                      <X className="size-3" />
+                    </button>
                   </Badge>
                 );
               })}
             </div>
           )}
 
-          {/* Options List */}
-          <div className="max-h-64 overflow-y-auto space-y-2">
+          <div
+            role="listbox"
+            aria-multiselectable={multiSelect || undefined}
+            aria-label={title}
+            className="-mx-1 max-h-72 space-y-0.5 overflow-y-auto px-1"
+          >
             {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="text-sm text-muted-foreground">
-                  {t('assignmentModal.loading')}
-                </div>
+              <div aria-busy="true" aria-label={t('assignmentModal.loading')} className="space-y-1">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 px-3 py-2">
+                    <Skeleton className="size-8 rounded-full" />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton className="h-3.5 w-32" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <>
                 {filteredOptions.length === 0 && !showCreateOption && (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="text-sm text-muted-foreground">
-                      {searchTerm
-                        ? t('assignmentModal.noResults')
-                        : t('assignmentModal.noOptions')}
-                    </div>
-                  </div>
+                  <p className="py-8 text-center text-muted-foreground text-sm">
+                    {searchTerm ? t('assignmentModal.noResults') : t('assignmentModal.noOptions')}
+                  </p>
                 )}
                 {filteredOptions.map(renderOption)}
                 {showCreateOption && (
-                  <div
-                    className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-primary/50 cursor-pointer transition-all hover:bg-primary/5 hover:border-primary"
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg border border-primary/40 border-dashed px-3 py-2.5 text-left transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     onClick={handleOpenLabelModal}
                   >
-                    <Plus className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium text-primary">
+                    <Plus aria-hidden="true" className="size-4 flex-shrink-0 text-primary" />
+                    <span className="font-medium text-primary text-sm">
                       {searchTerm.trim()
                         ? t('assignmentModal.createLabel', { name: searchTerm.trim() })
                         : t('assignmentModal.newLabel')}
                     </span>
-                  </div>
+                  </button>
                 )}
               </>
             )}
           </div>
-        </div>
+        </DialogPanel>
 
-        <DialogFooter className="flex-col-reverse sm:flex-row gap-3">
-          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost" disabled={isSubmitting} />}>
             {t('assignmentModal.cancel')}
-          </Button>
+          </DialogClose>
           <Button
             onClick={handleConfirm}
             disabled={isSubmitting || !hasSelectionChanged}
-            className="w-full sm:w-auto"
+            loading={isSubmitting}
           >
-            {isSubmitting
-              ? t('assignmentModal.applying')
-              : t('assignmentModal.apply')}
+            {isSubmitting ? t('assignmentModal.applying') : t('assignmentModal.apply')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
 
     {canCreateInline && onCreateInline && (
