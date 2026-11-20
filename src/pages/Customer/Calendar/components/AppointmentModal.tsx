@@ -74,12 +74,12 @@ const STATUS_OPTIONS: { value: AppointmentStatus; label: string }[] = [
 ];
 
 const STATUS_BADGE: Record<AppointmentStatus, string> = {
-  attended: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
-  no_show: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30',
+  attended: 'bg-success/10 text-success-foreground border-success/30',
+  no_show: 'bg-destructive/10 text-destructive-foreground border-destructive/30',
   confirmed: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30',
   scheduled: 'bg-primary/10 text-primary border-primary/30',
   cancelled: 'bg-muted text-muted-foreground border-border',
-  rescheduled: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30',
+  rescheduled: 'bg-warning/10 text-warning-foreground border-warning/30',
 };
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
@@ -262,7 +262,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   };
 
   const requiredError = (missing: boolean) =>
-    submitted && missing ? 'border-red-500' : '';
+    submitted && missing ? 'border-destructive' : '';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

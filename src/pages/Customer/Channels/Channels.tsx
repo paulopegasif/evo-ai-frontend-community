@@ -182,7 +182,7 @@ export default function Channels() {
       <Dialog open={deleteModal.isOpen} onOpenChange={closeDeleteModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-400">
+            <DialogTitle className="flex items-center gap-2 text-destructive">
               <Trash2 className="h-5 w-5" />
               {t('deleteDialog.title')}
             </DialogTitle>
@@ -222,7 +222,7 @@ export default function Channels() {
               variant="destructive"
               onClick={handleConfirmDelete}
               disabled={!isDeleteConfirmationValid || isDeleting === deleteModal.channel?.id}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-destructive hover:bg-red-700 text-white"
             >
               {isDeleting === deleteModal.channel?.id
                 ? t('deleteDialog.deleting')

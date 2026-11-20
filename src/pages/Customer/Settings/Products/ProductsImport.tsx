@@ -405,8 +405,8 @@ export default function ProductsImport() {
         </TabsContent>
 
         <TabsContent value="done">
-          <div className="rounded border border-emerald-500/40 bg-emerald-500/5 p-6 text-center">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
+          <div className="rounded border border-success/40 bg-success/5 p-6 text-center">
+            <CheckCircle2 className="mx-auto h-10 w-10 text-success-foreground" />
             <h2 className="mt-2 text-lg font-medium">{t('import.done.title')}</h2>
             <p className="text-sm text-muted-foreground">{t('import.done.subtitle')}</p>
             <div className="mt-4 flex justify-center gap-2">
@@ -443,9 +443,9 @@ export default function ProductsImport() {
 function SummaryCard({ tone, label, value }: { tone: 'ok' | 'warn' | 'error'; label: string; value: number | string }) {
   const palette =
     tone === 'ok'
-      ? 'border-emerald-500/40 bg-emerald-500/5'
+      ? 'border-success/40 bg-success/5'
       : tone === 'warn'
-        ? 'border-amber-500/40 bg-amber-500/5'
+        ? 'border-warning/40 bg-warning/5'
         : 'border-destructive/40 bg-destructive/5';
   return (
     <div className={`rounded border ${palette} p-3`}>

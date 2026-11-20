@@ -50,7 +50,7 @@ export default function UserCard({
                 className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
-              <AvatarFallback className="bg-blue-100 text-blue-600">
+              <AvatarFallback className="bg-info/12 text-info-foreground">
                 {getInitials(user.name)}
               </AvatarFallback>
             )}
@@ -110,7 +110,7 @@ export default function UserCard({
           {onDelete && canDelete && (
             <Button
               variant="ghost"
-              className="rounded-none h-12 px-4 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+              className="rounded-none h-12 px-4 text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => onDelete(user)}
             >
               <Trash2 className="h-4 w-4" />

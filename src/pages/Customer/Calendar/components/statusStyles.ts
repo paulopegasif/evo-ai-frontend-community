@@ -14,13 +14,13 @@ export const STATUS_STYLES: Record<AppointmentStatus, { label: string; block: st
   },
   attended: {
     label: 'Compareceu',
-    block: 'border-l-emerald-500 bg-emerald-500/10 text-foreground',
-    dot: 'bg-emerald-500',
+    block: 'border-l-emerald-500 bg-success/10 text-foreground',
+    dot: 'bg-success',
   },
   no_show: {
     label: 'Faltou',
-    block: 'border-l-rose-500 bg-rose-500/10 text-foreground',
-    dot: 'bg-rose-500',
+    block: 'border-l-rose-500 bg-destructive/10 text-foreground',
+    dot: 'bg-destructive',
   },
   cancelled: {
     label: 'Cancelado',
@@ -29,8 +29,8 @@ export const STATUS_STYLES: Record<AppointmentStatus, { label: string; block: st
   },
   rescheduled: {
     label: 'Reagendado',
-    block: 'border-l-amber-500 bg-amber-500/10 text-foreground',
-    dot: 'bg-amber-500',
+    block: 'border-l-amber-500 bg-warning/10 text-foreground',
+    dot: 'bg-warning',
   },
 };
 

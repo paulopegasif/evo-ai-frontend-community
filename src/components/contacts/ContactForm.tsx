@@ -591,7 +591,7 @@ export default function ContactForm({
               {formData.blocked ? (
                 <ShieldX className="h-5 w-5 text-destructive" />
               ) : (
-                <Shield className="h-5 w-5 text-green-600" />
+                <Shield className="h-5 w-5 text-success-foreground" />
               )}
               {t('form.sections.contactStatus')}
             </h3>

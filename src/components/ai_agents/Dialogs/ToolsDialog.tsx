@@ -294,7 +294,7 @@ const ToolsDialog = ({ open, onOpenChange, onSelectTools, editingTool }: ToolsDi
           <div className="flex flex-col gap-4 flex-1 min-h-0">
             {/* Informações da ferramenta */}
             <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg border">
-              <Wrench className="h-6 w-6 text-emerald-500" />
+              <Wrench className="h-6 w-6 text-success" />
               <div className="flex-1">
                 <h3 className="font-medium text-foreground">
                   {(selectedToolForConfig || editingTool)?.name}
@@ -555,7 +555,7 @@ const ToolsDialog = ({ open, onOpenChange, onSelectTools, editingTool }: ToolsDi
                       className="flex items-center justify-between p-2 bg-muted/30 border rounded-lg"
                     >
                       <div className="flex items-center gap-2">
-                        <Wrench className="h-4 w-4 text-emerald-500" />
+                        <Wrench className="h-4 w-4 text-success" />
                         <span className="font-medium text-sm">{tool.name}</span>
                         <Badge variant="outline" className="text-xs">
                           {t('dialogs.toolsDialog.configured')}
@@ -680,7 +680,7 @@ const ToolsDialog = ({ open, onOpenChange, onSelectTools, editingTool }: ToolsDi
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1">
                                   <div className="flex items-center gap-2">
-                                    <Wrench className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                                    <Wrench className="h-4 w-4 text-success flex-shrink-0" />
                                     <span className="font-medium">{tool.name}</span>
                                   </div>
                                   <Button

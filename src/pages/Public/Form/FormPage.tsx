@@ -201,7 +201,7 @@ const FormPage = () => {
           </div>
 
           {submitted ? (
-            <div className="p-4 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400">
+            <div className="p-4 rounded-lg bg-success/10 text-success-foreground">
               <p className="text-sm font-medium">
                 {config?.appearance?.success_message || t('public.successMessage')}
               </p>

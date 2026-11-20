@@ -216,7 +216,7 @@ const ContactSidebar: React.FC<ContactSidebarProps> = ({
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <User className="h-4 w-4 text-green-500" />
+                <User className="h-4 w-4 text-success" />
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-semibold truncate">
                     {t('contactSidebar.sections.contactDetails.title')}

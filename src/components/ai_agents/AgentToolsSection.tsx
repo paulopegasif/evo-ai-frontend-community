@@ -66,7 +66,7 @@ const AgentToolsSection = ({
               className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border"
             >
               <div className="flex items-center gap-3 flex-1">
-                <Users className="h-4 w-4 text-blue-500" />
+                <Users className="h-4 w-4 text-info" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium truncate">{agent.name}</span>
@@ -106,7 +106,7 @@ const AgentToolsSection = ({
                 className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border"
               >
                 <div className="flex items-center gap-3">
-                  <Users className="h-4 w-4 text-blue-500" />
+                  <Users className="h-4 w-4 text-info" />
                   <div>
                     <span className="font-medium">{agentId}</span>
                     <p className="text-sm text-muted-foreground">

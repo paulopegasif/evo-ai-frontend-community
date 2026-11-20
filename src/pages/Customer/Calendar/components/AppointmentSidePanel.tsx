@@ -95,7 +95,7 @@ const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, o
               <div className="space-y-2.5">
                 <Row icon={CalendarClock}>
                   {formatZoned(apt.start_time, { weekday: 'long', day: '2-digit', month: 'long' })} ·{' '}
-                  {apt.all_day ? <span className="text-amber-600">horário a definir</span> : appointmentTimeLabel(apt)}
+                  {apt.all_day ? <span className="text-warning-foreground">horário a definir</span> : appointmentTimeLabel(apt)}
                   {!apt.all_day && <span className="text-muted-foreground"> ({apt.duration_minutes} min)</span>}
                 </Row>
                 <Row icon={Stethoscope}>

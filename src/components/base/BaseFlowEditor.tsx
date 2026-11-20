@@ -233,11 +233,11 @@ export function BaseFlowEditor({
 
               {/* Validação */}
               {validationErrors.length > 0 && (
-                <Card className="bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800/30">
+                <Card className="bg-destructive/8 border-destructive/24">
                   <CardContent className="p-2">
                     <div className="flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3 text-red-500" />
-                      <p className="text-xs text-red-800 dark:text-red-200">
+                      <AlertCircle className="h-3 w-3 text-destructive" />
+                      <p className="text-xs text-destructive-foreground">
                         {t('base.flow.editor.errors', { count: validationErrors.length })}
                       </p>
                     </div>

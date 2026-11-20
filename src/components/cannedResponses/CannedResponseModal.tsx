@@ -336,9 +336,9 @@ export default function CannedResponseModal({
                     className="flex items-center justify-between p-2 bg-muted/30 rounded-md"
                   >
                     <div className="flex items-center gap-2">
-                      {attachment.file_type === 'image' && <ImageIcon className="h-4 w-4 text-blue-500" />}
+                      {attachment.file_type === 'image' && <ImageIcon className="h-4 w-4 text-info" />}
                       {attachment.file_type === 'audio' && <Music className="h-4 w-4 text-purple-500" />}
-                      {attachment.file_type === 'video' && <Film className="h-4 w-4 text-red-500" />}
+                      {attachment.file_type === 'video' && <Film className="h-4 w-4 text-destructive" />}
                       {attachment.file_type === 'file' && <FileText className="h-4 w-4 text-muted-foreground" />}
                       <div className="flex-1 min-w-0">
                         {/* não temos file_name; usa fallback_title ou o final da URL */}
@@ -390,7 +390,7 @@ export default function CannedResponseModal({
                 {formData.attachments.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-md"
+                    className="flex items-center justify-between p-2 bg-info/8 rounded-md"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       {getFileIcon(file.type)}
@@ -419,11 +419,11 @@ export default function CannedResponseModal({
           </div>
 
           {/* Variables Help */}
-          <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-4">
-            <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+          <div className="rounded-md bg-info/8 p-4">
+            <h4 className="text-sm font-medium text-info-foreground mb-2">
               {t('modal.variables.title')}
             </h4>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+            <p className="text-xs text-info-foreground mb-3">
               {t('modal.variables.clickToInsert')}
             </p>
             <div className="space-y-2">
@@ -431,17 +431,17 @@ export default function CannedResponseModal({
                 <button
                   key={variable.placeholder}
                   type="button"
-                  className="w-full rounded-md border border-blue-200 dark:border-blue-800 bg-white/70 dark:bg-blue-900/40 px-3 py-2 text-left transition-colors hover:bg-blue-100 dark:hover:bg-blue-900"
+                  className="w-full rounded-md border border-info/24 bg-white/70 dark:bg-blue-900/40 px-3 py-2 text-left transition-colors hover:bg-info/12"
                   onClick={() => insertVariableAtCursor(variable.placeholder)}
                   disabled={loading}
                   aria-label={`${t('modal.variables.insertAction')} ${variable.placeholder}`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <div className="text-xs text-blue-700 dark:text-blue-300">
-                      <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">{variable.placeholder}</code>
+                    <div className="text-xs text-info-foreground">
+                      <code className="bg-info/12 px-1 rounded">{variable.placeholder}</code>
                       <span className="ml-2">- {t(`modal.variables.${variable.key}`)}</span>
                     </div>
-                    <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                    <span className="text-xs font-medium text-info-foreground">
                       {t('modal.variables.insertAction')}
                     </span>
                   </div>

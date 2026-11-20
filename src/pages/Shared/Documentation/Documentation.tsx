@@ -164,11 +164,11 @@ const Documentacao = () => {
           {/* Content Area */}
           <div className="flex-1 p-6 overflow-y-auto">
             <div className="max-w-4xl mx-auto prose prose-gray dark:prose-invert">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+              <div className="bg-info/8 border border-info/24 rounded-lg p-6 mb-8">
+                <h3 className="text-lg font-semibold text-info-foreground mb-2">
                   {t('content.welcome.title')}
                 </h3>
-                <p className="text-blue-800">
+                <p className="text-info-foreground">
                   {t('content.welcome.description')}
                 </p>
               </div>
@@ -204,9 +204,9 @@ const Documentacao = () => {
                 <li dangerouslySetInnerHTML={{ __html: t('content.gettingStarted.steps.step4') }} />
               </ol>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mt-8">
-                <h3 className="text-lg font-semibold text-yellow-900 mb-2">{t('content.tip.title')}</h3>
-                <p className="text-yellow-800">
+              <div className="bg-warning/8 border border-warning/24 rounded-lg p-6 mt-8">
+                <h3 className="text-lg font-semibold text-warning-foreground mb-2">{t('content.tip.title')}</h3>
+                <p className="text-warning-foreground">
                   {t('content.tip.description')}
                 </p>
               </div>

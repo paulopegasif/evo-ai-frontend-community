@@ -282,7 +282,7 @@ export function ApiKeysModal({ open, onOpenChange, onApiKeysChange }: ApiKeysMod
                     <Label htmlFor="key_value">
                       {t('form.labels.key')}
                       {currentApiKey.provider !== CUSTOM_OPENAI_PROVIDER && (
-                        <span className="text-red-500 ml-1">*</span>
+                        <span className="text-destructive ml-1">*</span>
                       )}
                     </Label>
                     <div className="col-span-3 relative">

@@ -91,7 +91,7 @@ export default function ContactImportModal({
             <a
               href={csvTemplateUrl}
               download="import-contacts-sample.csv"
-              className="text-blue-600 hover:text-blue-700 underline inline-flex items-center gap-1"
+              className="text-info-foreground hover:text-info-foreground underline inline-flex items-center gap-1"
             >
               <Download className="h-3 w-3" />
               {t('import.downloadTemplate')}
@@ -156,11 +156,11 @@ export default function ContactImportModal({
             />
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="text-sm font-medium text-blue-900 mb-1">
+          <div className="bg-info/8 border border-info/24 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-info-foreground mb-1">
               {t('import.formatTitle')}
             </h4>
-            <p className="text-xs text-blue-700">
+            <p className="text-xs text-info-foreground">
               {t('import.formatDescription')}
             </p>
           </div>

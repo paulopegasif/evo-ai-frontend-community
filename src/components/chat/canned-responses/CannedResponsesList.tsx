@@ -47,7 +47,7 @@ const CannedResponsesList: React.FC<CannedResponsesListProps> = ({
       <span>
         {parts.map((part, index) =>
           part.toLowerCase() === query.toLowerCase() ? (
-            <mark key={index} className="bg-yellow-200 dark:bg-yellow-800 text-foreground">
+            <mark key={index} className="bg-warning/16 text-foreground">
               {part}
             </mark>
           ) : (
@@ -159,7 +159,7 @@ const CannedResponsesList: React.FC<CannedResponsesListProps> = ({
 
                   {/* 🎯 ATTACHMENTS INDICATOR: Mostrar ícone se tem mídia */}
                   {cannedResponse.attachments && cannedResponse.attachments.length > 0 && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-xs">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-info/12 text-info-foreground rounded text-xs">
                       <Paperclip className="h-3 w-3" />
                       <span>{cannedResponse.attachments.length}</span>
                     </span>

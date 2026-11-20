@@ -557,7 +557,7 @@ export default function PipelineCustomAttributesForm({
                         </Label>
                         <span
                           className={`text-xs px-2 py-0.5 rounded ${isGlobalAttribute
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
+                            ? 'bg-success/12 text-success-foreground'
                             : 'bg-muted text-foreground'}`}
                         >
                           {isGlobalAttribute ? 'Global' : 'Local'}
@@ -574,7 +574,7 @@ export default function PipelineCustomAttributesForm({
                           </span>
                         )}
                         {isShared && (
-                          <span className="text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                          <span className="text-xs px-2 py-0.5 rounded bg-info/12 text-info-foreground">
                             {attribute.attribute_scope === 'stages'
                               ? t('fields.attributeScope.sharedMessage.labelStages')
                               : t('fields.attributeScope.sharedMessage.label')}

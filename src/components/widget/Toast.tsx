@@ -8,15 +8,15 @@ interface ToastProps {
 
 const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
   const bgColor = {
-    success: 'bg-green-50 border-green-200 text-green-800',
-    error: 'bg-red-50 border-red-200 text-red-800',
-    info: 'bg-blue-50 border-blue-200 text-blue-800',
+    success: 'bg-success/8 border-success/24 text-success-foreground',
+    error: 'bg-destructive/8 border-destructive/24 text-destructive-foreground',
+    info: 'bg-info/8 border-info/24 text-info-foreground',
   }[type];
 
   const iconColor = {
-    success: 'text-green-500',
-    error: 'text-red-500',
-    info: 'text-blue-500',
+    success: 'text-success',
+    error: 'text-destructive',
+    info: 'text-info',
   }[type];
 
   const Icon = () => {

@@ -57,7 +57,7 @@ export default function ContactDetailPage({
               size="sm"
               onClick={() => onStartConversation(contact)}
               disabled={contact.blocked}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-success hover:bg-green-700 text-white"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               {t('details.actions.startConversation')}

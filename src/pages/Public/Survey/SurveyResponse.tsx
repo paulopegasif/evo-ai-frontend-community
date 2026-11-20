@@ -8,11 +8,11 @@ import { SurveyDetails } from '@/types/core/survey';
 import { Button } from '@/components/ui/compat';
 
 const getEmojiRatings = (t: any) => [
-  { value: 1, icon: Frown, labelKey: t('survey.rating.veryDissatisfied'), color: 'text-red-500' },
+  { value: 1, icon: Frown, labelKey: t('survey.rating.veryDissatisfied'), color: 'text-destructive' },
   { value: 2, icon: Frown, labelKey: t('survey.rating.dissatisfied'), color: 'text-orange-400' },
-  { value: 3, icon: Meh, labelKey: t('survey.rating.neutral'), color: 'text-yellow-500' },
-  { value: 4, icon: Smile, labelKey: t('survey.rating.satisfied'), color: 'text-green-400' },
-  { value: 5, icon: Smile, labelKey: t('survey.rating.verySatisfied'), color: 'text-green-500' },
+  { value: 3, icon: Meh, labelKey: t('survey.rating.neutral'), color: 'text-warning' },
+  { value: 4, icon: Smile, labelKey: t('survey.rating.satisfied'), color: 'text-success' },
+  { value: 5, icon: Smile, labelKey: t('survey.rating.verySatisfied'), color: 'text-success' },
 ];
 
 const SurveyResponse = () => {
@@ -140,7 +140,7 @@ const SurveyResponse = () => {
               className={`p-4 rounded-lg ${
                 errorMessage
                   ? 'bg-destructive/10 text-destructive'
-                  : 'bg-green-500/10 text-green-700 dark:text-green-400'
+                  : 'bg-success/10 text-success-foreground'
               }`}
             >
               <p className="text-sm font-medium">
@@ -208,7 +208,7 @@ const SurveyResponse = () => {
                     <Star
                       className={`w-10 h-10 ${
                         selectedRating && value <= selectedRating
-                          ? 'fill-yellow-400 text-yellow-400'
+                          ? 'fill-warning text-warning'
                           : 'text-muted-foreground'
                       }`}
                     />

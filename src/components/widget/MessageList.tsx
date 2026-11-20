@@ -237,7 +237,7 @@ const MessageList: React.FC<MessageListProps> = ({
                   } ${m.type === 'out'
                     ? 'text-white rounded-tr-[2px]'
                     : m.isSystem || m.type === 'system'
-                      ? 'bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-center italic'
+                      ? 'bg-warning/8 text-warning-foreground border border-warning/24 rounded-lg text-center italic'
                       : 'bg-background text-foreground border border-border rounded-tl-[2px]'
                   } ${m.attachments?.length ? 'p-2' : 'px-3 py-2'}`}
                 style={m.type === 'out' ? { backgroundColor: widgetColor } : undefined}
@@ -392,7 +392,7 @@ const MessageList: React.FC<MessageListProps> = ({
                 )}
                 {m.type === 'out' && m.status === 'failed' && (
                   <button
-                    className="text-[10px] text-red-500 underline"
+                    className="text-[10px] text-destructive underline"
                     onClick={() => onRetry?.(m.id, m.text)}
                   >
                     {t('messageList.retry')}

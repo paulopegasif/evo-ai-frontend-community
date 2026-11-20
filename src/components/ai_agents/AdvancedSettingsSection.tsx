@@ -86,7 +86,7 @@ const AdvancedSettingsSection = ({
           <div className="flex items-start justify-between p-4 bg-muted/30 rounded-lg border">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <Brain className="h-5 w-5 text-blue-500" />
+                <Brain className="h-5 w-5 text-info" />
                 <Label htmlFor="load-memory" className="font-medium">
                   {t('memory.loadMemory')}
                 </Label>
@@ -150,7 +150,7 @@ const AdvancedSettingsSection = ({
           <div className="flex items-start justify-between p-4 bg-muted/30 rounded-lg border">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
+                <Zap className="h-5 w-5 text-warning" />
                 <Label htmlFor="planner" className="font-medium">
                   {t('planner.title')}
                 </Label>
@@ -177,14 +177,14 @@ const AdvancedSettingsSection = ({
           {/* <div className="flex items-start justify-between p-4 bg-muted/30 rounded-lg border">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="h-5 w-5 text-green-500" />
+                <BookOpen className="h-5 w-5 text-success" />
                 <Label htmlFor="load-knowledge" className="font-medium">
                   {t('knowledge.loadKnowledge')}
                 </Label>
                 <Badge variant={data.load_knowledge ? 'default' : 'outline'} className="text-xs">
                   {data.load_knowledge ? t('advancedBot.active') : t('advancedBot.inactive')}
                 </Badge>
-                <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">
+                <Badge variant="outline" className="text-xs border-info/30 text-info">
                   RAG
                 </Badge>
               </div>
@@ -217,13 +217,13 @@ const AdvancedSettingsSection = ({
                       {data.knowledge_tags.map(tag => (
                         <div
                           key={tag}
-                          className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded text-xs"
+                          className="flex items-center gap-1 px-2 py-1 bg-info/10 border border-info/30 rounded text-xs"
                         >
                           <span>{tag}</span>
                           {!isReadOnly && (
                             <button
                               onClick={() => handleRemoveKnowledgeTag(tag)}
-                              className="text-blue-400 hover:text-blue-300"
+                              className="text-info hover:text-blue-300"
                             >
                               <X className="h-3 w-3" />
                             </button>

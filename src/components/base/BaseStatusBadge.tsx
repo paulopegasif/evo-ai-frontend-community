@@ -9,9 +9,9 @@ export interface BaseStatusBadgeProps {
 
 const statusConfig = {
   active: {
-    bgClassName: 'bg-emerald-600 dark:bg-[#26533D]',
+    bgClassName: 'bg-success dark:bg-[#26533D]',
     textClassName: 'text-white',
-    borderClassName: 'border-emerald-600 dark:border-[#26533D]',
+    borderClassName: 'border-success dark:border-[#26533D]',
   },
   inactive: {
     bgClassName: 'bg-gray-500',
@@ -19,29 +19,29 @@ const statusConfig = {
     borderClassName: 'border-gray-500',
   },
   blocked: {
-    bgClassName: 'bg-red-600 dark:bg-[#6A231D]',
+    bgClassName: 'bg-destructive dark:bg-[#6A231D]',
     textClassName: 'text-white',
-    borderClassName: 'border-red-600 dark:border-[#6A231D]',
+    borderClassName: 'border-destructive dark:border-[#6A231D]',
   },
   pending: {
-    bgClassName: 'bg-amber-500 dark:bg-yellow-500',
+    bgClassName: 'bg-warning',
     textClassName: 'text-white',
-    borderClassName: 'border-amber-500 dark:border-yellow-500',
+    borderClassName: 'border-warning',
   },
   success: {
-    bgClassName: 'bg-emerald-600 dark:bg-[#26533D]',
+    bgClassName: 'bg-success dark:bg-[#26533D]',
     textClassName: 'text-white',
-    borderClassName: 'border-emerald-600 dark:border-[#26533D]',
+    borderClassName: 'border-success dark:border-[#26533D]',
   },
   error: {
-    bgClassName: 'bg-red-600 dark:bg-[#6A231D]',
+    bgClassName: 'bg-destructive dark:bg-[#6A231D]',
     textClassName: 'text-white',
-    borderClassName: 'border-red-600 dark:border-[#6A231D]',
+    borderClassName: 'border-destructive dark:border-[#6A231D]',
   },
   warning: {
-    bgClassName: 'bg-amber-500 dark:bg-yellow-500',
+    bgClassName: 'bg-warning',
     textClassName: 'text-white',
-    borderClassName: 'border-amber-500 dark:border-yellow-500',
+    borderClassName: 'border-warning',
   }
 };
 

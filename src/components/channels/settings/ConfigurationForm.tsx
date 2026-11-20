@@ -99,14 +99,14 @@ const APIChannelConfig: React.FC<{
               </div>
 
               {hmacMandatory && (
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                <div className="mt-4 p-3 bg-info/8 rounded-lg">
+                  <div className="flex items-center gap-2 text-info-foreground">
                     <CheckCircle className="w-4 h-4" />
                     <span className="text-sm font-medium">
                       {t('settings.configuration.api.hmac.active')}
                     </span>
                   </div>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  <p className="text-xs text-info-foreground mt-1">
                     {t('settings.configuration.api.hmac.activeDescription')}
                   </p>
                 </div>
@@ -1077,13 +1077,13 @@ const EvolutionWhatsAppConfig: React.FC<{
                   {t('settings.configuration.whatsapp.instance.qrCodeInstructions')}
                 </p>
                 <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
-                  <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="animate-pulse w-2 h-2 bg-info rounded-full"></div>
                   <span>{t('settings.configuration.whatsapp.instance.waitingConnection')}</span>
                 </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-5 w-5 border-2 border-info border-t-transparent rounded-full"></div>
                 <span className="text-sm text-muted-foreground">
                   {t('settings.configuration.whatsapp.instance.generatingQrCode')}
                 </span>
@@ -1371,14 +1371,14 @@ const EvolutionWhatsAppConfig: React.FC<{
               </div>
 
               {usingGlobalFallback && (
-                <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 p-3">
+                <div className="rounded-lg border border-info/24 bg-info/8 p-3">
                   <div className="flex items-start gap-2">
-                    <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                    <Info className="w-4 h-4 text-info-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                      <p className="text-sm font-medium text-info-foreground">
                         {t('settings.configuration.whatsapp.instance.connection.usingGlobalConfig', 'Using Admin Settings defaults')}
                       </p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                      <p className="text-xs text-info-foreground mt-0.5">
                         {t('settings.configuration.whatsapp.instance.connection.usingGlobalConfigHint', 'The API URL and Token are configured globally in Admin Settings. Fill the fields below only to override the global values for this channel.')}
                       </p>
                     </div>
@@ -2155,11 +2155,11 @@ const ZapiWhatsAppConfig: React.FC<{
 
     const statusLower = status.toLowerCase();
     if (statusLower === 'connected' || statusLower === 'open') {
-      return <Badge className="bg-green-600 dark:bg-green-500 text-white">Connected</Badge>;
+      return <Badge className="bg-success text-white">Connected</Badge>;
     } else if (statusLower === 'disconnected' || statusLower === 'close') {
-      return <Badge className="bg-red-600 dark:bg-red-500 text-white">Disconnected</Badge>;
+      return <Badge className="bg-destructive text-white">Disconnected</Badge>;
     } else if (statusLower === 'connecting') {
-      return <Badge className="bg-yellow-600 dark:bg-yellow-500 text-white">Connecting</Badge>;
+      return <Badge className="bg-warning text-white">Connecting</Badge>;
     }
     return <Badge variant="secondary">{status}</Badge>;
   };
@@ -2351,7 +2351,7 @@ const ZapiWhatsAppConfig: React.FC<{
           <div className="flex flex-col items-center gap-4 p-4">
             {isLoading ? (
               <div className="flex flex-col items-center gap-2">
-                <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-8 w-8 border-2 border-info border-t-transparent rounded-full"></div>
                 <span className="text-sm text-muted-foreground">
                   Gerando QR Code...
                 </span>

@@ -197,9 +197,9 @@ export default function StartConversationModal({
   const getChannelIcon = (channelType: string) => {
     switch (channelType) {
       case 'Channel::Whatsapp':
-        return <MessageSquare className="h-4 w-4 text-green-600" />;
+        return <MessageSquare className="h-4 w-4 text-success-foreground" />;
       case 'Channel::Email':
-        return <Mail className="h-4 w-4 text-blue-600" />;
+        return <Mail className="h-4 w-4 text-info-foreground" />;
       case 'Channel::Sms':
         return <Phone className="h-4 w-4 text-purple-600" />;
       default:
@@ -459,8 +459,8 @@ export default function StartConversationModal({
             !loadingTemplates &&
             messageTemplates.length > 0 &&
             messageTemplates.every(tpl => !isTemplateSendable(tpl)) && (
-              <div className="p-3 rounded-md border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-                <p className="text-sm text-amber-700 dark:text-amber-400">
+              <div className="p-3 rounded-md border border-warning/24 bg-warning/8">
+                <p className="text-sm text-warning-foreground">
                   ⚠️ {t('startConversation.templates.noApproved')}
                 </p>
               </div>
@@ -503,8 +503,8 @@ export default function StartConversationModal({
               {useTemplate && (
                 <div className="space-y-3 p-3 border rounded-lg">
                   {messageTemplates.length === 0 ? (
-                    <div className="p-3 rounded-md border border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-800">
-                      <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                    <div className="p-3 rounded-md border border-warning/24 bg-warning/8">
+                      <p className="text-sm text-warning-foreground">
                         ⚠️ {t('startConversation.templates.noneForInbox')}
                       </p>
                     </div>
@@ -568,7 +568,7 @@ export default function StartConversationModal({
                       </div>
 
                       {isWhatsAppCloud && !isTemplateSendable(selectedTemplate) && (
-                        <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+                        <p className="text-xs text-warning-foreground mt-1">
                           {t('startConversation.templates.pendingSelectedHint')}
                         </p>
                       )}

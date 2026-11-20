@@ -62,11 +62,11 @@ const getAgentTypeLabel = (type: string): string => {
 
 const getAgentTypeColor = (type: string): string => {
   const colorMap: Record<string, string> = {
-    llm: 'bg-blue-500 text-white',
+    llm: 'bg-info text-white',
     sequential: 'bg-orange-500 text-white',
-    parallel: 'bg-green-500 text-white',
+    parallel: 'bg-success text-white',
     loop: 'bg-pink-500 text-white',
-    task: 'bg-green-500 text-white',
+    task: 'bg-success text-white',
   };
   return colorMap[type] || 'bg-gray-500 text-white';
 };
@@ -394,8 +394,8 @@ const TaskConfigForm = ({
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <div className="p-1 rounded-lg bg-emerald-500/10">
-              <List className="h-3.5 w-3.5 text-emerald-500" />
+            <div className="p-1 rounded-lg bg-success/10">
+              <List className="h-3.5 w-3.5 text-success" />
             </div>
             <div>
               <CardTitle className="text-sm">{t('wizard.step3.taskConfig.tasks')}</CardTitle>

@@ -58,7 +58,7 @@ export default function AgentActionsDropdown({
         )} */}
         {/* {onShare && (
           <DropdownMenuItem onClick={() => onShare(agent)}>
-            <Share2 className="h-4 w-4 mr-2 text-blue-500" />
+            <Share2 className="h-4 w-4 mr-2 text-info" />
             {t('dropdown.share')}
           </DropdownMenuItem>
         )} */}
@@ -67,7 +67,7 @@ export default function AgentActionsDropdown({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => onDelete(agent)}
-              className="text-red-500 focus:text-red-500"
+              className="text-destructive focus:text-destructive"
             >
               <Trash2 className="h-4 w-4 mr-2" />
               {t('dropdown.delete')}

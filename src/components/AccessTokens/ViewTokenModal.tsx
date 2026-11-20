@@ -215,14 +215,14 @@ export default function ViewTokenModal({
           </div>
 
           {/* Security Warning */}
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-900/20 dark:border-yellow-800">
+          <div className="p-4 bg-warning/8 border border-warning/24 rounded-lg">
             <div className="flex items-start gap-3">
-              <Key className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
+              <Key className="h-5 w-5 text-warning-foreground mt-0.5" />
               <div>
-                <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
+                <h4 className="font-medium text-warning-foreground">
                   Important - Security
                 </h4>
-                <ul className="mt-2 text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                <ul className="mt-2 text-sm text-warning-foreground space-y-1">
                   <li>• Never expose the access token in client-side code or public repositories</li>
                   <li>• Use HTTPS in production for all API communications</li>
                   <li>• Regenerate the token if you suspect it has been compromised</li>

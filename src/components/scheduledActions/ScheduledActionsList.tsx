@@ -261,7 +261,7 @@ export function ScheduledActionsList({ contactId }: ScheduledActionsListProps) {
                         )}
                       </div>
                       {action.status === 'scheduled' && !action.overdue && (
-                        <div className="flex items-center gap-1 text-sm font-medium text-blue-600">
+                        <div className="flex items-center gap-1 text-sm font-medium text-info-foreground">
                           <Clock className="h-4 w-4" />
                           <span>
                             {t('scheduledActions.timePrefix')}{' '}

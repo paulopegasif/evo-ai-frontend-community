@@ -38,8 +38,8 @@ const WizardStep4_Success = ({ agentId, agentName, onFinish }: WizardStep4Props)
           >
             <CardContent className="p-3.5">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-blue-500/10 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-                  <Settings className="h-5 w-5 text-blue-500 group-hover:text-white" />
+                <div className="p-2.5 rounded-lg bg-info/10 group-hover:bg-info group-hover:text-white transition-colors">
+                  <Settings className="h-5 w-5 text-info group-hover:text-white" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-base mb-0.5">{t('wizard.success.advancedSettings.title')}</h3>
@@ -58,8 +58,8 @@ const WizardStep4_Success = ({ agentId, agentName, onFinish }: WizardStep4Props)
           >
             <CardContent className="p-3.5">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-green-500/10 group-hover:bg-green-500 transition-colors">
-                  <MessageSquare className="h-5 w-5 text-green-500 group-hover:text-white" />
+                <div className="p-2.5 rounded-lg bg-success/10 group-hover:bg-success transition-colors">
+                  <MessageSquare className="h-5 w-5 text-success group-hover:text-white" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-base mb-0.5">{t('wizard.success.testChat.title')}</h3>

@@ -80,13 +80,13 @@ export default function InstagramForm({ onCancel }: InstagramFormProps) {
     <div className="space-y-6" data-tour="instagram-connect">
       {/* Configuration Check */}
       {!isInstagramConfigured && (
-        <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 mt-0.5 flex-shrink-0" />
+        <div className="p-4 bg-warning/8 border border-warning/24 rounded-lg flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-warning-foreground mt-0.5 flex-shrink-0" />
           <div>
-            <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
+            <h4 className="font-medium text-warning-foreground">
               {t('warnings.notConfigured')}
             </h4>
-            <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+            <p className="text-sm text-warning-foreground mt-1">
               {t('warnings.notConfiguredDescription')}
             </p>
           </div>

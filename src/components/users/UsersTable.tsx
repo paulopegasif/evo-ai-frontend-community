@@ -48,9 +48,9 @@ export default function UsersTable({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'text-green-600';
+        return 'text-success-foreground';
       case 'busy':
-        return 'text-yellow-600';
+        return 'text-warning-foreground';
       case 'offline':
       default:
         return 'text-muted-foreground';
@@ -86,7 +86,7 @@ export default function UsersTable({
                 className="h-8 w-8 rounded-full object-cover"
               />
             ) : (
-              <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+              <AvatarFallback className="bg-info/12 text-info-foreground text-xs">
                 {getInitials(user.name)}
               </AvatarFallback>
             )}
@@ -132,11 +132,11 @@ export default function UsersTable({
       render: user => (
         <div>
           {user.confirmed ? (
-            <Badge variant="secondary" className="text-xs text-green-600">
+            <Badge variant="secondary" className="text-xs text-success-foreground">
               {t('table.columns.confirmed')}
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-xs text-yellow-600">
+            <Badge variant="outline" className="text-xs text-warning-foreground">
               {t('table.columns.pending')}
             </Badge>
           )}

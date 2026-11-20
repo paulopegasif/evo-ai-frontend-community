@@ -227,7 +227,7 @@ export const GeneralTab = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="apiKey" className="text-sm font-medium">
-                    {t('llmConfig.apiKey')} <span className="text-red-500">*</span>
+                    {t('llmConfig.apiKey')} <span className="text-destructive">*</span>
                   </Label>
                   <Button
                     type="button"
@@ -340,8 +340,8 @@ export const GeneralTab = ({
               className="flex w-full items-center gap-3 pb-2 border-b text-left"
               aria-expanded={openBehavior}
             >
-              <span className="p-2 rounded-lg bg-blue-500/10">
-                <MessageSquare className="h-5 w-5 text-blue-500" />
+              <span className="p-2 rounded-lg bg-info/10">
+                <MessageSquare className="h-5 w-5 text-info" />
               </span>
               <span className="flex-1">
                 <span className="block text-lg font-semibold">
@@ -361,7 +361,7 @@ export const GeneralTab = ({
               {/* Transferir para humano */}
               <div className="flex items-center justify-between py-3 border-b last:border-0">
                 <div className="flex items-start gap-3 flex-1">
-                  <UserRound className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <UserRound className="h-5 w-5 text-info mt-0.5" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Label htmlFor="transfer-to-human" className="font-medium cursor-pointer">
@@ -422,7 +422,7 @@ export const GeneralTab = ({
               {/* Permitir editar contatos */}
               <div className="flex items-center justify-between py-3 border-b last:border-0">
                 <div className="flex items-start gap-3 flex-1">
-                  <Edit3 className="h-5 w-5 text-green-500 mt-0.5" />
+                  <Edit3 className="h-5 w-5 text-success mt-0.5" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <Label htmlFor="allow-contact-edit" className="font-medium cursor-pointer">
@@ -500,7 +500,7 @@ export const GeneralTab = ({
               {/* Permitir gerenciar labels */}
               <div className="flex items-center justify-between py-3 border-b last:border-0">
                 <div className="flex items-start gap-3 flex-1">
-                  <Tag className="h-5 w-5 text-amber-500 mt-0.5" />
+                  <Tag className="h-5 w-5 text-warning mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="allow-manage-labels" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.allowManageLabels') ||
@@ -527,7 +527,7 @@ export const GeneralTab = ({
               {/* Permitir registrar venda no pipeline */}
               <div className="flex items-center justify-between py-3 border-b last:border-0">
                 <div className="flex items-start gap-3 flex-1">
-                  <ShoppingCart className="h-5 w-5 text-emerald-500 mt-0.5" />
+                  <ShoppingCart className="h-5 w-5 text-success mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="allow-product-sales" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.allowProductSales') ||
@@ -554,7 +554,7 @@ export const GeneralTab = ({
               {/* Timezone */}
               <div className="flex items-start justify-between py-3">
                 <div className="flex items-start gap-3 flex-1">
-                  <Globe className="h-5 w-5 text-green-500 mt-0.5" />
+                  <Globe className="h-5 w-5 text-success mt-0.5" />
                   <div className="flex-1 space-y-2">
                     <Label htmlFor="timezone" className="font-medium">
                       {t('edit.configuration.behavior.timezone') || 'Timezone do agente'}
@@ -790,7 +790,7 @@ export const GeneralTab = ({
               {/* Usar Emojis */}
               <div className="flex items-center justify-between py-3 border-b">
                 <div className="flex items-start gap-3 flex-1">
-                  <Smile className="h-5 w-5 text-yellow-500 mt-0.5" />
+                  <Smile className="h-5 w-5 text-warning mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="use-emojis-messages" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.useEmojis') || 'Usar Emojis Nas Respostas'}
@@ -813,7 +813,7 @@ export const GeneralTab = ({
               {/* Enviar mensagem como resposta na conversa */}
               <div className="flex items-center justify-between py-3">
                 <div className="flex items-start gap-3 flex-1">
-                  <Reply className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <Reply className="h-5 w-5 text-info mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="send-as-reply" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.sendAsReply') ||
@@ -870,7 +870,7 @@ export const GeneralTab = ({
               {/* Usar Emojis */}
               <div className="flex items-center justify-between py-3 border-b last:border-0">
                 <div className="flex items-start gap-3 flex-1">
-                  <Smile className="h-5 w-5 text-yellow-500 mt-0.5" />
+                  <Smile className="h-5 w-5 text-warning mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="use-emojis-a2a-task" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.useEmojis') || 'Usar Emojis Nas Respostas'}
@@ -893,7 +893,7 @@ export const GeneralTab = ({
               {/* Enviar mensagem como resposta na conversa */}
               <div className="flex items-center justify-between py-3">
                 <div className="flex items-start gap-3 flex-1">
-                  <Reply className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <Reply className="h-5 w-5 text-info mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="send-as-reply-a2a-task" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.sendAsReply') ||
@@ -1119,7 +1119,7 @@ export const GeneralTab = ({
               {/* Enviar mensagem como resposta na conversa */}
               <div className="flex items-center justify-between py-3">
                 <div className="flex items-start gap-3 flex-1">
-                  <Reply className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <Reply className="h-5 w-5 text-info mt-0.5" />
                   <div className="flex-1">
                     <Label htmlFor="external-send-as-reply" className="font-medium cursor-pointer">
                       {t('edit.configuration.behavior.sendAsReply') ||

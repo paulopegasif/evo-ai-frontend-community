@@ -123,7 +123,7 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
             variant="outline"
             size="sm"
             onClick={() => onRemove(fieldKey)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-destructive-foreground hover:text-destructive-foreground hover:bg-destructive/8"
           >
             <Trash2 className="h-3 w-3 mr-1" />
             {t('actions.remove')}
@@ -134,7 +134,7 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
               variant="outline"
               size="sm"
               onClick={handleSave}
-              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+              className="text-success-foreground hover:text-success-foreground hover:bg-success/8"
             >
               <Save className="h-3 w-3 mr-1" />
               {t('actions.save')}

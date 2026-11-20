@@ -126,10 +126,10 @@ export default function BMSModal({
                   placeholder={t('bms.modal.fields.apiKey.placeholder')}
                   value={formData.api_key}
                   onChange={(e) => setFormData(prev => ({ ...prev, api_key: e.target.value }))}
-                  className={errors.api_key ? 'border-red-500' : ''}
+                  className={errors.api_key ? 'border-destructive' : ''}
                 />
                 {errors.api_key && (
-                  <p className="text-sm text-red-600 mt-1">{errors.api_key}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.api_key}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('bms.modal.fields.apiKey.hint')}
@@ -202,11 +202,11 @@ export default function BMSModal({
           </Card>
 
           {/* Features Info */}
-          <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-            <h4 className="font-semibold mb-3 text-blue-800 dark:text-blue-200">
+          <Card className="p-4 bg-info/8 border-info/24">
+            <h4 className="font-semibold mb-3 text-info-foreground">
               {t('bms.modal.features.title')}
             </h4>
-            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+            <ul className="text-sm text-info-foreground space-y-2">
               <li>• {t('bms.modal.features.bidirectionalSync')}</li>
               <li>• {t('bms.modal.features.labelSync')}</li>
               <li>• {t('bms.modal.features.customAttributes')}</li>
@@ -216,10 +216,10 @@ export default function BMSModal({
           </Card>
 
           {/* Security Warning */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+          <Card className="p-4 bg-warning/8 border-warning/24">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
+              <AlertCircle className="w-4 h-4 text-warning-foreground mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-warning-foreground">
                 <strong>{t('bms.modal.security.title')}</strong> {t('bms.modal.security.description')}
               </div>
             </div>

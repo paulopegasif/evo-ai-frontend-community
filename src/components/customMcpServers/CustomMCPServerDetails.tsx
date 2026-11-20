@@ -203,7 +203,7 @@ export default function CustomMCPServerDetails({
                             )}
                           </div>
                         </div>
-                        <TestTube className="h-4 w-4 text-emerald-400 mt-0.5" />
+                        <TestTube className="h-4 w-4 text-success mt-0.5" />
                       </div>
                     </div>
                   ))}

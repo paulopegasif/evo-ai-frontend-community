@@ -433,7 +433,7 @@ const MessageList: React.FC<MessageListProps> = ({
                       {/* Avatar pequeno para replies */}
                       <Avatar className="w-6 h-6 flex-shrink-0 ml-2 relative z-10">
                         <AvatarImage src={reply.sender?.thumbnail} />
-                        <AvatarFallback className={isFromBotReply ? 'bg-purple-100 text-purple-700 text-xs' : isFromAgentReply ? 'bg-green-100 text-green-800 text-xs' : 'text-xs'}>
+                        <AvatarFallback className={isFromBotReply ? 'bg-purple-100 text-purple-700 text-xs' : isFromAgentReply ? 'bg-success/12 text-success-foreground text-xs' : 'text-xs'}>
                           {isFromBotReply ? '🤖' : reply.sender?.name?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
@@ -445,7 +445,7 @@ const MessageList: React.FC<MessageListProps> = ({
                             {reply.sender?.name || t('messages.messageBubble.userFallback')}
                           </span>
                           {isFromAgentReply && (
-                            <Badge variant="outline" className="h-3 px-1 text-[9px] bg-green-200 text-green-900 border-green-400 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700">
+                            <Badge variant="outline" className="h-3 px-1 text-[9px] bg-success/16 text-success-foreground border-success">
                               {t('messages.messageBubble.agent.badge')}
                             </Badge>
                           )}
@@ -513,7 +513,7 @@ const MessageList: React.FC<MessageListProps> = ({
                       {/* Avatar sempre visível */}
                       <Avatar className="w-8 h-8 flex-shrink-0">
                         <AvatarImage src={rootMessage.sender?.thumbnail} />
-                        <AvatarFallback className={isFromBotRoot ? 'bg-purple-100 text-purple-700' : isFromAgentRoot ? 'bg-green-100 text-green-800' : ''}>
+                        <AvatarFallback className={isFromBotRoot ? 'bg-purple-100 text-purple-700' : isFromAgentRoot ? 'bg-success/12 text-success-foreground' : ''}>
                           {isFromBotRoot ? '🤖' : rootMessage.sender?.name?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
@@ -525,7 +525,7 @@ const MessageList: React.FC<MessageListProps> = ({
                             {rootMessage.sender?.name || t('messages.messageBubble.userFallback')}
                           </span>
                           {isFromAgentRoot && (
-                            <Badge variant="outline" className="h-4 px-1 text-[10px] bg-green-200 text-green-900 border-green-400 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700">
+                            <Badge variant="outline" className="h-4 px-1 text-[10px] bg-success/16 text-success-foreground border-success">
                               {t('messages.messageBubble.agent.badge')}
                             </Badge>
                           )}

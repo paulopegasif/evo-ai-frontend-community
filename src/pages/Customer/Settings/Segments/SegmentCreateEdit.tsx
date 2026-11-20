@@ -337,10 +337,10 @@ export default function SegmentCreateEdit() {
         <div className="max-w-5xl mx-auto p-6 space-y-6">
           {/* Preview result / error (does not affect the form) */}
           {previewError && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800/30 dark:bg-red-950/20">
+            <div className="rounded-lg border border-destructive/24 bg-destructive/8 p-3">
               <div className="flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 text-red-500 mt-0.5" />
-                <p className="text-sm text-red-800 dark:text-red-200">{previewError}</p>
+                <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
+                <p className="text-sm text-destructive-foreground">{previewError}</p>
               </div>
             </div>
           )}

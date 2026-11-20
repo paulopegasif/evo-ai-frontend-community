@@ -26,9 +26,9 @@ interface CustomToolTestResultDialogProps {
 
 const statusColor = (code: number | undefined): string => {
   if (!code) return 'text-muted-foreground';
-  if (code >= 200 && code < 300) return 'text-emerald-600';
+  if (code >= 200 && code < 300) return 'text-success-foreground';
   if (code >= 300 && code < 400) return 'text-sky-600';
-  if (code >= 400 && code < 500) return 'text-amber-600';
+  if (code >= 400 && code < 500) return 'text-warning-foreground';
   return 'text-destructive';
 };
 
@@ -69,7 +69,7 @@ export default function CustomToolTestResultDialog({
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="text-xl flex items-center gap-2">
             {isSuccess ? (
-              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+              <CheckCircle2 className="h-6 w-6 text-success" />
             ) : (
               <XCircle className="h-6 w-6 text-destructive" />
             )}

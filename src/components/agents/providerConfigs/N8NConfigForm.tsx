@@ -34,7 +34,7 @@ export const N8NConfigForm = ({
           disabled={disabled}
         />
         {errors.webhookUrl && (
-          <p className="text-xs text-red-600">{errors.webhookUrl}</p>
+          <p className="text-xs text-destructive-foreground">{errors.webhookUrl}</p>
         )}
       </div>
       <div className="grid grid-cols-2 gap-4">

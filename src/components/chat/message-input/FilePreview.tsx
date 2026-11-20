@@ -32,16 +32,16 @@ const FilePreview: React.FC<FilePreviewProps> = ({
     const type = file.type;
 
     if (type.startsWith('image/')) {
-      return <Image className="h-6 w-6 text-blue-500" />;
+      return <Image className="h-6 w-6 text-info" />;
     }
     if (type.startsWith('audio/')) {
-      return <Music className="h-6 w-6 text-green-500" />;
+      return <Music className="h-6 w-6 text-success" />;
     }
     if (type.startsWith('video/')) {
       return <Video className="h-6 w-6 text-purple-500" />;
     }
     if (type === 'application/pdf' || type.includes('document')) {
-      return <FileText className="h-6 w-6 text-red-500" />;
+      return <FileText className="h-6 w-6 text-destructive" />;
     }
 
     return <File className="h-6 w-6 text-muted-foreground" />;

@@ -59,7 +59,7 @@ const WizardStep3_TaskConfig = ({
       </div>
 
       {errors.length > 0 && !isValid && (
-        <div className="mt-2 text-sm text-red-600">
+        <div className="mt-2 text-sm text-destructive-foreground">
           {errors.map((error, index) => (
             <p key={index}>{error}</p>
           ))}

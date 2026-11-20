@@ -27,7 +27,7 @@ export const FormField = ({
     <div className={`space-y-2 ${className || ''}`}>
       <label className="text-sm font-medium text-sidebar-foreground/80">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-destructive ml-1">*</span>}
       </label>
       <Input
         placeholder={placeholder}

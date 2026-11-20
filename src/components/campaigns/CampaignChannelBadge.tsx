@@ -22,14 +22,14 @@ export default function CampaignChannelBadge({ channelType, className }: Campaig
           label: t('channel.email'),
           variant: 'outline' as const,
           icon: Mail,
-          color: 'text-blue-500',
+          color: 'text-info',
         };
       case CampaignChannelType.WHATSAPP:
         return {
           label: t('channel.whatsapp'),
           variant: 'outline' as const,
           icon: MessageCircle,
-          color: 'text-green-500',
+          color: 'text-success',
         };
       case CampaignChannelType.SMS:
         return {
@@ -43,7 +43,7 @@ export default function CampaignChannelBadge({ channelType, className }: Campaig
           label: t('channel.email'),
           variant: 'outline' as const,
           icon: Mail,
-          color: 'text-blue-500',
+          color: 'text-info',
         };
     }
   };

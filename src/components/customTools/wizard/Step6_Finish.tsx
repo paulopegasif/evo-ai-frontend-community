@@ -98,12 +98,12 @@ export default function Step6_Finish({
             )}
           </div>
 
-          <p className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded p-3">
+          <p className="text-xs text-muted-foreground bg-warning/8 border border-warning/24 rounded p-3">
             {t('wizard.step6.testHint')}
           </p>
 
-          <p className="flex items-start gap-2 text-xs text-muted-foreground bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded p-3">
-            <Link2 className="h-4 w-4 flex-shrink-0 mt-px text-blue-600 dark:text-blue-400" />
+          <p className="flex items-start gap-2 text-xs text-muted-foreground bg-info/8 border border-info/24 rounded p-3">
+            <Link2 className="h-4 w-4 flex-shrink-0 mt-px text-info-foreground" />
             <span>{t('wizard.step6.attachHint')}</span>
           </p>
         </div>

@@ -177,10 +177,10 @@ export default function OAuthAppModal({
                   placeholder={t('oauth.modal.fields.name.placeholder')}
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className={errors.name ? 'border-red-500' : ''}
+                  className={errors.name ? 'border-destructive' : ''}
                 />
                 {errors.name && (
-                  <p className="text-sm text-red-600 mt-1">{errors.name}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.name}</p>
                 )}
               </div>
 
@@ -193,10 +193,10 @@ export default function OAuthAppModal({
                   placeholder={t('oauth.modal.fields.redirectUri.placeholder')}
                   value={formData.redirect_uri}
                   onChange={(e) => setFormData(prev => ({ ...prev, redirect_uri: e.target.value }))}
-                  className={errors.redirect_uri ? 'border-red-500' : ''}
+                  className={errors.redirect_uri ? 'border-destructive' : ''}
                 />
                 {errors.redirect_uri && (
-                  <p className="text-sm text-red-600 mt-1">{errors.redirect_uri}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.redirect_uri}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('oauth.modal.fields.redirectUri.hint')}
@@ -221,10 +221,10 @@ export default function OAuthAppModal({
                   value={formData.scopes}
                   onChange={(e) => setFormData(prev => ({ ...prev, scopes: e.target.value }))}
                   rows={3}
-                  className={errors.scopes ? 'border-red-500' : ''}
+                  className={errors.scopes ? 'border-destructive' : ''}
                 />
                 {errors.scopes && (
-                  <p className="text-sm text-red-600 mt-1">{errors.scopes}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.scopes}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('oauth.modal.fields.scopes.hint')}
@@ -267,10 +267,10 @@ export default function OAuthAppModal({
           </Card>
 
           {/* Security Info */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+          <Card className="p-4 bg-warning/8 border-warning/24">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
+              <AlertCircle className="w-4 h-4 text-warning-foreground mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-warning-foreground">
                 <strong>{t('oauth.modal.security.title')}</strong> {t('oauth.modal.security.description')}
               </div>
             </div>

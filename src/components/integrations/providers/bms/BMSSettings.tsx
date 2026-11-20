@@ -160,13 +160,13 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                 <div className="flex items-center gap-2 text-sm">
                   {hook.status ? (
                     <>
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-green-600 font-medium">{t('bms.status.active')}</span>
+                      <CheckCircle className="w-4 h-4 text-success-foreground" />
+                      <span className="text-success-foreground font-medium">{t('bms.status.active')}</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-4 h-4 text-red-600" />
-                      <span className="text-red-600 font-medium">{t('bms.status.inactive')}</span>
+                      <XCircle className="w-4 h-4 text-destructive-foreground" />
+                      <span className="text-destructive-foreground font-medium">{t('bms.status.inactive')}</span>
                     </>
                   )}
                 </div>
@@ -233,9 +233,9 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </label>
                     <p className="text-sm">
                       {hook.settings?.enable_contact_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
+                        <span className="text-success-foreground">{t('bms.configuration.enabled')}</span>
                       ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
+                        <span className="text-destructive-foreground">{t('bms.configuration.disabled')}</span>
                       )}
                     </p>
                   </div>
@@ -245,9 +245,9 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </label>
                     <p className="text-sm">
                       {hook.settings?.enable_label_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
+                        <span className="text-success-foreground">{t('bms.configuration.enabled')}</span>
                       ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
+                        <span className="text-destructive-foreground">{t('bms.configuration.disabled')}</span>
                       )}
                     </p>
                   </div>
@@ -257,9 +257,9 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </label>
                     <p className="text-sm">
                       {hook.settings?.enable_custom_attributes_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
+                        <span className="text-success-foreground">{t('bms.configuration.enabled')}</span>
                       ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
+                        <span className="text-destructive-foreground">{t('bms.configuration.disabled')}</span>
                       )}
                     </p>
                   </div>
@@ -269,9 +269,9 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
                     </label>
                     <p className="text-sm">
                       {hook.settings?.enable_campaign_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
+                        <span className="text-success-foreground">{t('bms.configuration.enabled')}</span>
                       ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
+                        <span className="text-destructive-foreground">{t('bms.configuration.disabled')}</span>
                       )}
                     </p>
                   </div>
@@ -280,11 +280,11 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
             </Card>
 
             {/* Features Card */}
-            <Card className="p-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-              <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-200">
+            <Card className="p-6 bg-info/8 border-info/24">
+              <h3 className="text-lg font-semibold mb-4 text-info-foreground">
                 {t('bms.featuresCard.title')}
               </h3>
-              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+              <ul className="text-sm text-info-foreground space-y-2">
                 <li>• {t('bms.featuresCard.contactSync')}</li>
                 <li>• {t('bms.featuresCard.labelManagement')}</li>
                 <li>• {t('bms.featuresCard.customAttributes')}</li>

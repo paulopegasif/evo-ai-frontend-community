@@ -260,7 +260,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-foreground'
+                    hasError ? 'text-destructive' : 'text-foreground'
                   }`}
                 >
                   {field.label}
@@ -269,7 +269,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                   value={formField.value || ''}
                   onChange={e => formField.onChange(e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    hasError ? 'border-red-500' : 'border-border'
+                    hasError ? 'border-destructive' : 'border-border'
                   }`}
                 >
                   <option value="" disabled>
@@ -281,7 +281,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                     </option>
                   ))}
                 </select>
-                {fieldError && <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>}
+                {fieldError && <p className="text-destructive text-xs mt-1">{fieldError.message}</p>}
               </div>
             )}
           />
@@ -306,7 +306,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                 >
                   {field.label}
                 </label>
-                {fieldError && <p className="text-red-500 text-xs">{fieldError.message}</p>}
+                {fieldError && <p className="text-destructive text-xs">{fieldError.message}</p>}
               </div>
             )}
           />
@@ -322,7 +322,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-foreground'
+                    hasError ? 'text-destructive' : 'text-foreground'
                   }`}
                 >
                   {field.label}
@@ -334,7 +334,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                   error={hasError}
                   defaultCountry="BR"
                 />
-                {fieldError && <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>}
+                {fieldError && <p className="text-destructive text-xs mt-1">{fieldError.message}</p>}
               </div>
             )}
           />
@@ -350,7 +350,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-foreground'
+                    hasError ? 'text-destructive' : 'text-foreground'
                   }`}
                 >
                   {field.label}
@@ -368,9 +368,9 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                   value={formField.value || ''}
                   onChange={e => formField.onChange(e.target.value)}
                   placeholder={field.placeholder}
-                  className={hasError ? 'border-red-500' : ''}
+                  className={hasError ? 'border-destructive' : ''}
                 />
-                {fieldError && <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>}
+                {fieldError && <p className="text-destructive text-xs mt-1">{fieldError.message}</p>}
               </div>
             )}
           />
@@ -406,7 +406,7 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
               <div className="mb-4">
                 <label
                   className={`text-sm font-medium mb-1 block ${
-                    errors.message ? 'text-red-500' : 'text-foreground'
+                    errors.message ? 'text-destructive' : 'text-foreground'
                   }`}
                 >
                   {t('preChatForm.message')}
@@ -415,11 +415,11 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                   value={field.value || ''}
                   onChange={e => field.onChange(e.target.value)}
                   placeholder={t('preChatForm.messagePlaceholder')}
-                  className={errors.message ? 'border-red-500' : ''}
+                  className={errors.message ? 'border-destructive' : ''}
                   rows={4}
                 />
                 {errors.message && (
-                  <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>
+                  <p className="text-destructive text-xs mt-1">{errors.message.message}</p>
                 )}
               </div>
             )}

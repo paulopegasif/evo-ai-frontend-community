@@ -164,9 +164,9 @@ const MCPConfigDialog = ({
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'oauth':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+        return 'bg-info/10 text-info-foreground border-info/30';
       case 'webhook':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
+        return 'bg-success/10 text-success-foreground border-success/30';
       case 'basic_auth':
         return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
       case 'credentials':

@@ -146,12 +146,12 @@ export const ChatAttachment: React.FC<ChatAttachmentProps> = ({
       {isDragActive && (
         <div
           {...getRootProps()}
-          className="absolute inset-0 bg-blue-50 bg-opacity-90 border-2 border-dashed border-blue-300 rounded-lg flex items-center justify-center z-50"
+          className="absolute inset-0 bg-info/8 bg-opacity-90 border-2 border-dashed border-info/24 rounded-lg flex items-center justify-center z-50"
         >
           <input {...getInputProps()} />
           <div className="text-center">
-            <ImageIcon size={48} className="mx-auto mb-2 text-blue-500" />
-            <p className="text-blue-700 font-medium">{t('attachment.dropHere')}</p>
+            <ImageIcon size={48} className="mx-auto mb-2 text-info" />
+            <p className="text-info-foreground font-medium">{t('attachment.dropHere')}</p>
           </div>
         </div>
       )}

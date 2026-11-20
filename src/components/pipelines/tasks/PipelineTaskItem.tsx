@@ -58,11 +58,11 @@ export default function PipelineTaskItem({
   const getPriorityColor = () => {
     switch (task.priority) {
       case 'urgent':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+        return 'bg-destructive/12 text-destructive-foreground';
       case 'high':
         return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+        return 'bg-warning/12 text-warning-foreground';
       case 'low':
         return 'bg-muted text-muted-foreground';
       default:
@@ -94,7 +94,7 @@ export default function PipelineTaskItem({
 
     const date = new Date(task.due_date);
     if (isPast(date) || task.status === 'overdue') {
-      return 'text-red-600 font-semibold dark:text-red-400';
+      return 'text-destructive-foreground font-semibold';
     }
     if (isToday(date)) {
       return 'text-orange-600 font-medium dark:text-orange-400';
@@ -111,14 +111,14 @@ export default function PipelineTaskItem({
     if (task.status === 'overdue') {
       return cn(
         baseClasses,
-        'border-red-300 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20',
+        'border-destructive/24 bg-destructive/8',
       );
     }
 
     if (task.status === 'completed') {
       return cn(
         baseClasses,
-        'border-green-300 bg-green-50/50 dark:border-green-900/50 dark:bg-green-950/20',
+        'border-success/24 bg-success/8',
       );
     }
 

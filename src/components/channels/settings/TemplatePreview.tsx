@@ -17,7 +17,7 @@ const BubblePreview: React.FC<{
   return (
     <div className="template-preview-container">
       <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
-        <MessageSquare className="w-4 h-4 text-green-600" />
+        <MessageSquare className="w-4 h-4 text-success-foreground" />
         {t('settings.messageTemplates.preview.title')}
       </h4>
 
@@ -88,7 +88,7 @@ const BubblePreview: React.FC<{
                 {template.buttons.map((button: any, index: number) => (
                   <div
                     key={index}
-                    className="button-preview text-center text-blue-600 dark:text-blue-400 text-sm py-1 hover:bg-accent rounded transition-colors cursor-pointer"
+                    className="button-preview text-center text-info-foreground text-sm py-1 hover:bg-accent rounded transition-colors cursor-pointer"
                     style={{
                       borderBottom:
                         index < (template.buttons?.length || 0) - 1 ? '1px solid #f0f0f0' : 'none',
@@ -134,7 +134,7 @@ const EmailPreview: React.FC<{
   return (
     <div className="template-preview-container">
       <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
-        <Mail className="w-4 h-4 text-blue-600" />
+        <Mail className="w-4 h-4 text-info-foreground" />
         {t('settings.messageTemplates.preview.title')}
       </h4>
 
@@ -187,8 +187,8 @@ const TextPreview: React.FC<{
 }> = ({ template, channelType, t }) => {
   const getIcon = () => {
     if (channelType.includes('Sms')) return <Send className="w-4 h-4 text-purple-600" />;
-    if (channelType.includes('Telegram')) return <Send className="w-4 h-4 text-blue-600" />;
-    if (channelType.includes('Line')) return <MessageSquare className="w-4 h-4 text-green-600" />;
+    if (channelType.includes('Telegram')) return <Send className="w-4 h-4 text-info-foreground" />;
+    if (channelType.includes('Line')) return <MessageSquare className="w-4 h-4 text-success-foreground" />;
     return <Send className="w-4 h-4 text-muted-foreground" />;
   };
 

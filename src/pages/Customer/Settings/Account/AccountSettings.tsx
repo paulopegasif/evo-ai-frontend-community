@@ -361,11 +361,11 @@ export default function AccountSettings() {
                   onChange={e => handleFieldChange('name', e.target.value)}
                   placeholder={t('fields.name.placeholder')}
                   className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                    errors.name ? 'border-red-500' : ''
+                    errors.name ? 'border-destructive' : ''
                   }`}
                   disabled={saving}
                 />
-                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
               </div>
 
               <div className="space-y-2">
@@ -376,7 +376,7 @@ export default function AccountSettings() {
                 >
                   <SelectTrigger
                     className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                      errors.locale ? 'border-red-500' : ''
+                      errors.locale ? 'border-destructive' : ''
                     }`}
                   >
                     <SelectValue />
@@ -389,7 +389,7 @@ export default function AccountSettings() {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.locale && <p className="text-sm text-red-500">{errors.locale}</p>}
+                {errors.locale && <p className="text-sm text-destructive">{errors.locale}</p>}
               </div>
 
               {account?.features?.custom_reply_domain && (
@@ -465,7 +465,7 @@ export default function AccountSettings() {
                         handleFieldChange('autoResolveAfter', parseInt(e.target.value) || 0)
                       }
                       className={`w-32 bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                        errors.autoResolveAfter ? 'border-red-500' : ''
+                        errors.autoResolveAfter ? 'border-destructive' : ''
                       }`}
                     />
                     <span className="text-sm text-sidebar-foreground/60">
@@ -473,7 +473,7 @@ export default function AccountSettings() {
                     </span>
                   </div>
                   {errors.autoResolveAfter && (
-                    <p className="text-sm text-red-500">{errors.autoResolveAfter}</p>
+                    <p className="text-sm text-destructive">{errors.autoResolveAfter}</p>
                   )}
                   <p className="text-xs text-sidebar-foreground/60">
                     {t('fields.autoResolveTime.description')}

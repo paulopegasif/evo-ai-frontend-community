@@ -39,7 +39,7 @@ const Step1_Name = ({ data, onChange, onNext }: Step1Props) => {
         <div className="w-full max-w-2xl space-y-3">
           <div>
             <Label className="text-sm mb-1.5 block font-semibold">
-              {t('wizard.step1.nameLabel')} <span className="text-red-500">*</span>
+              {t('wizard.step1.nameLabel')} <span className="text-destructive">*</span>
             </Label>
             <Input
               placeholder={t('wizard.step1.namePlaceholder')}
@@ -53,7 +53,7 @@ const Step1_Name = ({ data, onChange, onNext }: Step1Props) => {
                 }
               }}
             />
-            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+            {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
           </div>
           <div>
             <Label className="text-sm mb-1.5 block font-semibold">{t('wizard.step1.descriptionLabel')}</Label>

@@ -26,18 +26,18 @@ const WebSocketStatus: React.FC<WebSocketStatusProps> = ({
         variant: 'default' as const,
         icon: <Wifi className="h-3 w-3" />,
         text: t('webSocketStatus.connected'),
-        bgColor: 'bg-green-500/10',
-        textColor: 'text-green-600',
-        borderColor: 'border-green-500/20',
+        bgColor: 'bg-success/10',
+        textColor: 'text-success-foreground',
+        borderColor: 'border-success/20',
       };
     } else {
       return {
         variant: 'destructive' as const,
         icon: <WifiOff className="h-3 w-3" />,
         text: t('webSocketStatus.reconnecting'),
-        bgColor: 'bg-yellow-500/10',
-        textColor: 'text-yellow-600',
-        borderColor: 'border-yellow-500/20',
+        bgColor: 'bg-warning/10',
+        textColor: 'text-warning-foreground',
+        borderColor: 'border-warning/20',
       };
     }
   };

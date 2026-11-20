@@ -39,25 +39,25 @@ const FacebookReauthorizeBanner: React.FC<{
   };
 
   return (
-    <Card className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/10">
+    <Card className="border-destructive/24 bg-destructive/8">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-destructive-foreground mt-0.5" />
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Facebook className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <h3 className="font-semibold text-red-900 dark:text-red-200">
+              <Facebook className="w-4 h-4 text-info-foreground" />
+              <h3 className="font-semibold text-destructive-foreground">
                 {t('settings.authorizationBanners.facebook.title')}
               </h3>
             </div>
-            <p className="text-sm text-red-800 dark:text-red-300 mb-3">
+            <p className="text-sm text-destructive-foreground mb-3">
               {t('settings.authorizationBanners.facebook.description')}
             </p>
             <Button
               onClick={handleReauthorize}
               loading={isReauthorizing}
               size="sm"
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-destructive hover:bg-red-700 text-white"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               {t('settings.authorizationBanners.facebook.button')}
@@ -84,25 +84,25 @@ const GoogleReauthorizeBanner: React.FC<{
   };
 
   return (
-    <Card className="border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/10">
+    <Card className="border-warning/24 bg-warning/8">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-yellow-700 dark:text-yellow-400 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-warning-foreground mt-0.5" />
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Mail className="w-4 h-4 text-red-600 dark:text-red-400" />
-              <h3 className="font-semibold text-yellow-900 dark:text-yellow-200">
+              <Mail className="w-4 h-4 text-destructive-foreground" />
+              <h3 className="font-semibold text-warning-foreground">
                 {t('settings.authorizationBanners.google.title')}
               </h3>
             </div>
-            <p className="text-sm text-yellow-800 dark:text-yellow-300 mb-3">
+            <p className="text-sm text-warning-foreground mb-3">
               {t('settings.authorizationBanners.google.description')}
             </p>
             <Button
               onClick={handleReauthorize}
               loading={isReauthorizing}
               size="sm"
-              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+              className="bg-warning hover:bg-yellow-700 text-white"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               {t('settings.authorizationBanners.google.button')}
@@ -129,25 +129,25 @@ const MicrosoftReauthorizeBanner: React.FC<{
   };
 
   return (
-    <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/10">
+    <Card className="border-info/24 bg-info/8">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-blue-700 dark:text-blue-400 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-info-foreground mt-0.5" />
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <h3 className="font-semibold text-blue-900 dark:text-blue-200">
+              <Mail className="w-4 h-4 text-info-foreground" />
+              <h3 className="font-semibold text-info-foreground">
                 {t('settings.authorizationBanners.microsoft.title')}
               </h3>
             </div>
-            <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
+            <p className="text-sm text-info-foreground mb-3">
               {t('settings.authorizationBanners.microsoft.description')}
             </p>
             <Button
               onClick={handleReauthorize}
               loading={isReauthorizing}
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-info hover:bg-blue-700 text-white"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               {t('settings.authorizationBanners.microsoft.button')}
@@ -265,19 +265,19 @@ const AuthorizationSuccessBanner: React.FC<{
   const getProviderIcon = () => {
     switch (provider.toLowerCase()) {
       case 'facebook':
-        return <Facebook className="w-4 h-4 text-blue-600" />;
+        return <Facebook className="w-4 h-4 text-info-foreground" />;
       case 'instagram':
         return <Instagram className="w-4 h-4 text-pink-600" />;
       case 'whatsapp':
-        return <MessageSquare className="w-4 h-4 text-green-600" />;
+        return <MessageSquare className="w-4 h-4 text-success-foreground" />;
       case 'google':
       case 'gmail':
-        return <Mail className="w-4 h-4 text-red-500" />;
+        return <Mail className="w-4 h-4 text-destructive" />;
       case 'microsoft':
       case 'outlook':
-        return <Mail className="w-4 h-4 text-blue-600" />;
+        return <Mail className="w-4 h-4 text-info-foreground" />;
       default:
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
+        return <CheckCircle className="w-4 h-4 text-success-foreground" />;
     }
   };
 

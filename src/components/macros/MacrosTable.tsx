@@ -54,7 +54,7 @@ export default function MacrosTable({
   };
 
   const getVisibilityColor = (visibility: string) => {
-    return visibility === 'global' ? 'text-green-600' : 'text-blue-600';
+    return visibility === 'global' ? 'text-success-foreground' : 'text-info-foreground';
   };
 
   const columns: TableColumn<Macro>[] = [

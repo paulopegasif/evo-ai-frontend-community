@@ -47,7 +47,7 @@ export function MCPCard({
         <>
           <Button
             variant="success"
-            className="w-full gap-2 bg-green-600 text-white hover:bg-green-700 border-green-600 cursor-default"
+            className="w-full gap-2 bg-success text-white hover:bg-green-700 border-success cursor-default"
             disabled
           >
             <Check className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function MCPCard({
 
         {/* Coming Soon Badge */}
         {showComingSoon && (
-          <span className="px-1 py-0.5 text-[12px] font-medium bg-blue-500/20 text-blue-400 rounded border border-blue-500/30">
+          <span className="px-1 py-0.5 text-[12px] font-medium bg-info/20 text-info rounded border border-info/30">
             {t('mcpServers.comingSoon') || 'Em breve'}
           </span>
         )}

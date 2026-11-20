@@ -116,10 +116,10 @@ export default function OpenAIModal({
                   placeholder={t('openai.modal.fields.apiKey.placeholder')}
                   value={formData.api_key}
                   onChange={(e) => setFormData(prev => ({ ...prev, api_key: e.target.value }))}
-                  className={errors.api_key ? 'border-red-500' : ''}
+                  className={errors.api_key ? 'border-destructive' : ''}
                 />
                 {errors.api_key && (
-                  <p className="text-sm text-red-600 mt-1">{errors.api_key}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.api_key}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('openai.modal.fields.apiKey.hint')}
@@ -146,11 +146,11 @@ export default function OpenAIModal({
           </Card>
 
           {/* Features Info */}
-          <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-            <h4 className="font-semibold mb-3 text-blue-800 dark:text-blue-200">
+          <Card className="p-4 bg-info/8 border-info/24">
+            <h4 className="font-semibold mb-3 text-info-foreground">
               {t('openai.modal.features.title')}
             </h4>
-            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+            <ul className="text-sm text-info-foreground space-y-2">
               <li>• {t('openai.modal.features.suggestions')}</li>
               <li>• {t('openai.modal.features.summaries')}</li>
               <li>• {t('openai.modal.features.improvement')}</li>
@@ -160,10 +160,10 @@ export default function OpenAIModal({
           </Card>
 
           {/* Security Warning */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+          <Card className="p-4 bg-warning/8 border-warning/24">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
+              <AlertCircle className="w-4 h-4 text-warning-foreground mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-warning-foreground">
                 <strong>{t('openai.modal.security.title')}</strong> {t('openai.modal.security.description')}
               </div>
             </div>

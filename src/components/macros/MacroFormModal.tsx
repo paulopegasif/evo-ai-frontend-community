@@ -248,11 +248,11 @@ export default function MacroFormModal({ isOpen, onClose, macro, onSuccess }: Ma
                 onChange={e => handleFieldChange('name', e.target.value)}
                 placeholder={t('modal.form.namePlaceholder')}
                 className={`w-full bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                  errors.name ? 'border-red-500' : ''
+                  errors.name ? 'border-destructive' : ''
                 }`}
                 disabled={loading}
               />
-              {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+              {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
             </div>
 
             {/* Visibilidade */}
@@ -269,7 +269,7 @@ export default function MacroFormModal({ isOpen, onClose, macro, onSuccess }: Ma
                 >
                   <CardHeader className="p-4">
                     <div className="flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-blue-600" />
+                      <Lock className="h-5 w-5 text-info-foreground" />
                       <CardTitle className="text-base">
                         {t('modal.form.visibilityPersonal')}
                       </CardTitle>
@@ -292,7 +292,7 @@ export default function MacroFormModal({ isOpen, onClose, macro, onSuccess }: Ma
                 >
                   <CardHeader className="p-4">
                     <div className="flex items-center gap-2">
-                      <Globe className="h-5 w-5 text-green-600" />
+                      <Globe className="h-5 w-5 text-success-foreground" />
                       <CardTitle className="text-base">
                         {t('modal.form.visibilityGlobal')}
                       </CardTitle>
@@ -334,7 +334,7 @@ export default function MacroFormModal({ isOpen, onClose, macro, onSuccess }: Ma
               </Button>
             </div>
 
-            {errors.actions && <p className="text-sm text-red-500">{errors.actions}</p>}
+            {errors.actions && <p className="text-sm text-destructive">{errors.actions}</p>}
 
             <div className="space-y-4">
               {formData.actions.map((action, index) => (

@@ -132,7 +132,7 @@ export default function ImportModal({ open, onClose }: Props) {
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <CheckCircle2 className="w-5 h-5 text-success-foreground" />
                 {t('import.report.title')}
               </DialogTitle>
               <DialogDescription>{t('import.report.subtitle')}</DialogDescription>
@@ -148,8 +148,8 @@ export default function ImportModal({ open, onClose }: Props) {
               </div>
 
               {report.warnings.length > 0 && (
-                <div className="rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-3">
-                  <p className="font-medium flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                <div className="rounded-md border border-warning/24 bg-warning/8 p-3">
+                  <p className="font-medium flex items-center gap-2 text-warning-foreground">
                     <AlertTriangle className="w-4 h-4" />
                     {t('import.report.warningsTitle')}
                   </p>

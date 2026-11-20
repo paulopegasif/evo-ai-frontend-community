@@ -116,7 +116,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
                         className={`w-16 shrink-0 text-center text-sm font-semibold tabular-nums ${
-                          apt.all_day ? 'text-amber-600 text-xs' : ''
+                          apt.all_day ? 'text-warning-foreground text-xs' : ''
                         }`}
                       >
                         {appointmentTimeLabel(apt)}
@@ -132,7 +132,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                             {style.label}
                           </span>
                           {pending && (
-                            <span className="inline-flex items-center gap-1 text-xs text-amber-600">
+                            <span className="inline-flex items-center gap-1 text-xs text-warning-foreground">
                               <AlertCircle className="h-3 w-3" /> sem desfecho
                             </span>
                           )}
@@ -163,7 +163,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                             type="button"
                             disabled={saving === apt.id}
                             onClick={() => handleStatusChange(apt, 'attended')}
-                            className="px-2.5 py-1 text-xs font-medium rounded-md border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 transition-colors flex items-center gap-1 disabled:opacity-50"
+                            className="px-2.5 py-1 text-xs font-medium rounded-md border border-success/30 text-success-foreground hover:bg-success/10 transition-colors flex items-center gap-1 disabled:opacity-50"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" /> Compareceu
                           </button>
@@ -171,7 +171,7 @@ export const CalendarListView: React.FC<CalendarListViewProps> = ({
                             type="button"
                             disabled={saving === apt.id}
                             onClick={() => handleStatusChange(apt, 'no_show')}
-                            className="px-2.5 py-1 text-xs font-medium rounded-md border border-rose-500/30 text-rose-700 dark:text-rose-300 hover:bg-rose-500/10 transition-colors flex items-center gap-1 disabled:opacity-50"
+                            className="px-2.5 py-1 text-xs font-medium rounded-md border border-destructive/30 text-destructive-foreground hover:bg-destructive/10 transition-colors flex items-center gap-1 disabled:opacity-50"
                           >
                             <XCircle className="w-3.5 h-3.5" /> Faltou
                           </button>

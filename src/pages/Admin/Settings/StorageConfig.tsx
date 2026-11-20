@@ -252,7 +252,7 @@ export default function StorageConfig() {
         <Label htmlFor={fieldName}>{label}</Label>
         {!secretModified[fieldName] && (
           secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
+            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
               <Lock className="h-3 w-3" />
               {t('storage.secretConfigured')}
             </span>
@@ -341,7 +341,7 @@ export default function StorageConfig() {
             {/* Cloud storage fields */}
             {isCloud && (
               <>
-                <div role="alert" className="rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+                <div role="alert" className="rounded-md border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-amber-200">
                   <strong className="font-semibold">{t('storage.cloudWarning.title')}</strong>{' '}
                   {t('storage.cloudWarning.body')}
                 </div>

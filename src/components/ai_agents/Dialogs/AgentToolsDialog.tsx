@@ -63,15 +63,15 @@ const getAgentTypeInfo = (type: string, t: (key: string) => string) => {
   const types: Record<string, { label: string; color: string }> = {
     llm: {
       label: t('basicInfo.types.llm'),
-      color: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-500 dark:border-green-900',
+      color: 'bg-success/12 text-success-foreground border-success/24',
     },
     a2a: {
       label: t('basicInfo.types.a2a'),
-      color: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700',
+      color: 'bg-info/12 text-info-foreground border-info/24',
     },
     sequential: {
       label: 'Sequential',
-      color: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700',
+      color: 'bg-warning/12 text-warning-foreground border-warning/24',
     },
     parallel: {
       label: 'Parallel',
@@ -83,7 +83,7 @@ const getAgentTypeInfo = (type: string, t: (key: string) => string) => {
     },
     task: {
       label: t('basicInfo.types.task'),
-      color: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-200 dark:border-red-700',
+      color: 'bg-destructive/12 text-destructive-foreground border-destructive/24',
     },
   };
 
@@ -177,7 +177,7 @@ export default function AgentToolsDialog({
       <DialogContent className="max-w-3xl h-[70vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-500" />
+            <Users className="h-5 w-5 text-info" />
             {t('dialogs.agentTools.title')}
           </DialogTitle>
           <DialogDescription>{t('tools.agentTools.description')}</DialogDescription>
@@ -202,7 +202,7 @@ export default function AgentToolsDialog({
               <span className="ml-2 text-muted-foreground">{t('messages.loadingAgents')}</span>
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-40 text-red-500">
+            <div className="flex items-center justify-center h-40 text-destructive">
               <p>{error}</p>
             </div>
           ) : filteredAgents.length === 0 ? (

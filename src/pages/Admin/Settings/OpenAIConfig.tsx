@@ -187,7 +187,7 @@ export default function OpenAIConfig() {
         <Label htmlFor={fieldName}>{label}</Label>
         {!secretModified[fieldName] && (
           secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
+            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
               <Lock className="h-3 w-3" />
               {t('openai.secretConfigured')}
             </span>

@@ -168,8 +168,8 @@ const LLMConfigForm = ({
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <Key className="h-5 w-5 text-green-500" />
+              <div className="p-2 rounded-lg bg-success/10">
+                <Key className="h-5 w-5 text-success" />
               </div>
               <div>
                 <CardTitle>{t('llmConfig.apiKey')}</CardTitle>
@@ -181,7 +181,7 @@ const LLMConfigForm = ({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="apiKey">
-                  {t('llmConfig.apiKey')} <span className="text-red-500">*</span>
+                  {t('llmConfig.apiKey')} <span className="text-destructive">*</span>
                 </Label>
                 {!isReadOnly && (
                   <Button
@@ -240,7 +240,7 @@ const LLMConfigForm = ({
                   </Select>
                 </>
               )}
-              {errors.api_key_id && <p className="text-xs text-red-600">{errors.api_key_id}</p>}
+              {errors.api_key_id && <p className="text-xs text-destructive-foreground">{errors.api_key_id}</p>}
             </div>
           </CardContent>
         </Card>
@@ -249,8 +249,8 @@ const LLMConfigForm = ({
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <Bot className="h-5 w-5 text-blue-500" />
+              <div className="p-2 rounded-lg bg-info/10">
+                <Bot className="h-5 w-5 text-info" />
               </div>
               <div>
                 <CardTitle className="pb-2">{t('llmConfig.model')}</CardTitle>
@@ -301,13 +301,13 @@ const LLMConfigForm = ({
                   placeholder={t('llmConfig.instructionPlaceholder')}
                   rows={6}
                   disabled={isReadOnly}
-                  className={errors.instruction ? 'border-red-500' : ''}
+                  className={errors.instruction ? 'border-destructive' : ''}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>{t('llmConfig.instructionHelp')}</span>
                   <span>{data.instruction?.length || 0}/2000</span>
                 </div>
-                {errors.instruction && <p className="text-xs text-red-600">{errors.instruction}</p>}
+                {errors.instruction && <p className="text-xs text-destructive-foreground">{errors.instruction}</p>}
               </div>
             </CardContent>
           </Card>
@@ -337,9 +337,9 @@ const LLMConfigForm = ({
                 onChange={e => handleInputChange('output_key', sanitizeAgentName(e.target.value))}
                 placeholder={t('llmConfig.outputKeyPlaceholder')}
                 disabled={isReadOnly}
-                className={errors.output_key ? 'border-red-500 focus:border-red-500' : ''}
+                className={errors.output_key ? 'border-destructive focus:border-destructive' : ''}
               />
-              {errors.output_key && <p className="text-xs text-red-600">{errors.output_key}</p>}
+              {errors.output_key && <p className="text-xs text-destructive-foreground">{errors.output_key}</p>}
               <p className="text-xs text-muted-foreground">{t('llmConfig.outputKeyDescription')}</p>
             </div>
           </CardContent>

@@ -56,7 +56,7 @@ export default function EventSelector({ control, disabled }: Props) {
             </SelectContent>
           </Select>
           {fieldState.error && (
-            <p className="text-sm text-red-500">{fieldState.error.message}</p>
+            <p className="text-sm text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}

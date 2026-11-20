@@ -509,7 +509,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
               <button
                 onClick={handleNext}
                 disabled={!wizardData.provider}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-white bg-info border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('wizardActions.next')}
               </button>
@@ -601,7 +601,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
               </button>
               <button
                 onClick={handleNext}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-info border border-transparent rounded-md hover:bg-blue-700"
               >
                 {t('edit.configuration.sections.externalIntegration.wizard.createAgent')}
               </button>

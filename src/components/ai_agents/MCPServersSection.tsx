@@ -175,8 +175,8 @@ const MCPServersSection = ({
                 );
               })}
               {mcpServers.some(server => !loadedMCPServers[server.id]) && (
-                <div className="p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                <div className="p-3 bg-warning/8 rounded-lg border border-warning/24">
+                  <p className="text-sm text-warning-foreground">
                     {t('tools.mcpServers.loadingServerInfo')}
                   </p>
                 </div>

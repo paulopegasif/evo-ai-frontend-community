@@ -220,7 +220,7 @@ const KnowledgeNexusConfigDialog = ({
               onChange={e => setConfig({ ...config, nexus_api_key: e.target.value })}
             />
             {hasSavedApiKey ? (
-              <p className="text-xs text-green-600">
+              <p className="text-xs text-success-foreground">
                 {t('edit.integrations.knowledgeNexus.apiKeySaved') ||
                   '✓ Chave já configurada — deixe em branco para manter, redigite para substituir.'}
               </p>

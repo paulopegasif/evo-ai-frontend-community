@@ -160,9 +160,9 @@ export default function CollaboratorsForm({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'bg-green-500';
+        return 'bg-success';
       case 'busy':
-        return 'bg-yellow-500';
+        return 'bg-warning';
       case 'offline':
         return 'bg-gray-400';
       default:
@@ -292,7 +292,7 @@ export default function CollaboratorsForm({
                               return roleKey === 'account_owner';
                             })()
                               ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                              : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                              : 'bg-info/12 text-info-foreground'
                           }`}
                         >
                           {(() => {
@@ -374,13 +374,13 @@ export default function CollaboratorsForm({
             </div>
 
             {/* Info box */}
-            <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <Info className="w-5 h-5 text-blue-700 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-3 p-4 bg-info/8 rounded-lg border border-info/24">
+              <Info className="w-5 h-5 text-info-foreground mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <h6 className="font-medium text-blue-700 dark:text-blue-300 mb-1">
+                <h6 className="font-medium text-info-foreground mb-1">
                   {t('settings.collaborators.autoAssignment.info.title')}
                 </h6>
-                <div className="text-blue-600 dark:text-blue-400 space-y-1">
+                <div className="text-info-foreground space-y-1">
                   <p>• {t('settings.collaborators.autoAssignment.info.point1')}</p>
                   <p>• {t('settings.collaborators.autoAssignment.info.point2')}</p>
                   <p>• {t('settings.collaborators.autoAssignment.info.point3')}</p>

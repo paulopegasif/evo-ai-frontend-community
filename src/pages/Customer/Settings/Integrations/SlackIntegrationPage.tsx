@@ -17,7 +17,7 @@ export default function SlackIntegrationPage() {
     return (
       <div className="h-full flex items-center justify-center p-6">
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <div className="animate-spin w-8 h-8 border-2 border-info border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-muted-foreground">{t('loading.title')}</p>
         </div>
       </div>

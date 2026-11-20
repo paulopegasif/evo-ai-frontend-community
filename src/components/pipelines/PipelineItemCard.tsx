@@ -95,7 +95,7 @@ export default function PipelineItemCard({
             {item.contact?.name?.[0]?.toUpperCase() || 'U'}
           </div>
           {/* Online indicator */}
-          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-background rounded-full" />
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success border-2 border-background rounded-full" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
@@ -229,9 +229,9 @@ export default function PipelineItemCard({
             <span
               className={`text-xs px-2 py-1 rounded-full font-medium ${
                 item.conversation?.status === 'open'
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                  ? 'bg-success/12 text-success-foreground'
                   : item.conversation?.status === 'resolved'
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
+                  ? 'bg-info/12 text-info-foreground'
                   : 'bg-muted text-foreground'
               }`}
             >
@@ -263,7 +263,7 @@ export default function PipelineItemCard({
                 </div>
                 <span className="font-medium">{t('kanban.item.valueLabel', 'Valor Total:')}</span>
               </div>
-              <div className="text-xs font-semibold text-green-600 dark:text-green-400">
+              <div className="text-xs font-semibold text-success-foreground">
                 {item.services_info.formatted_total}
               </div>
             </div>
@@ -287,7 +287,7 @@ export default function PipelineItemCard({
 
           {/* Tasks próximas do vencimento */}
           {item.tasks_info?.due_soon_count > 0 && (
-            <Badge title={t('tasks.status.dueSoon')} className="h-5 px-1.5 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+            <Badge title={t('tasks.status.dueSoon')} className="h-5 px-1.5 text-xs bg-warning/12 text-warning-foreground">
               <Clock className="w-3 h-3 mr-1" />
               {item.tasks_info.due_soon_count}
             </Badge>
@@ -305,7 +305,7 @@ export default function PipelineItemCard({
 
           {/* Tasks concluídas */}
           {item.tasks_info?.completed_count > 0 && (
-            <Badge title={t('tasks.status.completed')} className="h-5 px-1.5 text-xs bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+            <Badge title={t('tasks.status.completed')} className="h-5 px-1.5 text-xs bg-success/12 text-success-foreground">
               <CheckCircle2 className="w-3 h-3 mr-1" />
               {item.tasks_info.completed_count}
             </Badge>

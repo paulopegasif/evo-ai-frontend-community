@@ -84,7 +84,7 @@ const Step5_Review = ({
           </div>
 
           <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-3xl font-bold text-green-600">
+            <h1 className="text-3xl font-bold text-success-foreground">
               {isEditMode ? 'Campanha Atualizada!' : 'Campanha Criada!'}
             </h1>
             <p className="text-muted-foreground">
@@ -94,9 +94,9 @@ const Step5_Review = ({
             </p>
           </div>
 
-          <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-6 space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-            <h3 className="font-semibold text-green-900 dark:text-green-100">Próximos Passos</h3>
-            <div className="space-y-2 text-sm text-green-800 dark:text-green-200">
+          <div className="bg-success/8 border border-success/24 rounded-lg p-6 space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            <h3 className="font-semibold text-success-foreground">Próximos Passos</h3>
+            <div className="space-y-2 text-sm text-success-foreground">
               <div className="flex items-start gap-2">
                 <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>Acompanhe o progresso da campanha no painel</span>
@@ -164,8 +164,8 @@ const Step5_Review = ({
           {/* AUDIÊNCIA */}
           <div className="border border-border bg-card rounded-xl p-5 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-info-foreground" />
               </div>
               <Label className="text-lg font-bold">Audiência</Label>
             </div>
@@ -175,9 +175,9 @@ const Step5_Review = ({
                 <span className="font-bold capitalize">{data.contact_selection}</span>
               </div>
               {data.estimated_contacts && (
-                <div className="flex justify-between items-center p-3 bg-blue-500/5 rounded-lg border border-blue-500/10">
+                <div className="flex justify-between items-center p-3 bg-info/5 rounded-lg border border-info/10">
                   <span className="text-muted-foreground font-medium">Contatos estimados</span>
-                  <span className="text-lg font-bold text-blue-600">{data.estimated_contacts.toLocaleString('pt-BR')}</span>
+                  <span className="text-lg font-bold text-info-foreground">{data.estimated_contacts.toLocaleString('pt-BR')}</span>
                 </div>
               )}
             </div>
@@ -186,8 +186,8 @@ const Step5_Review = ({
           {/* CONTEÚDO */}
           <div className="border border-border bg-card rounded-xl p-5 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                <MessageSquare className="h-5 w-5 text-green-600" />
+              <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-success-foreground" />
               </div>
               <Label className="text-lg font-bold">Conteúdo</Label>
             </div>
@@ -322,8 +322,8 @@ const Step5_Review = ({
                 )}
 
                 {data.use_business_hours ? (
-                  <div className="flex flex-col gap-1.5 p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
-                    <div className="flex items-center justify-between text-[10px] font-bold text-green-600 uppercase tracking-widest">
+                  <div className="flex flex-col gap-1.5 p-3 bg-success/5 border border-success/20 rounded-lg">
+                    <div className="flex items-center justify-between text-[10px] font-bold text-success-foreground uppercase tracking-widest">
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3" />
                         <span>Horário Permitido</span>
@@ -344,7 +344,7 @@ const Step5_Review = ({
                           <span
                             key={day.id}
                             className={`w-5 h-5 flex items-center justify-center text-[10px] rounded ${data.allowed_weekdays?.includes(day.id)
-                                ? 'bg-green-500 text-white font-bold'
+                                ? 'bg-success text-white font-bold'
                                 : 'bg-muted text-muted-foreground'
                               }`}
                           >
@@ -363,7 +363,7 @@ const Step5_Review = ({
 
                 <div className="flex flex-wrap gap-2 pt-2">
                   {data.enable_rate_limit && (
-                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-bold rounded uppercase tracking-wider">
+                    <span className="px-2 py-1 bg-info/12 text-info-foreground text-[10px] font-bold rounded uppercase tracking-wider">
                       Limite de Taxa
                     </span>
                   )}

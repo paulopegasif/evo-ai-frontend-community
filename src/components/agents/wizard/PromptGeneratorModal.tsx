@@ -281,7 +281,7 @@ const PromptGeneratorModal = ({
                 </>
               ) : (
                 <>
-                  <Wand2 className="h-4 w-4 text-blue-500" />
+                  <Wand2 className="h-4 w-4 text-info" />
                   {t('wizard.promptGenerator.buttons.review')}
                 </>
               )}

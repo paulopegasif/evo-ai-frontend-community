@@ -152,8 +152,8 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/10">
-              <ExternalLink className="h-5 w-5 text-blue-500" />
+            <div className="p-2 rounded-lg bg-info/10">
+              <ExternalLink className="h-5 w-5 text-info" />
             </div>
             <div>
               <CardTitle>{t('a2aConfig.title')}</CardTitle>
@@ -166,7 +166,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="agent-card-url">
-              {t('a2aConfig.agentCardUrl')} <span className="text-red-500">*</span>
+              {t('a2aConfig.agentCardUrl')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="agent-card-url"
@@ -174,10 +174,10 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
               onChange={e => handleInputChange('agent_card_url', e.target.value)}
               placeholder={t('a2aConfig.agentCardUrlPlaceholder')}
               disabled={isReadOnly}
-              className={errors.agent_card_url ? 'border-red-500 focus:border-red-500' : ''}
+              className={errors.agent_card_url ? 'border-destructive focus:border-destructive' : ''}
             />
             {errors.agent_card_url && (
-              <p className="text-xs text-red-600">{errors.agent_card_url}</p>
+              <p className="text-xs text-destructive-foreground">{errors.agent_card_url}</p>
             )}
             <p className="text-xs text-muted-foreground">
               {t('a2aConfig.urlDescription')}
@@ -210,9 +210,9 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
               onChange={e => handleInputChange('output_key', sanitizeAgentName(e.target.value))}
               placeholder={t('a2aConfig.outputKeyPlaceholder')}
               disabled={isReadOnly}
-              className={errors.output_key ? 'border-red-500 focus:border-red-500' : ''}
+              className={errors.output_key ? 'border-destructive focus:border-destructive' : ''}
             />
-            {errors.output_key && <p className="text-xs text-red-600">{errors.output_key}</p>}
+            {errors.output_key && <p className="text-xs text-destructive-foreground">{errors.output_key}</p>}
             <p className="text-xs text-muted-foreground">
               {t('a2aConfig.outputKeyDescription')}
             </p>
@@ -269,7 +269,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
             {/* Callback URL */}
             <div className="space-y-2">
               <Label htmlFor="callback-url" className="text-sm font-medium">
-                {t('a2aConfig.callbackUrl') || 'Callback URL'} <span className="text-red-500">*</span>
+                {t('a2aConfig.callbackUrl') || 'Callback URL'} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="callback-url"
@@ -277,10 +277,10 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                 onChange={e => handleExternalSharingChange({ callback_url: e.target.value })}
                 placeholder={t('a2aConfig.callbackUrlPlaceholder') || 'https://exemplo.com/callback'}
                 disabled={isReadOnly}
-                className={errors.callback_url ? 'border-red-500 focus:border-red-500' : ''}
+                className={errors.callback_url ? 'border-destructive focus:border-destructive' : ''}
               />
               {errors.callback_url && (
-                <p className="text-xs text-red-600">{errors.callback_url}</p>
+                <p className="text-xs text-destructive-foreground">{errors.callback_url}</p>
               )}
               <p className="text-xs text-muted-foreground">
                 {t('a2aConfig.callbackUrlDescription') || 'URL HTTPS para receber notificações de eventos do agente'}
@@ -290,7 +290,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
             {/* Allowlist */}
             <div className="space-y-2">
               <Label htmlFor="allowlist" className="text-sm font-medium">
-                {t('a2aConfig.allowlist') || 'Allowlist'} <span className="text-red-500">*</span>
+                {t('a2aConfig.allowlist') || 'Allowlist'} <span className="text-destructive">*</span>
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -317,7 +317,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                 </Button>
               </div>
               {errors.allowlist && (
-                <p className="text-xs text-red-600">{errors.allowlist}</p>
+                <p className="text-xs text-destructive-foreground">{errors.allowlist}</p>
               )}
               {externalSharing.allowlist && externalSharing.allowlist.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -329,7 +329,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                         <button
                           type="button"
                           onClick={() => handleRemoveAllowlistEntry(index)}
-                          className="ml-1 hover:text-red-500"
+                          className="ml-1 hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
                         </button>

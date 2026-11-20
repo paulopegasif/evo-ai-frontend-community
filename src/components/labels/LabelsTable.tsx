@@ -70,7 +70,7 @@ export default function LabelsTable({
         <div className="flex items-center">
           <span className={`px-2 py-1 rounded-full text-xs ${
             label.show_on_sidebar
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+              ? 'bg-success/12 text-success-foreground'
               : 'bg-muted text-foreground'
           }`}>
             {label.show_on_sidebar ? t('table.sidebar.yes') : t('table.sidebar.no')}

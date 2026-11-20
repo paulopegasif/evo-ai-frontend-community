@@ -22,18 +22,18 @@ export default function AgentCard({
   const { t } = useLanguage('agents');
   const typeStyles: Record<string, { badge: string; ring: string; accent: string }> = {
     llm: {
-      badge: 'border-green-500 text-green-400 bg-green-500/10',
-      ring: 'ring-1 ring-green-500/40',
+      badge: 'border-success text-success bg-success/10',
+      ring: 'ring-1 ring-success/40',
       accent: 'from-green-500/10 to-transparent',
     },
     a2a: {
-      badge: 'border-blue-500 text-blue-400 bg-blue-500/10',
-      ring: 'ring-1 ring-blue-500/40',
+      badge: 'border-info text-info bg-info/10',
+      ring: 'ring-1 ring-info/40',
       accent: 'from-blue-500/10 to-transparent',
     },
     sequential: {
-      badge: 'border-amber-500 text-amber-400 bg-amber-500/10',
-      ring: 'ring-1 ring-amber-500/40',
+      badge: 'border-warning text-warning bg-warning/10',
+      ring: 'ring-1 ring-warning/40',
       accent: 'from-amber-500/10 to-transparent',
     },
     parallel: {

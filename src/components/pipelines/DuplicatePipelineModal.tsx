@@ -91,8 +91,8 @@ export default function DuplicatePipelineModal({
             </div>
 
             {/* Info about what will be copied */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30 rounded-lg p-3">
-              <div className="text-sm text-blue-800 dark:text-blue-200">
+            <div className="bg-info/8 border border-info/24 rounded-lg p-3">
+              <div className="text-sm text-info-foreground">
                 <div className="font-medium mb-1">ℹ️ {t('duplicatePipeline.whatWillBeCopied')}</div>
                 <div className="space-y-1 text-xs">
                   <div>• {t('duplicatePipeline.copied.settings')}</div>
@@ -102,8 +102,8 @@ export default function DuplicatePipelineModal({
               </div>
             </div>
 
-            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/30 rounded-lg p-3">
-              <div className="text-sm text-amber-800 dark:text-amber-200">
+            <div className="bg-warning/8 border border-warning/24 rounded-lg p-3">
+              <div className="text-sm text-warning-foreground">
                 <div className="font-medium mb-1">⚠️ {t('duplicatePipeline.noteLabel')}</div>
                 <div className="text-xs">
                   {t('duplicatePipeline.noteMessage')}

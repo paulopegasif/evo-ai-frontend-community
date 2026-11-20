@@ -83,7 +83,7 @@ const OutputSchemaSection = ({
         <CollapsibleHeader
           title={t('outputSchema.title')}
           description={t('outputSchema.subtitle')}
-          icon={<FileText className="h-5 w-5 text-blue-500" />}
+          icon={<FileText className="h-5 w-5 text-info" />}
           count={Object.keys(outputSchema).length}
           isOpen={isOpen}
           onToggle={onToggle}
@@ -92,16 +92,16 @@ const OutputSchemaSection = ({
 
       {isOpen && (
         <CardContent className="space-y-4">
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="p-4 bg-info/8 rounded-lg border border-info/24">
             <div className="flex items-start gap-3">
-              <div className="p-1 bg-blue-100 dark:bg-blue-900 rounded">
-                <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="p-1 bg-info/12 rounded">
+                <FileText className="h-4 w-4 text-info-foreground" />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                <h4 className="font-medium text-info-foreground mb-1">
                   {t('outputSchema.structuredSchema')}
                 </h4>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="text-sm text-info-foreground">
                   {t('outputSchema.structuredDescription')}
                 </p>
               </div>

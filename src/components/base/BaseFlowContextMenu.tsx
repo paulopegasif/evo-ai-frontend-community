@@ -84,7 +84,7 @@ export function BaseFlowContextMenu({
         id: 'duplicate',
         label: t('base.flow.node.duplicate'),
         icon: Copy,
-        color: 'text-blue-400',
+        color: 'text-info',
         onClick: duplicateNode,
       });
     }
@@ -104,7 +104,7 @@ export function BaseFlowContextMenu({
         id: 'delete',
         label: t('base.flow.node.delete'),
         icon: Trash2,
-        color: 'text-red-400',
+        color: 'text-destructive',
         onClick: deleteNode,
       });
     }

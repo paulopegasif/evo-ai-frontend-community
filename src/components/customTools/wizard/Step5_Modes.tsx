@@ -39,7 +39,7 @@ export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Pro
             {/* Input column */}
             <div className="space-y-2">
               <Label className="text-sm font-semibold flex items-center gap-1.5">
-                <LogIn className="h-4 w-4 text-emerald-500" />
+                <LogIn className="h-4 w-4 text-success" />
                 {t('wizard.step5.input.typeLabel')}
               </Label>
               <Select
@@ -80,7 +80,7 @@ export default function Step5_Modes({ data, onChange, onNext, onBack }: Step5Pro
             {/* Output column */}
             <div className="space-y-2">
               <Label className="text-sm font-semibold flex items-center gap-1.5">
-                <LogOut className="h-4 w-4 text-emerald-500" />
+                <LogOut className="h-4 w-4 text-success" />
                 {t('wizard.step5.output.typeLabel')}
               </Label>
               <Select

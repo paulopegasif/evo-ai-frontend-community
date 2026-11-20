@@ -72,12 +72,12 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
           <Card>
             <CardContent className="pt-3">
               <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 rounded-lg bg-green-500/10">
-                  <Key className="h-4 w-4 text-green-500" />
+                <div className="p-1.5 rounded-lg bg-success/10">
+                  <Key className="h-4 w-4 text-success" />
                 </div>
                 <div className="flex-1">
                   <Label className="text-sm font-semibold">
-                    {t('wizard.step6.apiKeyLabel')} <span className="text-red-500">*</span>
+                    {t('wizard.step6.apiKeyLabel')} <span className="text-destructive">*</span>
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {t('wizard.step6.apiKeyDescription')}
@@ -122,7 +122,7 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
                     ))}
                 </SelectContent>
               </Select>
-              {errors.api_key_id && <p className="text-xs text-red-600 mt-1">{errors.api_key_id}</p>}
+              {errors.api_key_id && <p className="text-xs text-destructive-foreground mt-1">{errors.api_key_id}</p>}
             </CardContent>
           </Card>
 
@@ -130,12 +130,12 @@ const Step6_ApiKeyModel = ({ data, onChange, onNext, onBack, apiKeys, onApiKeysR
           <Card>
             <CardContent className="pt-3">
               <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 rounded-lg bg-blue-500/10">
-                  <Bot className="h-4 w-4 text-blue-500" />
+                <div className="p-1.5 rounded-lg bg-info/10">
+                  <Bot className="h-4 w-4 text-info" />
                 </div>
                 <div>
                   <Label className="text-sm font-semibold">
-                    {t('wizard.step6.modelLabel')} <span className="text-red-500">*</span>
+                    {t('wizard.step6.modelLabel')} <span className="text-destructive">*</span>
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {selectedApiKey

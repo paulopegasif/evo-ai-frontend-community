@@ -51,7 +51,7 @@ export const ClearConfigButton = ({ configType, configLabel, onCleared }: ClearC
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" size="sm" className="text-red-600 border-red-600/30 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400 dark:border-red-400/30 dark:hover:text-red-300">
+        <Button variant="outline" size="sm" className="text-destructive-foreground border-destructive/30 hover:bg-destructive/10 hover:text-destructive-foreground">
           <Trash2 className="h-4 w-4 mr-2" />
           {t('clearConfig.button', 'Clear Configuration')}
         </Button>

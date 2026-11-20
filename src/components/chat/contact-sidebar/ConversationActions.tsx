@@ -258,15 +258,15 @@ const StatusButton: React.FC<StatusButtonProps> = ({ status, current, onClick, d
     const configs = {
       open: {
         label: t('contactSidebar.conversationActions.status.open'),
-        color: 'text-blue-600 bg-blue-50 border-blue-200',
+        color: 'text-info-foreground bg-info/8 border-info/24',
       },
       resolved: {
         label: t('contactSidebar.conversationActions.status.resolved'),
-        color: 'text-green-600 bg-green-50 border-green-200',
+        color: 'text-success-foreground bg-success/8 border-success/24',
       },
       pending: {
         label: t('contactSidebar.conversationActions.status.pending'),
-        color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
+        color: 'text-warning-foreground bg-warning/8 border-warning/24',
       },
       snoozed: {
         label: t('contactSidebar.conversationActions.status.snoozed'),
@@ -323,7 +323,7 @@ const PriorityButton: React.FC<PriorityButtonProps> = ({
       },
       medium: {
         label: t('contactSidebar.conversationActions.priority.medium'),
-        color: 'text-blue-600 bg-blue-50 border-blue-200',
+        color: 'text-info-foreground bg-info/8 border-info/24',
       },
       high: {
         label: t('contactSidebar.conversationActions.priority.high'),
@@ -331,7 +331,7 @@ const PriorityButton: React.FC<PriorityButtonProps> = ({
       },
       urgent: {
         label: t('contactSidebar.conversationActions.priority.urgent'),
-        color: 'text-red-600 bg-red-50 border-red-200',
+        color: 'text-destructive-foreground bg-destructive/8 border-destructive/24',
       },
     };
 

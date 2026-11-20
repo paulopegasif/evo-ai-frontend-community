@@ -202,7 +202,7 @@ const Step2_Type = ({ data, onChange, onNext, onBack }: Step2Props) => {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-600 text-center mb-3 flex-shrink-0">{error}</p>}
+      {error && <p className="text-sm text-destructive-foreground text-center mb-3 flex-shrink-0">{error}</p>}
 
       <div className="flex justify-between flex-shrink-0 pt-3 border-t mt-3">
         <Button variant="outline" onClick={onBack} className="gap-2">

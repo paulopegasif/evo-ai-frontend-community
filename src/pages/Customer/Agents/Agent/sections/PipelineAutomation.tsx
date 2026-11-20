@@ -58,9 +58,9 @@ const TASK_TYPES = [
 
 const PRIORITIES = [
   { value: 'low', label: 'Baixa', color: 'text-muted-foreground' },
-  { value: 'medium', label: 'Média', color: 'text-yellow-500' },
+  { value: 'medium', label: 'Média', color: 'text-warning' },
   { value: 'high', label: 'Alta', color: 'text-orange-500' },
-  { value: 'urgent', label: 'Urgente', color: 'text-red-500' },
+  { value: 'urgent', label: 'Urgente', color: 'text-destructive' },
 ];
 
 const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: PipelineAutomationProps) => {

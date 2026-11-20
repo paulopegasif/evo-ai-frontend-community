@@ -55,7 +55,7 @@ export default function Step3_Advanced({ data, onChange, onNext, onBack }: Step3
                 className={`h-10 text-sm ${errors.timeout ? 'border-red-500' : ''}`}
               />
               {errors.timeout && (
-                <p className="text-sm text-red-600 mt-2">{errors.timeout}</p>
+                <p className="text-sm text-destructive-foreground mt-2">{errors.timeout}</p>
               )}
             </div>
 
@@ -75,7 +75,7 @@ export default function Step3_Advanced({ data, onChange, onNext, onBack }: Step3
                 className={`h-10 text-sm ${errors.retry_count ? 'border-red-500' : ''}`}
               />
               {errors.retry_count && (
-                <p className="text-sm text-red-600 mt-2">{errors.retry_count}</p>
+                <p className="text-sm text-destructive-foreground mt-2">{errors.retry_count}</p>
               )}
             </div>
           </div>

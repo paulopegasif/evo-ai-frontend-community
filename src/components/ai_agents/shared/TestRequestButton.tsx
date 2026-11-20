@@ -25,9 +25,9 @@ export interface TestRequestButtonProps {
 type TestResult = CustomToolTestResponse['test_result'];
 
 const statusColor = (code: number): string => {
-  if (code >= 200 && code < 300) return 'text-emerald-600';
+  if (code >= 200 && code < 300) return 'text-success-foreground';
   if (code >= 300 && code < 400) return 'text-sky-600';
-  if (code >= 400 && code < 500) return 'text-amber-600';
+  if (code >= 400 && code < 500) return 'text-warning-foreground';
   if (code >= 500) return 'text-destructive';
   return 'text-muted-foreground';
 };

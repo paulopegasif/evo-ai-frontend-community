@@ -288,7 +288,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
       {!hubEnabled && canFB && !isAutoFilled && (
         <FormSection
           title={t('cloudWhatsappForm.facebookIntegration.title')}
-          className="bg-blue-50/10 border-blue-200/20"
+          className="bg-info/8 border-info/24"
           data-tour="whatsapp-cloud-connect"
         >
           <div className="flex flex-col items-center justify-center text-center">
@@ -296,7 +296,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
               type="button"
               onClick={handleFacebookLogin}
               disabled={!fbSDKReady || isLoading}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center space-x-2 px-4 py-2 bg-info text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -367,7 +367,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
       {isAutoFilled && (
         <FormSection
           title={t('cloudWhatsappForm.autoFilled.title')}
-          className="bg-green-50/10 border-green-200/20"
+          className="bg-success/8 border-success/24"
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
@@ -378,7 +378,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
             <button
               type="button"
               onClick={handleClearFields}
-              className="ml-4 px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+              className="ml-4 px-3 py-2 text-sm bg-destructive/12 text-destructive-foreground rounded-lg hover:bg-destructive/16 transition-colors"
             >
               {t('cloudWhatsappForm.autoFilled.clearButton')}
             </button>

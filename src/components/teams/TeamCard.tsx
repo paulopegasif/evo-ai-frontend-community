@@ -31,7 +31,7 @@ export default function TeamCard({
       <CardContent className="p-0">
         <div className="flex items-center gap-3 p-4 border-b border-sidebar-border">
           <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-blue-100 text-blue-600">
+            <AvatarFallback className="bg-info/12 text-info-foreground">
               {getInitials(team.name)}
             </AvatarFallback>
           </Avatar>
@@ -84,7 +84,7 @@ export default function TeamCard({
           <div className="w-px bg-sidebar-border" />
           <Button
             variant="ghost"
-            className="rounded-none h-12 px-4 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+            className="rounded-none h-12 px-4 text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={() => onDelete?.(team)}
           >
             <Trash2 className="h-4 w-4" />

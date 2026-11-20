@@ -139,7 +139,7 @@ const McpServers = () => {
           <div className="bg-card rounded-lg border p-4 sm:p-6 min-w-0">
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex-shrink-0">
-                <Server className="h-5 w-5 text-blue-500" />
+                <Server className="h-5 w-5 text-info" />
               </div>
               <h3 className="font-semibold text-sm sm:text-base min-w-0 truncate">
                 {t('stats.total')}
@@ -156,7 +156,7 @@ const McpServers = () => {
           <div className="bg-card rounded-lg border p-4 sm:p-6 min-w-0">
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex-shrink-0">
-                <Server className="h-5 w-5 text-green-500" />
+                <Server className="h-5 w-5 text-success" />
               </div>
               <h3 className="font-semibold text-sm sm:text-base min-w-0 truncate">
                 {t('stats.official')}
@@ -264,7 +264,7 @@ const McpServers = () => {
                           variant="outline"
                           className={
                             server.type === 'official'
-                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500'
+                              ? 'bg-success/10 text-success border-success'
                               : 'bg-orange-500/10 text-orange-500 border-orange-500'
                           }
                         >
@@ -278,7 +278,7 @@ const McpServers = () => {
                           variant="outline"
                           className={
                             server.config_type === 'sse'
-                              ? 'bg-blue-500/10 text-blue-500 border-blue-500'
+                              ? 'bg-info/10 text-info border-info'
                               : 'bg-orange-500/10 text-orange-500 border-orange-500'
                           }
                         >
@@ -288,7 +288,7 @@ const McpServers = () => {
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         <div className="flex items-center">
-                          <Wrench className="h-4 w-4 mr-1 text-emerald-400" />
+                          <Wrench className="h-4 w-4 mr-1 text-success" />
                           {server.tools?.length || 0}
                         </div>
                       </TableCell>

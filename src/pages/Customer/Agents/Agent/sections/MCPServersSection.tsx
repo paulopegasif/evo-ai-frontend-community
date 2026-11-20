@@ -119,8 +119,8 @@ const MCPServersSection = ({
       {/* Seção: MCPs Disponíveis */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pb-2 border-b">
-          <div className="p-2 rounded-lg bg-green-500/10">
-            <Server className="h-5 w-5 text-green-500" />
+          <div className="p-2 rounded-lg bg-success/10">
+            <Server className="h-5 w-5 text-success" />
           </div>
           <div>
             <h3 className="text-lg font-semibold">{t('mcpServers.title') || 'Servidores MCP'}</h3>

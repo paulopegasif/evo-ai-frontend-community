@@ -324,21 +324,21 @@ export const CalendarPage: React.FC = () => {
           label="compareceram"
           value={stats.attended}
           icon={CheckCircle2}
-          className="bg-emerald-500/15 text-emerald-500"
+          className="bg-success/15 text-success"
           onClick={() => setSelectedStatus('attended')}
         />
         <Counter
           label="faltas"
           value={stats.noShow}
           icon={UserX}
-          className="bg-rose-500/15 text-rose-500"
+          className="bg-destructive/15 text-destructive"
           onClick={() => setSelectedStatus('no_show')}
         />
         <Counter
           label={stats.tbd > 0 ? `sem desfecho · ${stats.tbd} com horário a definir` : 'sem desfecho'}
           value={stats.noOutcome}
           icon={AlertCircle}
-          className="bg-amber-500/15 text-amber-600"
+          className="bg-warning/15 text-warning-foreground"
           onClick={() => navigateTo({ view: 'list' })}
         />
       </div>
@@ -462,7 +462,7 @@ export const CalendarPage: React.FC = () => {
                 </span>
               ))}
               <span className="flex items-center gap-1">
-                <CalendarClock className="h-3 w-3 text-amber-500" /> sem desfecho
+                <CalendarClock className="h-3 w-3 text-warning" /> sem desfecho
               </span>
             </div>
             <div className="flex items-center gap-2">

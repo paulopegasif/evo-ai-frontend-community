@@ -29,9 +29,9 @@ const Step4_RoleGoal = ({ data, onChange, onNext, onBack }: Step4Props) => {
         <div className="w-full max-w-5xl space-y-3">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-blue-500" />
+              <User className="h-4 w-4 text-info" />
               <Label className="text-sm font-semibold">
-                {t('wizard.step4.roleLabel')} <span className="text-red-500">*</span>
+                {t('wizard.step4.roleLabel')} <span className="text-destructive">*</span>
               </Label>
             </div>
             <Input
@@ -43,7 +43,7 @@ const Step4_RoleGoal = ({ data, onChange, onNext, onBack }: Step4Props) => {
               placeholder={t('wizard.step4.rolePlaceholder')}
               className={`h-10 ${roleError ? 'border-red-500' : ''}`}
             />
-            {roleError && <p className="text-sm text-red-600">{roleError}</p>}
+            {roleError && <p className="text-sm text-destructive-foreground">{roleError}</p>}
             <p className="text-xs text-muted-foreground">
               {t('wizard.step4.roleHelp')}
             </p>
@@ -51,7 +51,7 @@ const Step4_RoleGoal = ({ data, onChange, onNext, onBack }: Step4Props) => {
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-blue-500" />
+              <Target className="h-4 w-4 text-info" />
               <Label className="text-sm font-semibold">
                 {t('wizard.step4.goalLabel')}
               </Label>

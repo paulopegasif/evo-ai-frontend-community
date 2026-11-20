@@ -120,7 +120,7 @@ const ExecutiveSummary = ({ kpis, compare }: Props) => {
           value={kpis?.total_no_outcome ?? 0}
           subtitle="Avaliações passadas sem status atualizado"
           icon={Receipt}
-          accentClassName="bg-amber-500/15 text-amber-600"
+          accentClassName="bg-warning/15 text-warning-foreground"
           tooltip={{
             title: 'Sem desfecho',
             content: 'Agendamentos com data passada que continuam como agendados ou confirmados. Atualize na Agenda.',

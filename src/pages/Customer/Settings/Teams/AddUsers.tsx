@@ -142,9 +142,9 @@ const AddUsers: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'bg-green-500';
+        return 'bg-success';
       case 'busy':
-        return 'bg-red-500';
+        return 'bg-destructive';
       case 'offline':
         return 'bg-gray-400';
       default:

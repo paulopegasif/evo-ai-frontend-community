@@ -61,7 +61,7 @@ export default function CustomAttributesTable({
       label: t('table.columns.type'),
       render: (attribute: CustomAttributeDefinition) => (
         <div className="flex items-center">
-          <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <span className="px-2 py-1 rounded-full text-xs bg-info/12 text-info-foreground">
             {getAttributeTypeLabel(attribute.attribute_display_type)}
           </span>
         </div>
@@ -109,7 +109,7 @@ export default function CustomAttributesTable({
       render: (attribute: CustomAttributeDefinition) => (
         <div className="flex items-center">
           {attribute.regex_pattern ? (
-            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+            <span className="px-2 py-1 rounded-full text-xs bg-success/12 text-success-foreground">
               {t('table.regexBadge.yes')}
             </span>
           ) : (

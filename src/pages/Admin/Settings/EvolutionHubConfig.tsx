@@ -318,11 +318,11 @@ export default function EvolutionHubConfig() {
         {testResult && (
           <div
             className={`flex items-start gap-2 rounded-md border p-3 text-sm ${
-              testResult.ok ? 'border-green-500/30 bg-green-500/10' : 'border-destructive/30 bg-destructive/10'
+              testResult.ok ? 'border-success/30 bg-success/10' : 'border-destructive/30 bg-destructive/10'
             }`}
           >
             {testResult.ok ? (
-              <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle2 className="h-5 w-5 text-success mt-0.5" />
             ) : (
               <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
             )}

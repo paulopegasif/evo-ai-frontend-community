@@ -35,7 +35,7 @@ const professionalColumns: TableColumn<ProfessionalPerformance>[] = [
     align: 'right',
     render: (p) =>
       p.no_outcome > 0 ? (
-        <span className="text-amber-600 font-medium" title="Data já passou e o status não foi atualizado">
+        <span className="text-warning-foreground font-medium" title="Data já passou e o status não foi atualizado">
           {p.no_outcome}
         </span>
       ) : (

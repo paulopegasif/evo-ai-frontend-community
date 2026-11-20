@@ -35,19 +35,19 @@ export default function AgentsTable({
     const types: Record<string, { label: string; color: string }> = {
       llm: {
         label: 'Nativo',
-        color: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-950 dark:text-green-500 dark:border-green-900',
+        color: 'bg-success/12 text-success-foreground border-success/24',
       },
       external: {
         label: 'Externo',
-        color: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700',
+        color: 'bg-info/12 text-info-foreground border-info/24',
       },
       a2a: {
         label: 'A2A',
-        color: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700',
+        color: 'bg-info/12 text-info-foreground border-info/24',
       },
       sequential: {
         label: 'Agente Sequencial',
-        color: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900 dark:text-amber-200 dark:border-amber-700',
+        color: 'bg-warning/12 text-warning-foreground border-warning/24',
       },
       parallel: {
         label: 'Agente Paralelo',

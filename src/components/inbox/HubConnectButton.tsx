@@ -189,7 +189,7 @@ export default function HubConnectButton({
     return (
       <div className="space-y-3 border rounded-md p-4 bg-muted/30">
         <div className="flex items-center gap-2 text-sm">
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
+          <CheckCircle2 className="h-5 w-5 text-success" />
           <span>Inbox criada. Aguardando conexão Meta no Hub…</span>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -211,7 +211,7 @@ export default function HubConnectButton({
     return (
       <div className="space-y-2 border rounded-md p-4 bg-muted/30">
         <div className="flex items-center gap-2 text-sm">
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
+          <CheckCircle2 className="h-5 w-5 text-success" />
           <span>Inbox vinculada ao canal Evo Hub existente.</span>
         </div>
         <p className="text-xs text-muted-foreground">

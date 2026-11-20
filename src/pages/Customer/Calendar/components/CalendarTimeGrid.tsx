@@ -196,8 +196,8 @@ const CalendarTimeGrid: React.FC<Props> = ({ columns, appointments, onSelectAppo
                     style={{ top: ((nowMinutes - startHour * 60) / 60) * HOUR_HEIGHT }}
                     aria-hidden
                   >
-                    <div className="relative h-px bg-rose-500">
-                      <span className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-rose-500" />
+                    <div className="relative h-px bg-destructive">
+                      <span className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-destructive" />
                     </div>
                   </div>
                 )}
@@ -219,14 +219,14 @@ const CalendarTimeGrid: React.FC<Props> = ({ columns, appointments, onSelectAppo
                       {height < 40 ? (
                         <span className="flex items-center gap-1 truncate">
                           <span className="font-semibold">{zonedTime(apt.start_time)}</span>
-                          {pending && <AlertCircle className="h-3 w-3 text-amber-500 shrink-0" aria-label="Sem desfecho" />}
+                          {pending && <AlertCircle className="h-3 w-3 text-warning shrink-0" aria-label="Sem desfecho" />}
                           <span className="truncate">{apt.contact?.name ?? apt.title}</span>
                         </span>
                       ) : (
                         <>
                           <span className="font-semibold flex items-center gap-1">
                             {zonedTime(apt.start_time)}
-                            {pending && <AlertCircle className="h-3 w-3 text-amber-500 shrink-0" aria-label="Sem desfecho" />}
+                            {pending && <AlertCircle className="h-3 w-3 text-warning shrink-0" aria-label="Sem desfecho" />}
                           </span>
                           <span className="block truncate">{apt.contact?.name ?? apt.title}</span>
                         </>

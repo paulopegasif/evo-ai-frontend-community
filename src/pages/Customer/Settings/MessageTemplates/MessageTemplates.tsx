@@ -50,9 +50,9 @@ import type { Inbox } from '@/types/channels/inbox';
 type Scope = { kind: 'global' } | { kind: 'inbox'; inbox: Inbox };
 
 const STATUS_STYLE: Record<string, string> = {
-  approved: 'bg-green-600 dark:bg-green-500 text-white',
-  pending: 'bg-yellow-600 dark:bg-yellow-500 text-white',
-  rejected: 'bg-red-600 dark:bg-red-500 text-white',
+  approved: 'bg-success text-white',
+  pending: 'bg-warning text-white',
+  rejected: 'bg-destructive text-white',
   paused: 'bg-gray-600 dark:bg-gray-500 text-white',
   inactive: 'bg-gray-600 dark:bg-gray-500 text-white',
   unknown: 'bg-gray-400 dark:bg-gray-600 text-white',
@@ -300,7 +300,7 @@ export default function MessageTemplates() {
     }
     const isActive = template.active !== false;
     return (
-      <Badge className={isActive ? 'bg-green-600 text-white' : 'bg-gray-500 text-white'}>
+      <Badge className={isActive ? 'bg-success text-white' : 'bg-gray-500 text-white'}>
         {t(`status.${isActive ? 'active' : 'inactive'}`)}
       </Badge>
     );
@@ -508,7 +508,7 @@ export default function MessageTemplates() {
             <p className="text-muted-foreground">
               {t('deleteDialog.message', { name: deleteTarget?.name })}
             </p>
-            <p className="text-sm text-red-600 mt-2">{t('deleteDialog.warning')}</p>
+            <p className="text-sm text-destructive-foreground mt-2">{t('deleteDialog.warning')}</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>

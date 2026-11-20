@@ -54,7 +54,7 @@ export const EmailCollectInput = ({
 
   if (isSubmitted) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm">
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-success/8 border border-success/24 text-success-foreground text-sm">
         <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
@@ -91,7 +91,7 @@ export const EmailCollectInput = ({
           {isSubmitting ? '...' : t('emailCollect.button')}
         </button>
       </div>
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
     </div>
   );
 };

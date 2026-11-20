@@ -58,17 +58,17 @@ function emptyData(def: IntegrationDef): AdminConfigData {
 const ACCENT: Record<string, string> = {
   linear: 'bg-indigo-500',
   hubspot: 'bg-orange-500',
-  shopify: 'bg-green-600',
+  shopify: 'bg-success',
   slack: 'bg-purple-600',
   github: 'bg-neutral-800',
   notion: 'bg-neutral-900',
-  asana: 'bg-rose-500',
+  asana: 'bg-destructive',
   canva: 'bg-sky-500',
-  google_calendar: 'bg-blue-500',
-  google_sheets: 'bg-emerald-600',
-  monday: 'bg-red-500',
+  google_calendar: 'bg-info',
+  google_sheets: 'bg-success',
+  monday: 'bg-destructive',
   paypal: 'bg-blue-700',
-  atlassian: 'bg-blue-600',
+  atlassian: 'bg-info',
 };
 
 function accent(key: string): string {
@@ -130,7 +130,7 @@ function SecretField({
         <Label htmlFor={`${sectionKey}-clientSecret`}>{label}</Label>
         {!secretModified && (
           secretConfigured ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
+            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
               <Lock className="h-3 w-3" />
               {t('integrations.secretConfigured')}
             </span>
@@ -381,7 +381,7 @@ export default function IntegrationsConfig() {
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium text-sidebar-foreground">{title}</span>
                 {configured ? (
-                  <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-green-600">
+                  <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-success-foreground">
                     <Check className="h-3 w-3" />
                     {t('integrations.statusConfigured')}
                   </span>

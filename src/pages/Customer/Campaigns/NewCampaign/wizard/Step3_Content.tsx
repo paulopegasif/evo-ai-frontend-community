@@ -116,10 +116,10 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      onboarding: 'text-blue-600 bg-blue-50 dark:bg-blue-950/20',
+      onboarding: 'text-info-foreground bg-info/8',
       promocional: 'text-purple-600 bg-purple-50 dark:bg-purple-950/20',
       transacional: 'text-orange-600 bg-orange-50 dark:bg-orange-950/20',
-      feedback: 'text-green-600 bg-green-50 dark:bg-green-950/20',
+      feedback: 'text-success-foreground bg-success/8',
       informativo: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/20',
     };
     return colors[category] || 'text-muted-foreground bg-muted/48';
@@ -168,7 +168,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
               </div>
               <div>
                 <Label className="text-lg font-semibold block">
-                  {t('wizard.step3.channelLabel')} <span className="text-red-500">*</span>
+                  {t('wizard.step3.channelLabel')} <span className="text-destructive">*</span>
                 </Label>
                 <p className="text-sm text-muted-foreground">
                   {t('wizard.step3.channelDescription')}
@@ -191,7 +191,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                     type="button"
                     onClick={() => onChange({ channel_type: channel.type, inbox_id: '' })}
                     className={`p-4 border-2 rounded-lg transition-all ${isSelected
-                      ? `border-green-500 bg-gradient-to-br ${channel.color} text-white shadow-lg`
+                      ? `border-success bg-gradient-to-br ${channel.color} text-white shadow-lg`
                       : 'border-border hover:border-primary/50 hover:shadow-md'
                       }`}
                   >
@@ -208,7 +208,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
             {data.channel_type && (
               <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <Label className="text-base font-medium block">
-                  {t('wizard.step3.inboxLabel', { channel: getChannelName(data.channel_type) })} <span className="text-red-500">*</span>
+                  {t('wizard.step3.inboxLabel', { channel: getChannelName(data.channel_type) })} <span className="text-destructive">*</span>
                 </Label>
                 <p className="text-sm text-muted-foreground mb-3">
                   {t('wizard.step3.inboxDescription')}
@@ -227,7 +227,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                         <div
                           key={inbox.id}
                           className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer ${data.inbox_id === inboxId
-                            ? 'border-green-500 bg-green-50/50 dark:bg-green-950/20'
+                            ? 'border-success bg-success/8'
                             : ''
                             }`}
                           onClick={() => handleSelectInbox(inboxId)}
@@ -241,7 +241,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                             <div className="flex items-center justify-between gap-2 mb-2">
                               <Label htmlFor={inboxId} className="text-base font-semibold cursor-pointer flex items-center gap-2">
                                 {data.inbox_id === inboxId && (
-                                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                  <CheckCircle2 className="h-4 w-4 text-success-foreground" />
                                 )}
                                 {inbox.name}
                               </Label>
@@ -258,7 +258,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                 )}
               </div>
             )}
-            {errors.inbox_id && <p className="text-sm text-red-600 mt-2">{errors.inbox_id}</p>}
+            {errors.inbox_id && <p className="text-sm text-destructive-foreground mt-2">{errors.inbox_id}</p>}
           </div>
 
           {/* SECTION 2: Templates */}
@@ -269,7 +269,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
               </div>
               <div>
                 <Label className="text-lg font-semibold block">
-                  {t('wizard.step3.templatesLabel')} <span className="text-red-500">*</span>
+                  {t('wizard.step3.templatesLabel')} <span className="text-destructive">*</span>
                 </Label>
                 <p className="text-sm text-muted-foreground">
                   {t('wizard.step3.templatesSelected', { count: data.template_ids?.length || 0 })}
@@ -327,7 +327,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
                 })
               )}
             </div>
-            {errors.template_ids && <p className="text-sm text-red-600 mt-2">{errors.template_ids}</p>}
+            {errors.template_ids && <p className="text-sm text-destructive-foreground mt-2">{errors.template_ids}</p>}
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ const STEPS: { key: LeadStep | 'all'; label: string }[] = [
 ];
 
 const outcome = (lead: LeadRow) => {
-  if (lead.won) return <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30" variant="outline">Venda</Badge>;
+  if (lead.won) return <Badge className="bg-success/15 text-success-foreground border-success/30" variant="outline">Venda</Badge>;
   if (lead.attended) return <Badge variant="outline">Compareceu</Badge>;
   if (lead.scheduled) return <Badge variant="outline">Agendou</Badge>;
   return <span className="text-muted-foreground text-xs">{DASH}</span>;

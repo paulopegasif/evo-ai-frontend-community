@@ -150,7 +150,7 @@ export default function BusinessDay({ dayName, timeSlot, onUpdate }: BusinessDay
           {/* Error Message */}
           {hasError && (
             <div className="pt-2">
-              <span className="text-xs text-red-500">
+              <span className="text-xs text-destructive">
                 {t('settings.businessDay.timeError')}
               </span>
             </div>
@@ -166,7 +166,7 @@ export default function BusinessDay({ dayName, timeSlot, onUpdate }: BusinessDay
       {/* Hours Badge */}
       <div className="flex-shrink-0">
         {isDayEnabled && !hasError && (
-          <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-lg whitespace-nowrap">
+          <span className="inline-block px-3 py-1 text-xs font-medium bg-info/12 text-info-foreground rounded-lg whitespace-nowrap">
             {totalHours}h
           </span>
         )}

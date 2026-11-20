@@ -206,7 +206,7 @@ const IntegrationsSection = ({
                           are always available (API key or per-agent OAuth), so no "coming soon"
                           badge for them — just the ATIVAR / ATIVO state below. */}
                       {!connected && !isAlwaysAvailable && (
-                        <span className="px-1 py-0.5 text-[12px] font-medium bg-blue-500/20 text-blue-400 rounded border border-blue-500/30">
+                        <span className="px-1 py-0.5 text-[12px] font-medium bg-info/20 text-info rounded border border-info/30">
                           {t('edit.integrations.comingSoon') || 'Em breve'}
                         </span>
                       )}
@@ -214,7 +214,7 @@ const IntegrationsSection = ({
                       {/* Discreet connected indicator — mirrors the admin Integrations
                           screen (small green text, no oversized button). */}
                       {connected && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-success-foreground">
                           <Check className="h-3.5 w-3.5" />
                           {t('edit.integrations.active') || 'Ativo'}
                         </span>

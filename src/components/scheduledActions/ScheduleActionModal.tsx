@@ -424,7 +424,7 @@ export function ScheduleActionModal({
                   </div>
                 )}
               </div>
-              {errors.contact_id && <p className="text-sm text-red-500">{errors.contact_id}</p>}
+              {errors.contact_id && <p className="text-sm text-destructive">{errors.contact_id}</p>}
             </div>
           )}
 
@@ -443,9 +443,9 @@ export function ScheduleActionModal({
                 }
               }}
               required
-              className={errors.scheduled_for ? 'border-red-500' : ''}
+              className={errors.scheduled_for ? 'border-destructive' : ''}
             />
-            {errors.scheduled_for && <p className="text-sm text-red-500">{errors.scheduled_for}</p>}
+            {errors.scheduled_for && <p className="text-sm text-destructive">{errors.scheduled_for}</p>}
           </div>
 
           <div className="space-y-2">
@@ -526,11 +526,11 @@ export function ScheduleActionModal({
                   </SelectContent>
                 </Select>
                 {channelOptions.length === 0 && !loadingInboxes && (
-                  <p className="text-sm text-amber-600">
+                  <p className="text-sm text-warning-foreground">
                     {t('scheduledActions.messages.noChannelsConfigured')}
                   </p>
                 )}
-                {errors.channel && <p className="text-sm text-red-500">{errors.channel}</p>}
+                {errors.channel && <p className="text-sm text-destructive">{errors.channel}</p>}
               </div>
 
               <div className="space-y-2">
@@ -546,9 +546,9 @@ export function ScheduleActionModal({
                   }}
                   rows={5}
                   required
-                  className={errors.message ? 'border-red-500' : ''}
+                  className={errors.message ? 'border-destructive' : ''}
                 />
-                {errors.message && <p className="text-sm text-red-500">{errors.message}</p>}
+                {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
               </div>
             </>
           )}
@@ -570,9 +570,9 @@ export function ScheduleActionModal({
                   }}
                   placeholder="https://example.com/webhook"
                   required
-                  className={errors.webhook_url ? 'border-red-500' : ''}
+                  className={errors.webhook_url ? 'border-destructive' : ''}
                 />
-                {errors.webhook_url && <p className="text-sm text-red-500">{errors.webhook_url}</p>}
+                {errors.webhook_url && <p className="text-sm text-destructive">{errors.webhook_url}</p>}
               </div>
 
               <div className="space-y-2">
@@ -610,9 +610,9 @@ export function ScheduleActionModal({
                     }
                   }}
                   required
-                  className={errors.task_title ? 'border-red-500' : ''}
+                  className={errors.task_title ? 'border-destructive' : ''}
                 />
-                {errors.task_title && <p className="text-sm text-red-500">{errors.task_title}</p>}
+                {errors.task_title && <p className="text-sm text-destructive">{errors.task_title}</p>}
               </div>
 
               <div className="space-y-2">

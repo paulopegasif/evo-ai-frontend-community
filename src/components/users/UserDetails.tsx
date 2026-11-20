@@ -55,9 +55,9 @@ export default function UserDetails({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return 'text-green-600';
+        return 'text-success-foreground';
       case 'busy':
-        return 'text-yellow-600';
+        return 'text-warning-foreground';
       case 'offline':
       default:
         return 'text-muted-foreground';
@@ -94,7 +94,7 @@ export default function UserDetails({
                     className="h-12 w-12 rounded-full object-cover"
                   />
                 ) : (
-                  <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
+                  <AvatarFallback className="bg-info/12 text-info-foreground text-lg">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 )}

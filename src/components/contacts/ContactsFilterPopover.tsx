@@ -26,8 +26,8 @@ interface ContactsFilterPopoverProps {
 // render as emerald/red dots, matching the badge shown elsewhere in the UI —
 // not tokenized on purpose.
 const BLOCKED_OPTIONS: Array<{ value: 'false' | 'true'; dotColor: string }> = [
-  { value: 'false', dotColor: 'bg-emerald-600' },
-  { value: 'true', dotColor: 'bg-red-600' },
+  { value: 'false', dotColor: 'bg-success' },
+  { value: 'true', dotColor: 'bg-destructive' },
 ];
 
 const filterToValues = (filter: BaseFilter | undefined): string[] => {

@@ -442,7 +442,7 @@ export default function CustomAttributeModal({
               </div>
 
               {regexEnabled && (
-                <div className="space-y-4 pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+                <div className="space-y-4 pl-4 border-l-2 border-info/24">
                   <div className="space-y-2">
                     <UILabel htmlFor="regex_pattern">{t('modal.fields.regexPattern.label')}</UILabel>
                     <Input

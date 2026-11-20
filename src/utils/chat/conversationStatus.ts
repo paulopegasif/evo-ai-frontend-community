@@ -52,24 +52,24 @@ export const getStatusConfig = (status: string, t?: Translate): StatusConfig => 
       description: t
         ? t('conversationStatusIcon.open.description', 'Conversa ativa e em andamento')
         : 'Conversa ativa e em andamento',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      color: 'text-info-foreground',
+      bgColor: 'bg-info/12',
     },
     pending: {
       label: getStatusLabel('pending', t),
       description: t
         ? t('conversationStatusIcon.pending.description', 'Aguardando resposta do cliente')
         : 'Aguardando resposta do cliente',
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100',
+      color: 'text-warning-foreground',
+      bgColor: 'bg-warning/12',
     },
     resolved: {
       label: getStatusLabel('resolved', t),
       description: t
         ? t('conversationStatusIcon.resolved.description', 'Conversa finalizada com sucesso')
         : 'Conversa finalizada com sucesso',
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      color: 'text-success-foreground',
+      bgColor: 'bg-success/12',
     },
     snoozed: {
       label: getStatusLabel('snoozed', t),

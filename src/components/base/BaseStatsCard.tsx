@@ -32,12 +32,12 @@ export interface BaseStatsCardProps {
 
 const colorVariants = {
   blue: {
-    bg: 'bg-blue-100 dark:bg-blue-900/50',
-    text: 'text-blue-600 dark:text-blue-400',
+    bg: 'bg-info/12',
+    text: 'text-info-foreground',
   },
   green: {
-    bg: 'bg-green-100 dark:bg-green-900/50',
-    text: 'text-green-600 dark:text-green-400',
+    bg: 'bg-success/12',
+    text: 'text-success-foreground',
   },
   purple: {
     bg: 'bg-purple-100 dark:bg-purple-900/50',
@@ -48,12 +48,12 @@ const colorVariants = {
     text: 'text-orange-600 dark:text-orange-400',
   },
   red: {
-    bg: 'bg-red-100 dark:bg-red-900/50',
-    text: 'text-red-600 dark:text-red-400',
+    bg: 'bg-destructive/12',
+    text: 'text-destructive-foreground',
   },
   yellow: {
-    bg: 'bg-yellow-100 dark:bg-yellow-900/50',
-    text: 'text-yellow-600 dark:text-yellow-400',
+    bg: 'bg-warning/12',
+    text: 'text-warning-foreground',
   },
   pink: {
     bg: 'bg-pink-100 dark:bg-pink-900/50',
@@ -166,8 +166,8 @@ export default function BaseStatsCard({
               <span className={cn(
                 "text-xs font-medium px-1.5 py-0.5 rounded-full",
                 change.isPositive 
-                  ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                  : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                  ? "bg-success/12 text-success-foreground"
+                  : "bg-destructive/12 text-destructive-foreground"
               )}>
                 {change.isPositive ? '+' : '-'}{change.percentage.toFixed(1)}%
               </span>

@@ -140,8 +140,8 @@ export default function CallbackPage({ integrationName, onCallback, onSuccess, r
           {status === 'success' && (
             <>
               <div className="flex justify-center">
-                <div className="rounded-full bg-green-100 dark:bg-green-900/20 p-3">
-                  <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
+                <div className="rounded-full bg-success/12 p-3">
+                  <CheckCircle className="h-12 w-12 text-success-foreground" />
                 </div>
               </div>
               <h2 className="text-xl font-semibold">{t('callback.success.title', { name: integrationName })}</h2>
@@ -172,8 +172,8 @@ export default function CallbackPage({ integrationName, onCallback, onSuccess, r
           {status === 'error' && (
             <>
               <div className="flex justify-center">
-                <div className="rounded-full bg-red-100 dark:bg-red-900/20 p-3">
-                  <AlertTriangle className="h-12 w-12 text-red-600 dark:text-red-400" />
+                <div className="rounded-full bg-destructive/12 p-3">
+                  <AlertTriangle className="h-12 w-12 text-destructive-foreground" />
                 </div>
               </div>
               <h2 className="text-xl font-semibold">{t('callback.error.title')}</h2>

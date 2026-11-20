@@ -35,7 +35,7 @@ export default function CustomMCPServerCard({
               <div className="min-w-0 flex-1">
                 <h3 className="font-medium text-sm truncate mb-1">{server.name || t('card.noName')}</h3>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-500 border-blue-500/30">
+                  <Badge variant="outline" className="text-xs bg-info/10 text-info border-info/30">
                     {t('card.custom')}
                   </Badge>
                 </div>
@@ -60,7 +60,7 @@ export default function CustomMCPServerCard({
 
           {/* Tools Count */}
           <div className="flex items-center gap-2 mb-3">
-            <TestTube className="h-4 w-4 text-emerald-400" />
+            <TestTube className="h-4 w-4 text-success" />
             <span className="text-sm text-muted-foreground">
               {server.tools?.length || 0} {t('card.tools')}
             </span>

@@ -124,7 +124,7 @@ const ScheduleMessageModal: React.FC<ScheduleMessageModalProps> = ({
             <div className="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm text-foreground whitespace-pre-wrap max-h-32 overflow-y-auto">
               {messageContent.trim() || t('messageInput.schedule.emptyMessage')}
             </div>
-            {errors.message && <p className="text-sm text-red-500">{errors.message}</p>}
+            {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -138,10 +138,10 @@ const ScheduleMessageModal: React.FC<ScheduleMessageModalProps> = ({
                 setScheduledFor(e.target.value);
                 if (errors.scheduledFor) setErrors({ ...errors, scheduledFor: '' });
               }}
-              className={errors.scheduledFor ? 'border-red-500' : ''}
+              className={errors.scheduledFor ? 'border-destructive' : ''}
               required
             />
-            {errors.scheduledFor && <p className="text-sm text-red-500">{errors.scheduledFor}</p>}
+            {errors.scheduledFor && <p className="text-sm text-destructive">{errors.scheduledFor}</p>}
           </div>
 
           <div className="space-y-2">

@@ -29,17 +29,17 @@ const STATUS_FILTERS: { value: string; labelKey: string }[] = [
 ];
 
 const STATUS_STYLES: Record<AutomationRuleRunStatus, string> = {
-  matched: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
+  matched: 'bg-success/15 text-success border border-success/30',
   no_match: 'bg-muted/40 text-muted-foreground border border-border',
-  skipped: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',
-  error: 'bg-red-500/15 text-red-400 border border-red-500/30',
+  skipped: 'bg-warning/15 text-warning border border-warning/30',
+  error: 'bg-destructive/15 text-destructive border border-destructive/30',
 };
 
 const STEP_LEVEL_STYLES: Record<AutomationRuleRunStep['level'], string> = {
   info: 'text-foreground',
-  success: 'text-emerald-400',
-  warn: 'text-amber-400',
-  error: 'text-red-400',
+  success: 'text-success',
+  warn: 'text-warning',
+  error: 'text-destructive',
 };
 
 function formatDateTime(iso?: string) {
@@ -119,7 +119,7 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
       </div>
 
       {error && (
-        <div className="p-3 rounded-md border border-red-500/30 bg-red-500/10 text-sm text-red-400">
+        <div className="p-3 rounded-md border border-destructive/30 bg-destructive/10 text-sm text-destructive">
           {error}
         </div>
       )}
@@ -160,7 +160,7 @@ export default function AutomationLogsPanel({ automationRuleId }: Props) {
               {isOpen && (
                 <div className="border-t px-4 py-3 space-y-3 text-sm">
                   {run.error_message && (
-                    <div className="p-2 rounded border border-red-500/30 bg-red-500/10 text-red-400 text-xs">
+                    <div className="p-2 rounded border border-destructive/30 bg-destructive/10 text-destructive text-xs">
                       {run.error_message}
                     </div>
                   )}

@@ -796,7 +796,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
                   size="icon"
                   disabled={isDisabled || isSending}
                   className={`h-9 w-9 flex-shrink-0 hover:bg-accent disabled:opacity-50 transition-colors ${
-                    isSignatureEnabled ? 'text-green-600 dark:text-green-400' : ''
+                    isSignatureEnabled ? 'text-success-foreground' : ''
                   }`}
                   onClick={toggleSignature}
                 >

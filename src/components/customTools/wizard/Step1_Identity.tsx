@@ -35,7 +35,7 @@ export default function Step1_Identity({ data, onChange, onNext }: Step1Props) {
         <div className="w-full max-w-2xl mx-auto space-y-4">
           <div>
             <Label className="text-sm mb-1.5 block font-semibold">
-              {t('form.fields.name.label')} <span className="text-red-500">*</span>
+              {t('form.fields.name.label')} <span className="text-destructive">*</span>
             </Label>
             <Input
               placeholder={t('form.fields.name.placeholder')}
@@ -47,7 +47,7 @@ export default function Step1_Identity({ data, onChange, onNext }: Step1Props) {
                 if (e.key === 'Enter' && data.name) handleNext();
               }}
             />
-            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+            {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
           </div>
 
           <div>

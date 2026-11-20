@@ -314,8 +314,8 @@ const Step4_Settings = ({ data, availableTemplates = [], onChange, onNext, onBac
           {/* 3. OPÇÕES AVANÇADAS */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Settings2 className="h-5 w-5 text-blue-500" />
+              <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center">
+                <Settings2 className="h-5 w-5 text-info" />
               </div>
               <Label className="text-xl font-bold">Opções Avançadas</Label>
             </div>

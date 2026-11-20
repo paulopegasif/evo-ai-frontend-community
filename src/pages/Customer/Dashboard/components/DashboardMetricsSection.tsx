@@ -180,10 +180,10 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
         </Card>
 
         <div className="xl:col-span-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
-          <Card className="border-dashed border-amber-500/40 bg-amber-500/[0.03]" data-tour="dashboard-active-conversations">
+          <Card className="border-dashed border-warning/40 bg-amber-500/[0.03]" data-tour="dashboard-active-conversations">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-amber-400" />
+                <MessageSquare className="h-4 w-4 text-warning" />
                 {tx('dashboard.stats.activeConversations', 'Conversas ativas agora')}
                 <TooltipInfo title={tTours('dashboard.step7.title')} content={tTours('dashboard.step7.content')} />
               </CardTitle>
@@ -191,7 +191,7 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-semibold">{data.stats.open_conversations}</div>
-                <Badge variant="outline" className="border-amber-500/40 text-amber-700 dark:text-amber-300 bg-amber-500/10">
+                <Badge variant="outline" className="border-warning/40 text-warning-foreground bg-warning/10">
                   {data.stats.open_conversations > 0
                     ? tx('dashboard.status.monitor', 'Monitorar')
                     : tx('dashboard.status.good', 'Estável')}
@@ -203,10 +203,10 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
             </CardContent>
           </Card>
 
-          <Card className="border-dashed border-rose-500/40 bg-rose-500/[0.03]" data-tour="dashboard-unassigned">
+          <Card className="border-dashed border-destructive/40 bg-rose-500/[0.03]" data-tour="dashboard-unassigned">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <UserX className="h-4 w-4 text-rose-400" />
+                <UserX className="h-4 w-4 text-destructive" />
                 {tx('dashboard.stats.unassignedConversations', 'Conversas sem responsável')}
                 <TooltipInfo title={tTours('dashboard.step8.title')} content={tTours('dashboard.step8.content')} />
               </CardTitle>
@@ -218,10 +218,10 @@ const DashboardMetricsSection = ({ data, t }: DashboardMetricsSectionProps) => {
                   variant="outline"
                   className={
                     unassignedStatus.tone === 'critical'
-                      ? 'border-red-500/40 text-red-700 dark:text-red-300 bg-red-500/10'
+                      ? 'border-destructive/40 text-destructive-foreground bg-destructive/10'
                       : unassignedStatus.tone === 'warning'
-                        ? 'border-amber-500/40 text-amber-700 dark:text-amber-300 bg-amber-500/10'
-                        : 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10'
+                        ? 'border-warning/40 text-warning-foreground bg-warning/10'
+                        : 'border-success/40 text-success-foreground bg-success/10'
                   }
                 >
                   {unassignedStatus.label}

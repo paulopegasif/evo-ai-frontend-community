@@ -76,7 +76,7 @@ const statusColorHex = (status?: string) => STATUS_HEX[status ?? ''] ?? '#9aa3b2
 
 const STATUS_BADGE_CLASS: Record<string, string> = {
   open: 'bg-primary/10 text-primary',
-  pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  pending: 'bg-warning/12 text-warning-foreground',
   resolved: 'bg-muted text-muted-foreground',
   snoozed: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
 };
@@ -97,8 +97,8 @@ const PRIORITY_HEX: Record<string, string> = {
   baixa: '#359558',
 };
 const PRIORITY_BADGE_CLASS: Record<string, string> = {
-  alta: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  media: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  alta: 'bg-destructive/12 text-destructive-foreground',
+  media: 'bg-warning/12 text-warning-foreground',
   baixa: 'bg-primary/10 text-primary',
 };
 
@@ -830,7 +830,7 @@ export default function PipelineKanban() {
                       </span>
                     )}
                     {pipeline?.is_default && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-warning/12 text-warning-foreground shrink-0">
                         <Star className="w-3 h-3 fill-current" />
                         {t('pipelinesTable.default')}
                       </span>

@@ -27,7 +27,7 @@ export function FormField({
     <div className="space-y-2">
       <Label htmlFor={id}>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-destructive ml-1">*</span>}
       </Label>
       <Input
         id={id}

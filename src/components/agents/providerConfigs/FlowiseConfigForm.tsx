@@ -33,7 +33,7 @@ export const FlowiseConfigForm = ({
           disabled={disabled}
         />
         {errors.apiUrl && (
-          <p className="text-xs text-red-600">{errors.apiUrl}</p>
+          <p className="text-xs text-destructive-foreground">{errors.apiUrl}</p>
         )}
       </div>
       <div className="space-y-2">

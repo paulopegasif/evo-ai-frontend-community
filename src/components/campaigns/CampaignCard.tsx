@@ -176,7 +176,7 @@ export default function CampaignCard({
             <>
               <Button
                 variant="ghost"
-                className="rounded-none h-12 px-3 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                className="rounded-none h-12 px-3 text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={e => {
                   e.stopPropagation();
                   onStop?.(campaign);
@@ -251,7 +251,7 @@ export default function CampaignCard({
 
           <Button
             variant="ghost"
-            className="rounded-none h-12 px-3 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+            className="rounded-none h-12 px-3 text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={e => {
               e.stopPropagation();
               onDelete?.(campaign);

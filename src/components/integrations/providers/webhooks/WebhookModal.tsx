@@ -175,10 +175,10 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
                     placeholder={t('webhooks.modal.fields.url.placeholder')}
                     value={formData.url}
                     onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-                    className={errors.url ? 'border-red-500' : ''}
+                    className={errors.url ? 'border-destructive' : ''}
                   />
                   {errors.url && (
-                    <p className="text-sm text-red-600 mt-1">{errors.url}</p>
+                    <p className="text-sm text-destructive-foreground mt-1">{errors.url}</p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
                     {t('webhooks.modal.fields.url.hint')}
@@ -232,10 +232,10 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
               </div>
 
               {errors.subscriptions && (
-                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="mb-4 p-3 bg-destructive/8 border border-destructive/24 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-                    <span className="text-sm text-red-700 dark:text-red-300">
+                    <AlertCircle className="w-4 h-4 text-destructive-foreground" />
+                    <span className="text-sm text-destructive-foreground">
                       {errors.subscriptions}
                     </span>
                   </div>
@@ -265,10 +265,10 @@ export default function WebhookModal({ webhook, open, onOpenChange, onSubmit, lo
             </Card>
 
             {/* Info Box */}
-            <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+            <Card className="p-4 bg-info/8 border-info/24">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-700 dark:text-blue-300">
+                <AlertCircle className="w-4 h-4 text-info-foreground mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-info-foreground">
                   <strong>{t('webhooks.modal.info.title')}</strong> {t('webhooks.modal.info.description')}
                 </div>
               </div>

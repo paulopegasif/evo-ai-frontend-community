@@ -40,7 +40,7 @@ const VelocityAlertsSection = ({ velocity, alerts, onOpenLead }: Props) => (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
-          <UserX className="h-4 w-4 text-amber-500" />
+          <UserX className="h-4 w-4 text-warning" />
           Leads sem agendamento
           <Badge variant="outline">{alerts?.stale_leads.count ?? 0}</Badge>
         </CardTitle>
@@ -69,7 +69,7 @@ const VelocityAlertsSection = ({ velocity, alerts, onOpenLead }: Props) => (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
-          <CalendarX2 className="h-4 w-4 text-amber-500" />
+          <CalendarX2 className="h-4 w-4 text-warning" />
           Agendamentos sem desfecho
           <Badge variant="outline">{alerts?.no_outcome.count ?? 0}</Badge>
         </CardTitle>
@@ -97,7 +97,7 @@ const VelocityAlertsSection = ({ velocity, alerts, onOpenLead }: Props) => (
     </Card>
 
     {(alerts?.unlinked_sales.count ?? 0) > 0 && (
-      <p className="xl:col-span-3 text-xs text-amber-600 flex items-center gap-1.5">
+      <p className="xl:col-span-3 text-xs text-warning-foreground flex items-center gap-1.5">
         <AlertTriangle className="h-3.5 w-3.5" />
         {plural(alerts!.unlinked_sales.count, 'venda do Bitrix aguarda', 'vendas do Bitrix aguardam')} ligação a um lead
         na aba “Revisão”.

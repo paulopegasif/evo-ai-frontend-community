@@ -187,12 +187,12 @@ export default function ContactExportModal({
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="text-sm font-medium text-blue-900 mb-1 flex items-center gap-2">
+          <div className="bg-info/8 border border-info/24 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-info-foreground mb-1 flex items-center gap-2">
               <Download className="h-4 w-4" />
               {t('export.download.title')}
             </h4>
-            <p className="text-xs text-blue-700">
+            <p className="text-xs text-info-foreground">
               {t('export.download.description')}
             </p>
           </div>

@@ -85,7 +85,7 @@ const TemplatesPicker: React.FC<TemplatesPickerProps> = ({ isWhatsAppCloud, temp
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium">{template.name}</p>
                         {showBadge && (
-                          <span className="inline-block px-2 py-0.5 text-xs rounded-md bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+                          <span className="inline-block px-2 py-0.5 text-xs rounded-md bg-warning/12 text-warning-foreground">
                             {t(`messageTemplates.picker.status.${badgeKey}`)}
                           </span>
                         )}

@@ -72,7 +72,7 @@ export function ContactEventsTab({ contactId }: ContactEventsTabProps) {
       {degraded && (
         <div
           role="status"
-          className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200"
+          className="flex items-start gap-3 rounded-lg border border-warning/24 bg-warning/8 p-3 text-sm text-warning-foreground"
         >
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div className="flex-1">

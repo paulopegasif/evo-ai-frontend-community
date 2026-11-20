@@ -139,10 +139,10 @@ export default function DashboardAppModal({
                   placeholder={t('dashboardApps.modal.fields.title.placeholder')}
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className={errors.title ? 'border-red-500' : ''}
+                  className={errors.title ? 'border-destructive' : ''}
                 />
                 {errors.title && (
-                  <p className="text-sm text-red-600 mt-1">{errors.title}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.title}</p>
                 )}
               </div>
 
@@ -158,10 +158,10 @@ export default function DashboardAppModal({
                     ...prev,
                     content: { ...prev.content, url: e.target.value }
                   }))}
-                  className={errors.url ? 'border-red-500' : ''}
+                  className={errors.url ? 'border-destructive' : ''}
                 />
                 {errors.url && (
-                  <p className="text-sm text-red-600 mt-1">{errors.url}</p>
+                  <p className="text-sm text-destructive-foreground mt-1">{errors.url}</p>
                 )}
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('dashboardApps.modal.fields.url.hint')}
@@ -268,10 +268,10 @@ export default function DashboardAppModal({
           </Card>
 
           {/* Info Box */}
-          <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <Card className="p-4 bg-info/8 border-info/24">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-700 dark:text-blue-300">
+              <AlertCircle className="w-4 h-4 text-info-foreground mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-info-foreground">
                 <strong>{t('dashboardApps.modal.info.title')}</strong> {t('dashboardApps.modal.info.description')}
               </div>
             </div>

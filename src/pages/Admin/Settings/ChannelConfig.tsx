@@ -259,7 +259,7 @@ function SecretField<TData extends Record<string, unknown>>({
         </div>
         {!secretModified[fieldName] && (
           secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
+            <span className="inline-flex items-center gap-1 text-xs text-success-foreground">
               <Lock className="h-3 w-3" />
               {t('channels.secretConfigured')}
             </span>

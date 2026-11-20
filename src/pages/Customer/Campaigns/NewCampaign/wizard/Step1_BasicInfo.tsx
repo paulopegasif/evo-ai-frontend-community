@@ -79,7 +79,7 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
           {/* Name */}
           <div>
             <Label className="text-base mb-2 block font-semibold">
-              Nome <span className="text-red-500">*</span>
+              Nome <span className="text-destructive">*</span>
             </Label>
             <Input
               placeholder="Ex: Campanha Black Friday 2025"
@@ -88,7 +88,7 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
               className={`h-12 text-base ${errors.name ? 'border-red-500 focus:border-red-500' : ''}`}
               autoFocus
             />
-            {errors.name && <p className="text-sm text-red-600 mt-2">{errors.name}</p>}
+            {errors.name && <p className="text-sm text-destructive-foreground mt-2">{errors.name}</p>}
           </div>
 
           {/* Description */}
@@ -109,7 +109,7 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
           {/* Type */}
           <div>
             <Label className="text-base mb-2 block font-semibold">
-              {t('wizard.step1.typeLabel')} <span className="text-red-500">*</span>
+              {t('wizard.step1.typeLabel')} <span className="text-destructive">*</span>
             </Label>
             <Select
               value={data.type || ''}
@@ -124,7 +124,7 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
                 <SelectItem value={CampaignType.TRIGGER}>{t('type.trigger')}</SelectItem>
               </SelectContent>
             </Select>
-            {errors.type && <p className="text-sm text-red-600 mt-2">{errors.type}</p>}
+            {errors.type && <p className="text-sm text-destructive-foreground mt-2">{errors.type}</p>}
           </div>
 
           {/* Trigger Configuration */}
@@ -135,7 +135,7 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
                 onChange={(config) => onChange({ triggerConfig: config })}
               />
               {errors.triggerConfig && (
-                <p className="text-sm text-red-600 mt-2">{errors.triggerConfig}</p>
+                <p className="text-sm text-destructive-foreground mt-2">{errors.triggerConfig}</p>
               )}
             </>
           )}

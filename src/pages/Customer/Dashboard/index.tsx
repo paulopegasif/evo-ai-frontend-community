@@ -269,7 +269,7 @@ const CustomerDashboardPage = () => {
       <div className="p-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-red-600 font-medium">
+            <div className="flex items-center gap-2 text-destructive-foreground font-medium">
               <AlertTriangle className="h-4 w-4" />
               {error || (t('dashboard.error') || 'Falha ao carregar dashboard')}
             </div>

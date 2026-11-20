@@ -18,17 +18,17 @@ import { Inbox } from '@/types/channels/inbox';
 
 // Status dot color for the summary line, keyed by the type-level health status.
 const statusDotClasses: Record<ChannelHealthStatus, string> = {
-  active: 'bg-emerald-500',
-  attention: 'bg-amber-500',
-  error: 'bg-red-500',
+  active: 'bg-success',
+  attention: 'bg-warning',
+  error: 'bg-destructive',
   available: 'bg-muted-foreground/40',
 };
 
 // Capability chips are color-coded by capability (reference design, EVO-2092):
 // publishing = green, conversations = blue, campaigns = purple.
 const capabilityChipClasses: Record<ChannelCapability, string> = {
-  publishing: 'bg-green-50 text-green-700 dark:bg-green-950/50 dark:text-green-300',
-  conversations: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
+  publishing: 'bg-success/8 text-success-foreground',
+  conversations: 'bg-info/8 text-info-foreground',
   campaigns: 'bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300',
 };
 

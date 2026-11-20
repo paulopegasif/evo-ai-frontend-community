@@ -114,11 +114,11 @@ export default function TeamForm({
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               placeholder={t('form.name.placeholder')}
-              className={errors.name ? 'border-red-500' : ''}
+              className={errors.name ? 'border-destructive' : ''}
               disabled={loading}
             />
             {errors.name && (
-              <p className="text-sm text-red-500">{errors.name}</p>
+              <p className="text-sm text-destructive">{errors.name}</p>
             )}
           </div>
 
@@ -136,7 +136,7 @@ export default function TeamForm({
               disabled={loading}
             />
             {errors.description && (
-              <p className="text-sm text-red-500">{errors.description}</p>
+              <p className="text-sm text-destructive">{errors.description}</p>
             )}
             <p className="text-xs text-muted-foreground">
               {t('form.description.counter', { current: formData.description.length })}

@@ -164,15 +164,15 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
                 <div className="flex items-center gap-2 text-sm">
                   {hook.status ? (
                     <>
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-green-600 font-medium">
+                      <CheckCircle className="w-4 h-4 text-success-foreground" />
+                      <span className="text-success-foreground font-medium">
                         {t('openai.settings.status.active')}
                       </span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-4 h-4 text-red-600" />
-                      <span className="text-red-600 font-medium">
+                      <XCircle className="w-4 h-4 text-destructive-foreground" />
+                      <span className="text-destructive-foreground font-medium">
                         {t('openai.settings.status.inactive')}
                       </span>
                     </>
@@ -252,7 +252,7 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
                   </div>
                   <div className="flex items-center gap-2">
                     {hook.settings?.enable_audio_transcription ? (
-                      <span className="text-sm text-green-600 font-medium">
+                      <span className="text-sm text-success-foreground font-medium">
                         {t('openai.settings.status.active')}
                       </span>
                     ) : (
@@ -266,11 +266,11 @@ export default function OpenAISettings({ onBack }: OpenAISettingsProps = {}) {
             </Card>
 
             {/* Features Card */}
-            <Card className="p-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-              <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-200">
+            <Card className="p-6 bg-info/8 border-info/24">
+              <h3 className="text-lg font-semibold mb-4 text-info-foreground">
                 {t('openai.settings.features.title')}
               </h3>
-              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+              <ul className="text-sm text-info-foreground space-y-2">
                 <li>• {t('openai.settings.features.suggestions')}</li>
                 <li>• {t('openai.settings.features.summaries')}</li>
                 <li>• {t('openai.settings.features.improvement')}</li>

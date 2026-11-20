@@ -37,13 +37,13 @@ export default function CustomToolsTable({
   const getMethodColor = (method: string) => {
     switch (method.toUpperCase()) {
       case 'GET':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+        return 'bg-info/10 text-info-foreground border-info/30';
       case 'POST':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
+        return 'bg-success/10 text-success-foreground border-success/30';
       case 'PUT':
         return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
       case 'DELETE':
-        return 'bg-red-500/10 text-red-600 border-red-500/30';
+        return 'bg-destructive/10 text-destructive-foreground border-destructive/30';
       case 'PATCH':
         return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
       default:

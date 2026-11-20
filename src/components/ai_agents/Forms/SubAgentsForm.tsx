@@ -128,8 +128,8 @@ const SubAgentsForm = ({
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <div className="p-1 rounded-lg bg-blue-500/10">
-              <Users className="h-3.5 w-3.5 text-blue-500" />
+            <div className="p-1 rounded-lg bg-info/10">
+              <Users className="h-3.5 w-3.5 text-info" />
             </div>
             <div>
               <CardTitle className="text-sm">{t('subAgents.title')}</CardTitle>

@@ -9,9 +9,9 @@ interface ChannelStatusBadgeProps {
 }
 
 const dotClasses: Record<ChannelHealthStatus, string> = {
-  active: 'bg-emerald-500',
-  attention: 'bg-amber-500',
-  error: 'bg-red-500',
+  active: 'bg-success',
+  attention: 'bg-warning',
+  error: 'bg-destructive',
   available: 'bg-sidebar-foreground/30',
 };
 

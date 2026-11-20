@@ -75,9 +75,9 @@ const EmailConfirmation = () => {
   const getStatusIcon = () => {
     switch (confirmationStatus) {
       case 'success':
-        return <CheckCircle className="h-12 w-12 text-green-500" />;
+        return <CheckCircle className="h-12 w-12 text-success" />;
       case 'error':
-        return <XCircle className="h-12 w-12 text-red-500" />;
+        return <XCircle className="h-12 w-12 text-destructive" />;
       default:
         return isLoading ? (
           <Loader2 className="h-12 w-12 text-primary animate-spin" />

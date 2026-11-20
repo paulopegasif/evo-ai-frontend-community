@@ -54,7 +54,7 @@ export default function Step2_Endpoint({ data, onChange, onNext, onBack }: Step2
           <div className="grid grid-cols-[140px_1fr] gap-3">
             <div>
               <Label className="text-sm mb-1.5 block font-semibold">
-                {t('form.fields.method.label')} <span className="text-red-500">*</span>
+                {t('form.fields.method.label')} <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={data.method}
@@ -75,7 +75,7 @@ export default function Step2_Endpoint({ data, onChange, onNext, onBack }: Step2
 
             <div>
               <Label className="text-sm mb-1.5 block font-semibold">
-                {t('form.fields.endpoint.label')} <span className="text-red-500">*</span>
+                {t('form.fields.endpoint.label')} <span className="text-destructive">*</span>
               </Label>
               <Input
                 placeholder={t('form.fields.endpoint.placeholder')}
@@ -83,7 +83,7 @@ export default function Step2_Endpoint({ data, onChange, onNext, onBack }: Step2
                 onChange={e => onChange({ ...data, endpoint: e.target.value })}
                 className={`h-10 text-sm ${error ? 'border-red-500' : ''}`}
               />
-              {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+              {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
             </div>
           </div>
 

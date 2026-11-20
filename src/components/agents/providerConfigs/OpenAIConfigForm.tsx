@@ -37,7 +37,7 @@ export const OpenAIConfigForm = ({
           disabled={disabled}
         />
         {errors.apiKey && (
-          <p className="text-xs text-red-600">{errors.apiKey}</p>
+          <p className="text-xs text-destructive-foreground">{errors.apiKey}</p>
         )}
       </div>
       <div className="space-y-2">
@@ -66,7 +66,7 @@ export const OpenAIConfigForm = ({
             disabled={disabled}
           />
           {errors.assistantId && (
-            <p className="text-xs text-red-600">{errors.assistantId}</p>
+            <p className="text-xs text-destructive-foreground">{errors.assistantId}</p>
           )}
         </div>
       )}
@@ -82,7 +82,7 @@ export const OpenAIConfigForm = ({
               disabled={disabled}
             />
             {errors.model && (
-              <p className="text-xs text-red-600">{errors.model}</p>
+              <p className="text-xs text-destructive-foreground">{errors.model}</p>
             )}
           </div>
           <div className="space-y-2">

@@ -257,7 +257,7 @@ export default function BusinessHoursForm({
                       {t('settings.businessHours.weekSchedule.label')}
                     </label>
                     {hasErrors && (
-                      <div className="flex items-center gap-1 text-red-500">
+                      <div className="flex items-center gap-1 text-destructive">
                         <AlertTriangle className="h-4 w-4" />
                         <span className="text-xs">
                           {t('settings.businessHours.validation.hasErrors')}
@@ -279,13 +279,13 @@ export default function BusinessHoursForm({
                 </div>
 
                 {/* Info Box */}
-                <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <Info className="w-5 h-5 text-blue-700 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="flex items-start gap-3 p-4 bg-info/8 rounded-lg border border-info/24">
+                  <Info className="w-5 h-5 text-info-foreground mt-0.5 flex-shrink-0" />
                   <div className="text-sm">
-                    <h6 className="font-medium text-blue-700 dark:text-blue-300 mb-1">
+                    <h6 className="font-medium text-info-foreground mb-1">
                       {t('settings.businessHours.info.title')}
                     </h6>
-                    <div className="text-blue-600 dark:text-blue-400 space-y-1">
+                    <div className="text-info-foreground space-y-1">
                       <p>• {t('settings.businessHours.info.point1')}</p>
                       <p>• {t('settings.businessHours.info.point2')}</p>
                       <p>• {t('settings.businessHours.info.point3')}</p>

@@ -219,11 +219,11 @@ export default function HierarchicalTaskItem({
   const getPriorityColor = () => {
     switch (task.priority) {
       case 'urgent':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        return 'bg-destructive/12 text-destructive-foreground';
       case 'high':
         return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+        return 'bg-warning/12 text-warning-foreground';
       case 'low':
         return 'bg-muted text-foreground';
       default:
@@ -234,13 +234,13 @@ export default function HierarchicalTaskItem({
   const getStatusColor = () => {
     switch (task.status) {
       case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'bg-success/12 text-success-foreground';
       case 'overdue':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+        return 'bg-destructive/12 text-destructive-foreground';
       case 'cancelled':
         return 'bg-muted text-foreground';
       default:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'bg-info/12 text-info-foreground';
     }
   };
 
@@ -260,8 +260,8 @@ export default function HierarchicalTaskItem({
         className={cn(
           'group relative rounded-lg border bg-card p-3 hover:shadow-md transition-all',
           task.status === 'completed' && 'opacity-60',
-          task.overdue && task.status === 'pending' && 'border-red-300 dark:border-red-800',
-          task.due_soon && task.status === 'pending' && 'border-yellow-300 dark:border-yellow-800',
+          task.overdue && task.status === 'pending' && 'border-destructive/24',
+          task.due_soon && task.status === 'pending' && 'border-warning/24',
         )}
       >
         {/* Depth indicator line */}
@@ -452,8 +452,8 @@ export default function HierarchicalTaskItem({
                 <div
                   className={cn(
                     'flex items-center gap-1',
-                    task.overdue && task.status === 'pending' && 'text-red-600 dark:text-red-400 font-medium',
-                    task.due_soon && task.status === 'pending' && 'text-yellow-600 dark:text-yellow-400 font-medium',
+                    task.overdue && task.status === 'pending' && 'text-destructive-foreground font-medium',
+                    task.due_soon && task.status === 'pending' && 'text-warning-foreground font-medium',
                   )}
                 >
                   <Calendar className="w-3 h-3" />

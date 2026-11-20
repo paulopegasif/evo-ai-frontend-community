@@ -12,8 +12,8 @@ const Unauthorized: React.FC = () => {
       <div className="max-w-md w-full space-y-8 text-center">
         {/* Ícone */}
         <div className="flex justify-center">
-          <div className="rounded-full bg-red-100 p-6">
-            <ShieldX className="h-16 w-16 text-red-600" />
+          <div className="rounded-full bg-destructive/12 p-6">
+            <ShieldX className="h-16 w-16 text-destructive-foreground" />
           </div>
         </div>
 
@@ -29,8 +29,8 @@ const Unauthorized: React.FC = () => {
             {t('description')}
           </p>
 
-          <div className="border-l-4 border-yellow-400 bg-yellow-50 p-4">
-            <p className="text-sm text-yellow-800">
+          <div className="border-l-4 border-warning bg-warning/8 p-4">
+            <p className="text-sm text-warning-foreground">
               <strong className="font-semibold">{t('contactAdmin.title')}</strong>
               <br />
               {t('contactAdmin.message')}

@@ -34,7 +34,7 @@ export const DifyConfigForm = ({
           disabled={disabled}
         />
         {errors.apiUrl && (
-          <p className="text-xs text-red-600">{errors.apiUrl}</p>
+          <p className="text-xs text-destructive-foreground">{errors.apiUrl}</p>
         )}
       </div>
       <div className="space-y-2">
@@ -48,7 +48,7 @@ export const DifyConfigForm = ({
           disabled={disabled}
         />
         {errors.apiKey && (
-          <p className="text-xs text-red-600">{errors.apiKey}</p>
+          <p className="text-xs text-destructive-foreground">{errors.apiKey}</p>
         )}
       </div>
       <div className="space-y-2">

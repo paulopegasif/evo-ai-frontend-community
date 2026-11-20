@@ -34,7 +34,7 @@ export const TypebotConfigForm = ({
           disabled={disabled}
         />
         {errors.url && (
-          <p className="text-xs text-red-600">{errors.url}</p>
+          <p className="text-xs text-destructive-foreground">{errors.url}</p>
         )}
       </div>
       <div className="space-y-2">
@@ -47,7 +47,7 @@ export const TypebotConfigForm = ({
           disabled={disabled}
         />
         {errors.typebot && (
-          <p className="text-xs text-red-600">{errors.typebot}</p>
+          <p className="text-xs text-destructive-foreground">{errors.typebot}</p>
         )}
       </div>
       <div className="space-y-2">

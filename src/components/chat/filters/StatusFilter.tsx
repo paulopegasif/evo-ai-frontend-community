@@ -28,19 +28,19 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     {
       value: 'open',
       label: t('filters.status.options.open'),
-      color: 'text-green-700',
+      color: 'text-success-foreground',
       count: null,
     },
     {
       value: 'pending',
       label: t('filters.status.options.pending'),
-      color: 'text-yellow-700',
+      color: 'text-warning-foreground',
       count: null,
     },
     {
       value: 'resolved',
       label: t('filters.status.options.resolved'),
-      color: 'text-blue-700',
+      color: 'text-info-foreground',
       count: null,
     },
     {

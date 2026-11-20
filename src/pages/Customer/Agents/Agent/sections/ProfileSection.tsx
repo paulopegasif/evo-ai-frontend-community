@@ -77,7 +77,7 @@ const ProfileSection = ({ formData, onFormDataChange, agentType }: ProfileSectio
           {/* Nome do agente */}
           <div className="space-y-2">
             <Label className="text-sm font-semibold">
-              {t('edit.profile.name') || 'Nome do agente'} <span className="text-red-500">*</span>
+              {t('edit.profile.name') || 'Nome do agente'} <span className="text-destructive">*</span>
             </Label>
             <Input
               value={formData.name}
@@ -150,7 +150,7 @@ const ProfileSection = ({ formData, onFormDataChange, agentType }: ProfileSectio
                           </>
                         ) : (
                           <>
-                            <Wand2 className="h-4 w-4 text-blue-500" />
+                            <Wand2 className="h-4 w-4 text-info" />
                             {t('wizard.promptGenerator.buttons.review')}
                           </>
                         )}

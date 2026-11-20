@@ -391,7 +391,7 @@ const ChatHeader = ({
             onClick={() => onSetPriority(conversation, 'urgent')}
             className="flex items-center gap-2"
           >
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertTriangle className="h-4 w-4 text-destructive-foreground" />
             {t('chatHeader.actions.priorityUrgent')}
           </DropdownMenuItem>
 
@@ -407,7 +407,7 @@ const ChatHeader = ({
             onClick={() => onSetPriority(conversation, 'medium')}
             className="flex items-center gap-2"
           >
-            <Minus className="h-4 w-4 text-blue-600" />
+            <Minus className="h-4 w-4 text-info-foreground" />
             {t('chatHeader.actions.priorityMedium')}
           </DropdownMenuItem>
 

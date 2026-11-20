@@ -179,10 +179,10 @@ export default function LeadSquaredModal({
                     placeholder={t('leadSquared.modal.fields.accessKey.placeholder')}
                     value={formData.access_key}
                     onChange={e => setFormData(prev => ({ ...prev, access_key: e.target.value }))}
-                    className={errors.access_key ? 'border-red-500' : ''}
+                    className={errors.access_key ? 'border-destructive' : ''}
                   />
                   {errors.access_key && (
-                    <p className="text-sm text-red-600 mt-1">{errors.access_key}</p>
+                    <p className="text-sm text-destructive-foreground mt-1">{errors.access_key}</p>
                   )}
                 </div>
 
@@ -199,10 +199,10 @@ export default function LeadSquaredModal({
                     placeholder={t('leadSquared.modal.fields.secretKey.placeholder')}
                     value={formData.secret_key}
                     onChange={e => setFormData(prev => ({ ...prev, secret_key: e.target.value }))}
-                    className={errors.secret_key ? 'border-red-500' : ''}
+                    className={errors.secret_key ? 'border-destructive' : ''}
                   />
                   {errors.secret_key && (
-                    <p className="text-sm text-red-600 mt-1">{errors.secret_key}</p>
+                    <p className="text-sm text-destructive-foreground mt-1">{errors.secret_key}</p>
                   )}
                 </div>
               </div>
@@ -289,7 +289,7 @@ export default function LeadSquaredModal({
                 </div>
 
                 {formData.enable_conversation_activity && (
-                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-blue-200">
+                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-info/24">
                     <div>
                       <Label htmlFor="conversation_activity_score">{t('leadSquared.modal.fields.conversationActivity.score')}</Label>
                       <Input
@@ -342,7 +342,7 @@ export default function LeadSquaredModal({
                 </div>
 
                 {formData.enable_transcript_activity && (
-                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-green-200">
+                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-success/24">
                     <div>
                       <Label htmlFor="transcript_activity_score">{t('leadSquared.modal.fields.transcriptActivity.score')}</Label>
                       <Input
@@ -379,10 +379,10 @@ export default function LeadSquaredModal({
           </Card>
 
           {/* Security Warning */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+          <Card className="p-4 bg-warning/8 border-warning/24">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
+              <AlertCircle className="w-4 h-4 text-warning-foreground mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-warning-foreground">
                 <strong>{t('leadSquared.modal.security.title')}</strong> {t('leadSquared.modal.security.description')}
               </div>
             </div>

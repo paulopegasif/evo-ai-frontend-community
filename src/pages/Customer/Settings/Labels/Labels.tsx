@@ -417,7 +417,7 @@ export default function Labels() {
             </DialogDescription>
           </DialogHeader>
           {!!labelToDelete?.usage_count && labelToDelete.usage_count > 0 && (
-            <p className="text-sm text-amber-600 dark:text-amber-500">
+            <p className="text-sm text-warning-foreground">
               {t('dialog.delete.usageWarning', { count: labelToDelete.usage_count })}
             </p>
           )}
@@ -450,7 +450,7 @@ export default function Labels() {
             </DialogDescription>
           </DialogHeader>
           {selectedInUse.length > 0 && (
-            <p className="text-sm text-amber-600 dark:text-amber-500">
+            <p className="text-sm text-warning-foreground">
               {t('dialog.bulkDelete.usageWarning', {
                 labels: selectedInUse.length,
                 records: selectedInUseRecords,

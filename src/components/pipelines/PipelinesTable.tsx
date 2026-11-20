@@ -100,7 +100,7 @@ export default function PipelinesTable({
                 {pipeline.name}
               </span>
               {pipeline.is_default && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-warning/12 text-warning-foreground">
                   <Star className="h-3 w-3 fill-current" />
                   {t('pipelinesTable.default')}
                 </span>

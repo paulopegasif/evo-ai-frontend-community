@@ -55,13 +55,13 @@ type SortKey =
   | 'meta_leads';
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: 'Ativa', className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' },
-  PAUSED: { label: 'Pausada', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30' },
-  CAMPAIGN_PAUSED: { label: 'Pausada', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30' },
+  ACTIVE: { label: 'Ativa', className: 'bg-success/10 text-success-foreground border-success/30' },
+  PAUSED: { label: 'Pausada', className: 'bg-warning/10 text-warning-foreground border-warning/30' },
+  CAMPAIGN_PAUSED: { label: 'Pausada', className: 'bg-warning/10 text-warning-foreground border-warning/30' },
   ARCHIVED: { label: 'Arquivada', className: 'bg-muted text-muted-foreground border-border' },
   DELETED: { label: 'Excluída', className: 'bg-muted text-muted-foreground border-border' },
   IN_PROCESS: { label: 'Em processamento', className: 'bg-muted text-muted-foreground border-border' },
-  WITH_ISSUES: { label: 'Com problemas', className: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30' },
+  WITH_ISSUES: { label: 'Com problemas', className: 'bg-destructive/10 text-destructive-foreground border-destructive/30' },
 };
 
 const StatusBadge = ({ status }: { status: string | null }) => {

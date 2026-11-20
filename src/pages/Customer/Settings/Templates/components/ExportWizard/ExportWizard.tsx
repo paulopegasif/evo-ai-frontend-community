@@ -129,7 +129,7 @@ export default function ExportWizard({ open, onClose }: Props) {
                 isActive
                   ? 'bg-primary text-primary-foreground font-medium'
                   : isDone
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                    ? 'bg-success/15 text-success-foreground'
                     : 'bg-muted text-muted-foreground'
               }`}
             >
@@ -138,7 +138,7 @@ export default function ExportWizard({ open, onClose }: Props) {
                   isActive
                     ? 'bg-primary-foreground/20'
                     : isDone
-                      ? 'bg-emerald-500/30'
+                      ? 'bg-success/30'
                       : 'bg-background'
                 }`}
               >
@@ -149,7 +149,7 @@ export default function ExportWizard({ open, onClose }: Props) {
             {idx < 2 && (
               <div
                 className={`w-6 h-px ${
-                  s < step ? 'bg-emerald-500/50' : 'bg-border'
+                  s < step ? 'bg-success/50' : 'bg-border'
                 }`}
               />
             )}
@@ -252,8 +252,8 @@ export default function ExportWizard({ open, onClose }: Props) {
             <p className="text-sm">
               {t('export.step3.summary', { count: totalSelected, categoryCount: selectedCategoryCount })}
             </p>
-            <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 rounded-md border border-warning/24 bg-warning/8 p-3">
+              <AlertTriangle className="w-5 h-5 text-warning-foreground mt-0.5 flex-shrink-0" />
               <p className="text-sm">{t('export.step3.credentialsWarning')}</p>
             </div>
           </div>

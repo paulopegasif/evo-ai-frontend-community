@@ -64,7 +64,7 @@ export const ZapiForm = ({ form, onFormChange }: ZapiFormProps) => {
       {/* Help Section */}
       <FormSection
         title={t('zapiForm.help.title')}
-        className="bg-blue-50/10 border-blue-200/20"
+        className="bg-info/8 border-info/24"
         data-tour="whatsapp-help"
       >
         <div className="text-sm text-sidebar-foreground/70 space-y-2">

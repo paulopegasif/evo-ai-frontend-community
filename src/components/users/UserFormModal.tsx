@@ -229,11 +229,11 @@ export default function UserFormModal({ isOpen, onClose, user, onSuccess }: User
               onChange={e => handleFieldChange('name', e.target.value)}
               placeholder={t('form.fields.name.placeholder')}
               className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                errors.name ? 'border-red-500' : ''
+                errors.name ? 'border-destructive' : ''
               }`}
               disabled={loading}
             />
-            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
@@ -245,11 +245,11 @@ export default function UserFormModal({ isOpen, onClose, user, onSuccess }: User
               onChange={e => handleFieldChange('email', e.target.value)}
               placeholder={t('form.fields.email.placeholder')}
               className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                errors.email ? 'border-red-500' : ''
+                errors.email ? 'border-destructive' : ''
               }`}
               disabled={loading || !!user}
             />
-            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             {user && (
               <p className="text-xs text-sidebar-foreground/60">
                 {t('form.fields.email.cannotChange')}
@@ -280,7 +280,7 @@ export default function UserFormModal({ isOpen, onClose, user, onSuccess }: User
                 ))}
               </SelectContent>
             </Select>
-            {errors.role && <p className="text-sm text-red-500">{errors.role}</p>}
+            {errors.role && <p className="text-sm text-destructive">{errors.role}</p>}
           </div>
 
           <div className="space-y-2">
@@ -314,11 +314,11 @@ export default function UserFormModal({ isOpen, onClose, user, onSuccess }: User
                   onChange={e => handleFieldChange('password', e.target.value)}
                   placeholder={t('form.fields.password.placeholder')}
                   className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                    errors.password ? 'border-red-500' : ''
+                    errors.password ? 'border-destructive' : ''
                   }`}
                   disabled={loading}
                 />
-                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
               </div>
 
               <div className="space-y-2">
@@ -334,12 +334,12 @@ export default function UserFormModal({ isOpen, onClose, user, onSuccess }: User
                   onChange={e => handleFieldChange('confirmPassword', e.target.value)}
                   placeholder={t('form.fields.confirmPassword.placeholder')}
                   className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                    errors.confirmPassword ? 'border-red-500' : ''
+                    errors.confirmPassword ? 'border-destructive' : ''
                   }`}
                   disabled={loading}
                 />
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
                 )}
               </div>
             </>

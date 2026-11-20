@@ -139,12 +139,12 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
             ({filteredTasks.length})
           </span>
           {pendingCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-info/12 text-info-foreground">
               {pendingCount} {t('tasks.pending')}
             </span>
           )}
           {overdueCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-destructive/12 text-destructive-foreground">
               {overdueCount} {t('tasks.overdue')}
             </span>
           )}

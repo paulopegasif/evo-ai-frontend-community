@@ -50,7 +50,7 @@ const MessageStatus: React.FC<MessageStatusProps> = ({ message, isOwn, onRetry, 
       case 'read':
         return <CheckCheck className={`h-3 w-3 ${readTickClass}`} />;
       case 'progress':
-        return <Loader2 className="h-3 w-3 text-blue-500 animate-spin" />;
+        return <Loader2 className="h-3 w-3 text-info animate-spin" />;
       case 'failed': {
         // Explain the real provider error (e.g. recipient not on WhatsApp) and
         // offer a retry, instead of the old generic "check the webhook" notice.

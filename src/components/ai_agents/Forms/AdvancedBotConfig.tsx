@@ -46,8 +46,8 @@ const AdvancedBotConfig = ({ data, onChange, isReadOnly = false }: AdvancedBotCo
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/10">
-              <Clock className="h-5 w-5 text-blue-500" />
+            <div className="p-2 rounded-lg bg-info/10">
+              <Clock className="h-5 w-5 text-info" />
             </div>
             <div>
               <CardTitle>{t('advancedBot.messageHandling')}</CardTitle>

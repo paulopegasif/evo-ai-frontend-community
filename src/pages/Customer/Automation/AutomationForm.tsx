@@ -185,7 +185,7 @@ export default function AutomationForm({ mode }: Props) {
               />
             )}
           />
-          {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+          {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
         </div>
 
         <div className="space-y-2">

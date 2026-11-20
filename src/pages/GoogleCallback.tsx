@@ -87,22 +87,22 @@ export default function GoogleCallback() {
   const getStatusIcon = () => {
     switch (status) {
       case 'processing':
-        return <Loader2 className="h-12 w-12 animate-spin text-blue-500" />;
+        return <Loader2 className="h-12 w-12 animate-spin text-info" />;
       case 'success':
-        return <CheckCircle className="h-12 w-12 text-green-500" />;
+        return <CheckCircle className="h-12 w-12 text-success" />;
       case 'error':
-        return <AlertTriangle className="h-12 w-12 text-red-500" />;
+        return <AlertTriangle className="h-12 w-12 text-destructive" />;
     }
   };
 
   const getStatusColor = () => {
     switch (status) {
       case 'processing':
-        return 'text-blue-600 dark:text-blue-400';
+        return 'text-info-foreground';
       case 'success':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-success-foreground';
       case 'error':
-        return 'text-red-600 dark:text-red-400';
+        return 'text-destructive-foreground';
     }
   };
 

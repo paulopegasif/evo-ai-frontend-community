@@ -192,7 +192,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                             htmlFor={`allow-tasks-${rule.id}`}
                             className="flex items-center gap-2 cursor-pointer font-medium"
                           >
-                            <CheckSquare className="h-4 w-4 text-blue-500" />
+                            <CheckSquare className="h-4 w-4 text-info" />
                             {t('edit.configuration.pipelineRules.allowTasks') ||
                               'Criar/gerenciar tarefas'}
                           </Label>
@@ -210,7 +210,7 @@ const PipelineRules = ({ rules = [], onChange, availablePipelines = [] }: Pipeli
                             htmlFor={`allow-services-${rule.id}`}
                             className="flex items-center gap-2 cursor-pointer font-medium"
                           >
-                            <Briefcase className="h-4 w-4 text-green-500" />
+                            <Briefcase className="h-4 w-4 text-success" />
                             {t('edit.configuration.pipelineRules.allowServices') ||
                               'Criar/gerenciar serviços'}
                           </Label>

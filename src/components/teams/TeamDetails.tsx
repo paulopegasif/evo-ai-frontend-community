@@ -61,7 +61,7 @@ export default function TeamDetails({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
+                <AvatarFallback className="bg-info/12 text-info-foreground text-lg">
                   {getInitials(team.name)}
                 </AvatarFallback>
               </Avatar>
@@ -139,7 +139,7 @@ export default function TeamDetails({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium">{t('details.overview.totalMembers')}</p>
-                  <p className="text-2xl font-bold text-blue-600">{team.members_count || 0}</p>
+                  <p className="text-2xl font-bold text-info-foreground">{team.members_count || 0}</p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm font-medium">{t('details.overview.autoAssign')}</p>

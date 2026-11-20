@@ -16,10 +16,10 @@ import { ChannelTypeStatus, formatLastSync } from '@/utils/channelStatus';
 import { Inbox, InboxConnectionState } from '@/types/channels/inbox';
 
 const stateDotClasses: Record<InboxConnectionState, string> = {
-  connected: 'bg-emerald-500',
-  pending: 'bg-amber-500',
-  disconnected: 'bg-red-500',
-  error: 'bg-red-500',
+  connected: 'bg-success',
+  pending: 'bg-warning',
+  disconnected: 'bg-destructive',
+  error: 'bg-destructive',
   unknown: 'bg-muted-foreground/40',
 };
 
@@ -127,7 +127,7 @@ export default function ChannelConnectionsPopover({
                           {isLiveLoading ? (
                             t('overview.inboxState.checking')
                           ) : isLiveVerified ? (
-                            <span className="text-emerald-600 dark:text-emerald-400">
+                            <span className="text-success-foreground">
                               {t('overview.statusMeta.live')}
                             </span>
                           ) : (
@@ -167,7 +167,7 @@ export default function ChannelConnectionsPopover({
                         setOpen(false);
                         onDelete(inbox);
                       }}
-                      className="shrink-0 rounded p-1 text-muted-foreground/60 transition-colors hover:text-red-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="shrink-0 rounded p-1 text-muted-foreground/60 transition-colors hover:text-destructive focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

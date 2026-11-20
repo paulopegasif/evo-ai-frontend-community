@@ -45,7 +45,7 @@ export default function WidgetHead({ config }: WidgetHeadProps) {
                   {config.websiteName}
                 </span>
                 {config.isOnline && (
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-success rounded-full"></div>
                 )}
               </div>
               <span className="text-xs text-muted-foreground">

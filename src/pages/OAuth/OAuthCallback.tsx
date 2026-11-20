@@ -56,9 +56,9 @@ export const OAuthCallback: React.FC = () => {
 
           {status === 'success' && (
             <Alert>
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-800">{t('callback.success.title')}</AlertTitle>
-              <AlertDescription className="text-green-700">
+              <CheckCircle className="h-4 w-4 text-success-foreground" />
+              <AlertTitle className="text-success-foreground">{t('callback.success.title')}</AlertTitle>
+              <AlertDescription className="text-success-foreground">
                 {message}
               </AlertDescription>
             </Alert>

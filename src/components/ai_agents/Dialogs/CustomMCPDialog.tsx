@@ -115,7 +115,7 @@ const CustomMCPDialog = ({
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5 text-emerald-500" />
+            <Server className="h-5 w-5 text-success" />
             {t('dialogs.customMcp.title')}
           </DialogTitle>
           <DialogDescription>{t('tools.mcpServers.subtitle')}</DialogDescription>
@@ -139,7 +139,7 @@ const CustomMCPDialog = ({
           <div className="flex-1 overflow-auto p-4">
             {loading ? (
               <div className="flex items-center justify-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-success"></div>
               </div>
             ) : filteredServers.length > 0 ? (
               <div className="space-y-3">
@@ -148,8 +148,8 @@ const CustomMCPDialog = ({
                     key={server.id}
                     className={`border rounded-lg p-4 transition-colors cursor-pointer ${
                       selectedServerIds.includes(server.id)
-                        ? 'border-emerald-500/50 bg-emerald-500/10'
-                        : 'border-border hover:border-emerald-500/30'
+                        ? 'border-success/50 bg-success/10'
+                        : 'border-border hover:border-success/30'
                     }`}
                     onClick={() => toggleServer(server.id)}
                   >
@@ -157,13 +157,13 @@ const CustomMCPDialog = ({
                       <Checkbox
                         checked={selectedServerIds.includes(server.id)}
                         onCheckedChange={() => toggleServer(server.id)}
-                        className="mt-1 data-checked:bg-emerald-500 data-checked:border-emerald-500"
+                        className="mt-1 data-checked:bg-success data-checked:border-success"
                         onClick={e => e.stopPropagation()}
                       />
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <Server className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                          <Server className="h-4 w-4 text-success flex-shrink-0" />
                           <h3 className="font-medium truncate">{server.name}</h3>
                         </div>
 

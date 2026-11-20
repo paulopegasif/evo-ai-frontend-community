@@ -32,13 +32,13 @@ export default function MCPServerDetails({
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'official':
-        return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30';
+        return 'bg-success/10 text-success-foreground border-success/30';
       case 'community':
         return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
       case 'oauth':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+        return 'bg-info/10 text-info-foreground border-info/30';
       case 'webhook':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
+        return 'bg-success/10 text-success-foreground border-success/30';
       case 'basic_auth':
         return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
       case 'credentials':
@@ -131,7 +131,7 @@ export default function MCPServerDetails({
                             <p className="text-xs text-muted-foreground">{tool.description}</p>
                           )}
                         </div>
-                        <Wrench className="h-4 w-4 text-emerald-400 mt-0.5" />
+                        <Wrench className="h-4 w-4 text-success mt-0.5" />
                       </div>
                     </div>
                   ))}

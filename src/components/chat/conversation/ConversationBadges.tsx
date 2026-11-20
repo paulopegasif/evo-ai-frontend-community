@@ -14,9 +14,9 @@ interface ConversationBadgesProps {
 }
 
 const PRIORITY_CONFIG: Record<string, { Icon: typeof AlertTriangle; bg: string; fg: string }> = {
-  urgent: { Icon: AlertTriangle, bg: 'bg-red-100', fg: 'text-red-600' },
+  urgent: { Icon: AlertTriangle, bg: 'bg-destructive/12', fg: 'text-destructive-foreground' },
   high: { Icon: ArrowUp, bg: 'bg-orange-100', fg: 'text-orange-600' },
-  medium: { Icon: Minus, bg: 'bg-blue-100', fg: 'text-blue-600' },
+  medium: { Icon: Minus, bg: 'bg-info/12', fg: 'text-info-foreground' },
   low: { Icon: ArrowDown, bg: 'bg-muted', fg: 'text-muted-foreground' },
 };
 

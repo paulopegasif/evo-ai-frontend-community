@@ -75,7 +75,7 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
       <div className="flex-1 flex flex-col space-y-2 min-h-0">
         <div className="flex items-center justify-between">
           <Label className="text-sm font-semibold">
-            {t('wizard.step5.instructionLabel')} <span className="text-red-500">*</span>
+            {t('wizard.step5.instructionLabel')} <span className="text-destructive">*</span>
           </Label>
           <TooltipProvider>
             <div className="flex gap-2">
@@ -98,7 +98,7 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
                         </>
                       ) : (
                         <>
-                          <Wand2 className="h-4 w-4 text-blue-500" />
+                          <Wand2 className="h-4 w-4 text-info" />
                           {t('wizard.promptGenerator.buttons.review')}
                         </>
                       )}
@@ -145,7 +145,7 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
           <span>{t('wizard.step5.minCharacters')}</span>
           <span>{t('wizard.step5.characterCount', { count: data.instruction?.length || 0 })}</span>
         </div>
-        {error && <p className="text-sm text-red-600 flex-shrink-0">{error}</p>}
+        {error && <p className="text-sm text-destructive-foreground flex-shrink-0">{error}</p>}
 
         <div className="bg-muted/50 p-3 rounded-lg flex-shrink-0">
           <p className="text-xs text-muted-foreground">

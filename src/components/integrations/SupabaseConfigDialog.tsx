@@ -244,21 +244,21 @@ const SupabaseConfigDialog = ({
           /* Connected - Show configuration */
           <div className="space-y-6 py-4">
             <div className="space-y-4">
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
-                  <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+              <div className="p-4 bg-success/8 rounded-lg border border-success/24">
+                <div className="flex items-center gap-2 text-success-foreground">
+                  <div className="h-2 w-2 bg-success rounded-full animate-pulse" />
                   <span className="font-medium">
                     {t('edit.integrations.supabase.connected') || 'Conectado'}
                   </span>
                 </div>
                 {config.username && (
-                  <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+                  <p className="text-sm text-success-foreground mt-2">
                     {t('edit.integrations.supabase.connectedAs') || 'Conectado como'}:{' '}
                     <strong>{config.username}</strong>
                   </p>
                 )}
                 {config.email && (
-                  <p className="text-sm text-green-700 dark:text-green-300">{config.email}</p>
+                  <p className="text-sm text-success-foreground">{config.email}</p>
                 )}
               </div>
 

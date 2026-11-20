@@ -47,11 +47,11 @@ const CustomMCPServersSection = ({
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <ExternalLink className="h-4 w-4 text-blue-500" />
+                      <ExternalLink className="h-4 w-4 text-info" />
                       <span className="font-medium">{serverId}</span>
                       <Badge
                         variant="outline"
-                        className="text-xs bg-emerald-500/10 text-emerald-600 border-emerald-500/30"
+                        className="text-xs bg-success/10 text-success-foreground border-success/30"
                       >
                         {t('tools.mcpServers.referenced')}
                       </Badge>

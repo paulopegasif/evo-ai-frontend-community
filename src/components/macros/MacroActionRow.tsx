@@ -323,7 +323,7 @@ export default function MacroActionRow({
           >
             <SelectTrigger
               className={`w-full bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                errors[`action_${index}_name`] ? 'border-red-500' : ''
+                errors[`action_${index}_name`] ? 'border-destructive' : ''
               }`}
             >
               <SelectValue placeholder={t('actionRow.selectPlaceholder')} />
@@ -346,7 +346,7 @@ export default function MacroActionRow({
             </SelectContent>
           </Select>
           {errors[`action_${index}_name`] && (
-            <p className="text-sm text-red-500">{errors[`action_${index}_name`]}</p>
+            <p className="text-sm text-destructive">{errors[`action_${index}_name`]}</p>
           )}
         </div>
 
@@ -369,7 +369,7 @@ export default function MacroActionRow({
               size="sm"
               onClick={() => onRemove(index)}
               disabled={disabled}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-red-500/10 hover:border-red-500 hover:text-red-500"
+              className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-destructive/10 hover:border-destructive hover:text-destructive"
             >
               <X className="h-4 w-4" />
             </Button>

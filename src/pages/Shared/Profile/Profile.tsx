@@ -536,10 +536,10 @@ const Profile = () => {
               disabled={!!userData.unconfirmed_email}
             />
             {userData.unconfirmed_email && (
-              <div className="flex items-start gap-3 p-3 border rounded-lg bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800 mt-2">
-                <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-3 border rounded-lg bg-info/8 border-info/24 mt-2">
+                <Mail className="h-4 w-4 text-info-foreground mt-0.5 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-blue-800 dark:text-blue-300">
+                  <p className="text-sm text-info-foreground">
                     {t('personalData.emailConfirmation.pendingChange', { email: userData.unconfirmed_email })}
                   </p>
                   <div className="flex gap-2 mt-2">
@@ -886,7 +886,7 @@ const Profile = () => {
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       uiSettings.editor_message_key === 'enter'
-                        ? 'border-green-500 bg-green-500'
+                        ? 'border-success bg-success'
                         : 'border-border'
                     }`}
                   >
@@ -921,7 +921,7 @@ const Profile = () => {
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       uiSettings.editor_message_key === 'cmd_enter'
-                        ? 'border-green-500 bg-green-500'
+                        ? 'border-success bg-success'
                         : 'border-border'
                     }`}
                   >

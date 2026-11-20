@@ -230,7 +230,7 @@ export default function CampaignsTable({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={e => {
                 e.stopPropagation();
                 onStopCampaign(campaign);

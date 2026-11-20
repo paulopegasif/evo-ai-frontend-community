@@ -42,7 +42,7 @@ export default function ActionsBuilder({ control, formData }: Props) {
         </Button>
       </div>
       {fields.length === 0 ? (
-        <p className="text-sm text-red-500">{t('form.fields.actions.empty')}</p>
+        <p className="text-sm text-destructive">{t('form.fields.actions.empty')}</p>
       ) : (
         <div className="space-y-2">
           {fields.map((field, index) => (

@@ -50,7 +50,7 @@ export const NotificameForm = ({ form, onFormChange }: NotificameFormProps) => {
       {/* Help Section */}
       <FormSection
         title={t('notificameForm.help.title')}
-        className="bg-green-50/10 border-green-200/20"
+        className="bg-success/8 border-success/24"
         data-tour="whatsapp-help"
       >
         <div className="text-sm text-sidebar-foreground/70 space-y-2">

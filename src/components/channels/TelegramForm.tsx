@@ -135,12 +135,12 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
             </div>
 
             {/* Instructions */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center">
+            <div className="bg-info/8 border border-info/24 rounded-lg p-4">
+              <h4 className="font-semibold text-info-foreground mb-2 flex items-center">
                 <Shield className="h-4 w-4 mr-2" />
                 {t('newChannel.forms.telegramForm.instructions.title')}
               </h4>
-              <div className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
+              <div className="text-sm text-info-foreground space-y-2">
                 <p>{t('newChannel.forms.telegramForm.instructions.step1')}</p>
                 <p>{t('newChannel.forms.telegramForm.instructions.step2')}</p>
                 <p>{t('newChannel.forms.telegramForm.instructions.step3')}</p>
@@ -151,14 +151,14 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
             </div>
 
             {/* Webhook Info */}
-            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-              <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2 flex items-center">
+            <div className="bg-success/8 border border-success/24 rounded-lg p-4">
+              <h4 className="font-semibold text-success-foreground mb-2 flex items-center">
                 <Key className="h-4 w-4 mr-2" />
                 {t('newChannel.forms.telegramForm.webhook.title')}
               </h4>
-              <div className="text-sm text-green-800 dark:text-green-200 space-y-2">
+              <div className="text-sm text-success-foreground space-y-2">
                 <p>{t('newChannel.forms.telegramForm.webhook.description')}</p>
-                <code className="block bg-green-100 dark:bg-green-900/50 p-2 rounded mt-1">
+                <code className="block bg-success/12 p-2 rounded mt-1">
                   {window.location.origin}/api/v1/webhooks/telegram
                 </code>
                 <p>{t('newChannel.forms.telegramForm.webhook.note')}</p>

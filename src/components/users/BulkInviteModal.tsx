@@ -107,14 +107,14 @@ export default function BulkInviteModal({ isOpen, onClose, onSuccess }: BulkInvi
           <div className="space-y-4">
             {result.invited.length > 0 && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-green-600 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-success-foreground flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />
                   {t('bulkInvite.results.invited', { count: result.invited.length })}
                 </h3>
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                <div className="bg-success/8 border border-success/24 rounded-lg p-3">
                   <ul className="text-sm space-y-1">
                     {result.invited.map((user, index) => (
-                      <li key={index} className="text-green-700 dark:text-green-300">
+                      <li key={index} className="text-success-foreground">
                         {user.email}
                       </li>
                     ))}
@@ -125,16 +125,16 @@ export default function BulkInviteModal({ isOpen, onClose, onSuccess }: BulkInvi
 
             {result.failed.length > 0 && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-red-600 flex items-center gap-2">
+                <h3 className="text-sm font-medium text-destructive-foreground flex items-center gap-2">
                   <XCircle className="h-4 w-4" />
                   {t('bulkInvite.results.failed', { count: result.failed.length })}
                 </h3>
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                <div className="bg-destructive/8 border border-destructive/24 rounded-lg p-3">
                   <ul className="text-sm space-y-1">
                     {result.failed.map((failure, index) => (
-                      <li key={index} className="text-red-700 dark:text-red-300">
+                      <li key={index} className="text-destructive-foreground">
                         <span className="font-medium">{failure.email}</span>
-                        <span className="text-red-600 dark:text-red-400"> - {failure.error}</span>
+                        <span className="text-destructive-foreground"> - {failure.error}</span>
                       </li>
                     ))}
                   </ul>
@@ -174,8 +174,8 @@ export default function BulkInviteModal({ isOpen, onClose, onSuccess }: BulkInvi
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
-            <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
+          <Alert className="border-info/24 bg-info/8">
+            <AlertDescription className="text-sm text-info-foreground">
               <strong>{t('bulkInvite.howToUse.title')}</strong>
               <br />• {t('bulkInvite.howToUse.step1')}
               <br />• {t('bulkInvite.howToUse.step2')}
@@ -187,7 +187,7 @@ export default function BulkInviteModal({ isOpen, onClose, onSuccess }: BulkInvi
           <div className="space-y-2">
             <Label htmlFor="emails">
               {t('bulkInvite.fields.emails.label')}
-              <span className="text-red-500 ml-1">*</span>
+              <span className="text-destructive ml-1">*</span>
             </Label>
             <Textarea
               id="emails"

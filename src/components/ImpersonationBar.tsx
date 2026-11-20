@@ -24,7 +24,7 @@ export default function ImpersonationBar() {
   if (!impersonation) return null;
 
   return (
-    <div className="bg-green-400 text-black py-2 px-4 sticky top-0 z-50">
+    <div className="bg-success text-black py-2 px-4 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <p>
           {t('base.impersonation.viewing')} <span className="font-bold">{impersonation.impersonatedClient}</span>

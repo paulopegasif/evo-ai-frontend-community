@@ -240,7 +240,7 @@ const ModelSelector = ({
     <div className="space-y-2">
       {showLabel && (
         <Label htmlFor={id} className="text-sm font-medium">
-          {displayLabel} {required && <span className="text-red-500">*</span>}
+          {displayLabel} {required && <span className="text-destructive">*</span>}
         </Label>
       )}
       {isReadOnlyWithValue ? (
@@ -326,7 +326,7 @@ const ModelSelector = ({
           )}
         </>
       )}
-      {(error || customModelError) && <p className="text-xs text-red-600">{error || customModelError}</p>}
+      {(error || customModelError) && <p className="text-xs text-destructive-foreground">{error || customModelError}</p>}
       {description && !error && !customModelError && (
         <p className="text-xs text-muted-foreground">
           {description}
