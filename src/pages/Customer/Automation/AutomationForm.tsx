@@ -4,16 +4,14 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import {
-  Button,
-  Input,
-  Textarea,
-  Switch,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft } from 'lucide-react';
 import { automationService } from '@/services/automation/automationService';
 import {
@@ -128,118 +126,145 @@ export default function AutomationForm({ mode }: Props) {
   });
 
   if (loadingExisting || formDataLoading) {
-    return <div className="p-4 text-muted-foreground">{t('page.loading')}</div>;
+    return (
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-6" aria-busy="true" aria-label={t('page.loading')}>
+        <div className="flex items-center gap-2">
+          <Skeleton className="size-8 rounded-lg" />
+          <Skeleton className="h-7 w-48" />
+        </div>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Card key={i}>
+            <CardPanel className="flex flex-col gap-3">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-2/3" />
+            </CardPanel>
+          </Card>
+        ))}
+      </div>
+    );
   }
 
   return (
     <FormProvider {...methods}>
-    <div className="h-full flex flex-col p-4 max-w-4xl mx-auto w-full">
-      <div className="flex items-center gap-2 mb-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/automation')}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-xl font-semibold">
-          {mode === 'create' ? t('form.title.create') : t('form.title.edit')}
-        </h1>
+      <div className="mx-auto flex h-full w-full max-w-4xl flex-col gap-6 p-4 md:p-6">
+        <div className="flex items-start gap-2">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="mt-0.5"
+            onClick={() => navigate('/automation')}
+            aria-label={t('form.buttons.cancel')}
+          >
+            <ArrowLeft />
+          </Button>
+          <h1 className="font-semibold text-xl md:text-2xl">
+            {mode === 'create' ? t('form.title.create') : t('form.title.edit')}
+          </h1>
+        </div>
+
+        {mode === 'edit' && id ? (
+          <Tabs defaultValue="settings" className="flex min-h-0 flex-1 flex-col gap-4">
+            <TabsList>
+              <TabsTab value="settings">{t('form.tabs.settings')}</TabsTab>
+              <TabsTab value="logs">{t('form.tabs.logs')}</TabsTab>
+            </TabsList>
+
+            <TabsPanel value="settings">{renderForm()}</TabsPanel>
+
+            <TabsPanel value="logs">
+              <AutomationLogsPanel automationRuleId={id} />
+            </TabsPanel>
+          </Tabs>
+        ) : (
+          renderForm()
+        )}
       </div>
-
-      {mode === 'edit' && id ? (
-        <Tabs defaultValue="settings" className="flex-1 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="settings">{t('form.tabs.settings')}</TabsTrigger>
-            <TabsTrigger value="logs">{t('form.tabs.logs')}</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="settings" className="pt-4 overflow-y-auto">
-            {renderForm()}
-          </TabsContent>
-
-          <TabsContent value="logs" className="pt-4 overflow-y-auto">
-            <AutomationLogsPanel automationRuleId={id} />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        renderForm()
-      )}
-    </div>
     </FormProvider>
   );
 
   function renderForm() {
     return (
-      <form onSubmit={onSubmit} className="space-y-6 flex-1">
-        <div className="space-y-2">
-          <label className="text-sm font-medium" htmlFor="name">
-            {t('form.fields.name')} *
-          </label>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <Input
-                id="name"
-                value={field.value ?? ''}
-                onChange={field.onChange}
-                placeholder={t('form.fields.namePlaceholder')}
-                disabled={submitting}
+      <form onSubmit={onSubmit} className="flex flex-1 flex-col gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('form.sections.details.title')}</CardTitle>
+            <CardDescription>{t('form.sections.details.description')}</CardDescription>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-5">
+            <Field invalid={!!errors.name}>
+              <FieldLabel htmlFor="name">
+                {t('form.fields.name')}
+                <span className="text-destructive-foreground" aria-hidden="true">*</span>
+              </FieldLabel>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <Input
+                    id="name"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder={t('form.fields.namePlaceholder')}
+                    disabled={submitting}
+                    aria-invalid={!!errors.name || undefined}
+                  />
+                )}
               />
-            )}
-          />
-          {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-        </div>
+              {errors.name && <FieldError match>{errors.name.message}</FieldError>}
+            </Field>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium" htmlFor="description">
-            {t('form.fields.description')}
-          </label>
-          <Controller
-            control={control}
-            name="description"
-            render={({ field }) => (
-              <Textarea
-                id="description"
-                value={field.value ?? ''}
-                onChange={field.onChange}
-                placeholder={t('form.fields.descriptionPlaceholder')}
-                rows={2}
-                disabled={submitting}
+            <Field>
+              <FieldLabel htmlFor="description">{t('form.fields.description')}</FieldLabel>
+              <Controller
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <Textarea
+                    id="description"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder={t('form.fields.descriptionPlaceholder')}
+                    rows={2}
+                    disabled={submitting}
+                  />
+                )}
               />
-            )}
-          />
-        </div>
+            </Field>
 
-        <Controller
-          control={control}
-          name="active"
-          render={({ field }) => (
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                disabled={submitting}
-              />
-              <label className="text-sm font-medium">{t('form.fields.active')}</label>
-            </div>
-          )}
-        />
+            <Controller
+              control={control}
+              name="active"
+              render={({ field }) => (
+                <label className="flex cursor-pointer items-center gap-3 font-medium text-sm">
+                  <Switch checked={field.value} onCheckedChange={field.onChange} disabled={submitting} />
+                  {t('form.fields.active')}
+                </label>
+              )}
+            />
+          </CardPanel>
+        </Card>
 
-        <EventSelector control={control} disabled={submitting} />
-        <p className="text-xs text-muted-foreground">{t('form.fields.event.hint')}</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('form.sections.trigger.title')}</CardTitle>
+            <CardDescription>{t('form.sections.trigger.description')}</CardDescription>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-2">
+            <EventSelector control={control} disabled={submitting} />
+            <p className="text-muted-foreground text-xs">{t('form.fields.event.hint')}</p>
+          </CardPanel>
+        </Card>
 
         <ConditionsBuilder control={control} formData={formData} />
 
         <ActionsBuilder control={control} formData={formData} />
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/automation')}
-            disabled={submitting}
-          >
+        <div className="sticky bottom-0 -mx-4 mt-auto flex justify-end gap-2 border-t bg-background/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6">
+          <Button type="button" variant="ghost" onClick={() => navigate('/automation')} disabled={submitting}>
             {t('form.buttons.cancel')}
           </Button>
-          <Button type="submit" disabled={submitting || !canSubmit}>
+          <Button type="submit" disabled={submitting || !canSubmit} loading={submitting}>
             {submitting
               ? t('form.buttons.saving')
               : mode === 'create'

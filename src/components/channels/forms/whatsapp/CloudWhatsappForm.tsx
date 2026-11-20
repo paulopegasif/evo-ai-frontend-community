@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import WhatsappService from '@/services/channels/whatsappService';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
 import { FormSection } from '../../shared/FormSection';
 import HubConnectButton from '@/components/inbox/HubConnectButton';
 import { FormActionBar } from '@/components/channels/shared/FormActionBar';
@@ -275,7 +275,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
           {onCancel && (
             <FormActionBar>
               <div className="flex justify-end">
-                <Button variant="outline" onClick={onCancel} className="min-w-24">
+                <Button variant="ghost" onClick={onCancel}>
                   {t('channels:newChannel.buttons.cancel')}
                 </Button>
               </div>
@@ -356,7 +356,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
               checked={useBusinessApp}
               onChange={setUseBusinessApp}
             />
-            <p className="mt-4 text-sm text-sidebar-foreground/70">
+            <p className="mt-4 text-sm text-muted-foreground">
               {t('cloudWhatsappForm.facebookIntegration.description')}
             </p>
           </div>
@@ -371,7 +371,7 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-sm text-sidebar-foreground/70">
+              <p className="text-sm text-muted-foreground">
                 {t('cloudWhatsappForm.autoFilled.description')}
               </p>
             </div>
@@ -390,8 +390,8 @@ export const CloudWhatsappForm = ({ form, onFormChange, canFB, onCancel }: Cloud
       {!hubEnabled && (
       <div data-tour="whatsapp-cloud-credentials">
       <div>
-        <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-          {t('cloudWhatsappForm.fields.phoneNumber.label')} <span className="text-destructive">*</span>
+        <label className="mb-2 block font-medium text-sm">
+          {t('cloudWhatsappForm.fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
         </label>
         <PhoneInput
           value={getStr('phone_number')}

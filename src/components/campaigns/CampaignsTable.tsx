@@ -1,3 +1,4 @@
+import type React from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Edit, Trash2, Megaphone, Eye, Pause, Play, Copy, Square } from 'lucide-react';
 import { Campaign, CampaignStatus } from '@/types/campaigns';
@@ -8,7 +9,8 @@ import CampaignChannelBadge from './CampaignChannelBadge';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR, enUS, es, fr, it } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CampaignsTableProps {
   campaigns: Campaign[];
@@ -89,18 +91,43 @@ export default function CampaignsTable({
     return `${Math.round((delivered / total) * 100)}%`;
   };
 
+  const quickAction = (label: string, icon: React.ReactNode, onClick: () => void, destructive = false) => (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={label}
+            className={destructive ? 'text-destructive-foreground hover:bg-destructive/8' : undefined}
+            onClick={e => {
+              e.stopPropagation();
+              onClick();
+            }}
+          />
+        }
+      >
+        {icon}
+      </TooltipTrigger>
+      <TooltipPopup>{label}</TooltipPopup>
+    </Tooltip>
+  );
+
   const columns: TableColumn<Campaign>[] = [
     {
       key: 'name',
       label: t('table.columns.name'),
       sortable: true,
       render: campaign => (
-        <div
-          className="cursor-pointer hover:opacity-80 py-2"
-          onClick={() => onCampaignClick(campaign)}
-        >
-          <div className="font-medium text-sm truncate mb-1">{campaign.title}</div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex min-w-0 flex-col gap-1.5 py-1">
+          <button
+            type="button"
+            className="truncate text-left font-medium text-sm outline-none hover:underline focus-visible:underline"
+            onClick={() => onCampaignClick(campaign)}
+          >
+            {campaign.title}
+          </button>
+          <div className="flex items-center gap-1.5">
             <CampaignTypeBadge type={campaign.type} />
             {campaign.channel_type !== undefined && (
               <CampaignChannelBadge channelType={campaign.channel_type} />
@@ -117,13 +144,14 @@ export default function CampaignsTable({
     },
     {
       key: 'contacts',
+      align: 'right',
       label: t('table.columns.contacts'),
       sortable: true,
       render: campaign => (
         <div className="text-right">
-          <div className="font-medium">{formatNumber(campaign.contacts_count)}</div>
+          <div className="font-medium tabular-nums">{formatNumber(campaign.contacts_count)}</div>
           {campaign.stats?.total_sent !== undefined && campaign.stats.total_sent > 0 && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-muted-foreground text-xs">
               {formatNumber(campaign.stats.total_sent)} {t('table.sent')}
             </div>
           )}
@@ -132,6 +160,7 @@ export default function CampaignsTable({
     },
     {
       key: 'delivery',
+      align: 'right',
       label: t('table.columns.delivery'),
       sortable: false,
       render: campaign => {
@@ -140,8 +169,8 @@ export default function CampaignsTable({
           : '0%';
         return (
           <div className="text-right">
-            <div className="font-medium">{deliveryRate}</div>
-            <div className="text-xs text-muted-foreground">
+            <div className="font-medium tabular-nums">{deliveryRate}</div>
+            <div className="text-muted-foreground text-xs">
               {formatNumber(campaign.stats?.total_delivered || 0)} {t('table.delivered')}
             </div>
           </div>
@@ -150,6 +179,7 @@ export default function CampaignsTable({
     },
     {
       key: 'engagement',
+      align: 'right',
       label: t('table.columns.engagement'),
       sortable: false,
       render: campaign => {
@@ -158,8 +188,8 @@ export default function CampaignsTable({
           : '0%';
         return (
           <div className="text-right">
-            <div className="font-medium">{readRate}</div>
-            <div className="text-xs text-muted-foreground">
+            <div className="font-medium tabular-nums">{readRate}</div>
+            <div className="text-muted-foreground text-xs">
               {formatNumber(campaign.stats?.total_read || 0)} {t('table.read')}
             </div>
           </div>
@@ -174,7 +204,7 @@ export default function CampaignsTable({
         <div className="text-sm">
           {formatDate(campaign.created_at)}
           {campaign.schedule_to && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-muted-foreground text-xs">
               {t('table.scheduled')}: {formatDate(campaign.schedule_to)}
             </div>
           )}
@@ -187,58 +217,27 @@ export default function CampaignsTable({
       sortable: false,
       align: 'center',
       render: campaign => (
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-0.5">
           {(campaign.status === CampaignStatus.DRAFT ||
             campaign.status === CampaignStatus.SCHEDULED ||
             campaign.status === CampaignStatus.PAUSED ||
             campaign.status === CampaignStatus.STOPPED) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={e => {
-                e.stopPropagation();
-                onStartCampaign(campaign);
-              }}
-              title={
-                campaign.status === CampaignStatus.PAUSED || campaign.status === CampaignStatus.STOPPED
-                  ? t('card.actions.resume')
-                  : t('card.actions.start')
-              }
-            >
-              <Play className="h-4 w-4" />
-            </Button>
+            quickAction(
+              campaign.status === CampaignStatus.PAUSED || campaign.status === CampaignStatus.STOPPED
+                ? t('card.actions.resume')
+                : t('card.actions.start'),
+              <Play />,
+              () => onStartCampaign(campaign),
+            )
           )}
           {campaign.status === CampaignStatus.SENDING && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={e => {
-                e.stopPropagation();
-                onPauseCampaign(campaign);
-              }}
-              title={t('card.actions.pause')}
-            >
-              <Pause className="h-4 w-4" />
-            </Button>
+            quickAction(t('card.actions.pause'), <Pause />, () => onPauseCampaign(campaign))
           )}
           {(campaign.status === CampaignStatus.DRAFT ||
             campaign.status === CampaignStatus.SCHEDULED ||
             campaign.status === CampaignStatus.SENDING ||
             campaign.status === CampaignStatus.PAUSED) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={e => {
-                e.stopPropagation();
-                onStopCampaign(campaign);
-              }}
-              title={t('card.actions.cancel')}
-            >
-              <Square className="h-4 w-4" />
-            </Button>
+            quickAction(t('card.actions.cancel'), <Square />, () => onStopCampaign(campaign), true)
           )}
         </div>
       ),
@@ -248,12 +247,12 @@ export default function CampaignsTable({
   const actions: TableAction<Campaign>[] = [
     {
       label: t('card.actions.viewStats'),
-      icon: <Eye className="h-4 w-4" />,
+      icon: <Eye />,
       onClick: onViewStats,
     },
     {
       label: t('card.actions.start'),
-      icon: <Play className="h-4 w-4" />,
+      icon: <Play />,
       onClick: onStartCampaign,
       show: campaign =>
         campaign.status === CampaignStatus.DRAFT ||
@@ -263,13 +262,13 @@ export default function CampaignsTable({
     },
     {
       label: t('card.actions.pause'),
-      icon: <Pause className="h-4 w-4" />,
+      icon: <Pause />,
       onClick: onPauseCampaign,
       show: campaign => campaign.status === CampaignStatus.SENDING,
     },
     {
       label: t('card.actions.cancel'),
-      icon: <Square className="h-4 w-4" />,
+      icon: <Square />,
       onClick: onStopCampaign,
       variant: 'destructive' as const,
       show: campaign =>
@@ -280,17 +279,17 @@ export default function CampaignsTable({
     },
     {
       label: t('card.actions.duplicate'),
-      icon: <Copy className="h-4 w-4" />,
+      icon: <Copy />,
       onClick: onDuplicateCampaign,
     },
     {
       label: t('card.actions.edit'),
-      icon: <Edit className="h-4 w-4" />,
+      icon: <Edit />,
       onClick: onEditCampaign,
     },
     {
       label: t('card.actions.delete'),
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 />,
       onClick: onDeleteCampaign,
       variant: 'destructive' as const,
     },

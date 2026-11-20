@@ -1,14 +1,7 @@
-import { useState } from 'react';
-import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/compat';
+import { useState, type ReactElement } from 'react';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Link2, List, Plus, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/utils/cn';
@@ -36,7 +29,7 @@ interface ChannelConnectionsPopoverProps {
   liveLoadingIds?: Set<string>;
   liveFailedIds?: Set<string>;
   /** The trigger — the card's header connection group. */
-  children: React.ReactNode;
+  children: ReactElement;
 }
 
 // A lightweight popover, anchored to the card's connection group, that lists the
@@ -58,16 +51,16 @@ export default function ChannelConnectionsPopover({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent align="end" className="w-80 p-0">
-        <TooltipProvider delayDuration={200}>
-          <div className="border-b border-border px-3 py-2.5">
-            <p className="truncate text-sm font-semibold text-foreground">{typeStatus.type.name}</p>
-            <p className="text-xs text-muted-foreground">{t('overview.drawer.title')}</p>
+      <PopoverTrigger render={children} />
+      <PopoverPopup align="end" className="w-80 [&_[data-slot=popover-viewport]]:py-0 [&_[data-slot=popover-viewport]]:[--viewport-inline-padding:0px]">
+        <div>
+          <div className="border-b px-3 py-2.5">
+            <p className="truncate font-semibold text-sm">{typeStatus.type.name}</p>
+            <p className="text-muted-foreground text-xs">{t('overview.drawer.title')}</p>
           </div>
 
-          <div className="max-h-72 overflow-y-auto p-2">
-            <ul className="space-y-1.5">
+          <div className="max-h-72 overflow-y-auto p-1.5">
+            <ul className="flex flex-col gap-0.5">
               {typeStatus.inboxStates.map(({ inbox, state, unmonitored }) => {
                 const id = String(inbox.id);
                 const isLiveLoading = liveLoadingIds?.has(id) ?? false;
@@ -100,23 +93,23 @@ export default function ChannelConnectionsPopover({
                         openInbox();
                       }
                     }}
-                    className="flex items-center gap-2.5 rounded-lg border border-border bg-background px-3 py-2 cursor-pointer transition-colors hover:bg-accent/50 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     title={liveFailed ? t('overview.liveCheckFailed') : undefined}
                   >
                     <span
                       className={cn(
-                        'h-2 w-2 shrink-0 rounded-full',
+                        'size-2 shrink-0 rounded-full',
                         stateDotClasses[state],
                         isLiveLoading && 'animate-pulse',
                       )}
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium text-foreground">
+                      <div className="truncate font-medium text-sm">
                         {inbox.name}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Link2 className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <div className="flex items-center gap-1 text-muted-foreground text-xs">
+                        <Link2 className="size-3 shrink-0" aria-hidden="true" />
                         {providerLabel && <span className="truncate">{providerLabel}</span>}
                         {providerLabel && (
                           <span className="shrink-0" aria-hidden="true">
@@ -132,66 +125,67 @@ export default function ChannelConnectionsPopover({
                             </span>
                           ) : (
                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="cursor-help">
-                                  {stateLabel} · {t('overview.statusMeta.stored')}
-                                </span>
+                              <TooltipTrigger render={<span className="cursor-help" />}>
+                                {stateLabel} · {t('overview.statusMeta.stored')}
                               </TooltipTrigger>
-                              <TooltipContent className="max-w-xs text-xs">
+                              <TooltipPopup className="max-w-xs">
                                 {t('overview.statusMeta.storedTooltip')}
                                 {lastSync
                                   ? ` · ${t('overview.statusMeta.lastSync', { time: lastSync })}`
                                   : ''}
-                              </TooltipContent>
+                              </TooltipPopup>
                             </Tooltip>
                           )}
                         </span>
                       </div>
                     </div>
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
                       aria-label={t('overview.actions.manage')}
                       onClick={event => {
                         event.stopPropagation();
                         openInbox();
                       }}
-                      className="shrink-0 rounded p-1 text-muted-foreground/60 transition-colors hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="shrink-0 text-muted-foreground"
                     >
-                      <List className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
+                      <List />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
                       aria-label={t('overview.actions.deleteConnection')}
                       onClick={event => {
                         event.stopPropagation();
                         setOpen(false);
                         onDelete(inbox);
                       }}
-                      className="shrink-0 rounded p-1 text-muted-foreground/60 transition-colors hover:text-destructive focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="shrink-0 text-muted-foreground hover:text-destructive-foreground"
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                      <Trash2 />
+                    </Button>
                   </li>
                 );
               })}
             </ul>
           </div>
 
-          <div className="border-t border-border p-2">
+          <div className="border-t p-2">
             <Button
-              variant="ghost"
-              className="w-full bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
+              variant="outline"
+              size="sm"
+              className="w-full"
               onClick={() => {
                 setOpen(false);
                 onAdd(typeStatus);
               }}
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus />
               {t('overview.actions.addConnection')}
             </Button>
           </div>
-        </TooltipProvider>
-      </PopoverContent>
+        </div>
+      </PopoverPopup>
     </Popover>
   );
 }

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Skeleton } from '@/components/ui/compat';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Inbox } from '@/types/channels/inbox';
 import { getChannelTypes } from '@/constants/channelTypes';
@@ -48,21 +49,36 @@ export default function ChannelTypeHub({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 8 }).map((_, idx) => (
-          <Skeleton key={idx} className="h-44" />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <Card key={idx}>
+            <CardPanel className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="size-10 rounded-lg" />
+                <div className="flex flex-1 flex-col gap-1.5">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-40" />
+                </div>
+              </div>
+              <div className="flex gap-1.5">
+                <Skeleton className="h-5 w-20 rounded-full" />
+                <Skeleton className="h-5 w-24 rounded-full" />
+              </div>
+              <Skeleton className="h-8 w-full" />
+            </CardPanel>
+          </Card>
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <section className="flex flex-col gap-4">
       <div>
-        <h2 className="text-lg font-semibold text-sidebar-foreground">{t('overview.title')}</h2>
-        <p className="text-sm text-sidebar-foreground/60">{t('overview.subtitle')}</p>
+        <h2 className="font-semibold text-base">{t('overview.title')}</h2>
+        <p className="text-muted-foreground text-sm">{t('overview.subtitle')}</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start gap-6">
+      <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
         {typeStatuses.map(typeStatus => (
           <ChannelTypeCard
             key={typeStatus.type.id}
@@ -81,6 +97,6 @@ export default function ChannelTypeHub({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

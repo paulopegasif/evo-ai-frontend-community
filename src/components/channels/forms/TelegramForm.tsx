@@ -33,7 +33,7 @@ export const TelegramForm = ({ form, onFormChange }: TelegramFormProps) => {
         className="bg-info/8 border-info/24"
         data-tour="telegram-instructions"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p><strong>1.</strong> {t('howToCreate.step1')}</p>
           <p><strong>2.</strong> {t('howToCreate.step2')}</p>
           <p><strong>3.</strong> {t('howToCreate.step3')}</p>

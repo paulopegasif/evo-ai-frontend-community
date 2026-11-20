@@ -2,16 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Label,
-} from '@/components/ui/compat';
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Megaphone } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
@@ -22,8 +24,10 @@ import { Campaign, CampaignsState, CampaignsListParams } from '@/types/campaigns
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
 
 import {
+  CampaignChannelBadge,
   CampaignsHeader,
   CampaignsPagination,
+  CampaignStatusBadge,
   CampaignsTable,
 } from '@/components/campaigns';
 
@@ -360,7 +364,7 @@ export default function Campaigns() {
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col gap-6 p-4 md:p-6">
       <CampaignsHeader
         totalCount={state.meta.pagination.total}
         selectedCount={state.selectedCampaignIds.length}
@@ -378,12 +382,8 @@ export default function Campaigns() {
       />
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
-        {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading.campaigns')}</div>
-          </div>
-        ) : state.campaigns.length === 0 ? (
+      <div className="flex-1">
+        {!state.loading.list && state.campaigns.length === 0 ? (
           <EmptyState
             icon={Megaphone}
             title={t('empty.title')}
@@ -472,7 +472,7 @@ export default function Campaigns() {
       />
 
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent>
+        <DialogPopup>
           <DialogHeader>
             <DialogTitle>{t('dialog.details.title')}</DialogTitle>
             <DialogDescription>
@@ -482,42 +482,52 @@ export default function Campaigns() {
             </DialogDescription>
           </DialogHeader>
 
-          {detailsLoading ? (
-            <div className="py-6 text-sm text-muted-foreground">{t('dialog.details.loading')}</div>
-          ) : detailsCampaign ? (
-            <div className="grid grid-cols-1 gap-3">
-              <div className="rounded-md border border-sidebar-border p-3">
-                <Label className="text-xs text-muted-foreground">{t('dialog.details.fields.title')}</Label>
-                <div className="mt-1 text-sm font-semibold">{detailsCampaign.title}</div>
+          <DialogPanel>
+            {detailsLoading ? (
+              <div className="flex flex-col gap-4" aria-busy="true" aria-label={t('dialog.details.loading')}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex flex-col gap-1.5">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-4 w-48" />
+                  </div>
+                ))}
               </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <Label className="text-xs text-muted-foreground">{t('dialog.details.fields.name')}</Label>
-                <div className="mt-1 text-sm font-semibold">{detailsCampaign.name}</div>
-              </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <Label className="text-xs text-muted-foreground">
-                  {t('dialog.details.fields.description')}
-                </Label>
-                <div className="mt-1 text-sm">{detailsCampaign.description || '-'}</div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-md border border-sidebar-border p-3">
-                  <Label className="text-xs text-muted-foreground">
-                    {t('dialog.details.fields.status')}
-                  </Label>
-                  <div className="mt-1 text-sm font-semibold">{detailsCampaign.status}</div>
+            ) : detailsCampaign ? (
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                <div className="col-span-2">
+                  <dt className="text-muted-foreground text-xs">{t('dialog.details.fields.title')}</dt>
+                  <dd className="mt-1 font-medium">{detailsCampaign.title}</dd>
                 </div>
-                <div className="rounded-md border border-sidebar-border p-3">
-                  <Label className="text-xs text-muted-foreground">
-                    {t('dialog.details.fields.channel')}
-                  </Label>
-                  <div className="mt-1 text-sm font-semibold">{detailsCampaign.channel_type || '-'}</div>
+                <div className="col-span-2">
+                  <dt className="text-muted-foreground text-xs">{t('dialog.details.fields.name')}</dt>
+                  <dd className="mt-1 font-medium">{detailsCampaign.name}</dd>
                 </div>
-              </div>
-            </div>
-          ) : null}
+                <div className="col-span-2">
+                  <dt className="text-muted-foreground text-xs">{t('dialog.details.fields.description')}</dt>
+                  <dd className="mt-1 text-muted-foreground">{detailsCampaign.description || '-'}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground text-xs">{t('dialog.details.fields.status')}</dt>
+                  <dd className="mt-1">
+                    <CampaignStatusBadge status={detailsCampaign.status} />
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground text-xs">{t('dialog.details.fields.channel')}</dt>
+                  <dd className="mt-1">
+                    {detailsCampaign.channel_type ? (
+                      <CampaignChannelBadge channelType={detailsCampaign.channel_type} />
+                    ) : (
+                      '-'
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            ) : null}
+          </DialogPanel>
 
           <DialogFooter>
+            <DialogClose render={<Button variant="ghost" />}>{t('dialog.details.close')}</DialogClose>
             {detailsCampaign && (
               <Button
                 onClick={() => {
@@ -528,11 +538,8 @@ export default function Campaigns() {
                 {t('dialog.details.edit')}
               </Button>
             )}
-            <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
-              {t('dialog.details.close')}
-            </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
 
       <Dialog
@@ -545,7 +552,7 @@ export default function Campaigns() {
           }
         }}
       >
-        <DialogContent>
+        <DialogPopup>
           <DialogHeader>
             <DialogTitle>{t('dialog.stats.title')}</DialogTitle>
             <DialogDescription>
@@ -555,90 +562,57 @@ export default function Campaigns() {
             </DialogDescription>
           </DialogHeader>
 
-          {statsLoading ? (
-            <div className="py-6 text-sm text-muted-foreground">{t('dialog.stats.loading')}</div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-md border border-sidebar-border p-3">
-                <div className="text-xs text-muted-foreground">{t('dialog.stats.totalSent')}</div>
-                <div className="mt-1 text-lg font-semibold">
-                  {statsData?.total_sent?.toLocaleString() || 0}
+          <DialogPanel>
+            <dl className="grid grid-cols-2 gap-3" aria-busy={statsLoading || undefined}>
+              {[
+                { key: 'totalSent', value: statsData?.total_sent?.toLocaleString() || 0 },
+                { key: 'totalDelivered', value: statsData?.total_delivered?.toLocaleString() || 0 },
+                { key: 'totalRead', value: statsData?.total_read?.toLocaleString() || 0 },
+                { key: 'totalErrors', value: statsData?.total_errors?.toLocaleString() || 0 },
+                { key: 'deliveryRate', value: `${statsData?.delivery_rate?.toFixed(2) || '0.00'}%` },
+                { key: 'readRate', value: `${statsData?.read_rate?.toFixed(2) || '0.00'}%` },
+              ].map(stat => (
+                <div key={stat.key} className="rounded-xl border bg-muted/24 p-3">
+                  <dt className="text-muted-foreground text-xs">{t(`dialog.stats.${stat.key}`)}</dt>
+                  <dd className="mt-1 font-semibold text-lg tabular-nums">
+                    {statsLoading ? <Skeleton className="h-6 w-16" /> : stat.value}
+                  </dd>
                 </div>
-              </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <div className="text-xs text-muted-foreground">{t('dialog.stats.totalDelivered')}</div>
-                <div className="mt-1 text-lg font-semibold">
-                  {statsData?.total_delivered?.toLocaleString() || 0}
-                </div>
-              </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <div className="text-xs text-muted-foreground">{t('dialog.stats.totalRead')}</div>
-                <div className="mt-1 text-lg font-semibold">
-                  {statsData?.total_read?.toLocaleString() || 0}
-                </div>
-              </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <div className="text-xs text-muted-foreground">{t('dialog.stats.totalErrors')}</div>
-                <div className="mt-1 text-lg font-semibold">
-                  {statsData?.total_errors?.toLocaleString() || 0}
-                </div>
-              </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <div className="text-xs text-muted-foreground">{t('dialog.stats.deliveryRate')}</div>
-                <div className="mt-1 text-lg font-semibold">
-                  {statsData?.delivery_rate?.toFixed(2) || '0.00'}%
-                </div>
-              </div>
-              <div className="rounded-md border border-sidebar-border p-3">
-                <div className="text-xs text-muted-foreground">{t('dialog.stats.readRate')}</div>
-                <div className="mt-1 text-lg font-semibold">
-                  {statsData?.read_rate?.toFixed(2) || '0.00'}%
-                </div>
-              </div>
-            </div>
-          )}
+              ))}
+            </dl>
+          </DialogPanel>
 
           <DialogFooter>
-            {statsCampaign &&
-              (statsCampaign.status === 0 ||
-                statsCampaign.status === 1 ||
-                statsCampaign.status === 3 ||
-                statsCampaign.status === 4) && (
-                <Button
-                  variant="outline"
-                  onClick={() => handleStartCampaign(statsCampaign)}
-                >
-                  {statsCampaign.status === 3 || statsCampaign.status === 4
-                    ? t('dialog.stats.actions.resume')
-                    : t('dialog.stats.actions.start')}
-                </Button>
-              )}
-            {statsCampaign &&
-              statsCampaign.status === 2 && (
-                <Button
-                  variant="outline"
-                  onClick={() => handlePauseCampaign(statsCampaign)}
-                >
-                  {t('dialog.stats.actions.pause')}
-                </Button>
-              )}
+            <DialogClose render={<Button variant="ghost" className="sm:me-auto" />}>
+              {t('dialog.stats.close')}
+            </DialogClose>
             {statsCampaign &&
               (statsCampaign.status === 0 ||
                 statsCampaign.status === 1 ||
                 statsCampaign.status === 2 ||
                 statsCampaign.status === 3) && (
-                <Button
-                  variant="destructive"
-                  onClick={() => handleStopCampaign(statsCampaign)}
-                >
+                <Button variant="destructive-outline" onClick={() => handleStopCampaign(statsCampaign)}>
                   {t('dialog.stats.actions.cancel')}
                 </Button>
               )}
-            <Button variant="outline" onClick={() => setStatsDialogOpen(false)}>
-              {t('dialog.stats.close')}
-            </Button>
+            {statsCampaign && statsCampaign.status === 2 && (
+              <Button variant="outline" onClick={() => handlePauseCampaign(statsCampaign)}>
+                {t('dialog.stats.actions.pause')}
+              </Button>
+            )}
+            {statsCampaign &&
+              (statsCampaign.status === 0 ||
+                statsCampaign.status === 1 ||
+                statsCampaign.status === 3 ||
+                statsCampaign.status === 4) && (
+                <Button onClick={() => handleStartCampaign(statsCampaign)}>
+                  {statsCampaign.status === 3 || statsCampaign.status === 4
+                    ? t('dialog.stats.actions.resume')
+                    : t('dialog.stats.actions.start')}
+                </Button>
+              )}
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </div>
   );

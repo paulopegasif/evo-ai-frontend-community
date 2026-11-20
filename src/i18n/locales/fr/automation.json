@@ -193,6 +193,22 @@
       "update": "Enregistrer",
       "saving": "Enregistrement...",
       "cancel": "Annuler"
+    },
+    "sections": {
+      "details": {
+        "title": "Détails",
+        "description": "Nom et contexte de la règle pour l’équipe."
+      },
+      "trigger": {
+        "title": "Déclencheur",
+        "description": "L’événement qui lance cette automatisation."
+      },
+      "conditions": {
+        "description": "La règle ne s’exécute que si les conditions sont remplies."
+      },
+      "actions": {
+        "description": "Ce qui se passe quand la règle se déclenche, dans l’ordre indiqué."
+      }
     }
   },
   "dialog": {

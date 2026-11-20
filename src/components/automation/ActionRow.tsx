@@ -50,7 +50,7 @@ export default function ActionRow({
   const actionName = useWatch({ control, name: `actions.${index}.action_name` });
 
   return (
-    <div className="flex items-start gap-2 p-3 border rounded-md">
+    <div className="flex items-start gap-2 rounded-xl border bg-muted/24 p-3">
       <div className="flex-1 grid grid-cols-2 gap-2">
         <Controller
           control={control}
@@ -87,7 +87,8 @@ export default function ActionRow({
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size="icon-sm"
+        className="shrink-0 text-muted-foreground hover:text-destructive-foreground"
         onClick={onRemove}
         aria-label={t('form.fields.actionRow.remove')}
       >

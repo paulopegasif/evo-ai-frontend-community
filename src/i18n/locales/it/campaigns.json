@@ -141,7 +141,13 @@
       "contactSelectionRequired": "Seleziona un'opzione",
       "scheduleOptionRequired": "Seleziona un'opzione",
       "scheduleDateRequired": "Data e ora sono obbligatorie",
-      "scheduleDateFuture": "La data deve essere futura"
+      "scheduleDateFuture": "La data deve essere futura",
+      "triggerRequired": "Configura il trigger per le campagne con trigger",
+      "triggerEventRequired": "Inserisci il nome dell’evento",
+      "triggerSegmentRequired": "Seleziona un segmento",
+      "triggerLabelRequired": "Seleziona un’etichetta",
+      "triggerAttributeRequired": "Seleziona un attributo personalizzato",
+      "triggerWebhookRequired": "Inserisci l’URL del webhook"
     },
     "progress": {
       "basicInfo": "Informazioni di Base",
@@ -161,7 +167,10 @@
       "typeLabel": "Tipo di Campagna",
       "typePlaceholder": "Seleziona il tipo",
       "channelLabel": "Canale di Comunicazione",
-      "channelPlaceholder": "Seleziona il canale"
+      "channelPlaceholder": "Seleziona il canale",
+      "descriptionLabel": "Descrizione",
+      "descriptionPlaceholder": "Descrivi brevemente l’obiettivo di questa campagna...",
+      "optional": "Facoltativo"
     },
     "step2": {
       "title": "Pubblico",
@@ -246,6 +255,22 @@
       "continue": "Continua",
       "back": "Indietro",
       "create": "Crea Campagna"
+    },
+    "stepOf": "Passo {{current}} di {{total}}",
+    "success": {
+      "createdTitle": "Campagna creata",
+      "updatedTitle": "Campagna aggiornata",
+      "createdDescription": "La tua campagna è stata creata ed è pronta.",
+      "updatedDescription": "La tua campagna è stata aggiornata.",
+      "nextSteps": "Prossimi passi",
+      "steps": {
+        "track": "Segui l’avanzamento della campagna nella dashboard",
+        "monitor": "Monitora le statistiche di invio e coinvolgimento",
+        "pause": "Puoi mettere in pausa o modificare la campagna in qualsiasi momento"
+      },
+      "viewCampaigns": "Vedi campagne",
+      "newCampaign": "Nuova campagna",
+      "keepEditing": "Continua a modificare"
     }
   }
 }

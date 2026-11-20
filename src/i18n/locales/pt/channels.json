@@ -114,7 +114,8 @@
       "selectType": "Tipo de Canal",
       "selectProvider": "Provedor",
       "configure": "Configurar",
-      "review": "Revisar"
+      "review": "Revisar",
+      "done": "Concluído"
     },
     "breadcrumb": {
       "channels": "Canais",
@@ -124,7 +125,10 @@
       "title": "Selecione um tipo de canal",
       "subtitle": "Escolha o canal que melhor atende às suas necessidades de comunicação",
       "searchPlaceholder": "Buscar canais...",
-      "notConfiguredTooltip": "Este canal não está configurado. Configure em Configurações do Admin > Canais antes de usá-lo."
+      "notConfiguredTooltip": "Este canal não está configurado. Configure em Configurações do Admin > Canais antes de usá-lo.",
+      "notConfigured": "Não configurado",
+      "noResults": "Nenhum canal encontrado",
+      "noResultsDescription": "Tente pesquisar por outro nome."
     },
     "channelTypes": {
       "website": {
@@ -253,6 +257,15 @@
         "placeholder": "gerado automaticamente",
         "helpText": "Gerado automaticamente a partir do nome de exibição."
       }
+    },
+    "validation": {
+      "required": "Campo obrigatório"
+    },
+    "successState": {
+      "title": "Canal criado",
+      "description": "{{name}} já está ligado. Reveja as definições para começar a atender.",
+      "openSettings": "Configurar canal",
+      "backToChannels": "Ver canais"
     }
   },
   "settings": {

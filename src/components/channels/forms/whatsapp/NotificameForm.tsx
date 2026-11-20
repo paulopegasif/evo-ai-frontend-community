@@ -18,8 +18,8 @@ export const NotificameForm = ({ form, onFormChange }: NotificameFormProps) => {
     <div className="space-y-6">
       {/* Phone Number */}
       <div data-tour="whatsapp-credentials">
-        <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-          {t('notificameForm.fields.phoneNumber.label')} <span className="text-destructive">*</span>
+        <label className="mb-2 block font-medium text-sm">
+          {t('notificameForm.fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
         </label>
         <PhoneInput
           value={getStr('phone_number')}
@@ -53,7 +53,7 @@ export const NotificameForm = ({ form, onFormChange }: NotificameFormProps) => {
         className="bg-success/8 border-success/24"
         data-tour="whatsapp-help"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p>
             <strong>
               {t('notificameForm.help.apiToken.title')}:

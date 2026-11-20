@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Copy } from 'lucide-react';
 import type { AutomationRule } from '@/types/automation';
 import BaseTable, { type TableColumn, type TableAction } from '@/components/base/BaseTable';
@@ -63,7 +63,7 @@ export default function AutomationsTable({
       label: t('table.columns.status'),
       width: '120px',
       render: (rule) => (
-        <Badge variant={rule.active ? 'default' : 'secondary'}>
+        <Badge variant={rule.active ? 'success' : 'secondary'}>
           {rule.active ? t('table.status.active') : t('table.status.inactive')}
         </Badge>
       ),
@@ -97,19 +97,19 @@ export default function AutomationsTable({
   const actions: TableAction<AutomationRule>[] = [
     {
       label: t('table.actions.edit'),
-      icon: <Edit className="h-4 w-4" />,
+      icon: <Edit />,
       onClick: onEdit,
       show: () => canEdit,
     },
     {
       label: t('table.actions.clone'),
-      icon: <Copy className="h-4 w-4" />,
+      icon: <Copy />,
       onClick: onClone,
       show: () => canClone,
     },
     {
       label: t('table.actions.delete'),
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 />,
       onClick: onDelete,
       variant: 'destructive',
       show: () => canDelete,

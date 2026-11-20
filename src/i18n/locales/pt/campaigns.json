@@ -197,7 +197,13 @@
       "contactSelectionRequired": "Selecione uma opção",
       "scheduleOptionRequired": "Selecione uma opção",
       "scheduleDateRequired": "Data e hora são obrigatórias",
-      "scheduleDateFuture": "Data deve ser no futuro"
+      "scheduleDateFuture": "Data deve ser no futuro",
+      "triggerRequired": "Configure o gatilho para campanhas com gatilho",
+      "triggerEventRequired": "Indique o nome do evento",
+      "triggerSegmentRequired": "Selecione um segmento",
+      "triggerLabelRequired": "Selecione uma etiqueta",
+      "triggerAttributeRequired": "Selecione um atributo personalizado",
+      "triggerWebhookRequired": "Indique o URL do webhook"
     },
     "progress": {
       "basicInfo": "Informações Básicas",
@@ -217,7 +223,10 @@
       "typeLabel": "Tipo de Campanha",
       "typePlaceholder": "Selecione o tipo",
       "channelLabel": "Canal de Comunicação",
-      "channelPlaceholder": "Selecione o canal"
+      "channelPlaceholder": "Selecione o canal",
+      "descriptionLabel": "Descrição",
+      "descriptionPlaceholder": "Descreva brevemente o objetivo desta campanha...",
+      "optional": "Opcional"
     },
     "step2": {
       "title": "Audiência",
@@ -303,6 +312,22 @@
       "back": "Voltar",
       "create": "Criar Campanha",
       "save": "Salvar Campanha"
+    },
+    "stepOf": "Passo {{current}} de {{total}}",
+    "success": {
+      "createdTitle": "Campanha criada",
+      "updatedTitle": "Campanha atualizada",
+      "createdDescription": "A sua campanha foi criada e está pronta.",
+      "updatedDescription": "A sua campanha foi atualizada com sucesso.",
+      "nextSteps": "Próximos passos",
+      "steps": {
+        "track": "Acompanhe o progresso da campanha no painel",
+        "monitor": "Monitorize as estatísticas de envio e envolvimento",
+        "pause": "Pode pausar ou editar a campanha a qualquer momento"
+      },
+      "viewCampaigns": "Ver campanhas",
+      "newCampaign": "Nova campanha",
+      "keepEditing": "Continuar a editar"
     }
   }
 }

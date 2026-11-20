@@ -114,7 +114,8 @@
       "selectType": "Channel Type",
       "selectProvider": "Provider",
       "configure": "Configure",
-      "review": "Review"
+      "review": "Review",
+      "done": "Done"
     },
     "breadcrumb": {
       "channels": "Channels",
@@ -124,7 +125,10 @@
       "title": "Select a channel type",
       "subtitle": "Choose the channel that best meets your communication needs",
       "searchPlaceholder": "Search channels...",
-      "notConfiguredTooltip": "This channel is not configured. Set it up under Admin Settings > Channels before using it."
+      "notConfiguredTooltip": "This channel is not configured. Set it up under Admin Settings > Channels before using it.",
+      "notConfigured": "Not configured",
+      "noResults": "No channels found",
+      "noResultsDescription": "Try searching for another name."
     },
     "channelTypes": {
       "website": {
@@ -253,6 +257,15 @@
         "placeholder": "auto-generated",
         "helpText": "Auto-generated from the display name."
       }
+    },
+    "validation": {
+      "required": "This field is required"
+    },
+    "successState": {
+      "title": "Channel created",
+      "description": "{{name}} is connected. Review its settings to start handling conversations.",
+      "openSettings": "Configure channel",
+      "backToChannels": "View channels"
     }
   },
   "settings": {

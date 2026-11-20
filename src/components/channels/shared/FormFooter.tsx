@@ -1,4 +1,7 @@
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/compat';
+import { CircleAlert } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ConnectionTest } from './ConnectionTest';
 
@@ -29,83 +32,44 @@ export const FormFooter = ({
 }: FormFooterProps) => {
   const { t } = useLanguage('channels');
 
-  // Verifica se o botão está desabilitado por causa do health check
+  // Submit stays locked until the connection test passed (when a test applies).
   const isDisabledByHealthCheck = showTestConnection && healthCheckPassed !== true;
   const isButtonDisabled = isSubmitting || isTesting || isDisabled;
 
-  const submitButtonContent = isSubmitting ? (
-    <div className="flex items-center gap-2">
-      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-      {t('newChannel.buttons.creating')}
-    </div>
-  ) : (
-    submitText || t('newChannel.buttons.createChannel')
-  );
-
-  // Tooltip wrapper - sempre mostra quando está desabilitado por health check
-  // Para tooltips funcionarem com botões desabilitados, precisamos envolver em um elemento que capture o hover
-  const buttonWithTooltip = isDisabledByHealthCheck ? (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="inline-block">
-          <Button
-            onClick={onSubmit}
-            disabled={isButtonDisabled}
-            className="min-w-32"
-            aria-disabled={isButtonDisabled}
-          >
-            {submitButtonContent}
-          </Button>
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{t('newChannel.messages.testConnectionFirst')}</p>
-      </TooltipContent>
-    </Tooltip>
-  ) : (
-    <Button
-      onClick={onSubmit}
-      disabled={isButtonDisabled}
-      className="min-w-32"
-    >
-      {submitButtonContent}
+  const submitButton = (
+    <Button onClick={onSubmit} disabled={isButtonDisabled} loading={isSubmitting} className="min-w-32">
+      {isSubmitting ? t('newChannel.buttons.creating') : submitText || t('newChannel.buttons.createChannel')}
     </Button>
   );
 
   return (
-    <div className="border-t border-border bg-muted/20 px-6 py-4">
-      {/* Aviso quando health check não passou */}
+    <div className="flex flex-col gap-3 border-t bg-muted/72 px-6 py-4">
       {isDisabledByHealthCheck && (
-        <div className="mb-4 p-3 bg-warning/8 border border-warning/24 rounded-lg">
-          <p className="text-sm text-warning-foreground">
-            ⚠️ {t('newChannel.messages.testConnectionFirst')}
-          </p>
-        </div>
+        <Alert variant="warning">
+          <CircleAlert />
+          <AlertDescription>{t('newChannel.messages.testConnectionFirst')}</AlertDescription>
+        </Alert>
       )}
 
-      <div className="flex justify-between">
-        {/* Test Connection Button */}
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           {showTestConnection && onTest && (
-            <ConnectionTest
-              onTest={onTest}
-              isLoading={isTesting}
-              disabled={isSubmitting || isTesting}
-            />
+            <ConnectionTest onTest={onTest} isLoading={isTesting} disabled={isSubmitting || isTesting} />
           )}
         </div>
 
-        {/* Main Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting || isTesting}
-            className="min-w-24"
-          >
+        <div className="flex flex-col-reverse gap-2 sm:flex-row">
+          <Button variant="ghost" onClick={onCancel} disabled={isSubmitting || isTesting}>
             {cancelText || t('newChannel.buttons.cancel')}
           </Button>
-          {buttonWithTooltip}
+          {isDisabledByHealthCheck ? (
+            <Tooltip>
+              <TooltipTrigger render={<span className="inline-flex" />}>{submitButton}</TooltipTrigger>
+              <TooltipPopup>{t('newChannel.messages.testConnectionFirst')}</TooltipPopup>
+            </Tooltip>
+          ) : (
+            submitButton
+          )}
         </div>
       </div>
     </div>

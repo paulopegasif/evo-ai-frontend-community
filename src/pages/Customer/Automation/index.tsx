@@ -200,7 +200,7 @@ export default function AutomationsListPage() {
   const selected = state.automations.filter((rule) => state.selectedIds.includes(rule.id));
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col gap-6 p-4 md:p-6">
       <AutomationsHeader
         totalCount={totalFiltered}
         selectedCount={state.selectedIds.length}
@@ -219,7 +219,7 @@ export default function AutomationsListPage() {
         canDelete={canDeleteCap}
       />
 
-      <div className="flex-1 overflow-auto mt-6">
+      <div className="flex-1">
         <AutomationsTable
           automations={paginatedAutomations}
           selected={selected}
@@ -238,7 +238,7 @@ export default function AutomationsListPage() {
       </div>
 
       {totalFiltered > 0 && (
-        <div className="mt-auto pt-4 border-t">
+        <div className="mt-auto">
           <AutomationsPagination
             currentPage={safePage}
             totalPages={totalPages}

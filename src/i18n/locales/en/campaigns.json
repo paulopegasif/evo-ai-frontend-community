@@ -197,7 +197,13 @@
       "contactSelectionRequired": "Select an option",
       "scheduleOptionRequired": "Select an option",
       "scheduleDateRequired": "Date and time are required",
-      "scheduleDateFuture": "Date must be in the future"
+      "scheduleDateFuture": "Date must be in the future",
+      "triggerRequired": "Configure the trigger for trigger campaigns",
+      "triggerEventRequired": "Enter the event name",
+      "triggerSegmentRequired": "Select a segment",
+      "triggerLabelRequired": "Select a label",
+      "triggerAttributeRequired": "Select a custom attribute",
+      "triggerWebhookRequired": "Enter the webhook URL"
     },
     "progress": {
       "basicInfo": "Basic Info",
@@ -217,7 +223,10 @@
       "typeLabel": "Campaign Type",
       "typePlaceholder": "Select type",
       "channelLabel": "Communication Channel",
-      "channelPlaceholder": "Select channel"
+      "channelPlaceholder": "Select channel",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Briefly describe the goal of this campaign...",
+      "optional": "Optional"
     },
     "step2": {
       "title": "Audience",
@@ -303,6 +312,22 @@
       "back": "Back",
       "create": "Create Campaign",
       "save": "Save Campaign"
+    },
+    "stepOf": "Step {{current}} of {{total}}",
+    "success": {
+      "createdTitle": "Campaign created",
+      "updatedTitle": "Campaign updated",
+      "createdDescription": "Your campaign was created and is ready.",
+      "updatedDescription": "Your campaign was updated successfully.",
+      "nextSteps": "Next steps",
+      "steps": {
+        "track": "Track the campaign progress on the dashboard",
+        "monitor": "Monitor delivery and engagement stats",
+        "pause": "You can pause or edit the campaign at any time"
+      },
+      "viewCampaigns": "View campaigns",
+      "newCampaign": "New campaign",
+      "keepEditing": "Keep editing"
     }
   }
 }

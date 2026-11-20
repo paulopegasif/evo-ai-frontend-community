@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { CampaignChannelType } from '@/types/campaigns';
 import { Mail, MessageCircle, Smartphone } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -36,7 +36,7 @@ export default function CampaignChannelBadge({ channelType, className }: Campaig
           label: t('channel.sms'),
           variant: 'outline' as const,
           icon: Smartphone,
-          color: 'text-purple-500',
+          color: 'text-violet-500',
         };
       default:
         return {
@@ -53,7 +53,7 @@ export default function CampaignChannelBadge({ channelType, className }: Campaig
 
   return (
     <Badge variant={config.variant} className={className}>
-      <Icon className={`h-3 w-3 mr-1 ${config.color}`} />
+      <Icon className={config.color} />
       {config.label}
     </Badge>
   );

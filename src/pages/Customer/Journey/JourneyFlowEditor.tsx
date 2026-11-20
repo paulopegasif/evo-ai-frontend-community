@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Route as RouteIcon } from 'lucide-react';
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
+  AlertDialogClose,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogPopup,
   AlertDialogTitle,
-  Button,
-} from '@/components/ui/compat';
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { journeyService } from '@/services';
 import type { Journey } from '@/types/automation';
@@ -827,10 +829,23 @@ function JourneyFlowEditor() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-sidebar-foreground/60">{t('flowEditor.loading')}</p>
+      <div className="flex h-screen flex-col" aria-busy="true" aria-label={t('flowEditor.loading')}>
+        <div className="flex items-center gap-3 border-b px-4 py-3">
+          <Skeleton className="size-8 rounded-lg" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-4 w-56" />
+            <Skeleton className="h-3 w-36" />
+          </div>
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-20" />
+        </div>
+        <div className="flex min-h-0 flex-1">
+          <div className="hidden w-64 flex-col gap-3 border-r p-4 md:flex">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+          <div className="flex-1 bg-flow-canvas-bg" />
         </div>
       </div>
     );
@@ -838,13 +853,20 @@ function JourneyFlowEditor() {
 
   if (!journey) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sidebar-foreground/60 mb-4">{t('flowEditor.notFound')}</p>
-          <Button onClick={handleBack} variant="outline">
-            {t('flowEditor.back')}
-          </Button>
-        </div>
+      <div className="flex h-full items-center justify-center p-4 md:p-6">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <RouteIcon />
+            </EmptyMedia>
+            <EmptyTitle>{t('flowEditor.notFound')}</EmptyTitle>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={handleBack} variant="outline">
+              {t('flowEditor.back')}
+            </Button>
+          </EmptyContent>
+        </Empty>
       </div>
     );
   }
@@ -924,7 +946,7 @@ function JourneyFlowEditor() {
           if (!open) useFlowEditorStore.getState().rejectRecovery();
         }}
       >
-        <AlertDialogContent>
+        <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('flowEditor.recoveryTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -939,18 +961,20 @@ function JourneyFlowEditor() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
+            <AlertDialogClose
+              render={<Button variant="ghost" />}
               onClick={() => useFlowEditorStore.getState().rejectRecovery()}
             >
               {t('flowEditor.discard')}
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </AlertDialogClose>
+            <AlertDialogClose
+              render={<Button />}
               onClick={() => useFlowEditorStore.getState().acceptRecovery()}
             >
               {t('flowEditor.recover')}
-            </AlertDialogAction>
+            </AlertDialogClose>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>
 
       <AlertDialog
@@ -959,7 +983,7 @@ function JourneyFlowEditor() {
           if (!open) cancelLeave();
         }}
       >
-        <AlertDialogContent>
+        <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('flowEditor.unsavedChangesTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -967,14 +991,14 @@ function JourneyFlowEditor() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelLeave}>
+            <AlertDialogClose render={<Button variant="ghost" />} onClick={cancelLeave}>
               {t('flowEditor.stay')}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmLeave}>
+            </AlertDialogClose>
+            <AlertDialogClose render={<Button variant="destructive" />} onClick={confirmLeave}>
               {t('flowEditor.leaveAnyway')}
-            </AlertDialogAction>
+            </AlertDialogClose>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>
       <JourneyValidationProvider
         value={{ byNodeId: journeyValidation?.byNodeId ?? {} }}
@@ -1008,11 +1032,14 @@ function JourneyFlowEditor() {
       </JourneyValidationProvider>
 
       {/* Footer com informações */}
-      <div className="border-t border-flow-panel-divider bg-flow-canvas-bg p-3 flex-shrink-0">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="shrink-0 border-flow-panel-divider border-t bg-background px-4 py-2">
+        <div className="flex items-center justify-between text-muted-foreground text-xs">
           <div className="flex items-center gap-4">
-            <span>
-              Status:{' '}
+            <span className="inline-flex items-center gap-1.5">
+              <span
+                aria-hidden="true"
+                className={journey.isActive ? 'size-2 rounded-full bg-success' : 'size-2 rounded-full bg-muted-foreground/48'}
+              />
               {journey.isActive ? t('flowEditor.status.active') : t('flowEditor.status.inactive')}
             </span>
             <span>

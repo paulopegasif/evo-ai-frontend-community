@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
-import { Button } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Activity, ArrowLeft, Clock, Loader2, Save } from 'lucide-react';
 
 export type JourneyEditorHeaderProps = {
@@ -58,13 +59,8 @@ export function JourneyEditorHeader({
       role="banner"
     >
       <div data-zone="navigation" className="flex items-center">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onBack}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        <Button variant="outline" size="sm" onClick={onBack}>
+          <ArrowLeft aria-hidden="true" />
           {backLabel}
         </Button>
       </div>
@@ -74,13 +70,13 @@ export function JourneyEditorHeader({
         className="flex-1 min-w-0 border-l border-flow-panel-divider pl-4"
       >
         <h1
-          className="text-lg font-semibold leading-tight truncate"
+          className="truncate font-semibold text-base leading-tight sm:text-lg"
           title={title}
         >
           {title}
         </h1>
         {subtitle ? (
-          <p className="text-sm text-muted-foreground truncate" title={subtitle}>
+          <p className="truncate text-muted-foreground text-xs sm:text-sm" title={subtitle}>
             {subtitle}
           </p>
         ) : null}
@@ -88,24 +84,26 @@ export function JourneyEditorHeader({
 
       <div data-zone="actions" className="flex items-center gap-2">
         <div className="flex items-center border-l border-flow-panel-divider pl-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onViewSessions}
-            className="gap-2 hidden md:inline-flex"
-          >
-            <Activity className="h-4 w-4" aria-hidden="true" />
+          <Button variant="ghost" size="sm" onClick={onViewSessions} className="hidden md:inline-flex">
+            <Activity aria-hidden="true" />
             {viewSessionsLabel}
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={onViewSessions}
-            aria-label={viewSessionsLabel}
-            className="md:hidden h-9 w-9"
-          >
-            <Activity className="h-4 w-4" aria-hidden="true" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={onViewSessions}
+                  aria-label={viewSessionsLabel}
+                  className="md:hidden"
+                />
+              }
+            >
+              <Activity aria-hidden="true" />
+            </TooltipTrigger>
+            <TooltipPopup>{viewSessionsLabel}</TooltipPopup>
+          </Tooltip>
         </div>
 
         {environmentSlot ? (
@@ -119,8 +117,8 @@ export function JourneyEditorHeader({
           className="flex items-center gap-3 border-l border-flow-panel-divider pl-2"
         >
           {lastSaved ? (
-            <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" aria-hidden="true" />
+            <div className="hidden items-center gap-1.5 text-muted-foreground text-xs md:flex">
+              <Clock className="size-3" aria-hidden="true" />
               <span>
                 {lastSavedFormatter ? lastSavedFormatter(lastSaved) : lastSaved.toLocaleTimeString()}
                 {showUnsavedHint ? ` • ${unsavedChangesHint}` : null}
@@ -136,12 +134,12 @@ export function JourneyEditorHeader({
               size="sm"
               onClick={onSave}
               disabled={saveDisabled}
-              className="gap-2 min-w-[100px]"
+              className="min-w-[100px]"
             >
               {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                <Loader2 className="animate-spin" aria-hidden="true" />
               ) : (
-                <Save className="h-4 w-4" aria-hidden="true" />
+                <Save aria-hidden="true" />
               )}
               {computedSaveLabel}
             </Button>

@@ -141,7 +141,13 @@
       "contactSelectionRequired": "Sélectionnez une option",
       "scheduleOptionRequired": "Sélectionnez une option",
       "scheduleDateRequired": "Date et heure sont obligatoires",
-      "scheduleDateFuture": "La date doit être future"
+      "scheduleDateFuture": "La date doit être future",
+      "triggerRequired": "Configurez le déclencheur pour les campagnes déclenchées",
+      "triggerEventRequired": "Indiquez le nom de l’événement",
+      "triggerSegmentRequired": "Sélectionnez un segment",
+      "triggerLabelRequired": "Sélectionnez une étiquette",
+      "triggerAttributeRequired": "Sélectionnez un attribut personnalisé",
+      "triggerWebhookRequired": "Indiquez l’URL du webhook"
     },
     "progress": {
       "basicInfo": "Informations de Base",
@@ -161,7 +167,10 @@
       "typeLabel": "Type de Campagne",
       "typePlaceholder": "Sélectionnez le type",
       "channelLabel": "Canal de Communication",
-      "channelPlaceholder": "Sélectionnez le canal"
+      "channelPlaceholder": "Sélectionnez le canal",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Décrivez brièvement l’objectif de cette campagne...",
+      "optional": "Facultatif"
     },
     "step2": {
       "title": "Audience",
@@ -246,6 +255,22 @@
       "continue": "Continuer",
       "back": "Retour",
       "create": "Créer la Campagne"
+    },
+    "stepOf": "Étape {{current}} sur {{total}}",
+    "success": {
+      "createdTitle": "Campagne créée",
+      "updatedTitle": "Campagne mise à jour",
+      "createdDescription": "Votre campagne a été créée et est prête.",
+      "updatedDescription": "Votre campagne a été mise à jour.",
+      "nextSteps": "Prochaines étapes",
+      "steps": {
+        "track": "Suivez la progression de la campagne dans le tableau de bord",
+        "monitor": "Surveillez les statistiques d’envoi et d’engagement",
+        "pause": "Vous pouvez suspendre ou modifier la campagne à tout moment"
+      },
+      "viewCampaigns": "Voir les campagnes",
+      "newCampaign": "Nouvelle campagne",
+      "keepEditing": "Continuer la modification"
     }
   }
 }

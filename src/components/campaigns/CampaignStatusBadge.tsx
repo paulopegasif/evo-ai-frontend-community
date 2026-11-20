@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
 import { CampaignStatus } from '@/types/campaigns';
 import { Clock, Send, Pause, StopCircle, CheckCircle, FileText, FlaskConical } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -22,37 +22,37 @@ export default function CampaignStatusBadge({ status, className }: CampaignStatu
       case CampaignStatus.SCHEDULED:
         return {
           label: t('status.scheduled'),
-          variant: 'default' as const,
+          variant: 'info' as const,
           icon: Clock,
         };
       case CampaignStatus.SENDING:
         return {
           label: t('status.sending'),
-          variant: 'default' as const,
+          variant: 'info' as const,
           icon: Send,
         };
       case CampaignStatus.PAUSED:
         return {
           label: t('status.paused'),
-          variant: 'secondary' as const,
+          variant: 'warning' as const,
           icon: Pause,
         };
       case CampaignStatus.STOPPED:
         return {
           label: t('status.stopped'),
-          variant: 'destructive' as const,
+          variant: 'error' as const,
           icon: StopCircle,
         };
       case CampaignStatus.COMPLETED:
         return {
           label: t('status.completed'),
-          variant: 'default' as const,
+          variant: 'success' as const,
           icon: CheckCircle,
         };
       case CampaignStatus.SENDING_TESTAB:
         return {
           label: t('status.sending_testab'),
-          variant: 'default' as const,
+          variant: 'info' as const,
           icon: FlaskConical,
         };
       default:
@@ -69,7 +69,7 @@ export default function CampaignStatusBadge({ status, className }: CampaignStatu
 
   return (
     <Badge variant={config.variant} className={className}>
-      <Icon className="h-3 w-3 mr-1" />
+      <Icon />
       {config.label}
     </Badge>
   );

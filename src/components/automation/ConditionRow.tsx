@@ -160,7 +160,7 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
   };
 
   return (
-    <div className="flex items-start gap-2 p-3 border rounded-md">
+    <div className="flex items-start gap-2 rounded-xl border bg-muted/24 p-3">
       <div className="flex-1 grid grid-cols-3 gap-2">
         <Controller
           control={control}
@@ -262,7 +262,8 @@ export default function ConditionRow({ control, index, formData, onRemove }: Pro
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size="icon-sm"
+        className="shrink-0 text-muted-foreground hover:text-destructive-foreground"
         onClick={onRemove}
         aria-label={t('form.fields.conditionRow.remove')}
       >
