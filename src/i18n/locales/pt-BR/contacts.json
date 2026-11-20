@@ -544,7 +544,14 @@
         "paused": "Pausado",
         "inactive": "Inativo",
         "unknown": "Desconhecido"
-      }
+      },
+      "select": "Selecione um template",
+      "selected": "Template: {{name}}",
+      "change": "Trocar template",
+      "fillVariables": "Preencha as variáveis",
+      "preview": "Pré-visualização",
+      "valueFor": "Valor para {{key}}",
+      "visualEmail": "Template de email visual. O HTML será gerado automaticamente."
     },
     "toggle": {
       "label": "Usar Template",

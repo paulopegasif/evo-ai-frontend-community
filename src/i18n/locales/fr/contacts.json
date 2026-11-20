@@ -536,7 +536,14 @@
         "paused": "En pause",
         "inactive": "Inactif",
         "unknown": "Inconnu"
-      }
+      },
+      "select": "Sélectionnez un modèle",
+      "selected": "Modèle : {{name}}",
+      "change": "Changer de modèle",
+      "fillVariables": "Renseignez les variables",
+      "preview": "Aperçu",
+      "valueFor": "Valeur pour {{key}}",
+      "visualEmail": "Modèle d’email visuel. Le HTML sera généré automatiquement."
     },
     "toggle": {
       "label": "Utiliser un Modèle",

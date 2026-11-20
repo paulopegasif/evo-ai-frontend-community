@@ -536,7 +536,14 @@
         "paused": "Pausada",
         "inactive": "Inactiva",
         "unknown": "Desconocido"
-      }
+      },
+      "select": "Selecciona una plantilla",
+      "selected": "Plantilla: {{name}}",
+      "change": "Cambiar plantilla",
+      "fillVariables": "Completa las variables",
+      "preview": "Vista previa",
+      "valueFor": "Valor para {{key}}",
+      "visualEmail": "Plantilla de email visual. El HTML se generará automáticamente."
     },
     "toggle": {
       "label": "Usar Plantilla",
