@@ -5,7 +5,7 @@ import PrimaryActionButton from './PrimaryActionButton';
 interface EmptyStateProps {
   icon?: LucideIcon;
   title: string;
-  description: string;
+  description?: string;
   action?: {
     label: string;
     onClick: () => void;
@@ -27,7 +27,7 @@ export default function EmptyState({ icon: Icon, title, description, action, cla
           </EmptyMedia>
         )}
         <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
+        {description && <EmptyDescription>{description}</EmptyDescription>}
       </EmptyHeader>
       {action && (
         <EmptyContent>
