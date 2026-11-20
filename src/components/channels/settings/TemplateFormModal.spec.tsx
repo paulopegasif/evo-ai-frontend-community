@@ -23,7 +23,7 @@ vi.mock('@/services/channels/messageTemplatesService', () => ({
   }),
 }));
 
-vi.mock('@/components/ui/compat', async importOriginal => {
+vi.mock('@/components/ui/select', async importOriginal => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
@@ -49,7 +49,7 @@ vi.mock('@/components/ui/compat', async importOriginal => {
     ),
     SelectTrigger: () => null,
     SelectValue: () => null,
-    SelectContent: ({ children }: { children: ReactNode }) => <>{children}</>,
+    SelectPopup: ({ children }: { children: ReactNode }) => <>{children}</>,
     SelectItem: ({ value, children }: { value: string; children: ReactNode }) => (
       <option value={value}>{children}</option>
     ),

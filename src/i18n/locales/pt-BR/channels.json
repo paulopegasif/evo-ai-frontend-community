@@ -1404,7 +1404,8 @@
       "avatar": {
         "label": "Avatar do Widget",
         "upload": "Enviar Avatar",
-        "change": "Alterar Avatar"
+        "change": "Alterar Avatar",
+        "remove": "Remover avatar"
       },
       "websiteName": {
         "label": "Nome do Website",
@@ -1734,6 +1735,10 @@
         "rejectError": "Erro ao rejeitar moderação",
         "regenerateError": "Erro ao regenerar resposta"
       }
+    },
+    "a11y": {
+      "copy": "Copiar",
+      "remove": "Remover"
     }
   },
   "deleteDialog": {

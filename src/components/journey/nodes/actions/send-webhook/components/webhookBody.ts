@@ -41,7 +41,10 @@ const hasVariableToken = (value: string): boolean => value.includes('{{');
  * A `number` row whose value is not a finite numeric literal also stays a string
  * rather than emitting `NaN`.
  */
-export function coerceJsonValue(value: string, type: WebhookBodyValueType): string | number | boolean {
+export function coerceJsonValue(
+  value: string,
+  type: WebhookBodyValueType,
+): string | number | boolean {
   if (hasVariableToken(value)) return value;
   if (type === 'number') {
     const trimmed = value.trim();
@@ -135,7 +138,9 @@ export type BodyFieldsError = 'blankKey' | 'duplicateKey';
  * ignored; a row with a value but no key is a blankKey error; repeated keys are
  * a duplicateKey error.
  */
-export function validateFields(fields: WebhookBodyField[]): { ok: true } | { ok: false; error: BodyFieldsError } {
+export function validateFields(
+  fields: WebhookBodyField[],
+): { ok: true } | { ok: false; error: BodyFieldsError } {
   const seen = new Set<string>();
   for (const f of fields) {
     const key = f.key.trim();

@@ -1,14 +1,9 @@
 import { useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Checkbox,
-} from '@/components/ui/compat';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { WaitNodeData } from '../WaitNode';
 import {
   LabelConfiguration,
@@ -154,47 +149,46 @@ export function WaitConditionConfig({ data, onChange, journeyId }: WaitCondition
   return (
     <div className="space-y-4">
       {/* Seletor de Tipo */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">
+      <Field>
+        <FieldLabel>
           {t('panels.waitComponents.condition.typeLabel')}
-        </Label>
-        <Select value={conditionType} onValueChange={handleConditionTypeChange}>
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+        </FieldLabel>
+        <Select
+          items={CONDITION_TYPES}
+          value={conditionType || null}
+          onValueChange={value => handleConditionTypeChange(String(value ?? ''))}
+        >
+          <SelectTrigger className="w-full">
             <SelectValue placeholder={t('panels.waitComponents.condition.selectTypePlaceholder')} />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {CONDITION_TYPES.map(option => (
               <SelectItem
                 key={option.value}
                 value={option.value}
-                className="text-sidebar-foreground"
               >
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {/* Configuração específica do tipo */}
       {conditionType && (
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">
+        <div className="flex flex-col gap-3">
+          <h4 className="font-medium text-sm">
             {t('panels.waitComponents.condition.configurationLabel')} -{' '}
             {CONDITION_TYPES.find(t => t.value === conditionType)?.label}
-          </Label>
+          </h4>
           {renderConditionConfiguration()}
         </div>
       )}
 
       {/* Seleção de Variável para Comparação */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">
-          {t('panels.waitComponents.condition.variableLabel')}
-        </Label>
-        <p className="text-xs text-muted-foreground">
-          {t('panels.waitComponents.condition.variableDescription')}
-        </p>
+      <Field className="items-stretch">
+        <FieldLabel>{t('panels.waitComponents.condition.variableLabel')}</FieldLabel>
+        <FieldDescription>{t('panels.waitComponents.condition.variableDescription')}</FieldDescription>
         <VariableSelect
           value={data.conditionValue || ''}
           onValueChange={variable => onChange({ conditionValue: variable })}
@@ -202,20 +196,17 @@ export function WaitConditionConfig({ data, onChange, journeyId }: WaitCondition
           journeyId={journeyId}
           className="w-full"
         />
-      </div>
+      </Field>
 
       {/* Caso contrário (substituindo o timeout antigo) */}
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col gap-3 rounded-lg border bg-background p-4">
+        <Label className="flex items-center gap-2 font-medium text-sm">
           <Checkbox
-            id="fallback"
             checked={data.enableFallback || false}
-            onCheckedChange={handleFallbackChange}
+            onCheckedChange={checked => handleFallbackChange(checked)}
           />
-          <Label htmlFor="fallback" className="text-sm font-medium">
-            {t('panels.waitComponents.condition.fallbackLabel')}
-          </Label>
-        </div>
+          {t('panels.waitComponents.condition.fallbackLabel')}
+        </Label>
 
         <p className="text-xs text-muted-foreground pl-6">
           {t('panels.waitComponents.condition.fallbackDescription')}
@@ -223,47 +214,51 @@ export function WaitConditionConfig({ data, onChange, journeyId }: WaitCondition
 
         {data.enableFallback && (
           <div className="grid grid-cols-2 gap-3 pl-6">
-            <div className="space-y-2">
-              <Label className="text-xs">
+            <Field>
+              <FieldLabel className="text-xs">
                 {t('panels.waitComponents.condition.fallbackTimeLabel')}
-              </Label>
+              </FieldLabel>
               <Input
                 type="number"
                 min="1"
                 value={data.fallbackTime || 1}
                 onChange={e => handleFallbackTimeChange(e.target.value)}
                 placeholder={t('panels.waitComponents.condition.fallbackTimePlaceholder')}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
               />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs">
+            </Field>
+            <Field>
+              <FieldLabel className="text-xs">
                 {t('panels.waitComponents.condition.fallbackUnitLabel')}
-              </Label>
-              <Select value={data.fallbackUnit || 'hours'} onValueChange={handleFallbackUnitChange}>
-                <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+              </FieldLabel>
+              <Select
+                items={TIME_UNIT_OPTIONS}
+                value={data.fallbackUnit || 'hours'}
+                onValueChange={value =>
+                  value != null && handleFallbackUnitChange(value as 'minutes' | 'hours' | 'days')
+                }
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-sidebar border-sidebar-border">
+                <SelectPopup alignItemWithTrigger={false}>
                   {TIME_UNIT_OPTIONS.map(option => (
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="text-sidebar-foreground"
                     >
                       {option.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
-            </div>
+            </Field>
           </div>
         )}
       </div>
 
       {/* Preview */}
-      <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800/30">
-        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+      <div className="rounded-xl border border-warning/24 bg-warning/8 p-4">
+        <p className="text-sm text-warning-foreground">
           <strong>{t('panels.waitComponents.condition.summaryLabel')}:</strong>{' '}
           {t('panels.waitComponents.condition.summaryText', { condition: getConditionSummary() })}.
           {data.enableFallback && data.fallbackTime && data.fallbackUnit && (

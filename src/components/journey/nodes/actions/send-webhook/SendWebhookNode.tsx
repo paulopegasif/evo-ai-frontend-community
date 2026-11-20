@@ -88,15 +88,23 @@ export function SendWebhookNode({ selected, data, id }: SendWebhookNodeProps) {
     }
 
     if (data.headers && data.headers.length > 0) {
-      indicators.push(t('flowEditor.nodes.sendWebhook.indicators.headers', { count: data.headers.length }));
+      indicators.push(
+        t('flowEditor.nodes.sendWebhook.indicators.headers', { count: data.headers.length }),
+      );
     }
 
     if (data.retryAttempts && data.retryAttempts > 0) {
-      indicators.push(t('flowEditor.nodes.sendWebhook.indicators.retries', { count: data.retryAttempts }));
+      indicators.push(
+        t('flowEditor.nodes.sendWebhook.indicators.retries', { count: data.retryAttempts }),
+      );
     }
 
     if (data.responseMappings && data.responseMappings.length > 0) {
-      indicators.push(t('flowEditor.nodes.sendWebhook.indicators.variables', { count: data.responseMappings.length }));
+      indicators.push(
+        t('flowEditor.nodes.sendWebhook.indicators.variables', {
+          count: data.responseMappings.length,
+        }),
+      );
     }
 
     return indicators;
@@ -138,20 +146,30 @@ export function SendWebhookNode({ selected, data, id }: SendWebhookNodeProps) {
           {/* Método HTTP */}
           {data.webhookUrl && (
             <div className="mt-2 flex items-center gap-2">
-              <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                data.method === 'GET' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                data.method === 'POST' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                data.method === 'PUT' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                data.method === 'PATCH' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
-                data.method === 'DELETE' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                'bg-muted text-foreground'
-              }`}>
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                  data.method === 'GET'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    : data.method === 'POST'
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                      : data.method === 'PUT'
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                        : data.method === 'PATCH'
+                          ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                          : data.method === 'DELETE'
+                            ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                            : 'bg-muted text-foreground'
+                }`}
+              >
                 {data.method || 'POST'}
               </span>
 
               {/* Indicadores de configuração */}
               {getStatusIndicators().map((indicator, index) => (
-                <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                <span
+                  key={index}
+                  className="inline-flex items-center px-2 py-1 rounded text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                >
                   {indicator}
                 </span>
               ))}
@@ -166,7 +184,7 @@ export function SendWebhookNode({ selected, data, id }: SendWebhookNodeProps) {
               {t('flowEditor.nodes.sendWebhook.mappedVariables')}:
             </p>
             <div className="space-y-1">
-              {data.responseMappings.slice(0, 3).map((mapping) => (
+              {data.responseMappings.slice(0, 3).map(mapping => (
                 <div key={mapping.id} className="flex items-center justify-between text-xs">
                   <span className="text-blue-700 dark:text-blue-300 font-mono">
                     {mapping.jsonPath}
@@ -179,7 +197,9 @@ export function SendWebhookNode({ selected, data, id }: SendWebhookNodeProps) {
               ))}
               {data.responseMappings.length > 3 && (
                 <p className="text-xs text-blue-600 dark:text-blue-400 italic">
-                  {t('flowEditor.nodes.sendWebhook.moreVariables', { count: data.responseMappings.length - 3 })}
+                  {t('flowEditor.nodes.sendWebhook.moreVariables', {
+                    count: data.responseMappings.length - 3,
+                  })}
                 </p>
               )}
             </div>
@@ -190,7 +210,9 @@ export function SendWebhookNode({ selected, data, id }: SendWebhookNodeProps) {
         {!data.webhookUrl && (
           <div className="p-3 rounded-lg border-2 border-dashed border-purple-300 bg-purple-50 dark:bg-purple-950/20 text-center">
             <Send className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-            <p className="text-xs text-purple-600 dark:text-purple-300">{t('flowEditor.nodes.sendWebhook.configureEndpoint')}</p>
+            <p className="text-xs text-purple-600 dark:text-purple-300">
+              {t('flowEditor.nodes.sendWebhook.configureEndpoint')}
+            </p>
           </div>
         )}
       </div>

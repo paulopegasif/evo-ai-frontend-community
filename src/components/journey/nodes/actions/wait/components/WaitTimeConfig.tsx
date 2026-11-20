@@ -1,11 +1,5 @@
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { WaitNodeData } from '../WaitNode';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -62,53 +56,56 @@ export function WaitTimeConfig({ data, onChange, journeyId }: WaitTimeConfigProp
   return (
     <div className="space-y-4">
       {/* Duração */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">
+      <Field className="items-stretch">
+        <FieldLabel>
           {t('panels.waitComponents.time.durationLabel')}
-        </Label>
+        </FieldLabel>
         <VariableInput
           type="number"
           min="1"
           value={data.duration?.toString() || '1'}
           onChange={e => handleDurationChange(e.target.value)}
           placeholder={t('panels.waitComponents.time.durationPlaceholder')}
-          className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+          className="w-full"
           journeyId={journeyId}
           onVariableInsert={variable => {
             console.log('Variable inserted in wait duration:', variable);
           }}
         />
-        <p className="text-xs text-muted-foreground">
-          {t('panels.waitComponents.time.variableHint')}
-        </p>
-      </div>
+        <FieldDescription>{t('panels.waitComponents.time.variableHint')}</FieldDescription>
+      </Field>
 
       {/* Unidade de Tempo */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">
+      <Field>
+        <FieldLabel>
           {t('panels.waitComponents.time.timeUnitLabel')}
-        </Label>
-        <Select value={data.timeUnit || 'minutes'} onValueChange={handleTimeUnitChange}>
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+        </FieldLabel>
+        <Select
+          items={TIME_UNIT_OPTIONS}
+          value={data.timeUnit || 'minutes'}
+          onValueChange={value =>
+            value != null && handleTimeUnitChange(value as 'minutes' | 'hours' | 'days')
+          }
+        >
+          <SelectTrigger className="w-full">
             <SelectValue placeholder={t('panels.waitComponents.time.timeUnitPlaceholder')} />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {TIME_UNIT_OPTIONS.map(option => (
               <SelectItem
                 key={option.value}
                 value={option.value}
-                className="text-sidebar-foreground"
               >
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {/* Preview */}
-      <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30">
-        <p className="text-sm text-blue-800 dark:text-blue-200">
+      <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+        <p className="text-sm text-info-foreground">
           <strong>{t('panels.waitComponents.time.summaryLabel')}:</strong>{' '}
           {t('panels.waitComponents.time.summaryText', {
             duration: data.duration || 1,

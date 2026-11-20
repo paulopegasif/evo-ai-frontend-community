@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Label, Textarea, Checkbox } from '@/components/ui/compat';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
 import { Mail } from 'lucide-react';
 import { SendEmailTeamNodeData } from './SendEmailTeamNode';
 import { automationService } from '@/services/automation/automationService';
@@ -92,7 +94,7 @@ export function SendEmailTeamPanel({ nodeId, data, onUpdate, onClose }: SendEmai
     const count = getCharacterCount();
     if (count > 500) return 'text-flow-feedback-error-fg';
     if (count > 400) return 'text-flow-feedback-warn-fg';
-    return 'text-sidebar-foreground/60';
+    return 'text-muted-foreground';
   };
 
   const isValid = selectedTeams.length > 0 && message.trim().length > 0 && getCharacterCount() <= 500;
@@ -106,7 +108,7 @@ export function SendEmailTeamPanel({ nodeId, data, onUpdate, onClose }: SendEmai
       open
       variant="simple"
       title={t('panels.sendEmailTeam.title')}
-      icon={<Mail className="h-5 w-5 text-flow-node-action-message-fg" />}
+      icon={<Mail className="size-5 text-flow-node-action-message-fg" />}
       onCancel={onClose}
       onSave={handleSave}
       dirty={dirty && isValid}
@@ -115,71 +117,70 @@ export function SendEmailTeamPanel({ nodeId, data, onUpdate, onClose }: SendEmai
       cancelLabel={t('actions.cancel')}
     >
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.sendEmailTeam.teams')}
-          </Label>
+          </FieldLabel>
 
           {loading ? (
-            <div className="text-sm text-sidebar-foreground/60">
+            <div className="text-sm text-muted-foreground">
               {t('panels.sendEmailTeam.loadingTeams')}
             </div>
           ) : (
-            <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="flex max-h-48 w-full flex-col gap-1 overflow-y-auto rounded-xl border bg-muted/24 p-1">
               {formDataOptions.teams.length === 0 ? (
-                <p className="text-sm text-sidebar-foreground/60">
+                <p className="text-sm text-muted-foreground">
                   {t('panels.sendEmailTeam.noTeamsFound')}
                 </p>
               ) : (
                 formDataOptions.teams.map(team => (
-                  <div
+                  <label
                     key={team.id}
-                    className="flex items-center space-x-3 p-2 rounded-md hover:bg-sidebar-accent cursor-pointer"
-                    onClick={() => handleTeamToggle(team.id.toString())}
+                    className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-accent"
                   >
                     <Checkbox
                       checked={selectedTeams.includes(team.id.toString())}
                       onCheckedChange={() => handleTeamToggle(team.id.toString())}
                     />
                     <div className="flex items-center gap-2 flex-1">
-                      <div className="w-8 h-8 rounded-full bg-flow-node-action-message-bg text-flow-node-action-message-fg flex items-center justify-center text-xs font-medium">
-                        <Mail className="w-4 h-4" />
+                      <div className="flex size-8 items-center justify-center rounded-full bg-flow-node-action-message-bg text-flow-node-action-message-fg text-xs font-medium">
+                        <Mail className="size-4" />
                       </div>
                       <div>
-                        <div className="font-medium text-sidebar-foreground">{team.name}</div>
-                        <div className="text-xs text-sidebar-foreground/60">
+                        <div className="font-medium text-foreground">{team.name}</div>
+                        <div className="text-xs text-muted-foreground">
                           {team.description || t('panels.sendEmailTeam.node.defaultTeamDescription')}
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </label>
                 ))
               )}
             </div>
           )}
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.sendEmailTeam.messageLabel')}
-          </Label>
+          </FieldLabel>
           <Textarea
             value={message}
             onChange={e => setMessage(e.target.value)}
             placeholder={t('panels.sendEmailTeam.messagePlaceholder')}
-            className="min-h-[100px] resize-none bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50"
+            className="min-h-[100px] resize-none"
             disabled={loading}
           />
 
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-sidebar-foreground/50">
+          <div className="flex w-full items-center justify-between gap-2 text-xs">
+            <span className="text-muted-foreground">
               {t('panels.sendEmailTeam.messageHelp')}
             </span>
             <span className={getCharacterCountColor()}>
               {t('panels.sendEmailTeam.characterCount', { count: getCharacterCount() })}
             </span>
           </div>
-        </div>
+        </Field>
 
         {selectedTeams.length > 0 && (
           <FlowFeedbackBanner variant="info">

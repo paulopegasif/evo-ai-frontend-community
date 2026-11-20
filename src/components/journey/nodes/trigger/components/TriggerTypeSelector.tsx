@@ -1,11 +1,5 @@
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface TriggerTypeSelectorProps {
@@ -16,45 +10,33 @@ interface TriggerTypeSelectorProps {
 export function TriggerTypeSelector({ value, onChange }: TriggerTypeSelectorProps) {
   const { t } = useLanguage('journey');
 
+  const typeItems = [
+    'manual',
+    'event',
+    'segment',
+    'webhook',
+    'contactCreated',
+    'contactUpdated',
+    'label',
+    'customAttribute',
+    'pipelineStageChanged',
+  ].map(type => ({ value: type, label: t(`triggerComponents.types.${type}`) }));
+
   return (
-    <div className="space-y-2">
-      <Label className="text-sidebar-foreground font-medium">
-        {t('triggerComponents.triggerType')}
-      </Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+    <Field>
+      <FieldLabel>{t('triggerComponents.triggerType')}</FieldLabel>
+      <Select items={typeItems} value={value || null} onValueChange={v => onChange(String(v ?? ''))}>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder={t('triggerComponents.selectType')} />
         </SelectTrigger>
-        <SelectContent className="bg-sidebar border-sidebar-border">
-          <SelectItem value="manual" className="text-sidebar-foreground">
-            {t('triggerComponents.types.manual')}
-          </SelectItem>
-          <SelectItem value="event" className="text-sidebar-foreground">
-            {t('triggerComponents.types.event')}
-          </SelectItem>
-          <SelectItem value="segment" className="text-sidebar-foreground">
-            {t('triggerComponents.types.segment')}
-          </SelectItem>
-          <SelectItem value="webhook" className="text-sidebar-foreground">
-            {t('triggerComponents.types.webhook')}
-          </SelectItem>
-          <SelectItem value="contactCreated" className="text-sidebar-foreground">
-            {t('triggerComponents.types.contactCreated')}
-          </SelectItem>
-          <SelectItem value="contactUpdated" className="text-sidebar-foreground">
-            {t('triggerComponents.types.contactUpdated')}
-          </SelectItem>
-          <SelectItem value="label" className="text-sidebar-foreground">
-            {t('triggerComponents.types.label')}
-          </SelectItem>
-          <SelectItem value="customAttribute" className="text-sidebar-foreground">
-            {t('triggerComponents.types.customAttribute')}
-          </SelectItem>
-          <SelectItem value="pipelineStageChanged" className="text-sidebar-foreground">
-            {t('triggerComponents.types.pipelineStageChanged')}
-          </SelectItem>
-        </SelectContent>
+        <SelectPopup alignItemWithTrigger={false}>
+          {typeItems.map(item => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectPopup>
       </Select>
-    </div>
+    </Field>
   );
 }

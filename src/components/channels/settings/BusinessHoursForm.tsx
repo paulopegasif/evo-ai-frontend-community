@@ -1,15 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import {
-  Card,
-  CardContent,
-  Switch,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-} from '@/components/ui/compat';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Clock, Info, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -139,7 +132,7 @@ export default function BusinessHoursForm({
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-center gap-3 pb-4 border-b border-border">
             <div className="p-2 rounded-lg bg-primary/10">
               <Clock className="w-5 h-5 text-primary" />
@@ -231,7 +224,8 @@ export default function BusinessHoursForm({
                     {t('settings.businessHours.timezone.label')}
                   </label>
                   <Select
-                    value={selectedTimeZone.value}
+                    items={timeZoneOptions}
+                    value={selectedTimeZone.value || null}
                     onValueChange={value => {
                       const timezone = timeZoneOptions.find(tz => tz.value === value);
                       if (timezone) setSelectedTimeZone(timezone);
@@ -240,13 +234,13 @@ export default function BusinessHoursForm({
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={t('settings.businessHours.timezone.placeholder')} />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectPopup alignItemWithTrigger={false}>
                       {timeZoneOptions.map(tz => (
                         <SelectItem key={tz.value} value={tz.value}>
                           {tz.label}
                         </SelectItem>
                       ))}
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
 
@@ -309,7 +303,7 @@ export default function BusinessHoursForm({
               </div>
             )}
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

@@ -13,7 +13,7 @@ vi.mock('./GlobalTemplateSelect', () => ({
 }));
 
 // Interactive Switch so the "use template" toggle can be exercised.
-vi.mock('@/components/ui/compat', () => ({
+vi.mock('@/components/ui/switch', () => ({
   Switch: ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (v: boolean) => void }) => (
     <button role="switch" aria-checked={checked} onClick={() => onCheckedChange(!checked)} />
   ),

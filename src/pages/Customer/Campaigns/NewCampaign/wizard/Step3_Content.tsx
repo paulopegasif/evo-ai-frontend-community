@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Button, Label, Checkbox, RadioGroup, RadioGroupItem } from '@/components/ui/compat';
-import { ArrowRight, ArrowLeft, MessageSquare, FileText, Mail, MessageCircle, Smartphone, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import { cn } from '@/lib/utils';
+import {
+  ArrowRight,
+  ArrowLeft,
+  FileText,
+  Inbox as InboxIcon,
+  Mail,
+  MessageCircle,
+  Smartphone,
+} from 'lucide-react';
 import WizardStepLayout from './WizardStepLayout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -119,10 +133,10 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       onboarding: 'text-info-foreground bg-info/8',
-      promocional: 'text-purple-600 bg-purple-50 dark:bg-purple-950/20',
-      transacional: 'text-orange-600 bg-orange-50 dark:bg-orange-950/20',
+      promocional: 'text-violet-700 bg-violet-500/10 dark:text-violet-300',
+      transacional: 'text-warning-foreground bg-warning/8',
       feedback: 'text-success-foreground bg-success/8',
-      informativo: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/20',
+      informativo: 'text-cyan-700 bg-cyan-500/10 dark:text-cyan-300',
     };
     return colors[category] || 'text-muted-foreground bg-muted/48';
   };
@@ -141,7 +155,7 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
   };
 
   // Filter inboxes by selected channel type
-  const filteredInboxes = data.channel_type 
+  const filteredInboxes = data.channel_type
     ? inboxes.filter(inbox => {
         const channelType = inbox.channel_type?.toLowerCase() || '';
         if (data.channel_type === CampaignChannelType.WHATSAPP) {
@@ -156,6 +170,40 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
     : [];
 
   const isValid = !!data.inbox_id && data.template_ids?.length > 0;
+
+  const channelOptions = [
+    {
+      type: CampaignChannelType.WHATSAPP,
+      icon: MessageCircle,
+      name: 'WhatsApp',
+      tint: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400',
+    },
+    {
+      type: CampaignChannelType.EMAIL,
+      icon: Mail,
+      name: 'Email',
+      tint: 'bg-sky-500/12 text-sky-600 dark:text-sky-400',
+    },
+    {
+      type: CampaignChannelType.SMS,
+      icon: Smartphone,
+      name: 'SMS',
+      tint: 'bg-violet-500/12 text-violet-600 dark:text-violet-400',
+    },
+  ];
+  const required = (
+    <span className="ms-1 text-destructive-foreground" aria-hidden="true">
+      *
+    </span>
+  );
+  const emptyBlock = (icon: React.ReactNode, text: string) => (
+    <Empty className="rounded-xl border border-dashed py-8">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">{icon}</EmptyMedia>
+        <EmptyDescription>{text}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
 
   return (
     <WizardStepLayout
@@ -173,181 +221,184 @@ const Step3_Content = ({ data, onChange, onNext, onBack }: Step3Props) => {
       }
     >
       <div className="flex flex-col gap-6">
-          {/* SECTION 1: Seleção de Canal */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <Label className="text-lg font-semibold block">
-                  {t('wizard.step3.channelLabel')} <span className="text-destructive">*</span>
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  {t('wizard.step3.channelDescription')}
-                </p>
-              </div>
-            </div>
-
-            {/* Seleção de Canal */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              {[
-                { type: CampaignChannelType.WHATSAPP, icon: MessageCircle, name: 'WhatsApp', color: 'from-green-500 to-emerald-500' },
-                { type: CampaignChannelType.EMAIL, icon: Mail, name: 'Email', color: 'from-blue-500 to-cyan-500' },
-                { type: CampaignChannelType.SMS, icon: Smartphone, name: 'SMS', color: 'from-purple-500 to-pink-500' },
-              ].map((channel) => {
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {t('wizard.step3.channelLabel')}
+              {required}
+            </CardTitle>
+            <CardDescription>{t('wizard.step3.channelDescription')}</CardDescription>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-6">
+            <div className="grid grid-cols-3 gap-3">
+              {channelOptions.map(channel => {
                 const Icon = channel.icon;
                 const isSelected = data.channel_type === channel.type;
                 return (
                   <button
                     key={channel.type}
                     type="button"
+                    aria-pressed={isSelected}
                     onClick={() => onChange({ channel_type: channel.type, inbox_id: '' })}
-                    className={`p-4 border-2 rounded-lg transition-all ${isSelected
-                      ? `border-success bg-gradient-to-br ${channel.color} text-white shadow-lg`
-                      : 'border-border hover:border-primary/50 hover:shadow-md'
-                      }`}
+                    className={cn(
+                      'flex flex-col items-center gap-2 rounded-xl border p-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                      isSelected
+                        ? 'border-primary bg-primary/4'
+                        : 'bg-background hover:bg-accent/50',
+                    )}
                   >
-                    <Icon className={`h-8 w-8 mx-auto mb-2 ${isSelected ? 'text-white' : 'text-muted-foreground'}`} />
-                    <p className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-foreground'}`}>
-                      {channel.name}
-                    </p>
+                    <span
+                      className={cn(
+                        'flex size-10 items-center justify-center rounded-lg',
+                        channel.tint,
+                      )}
+                    >
+                      <Icon className="size-5" />
+                    </span>
+                    <span className="font-medium text-sm">{channel.name}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Inboxes do canal selecionado */}
             {data.channel_type && (
-              <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                <Label className="text-base font-medium block">
-                  {t('wizard.step3.inboxLabel', { channel: getChannelName(data.channel_type) })} <span className="text-destructive">*</span>
-                </Label>
-                <p className="text-sm text-muted-foreground mb-3">
-                  {t('wizard.step3.inboxDescription')}
-                </p>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <p className="font-medium text-sm">
+                    {t('wizard.step3.inboxLabel', { channel: getChannelName(data.channel_type) })}
+                    {required}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {t('wizard.step3.inboxDescription')}
+                  </p>
+                </div>
                 {loadingInboxes ? (
                   <div className="flex flex-col gap-2" aria-busy="true">
-                    <Skeleton className="h-12 w-full rounded-lg" />
-                    <Skeleton className="h-12 w-full rounded-lg" />
+                    <Skeleton className="h-16 w-full rounded-xl" />
+                    <Skeleton className="h-16 w-full rounded-xl" />
                   </div>
                 ) : filteredInboxes.length === 0 ? (
-                  <div className="text-center py-4 text-muted-foreground">
-                    {t('wizard.step3.noInboxes', 'No inboxes available for this channel')}
-                  </div>
+                  emptyBlock(
+                    <InboxIcon />,
+                    t('wizard.step3.noInboxes', 'No inboxes available for this channel'),
+                  )
                 ) : (
-                  <RadioGroup value={data.inbox_id} onValueChange={handleSelectInbox}>
-                    {filteredInboxes.map((inbox) => {
+                  <RadioGroup
+                    value={data.inbox_id || null}
+                    onValueChange={value => value != null && handleSelectInbox(String(value))}
+                    className="flex flex-col gap-2"
+                  >
+                    {filteredInboxes.map(inbox => {
                       const inboxId = inbox.id.toString();
+                      const selected = data.inbox_id === inboxId;
                       return (
-                        <div
+                        <label
                           key={inbox.id}
-                          className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer ${data.inbox_id === inboxId
-                            ? 'border-success bg-success/8'
-                            : ''
-                            }`}
-                          onClick={() => handleSelectInbox(inboxId)}
+                          className={cn(
+                            'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+                            selected ? 'border-primary bg-primary/4' : 'hover:bg-accent/50',
+                          )}
                         >
-                          <RadioGroupItem
-                            value={inboxId}
-                            id={inboxId}
-                            className="mt-1"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2 mb-2">
-                              <Label htmlFor={inboxId} className="text-base font-semibold cursor-pointer flex items-center gap-2">
-                                {data.inbox_id === inboxId && (
-                                  <CheckCircle2 className="h-4 w-4 text-success-foreground" />
-                                )}
-                                {inbox.name}
-                              </Label>
+                          <Radio value={inboxId} className="mt-0.5" />
+                          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                            <span className="flex items-center justify-between gap-2">
+                              <span className="truncate font-medium text-sm">{inbox.name}</span>
                               {inbox.phone_number && (
-                                <span className="text-xs text-muted-foreground">{inbox.phone_number}</span>
+                                <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
+                                  {inbox.phone_number}
+                                </span>
                               )}
-                            </div>
-                            <p className="text-xs text-muted-foreground capitalize">{inbox.channel_type}</p>
-                          </div>
-                        </div>
+                            </span>
+                            <span className="text-muted-foreground text-xs capitalize">
+                              {inbox.channel_type}
+                            </span>
+                          </span>
+                        </label>
                       );
                     })}
                   </RadioGroup>
                 )}
               </div>
             )}
-            {errors.inbox_id && <p className="text-sm text-destructive-foreground mt-2">{errors.inbox_id}</p>}
-          </div>
+            {errors.inbox_id && (
+              <p className="text-destructive-foreground text-sm">{errors.inbox_id}</p>
+            )}
+          </CardPanel>
+        </Card>
 
-          {/* SECTION 2: Templates */}
-          <div className="pt-6 border-t">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/8 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-primary" />
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {t('wizard.step3.templatesLabel')}
+              {required}
+            </CardTitle>
+            <CardDescription>
+              {t('wizard.step3.templatesSelected', { count: data.template_ids?.length || 0 })}
+            </CardDescription>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-2">
+            {!data.inbox_id ? (
+              emptyBlock(
+                <InboxIcon />,
+                t('wizard.step3.selectInboxFirst', 'Please select an inbox first'),
+              )
+            ) : loadingTemplates ? (
+              <div className="flex flex-col gap-2" aria-busy="true">
+                <Skeleton className="h-20 w-full rounded-xl" />
+                <Skeleton className="h-20 w-full rounded-xl" />
               </div>
-              <div>
-                <Label className="text-lg font-semibold block">
-                  {t('wizard.step3.templatesLabel')} <span className="text-destructive">*</span>
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  {t('wizard.step3.templatesSelected', { count: data.template_ids?.length || 0 })}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {!data.inbox_id ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  {t('wizard.step3.selectInboxFirst', 'Please select an inbox first')}
-                </div>
-              ) : loadingTemplates ? (
-                <div className="grid gap-3" aria-busy="true">
-                  <Skeleton className="h-20 w-full rounded-xl" />
-                  <Skeleton className="h-20 w-full rounded-xl" />
-                </div>
-              ) : templates.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  {t('wizard.step3.noTemplates', 'No templates available for this inbox')}
-                </div>
-              ) : (
-                templates.map((template) => {
-                  if (!template.id) return null;
-                  const templateId = template.id.toString();
-                  return (
-                    <div
-                      key={template.id}
-                      className={`flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer ${data.template_ids?.includes(templateId)
-                        ? 'border-primary bg-primary/4'
-                        : ''
-                        }`}
-                      onClick={() => handleToggleTemplate(templateId)}
-                    >
-                      <Checkbox
-                        checked={data.template_ids?.includes(templateId)}
-                        onCheckedChange={() => handleToggleTemplate(templateId)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <Label className="text-base font-semibold cursor-pointer flex items-center gap-2">
-                            {data.template_ids?.includes(templateId) && (
-                              <CheckCircle2 className="h-4 w-4 text-primary" />
+            ) : templates.length === 0 ? (
+              emptyBlock(
+                <FileText />,
+                t('wizard.step3.noTemplates', 'No templates available for this inbox'),
+              )
+            ) : (
+              templates.map(template => {
+                if (!template.id) return null;
+                const templateId = template.id.toString();
+                const checked = !!data.template_ids?.includes(templateId);
+                return (
+                  <label
+                    key={template.id}
+                    className={cn(
+                      'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+                      checked ? 'border-primary bg-primary/4' : 'hover:bg-accent/50',
+                    )}
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => handleToggleTemplate(templateId)}
+                      className="mt-0.5"
+                    />
+                    <span className="flex min-w-0 flex-1 flex-col gap-1">
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="truncate font-medium text-sm">{template.name}</span>
+                        {template.category && (
+                          <Badge
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              'border-transparent',
+                              getCategoryColor(template.category),
                             )}
-                            {template.name}
-                          </Label>
-                          {template.category && (
-                            <span className={`text-xs font-medium px-2 py-1 rounded-full ${getCategoryColor(template.category)}`}>
-                              {template.category}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{template.content || 'No content preview'}</p>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-            {errors.template_ids && <p className="text-sm text-destructive-foreground mt-2">{errors.template_ids}</p>}
-          </div>
+                          >
+                            {template.category}
+                          </Badge>
+                        )}
+                      </span>
+                      <span className="line-clamp-2 text-muted-foreground text-sm">
+                        {template.content || t('wizard.step3.noContentPreview')}
+                      </span>
+                    </span>
+                  </label>
+                );
+              })
+            )}
+            {errors.template_ids && (
+              <p className="text-destructive-foreground text-sm">{errors.template_ids}</p>
+            )}
+          </CardPanel>
+        </Card>
       </div>
     </WizardStepLayout>
   );

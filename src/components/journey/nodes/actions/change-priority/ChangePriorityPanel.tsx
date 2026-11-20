@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle } from 'lucide-react';
 import { ChangePriorityNodeData } from './ChangePriorityNode';
 import { automationService } from '@/services/automation/automationService';
@@ -112,15 +106,23 @@ export function ChangePriorityPanel({ nodeId, data, onUpdate, onClose }: ChangeP
       cancelLabel={t('panels.actions.cancel')}
     >
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.changePriority.newPriority')}
-          </Label>
-          <Select value={priority} onValueChange={setPriority} disabled={loading}>
-            <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+          </FieldLabel>
+          <Select
+            items={(formDataOptions.priorities || []).map(option => ({
+              value: option.value,
+              label: `${getPriorityIcon(option.value)} ${option.label}`,
+            }))}
+            value={priority || null}
+            onValueChange={value => setPriority(String(value ?? ''))}
+            disabled={loading}
+          >
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('panels.changePriority.selectPriority')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup alignItemWithTrigger={false}>
               {(formDataOptions.priorities || []).map(priorityOption => (
                 <SelectItem key={priorityOption.value} value={priorityOption.value}>
                   <div className="flex items-center gap-2">
@@ -129,13 +131,11 @@ export function ChangePriorityPanel({ nodeId, data, onUpdate, onClose }: ChangeP
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
-          <p className="text-xs text-sidebar-foreground/60">
-            {t('panels.changePriority.priorityAffectsOrder')}
-          </p>
-        </div>
+          <FieldDescription>{t('panels.changePriority.priorityAffectsOrder')}</FieldDescription>
+        </Field>
 
         {priority && (
           <FlowFeedbackBanner variant="info">

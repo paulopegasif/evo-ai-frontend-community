@@ -1,19 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Button,
-  Label,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Badge,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { GitBranch, Plus, Trash2, Copy } from 'lucide-react';
 import {
   ConditionalNodeData,
@@ -78,6 +69,21 @@ export function ConditionalPanel({
     { value: 'purple', label: t('panels.conditional.colors.purple'), hex: '#8b5cf6' },
     { value: 'orange', label: t('panels.conditional.colors.orange'), hex: '#f97316' },
     { value: 'yellow', label: t('panels.conditional.colors.yellow'), hex: '#eab308' },
+  ];
+
+  const colorItems = PATH_COLORS.map(color => ({
+    value: color.value,
+    label: (
+      <span className="flex items-center gap-2">
+        <span className="size-3 rounded-full" style={{ backgroundColor: color.hex }} />
+        {color.label}
+      </span>
+    ),
+  }));
+
+  const logicalOperatorItems = [
+    { value: 'AND', label: t('panels.conditional.andAll') },
+    { value: 'OR', label: t('panels.conditional.orAny') },
   ];
 
   const [activePathId, setActivePathId] = useState<string>('');
@@ -295,12 +301,9 @@ export function ConditionalPanel({
     const exprErrorId = `conditional-expr-error-${condition.id}`;
 
     return (
-      <div
-        key={condition.id}
-        className="p-3 rounded-lg bg-sidebar-accent/10 border border-sidebar-border/30 space-y-3"
-      >
+      <div key={condition.id} className="flex flex-col gap-3 rounded-xl border bg-muted/24 p-3">
         {index > 0 && (
-          <div className="flex items-center gap-2 pb-2 border-b border-sidebar-border/30">
+          <div className="flex items-center gap-2 border-b pb-2">
             <Badge variant="outline" className="text-xs">
               {path.logicalOperator === 'AND'
                 ? t('panels.conditional.logicalOperators.and')
@@ -309,9 +312,9 @@ export function ConditionalPanel({
           </div>
         )}
 
-        <div className="grid grid-cols-12 gap-2 items-end">
-          <div className="col-span-4">
-            <Label className="text-xs">{t('panels.conditional.field')}</Label>
+        <div className="grid grid-cols-12 items-end gap-2">
+          <Field className="col-span-4 items-stretch">
+            <FieldLabel className="text-xs">{t('panels.conditional.field')}</FieldLabel>
             <VariableSelect
               value={condition.field || ''}
               onValueChange={value => handleFieldChange(pathId, condition, value)}
@@ -322,59 +325,62 @@ export function ConditionalPanel({
               showContactAttributes={true}
               triggerTestId="conditional-field-select"
             />
-          </div>
+          </Field>
 
-          <div className="col-span-3">
-            <Label className="text-xs">{t('panels.conditional.operator')}</Label>
+          <Field className="col-span-3 items-stretch">
+            <FieldLabel className="text-xs">{t('panels.conditional.operator')}</FieldLabel>
             <Select
-              value={condition.operator}
-              onValueChange={value => updateCondition(pathId, condition.id, { operator: value })}
+              items={operatorOptions}
+              value={condition.operator || null}
+              onValueChange={value =>
+                updateCondition(pathId, condition.id, { operator: String(value ?? '') })
+              }
             >
-              <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
+              <SelectPopup alignItemWithTrigger={false}>
                 {operatorOptions.map(option => (
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    className="text-sidebar-foreground"
                   >
                     {option.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
-          </div>
+          </Field>
 
-          <div className="col-span-4">
-            <Label className="text-xs">{t('panels.conditional.value')}</Label>
+          <Field className="col-span-4 items-stretch">
+            <FieldLabel className="text-xs">{t('panels.conditional.value')}</FieldLabel>
             {isPipelineStageField ? (
               <Select
-                value={condition.value || ''}
-                onValueChange={value =>
+                items={stageOptions.map(option => ({ value: option.id, label: option.label }))}
+                value={condition.value || null}
+                onValueChange={next => {
+                  const value = String(next ?? '');
                   updateCondition(pathId, condition.id, {
                     value,
                     valueLabel: stageOptions.find(option => option.id === value)?.label,
-                  })
-                }
+                  });
+                }}
               >
-                <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+                <SelectTrigger className="w-full">
                   <SelectValue
                     placeholder={t('panels.conditional.placeholders.selectStage')}
                   />
                 </SelectTrigger>
-                <SelectContent className="bg-sidebar border-sidebar-border">
+                <SelectPopup alignItemWithTrigger={false}>
                   {stageOptions.map(option => (
                     <SelectItem
                       key={option.id}
                       value={option.id}
-                      className="text-sidebar-foreground"
                     >
                       {option.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             ) : needsValue(condition.operator) ? (
               <>
@@ -387,32 +393,33 @@ export function ConditionalPanel({
                     })
                   }
                   placeholder={t('panels.conditional.value')}
-                  className="bg-sidebar border-sidebar-border text-sidebar-foreground"
+                  className="w-full"
                   journeyId={journeyId}
                   aria-invalid={!valueBalanced}
                   aria-describedby={valueBalanced ? undefined : exprErrorId}
                 />
                 {!valueBalanced && (
-                  <p id={exprErrorId} className="mt-1 text-xs text-flow-feedback-error-fg">
+                  <p id={exprErrorId} className="text-xs text-flow-feedback-error-fg">
                     {t('environmentManager.invalidExpression')}
                   </p>
                 )}
               </>
             ) : (
-              <div className="h-10 flex items-center text-xs text-muted-foreground italic px-3">
+              <div className="flex h-9 items-center px-3 text-muted-foreground text-xs italic sm:h-8">
                 {t('panels.conditional.notNecessary')}
               </div>
             )}
-          </div>
+          </Field>
 
-          <div className="col-span-1">
+          <div className="col-span-1 flex justify-end">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => removeCondition(pathId, condition.id)}
-              className="h-10 w-10 p-0 text-flow-feedback-error-fg hover:text-flow-feedback-error-fg"
+              aria-label={t('panels.conditional.removeCondition')}
+              className="text-destructive-foreground hover:text-destructive-foreground"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 />
             </Button>
           </div>
         </div>
@@ -427,97 +434,98 @@ export function ConditionalPanel({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pathColor.hex }} />
+            <div className="size-3 shrink-0 rounded-full" style={{ backgroundColor: pathColor.hex }} />
             <Input
               value={path.name}
               onChange={e => updatePath(path.id, { name: e.target.value })}
               placeholder={t('panels.conditional.pathName')}
-              className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-48"
             />
             <Select
-              value={path.color}
-              onValueChange={value => updatePath(path.id, { color: value })}
+              items={colorItems}
+              value={path.color || null}
+              onValueChange={value => updatePath(path.id, { color: String(value ?? '') })}
             >
-              <SelectTrigger className="w-32 bg-sidebar border-sidebar-border text-sidebar-foreground">
+              <SelectTrigger className="w-32">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
+              <SelectPopup alignItemWithTrigger={false}>
                 {PATH_COLORS.map(color => (
                   <SelectItem
                     key={color.value}
                     value={color.value}
-                    className="text-sidebar-foreground"
                   >
                     <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: color.hex }}
-                      />
+                      <div className="size-3 rounded-full" style={{ backgroundColor: color.hex }} />
                       {color.label}
                     </div>
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </div>
 
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={() => duplicatePath(path.id)}
-              className="h-8 w-8 p-0"
+              aria-label={t('panels.conditional.duplicatePath')}
             >
-              <Copy className="w-4 h-4" />
+              <Copy />
             </Button>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={() => removePath(path.id)}
-              className="h-8 w-8 p-0 text-flow-feedback-error-fg hover:text-flow-feedback-error-fg"
+              aria-label={t('panels.conditional.removePath')}
+              className="text-destructive-foreground hover:text-destructive-foreground"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 />
             </Button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Label className="text-sm">
+        <Field className="flex-row items-center gap-2">
+          <FieldLabel className="font-normal">
             {t('panels.conditional.logicalOperatorBetweenConditions')}
-          </Label>
+          </FieldLabel>
           <Select
-            value={path.logicalOperator}
-            onValueChange={(value: 'AND' | 'OR') => updatePath(path.id, { logicalOperator: value })}
+            items={logicalOperatorItems}
+            value={path.logicalOperator || null}
+            onValueChange={value =>
+              value != null && updatePath(path.id, { logicalOperator: value as 'AND' | 'OR' })
+            }
           >
-            <SelectTrigger className="w-32 bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              <SelectItem value="AND" className="text-sidebar-foreground">
+            <SelectPopup alignItemWithTrigger={false}>
+              <SelectItem value="AND">
                 {t('panels.conditional.andAll')}
               </SelectItem>
-              <SelectItem value="OR" className="text-sidebar-foreground">
+              <SelectItem value="OR">
                 {t('panels.conditional.orAny')}
               </SelectItem>
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => addCondition(path.id, 'trigger')}>
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('panels.conditional.trigger')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => addCondition(path.id, 'contact')}>
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('panels.conditional.contact')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => addCondition(path.id, 'system')}>
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('panels.conditional.system')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => addCondition(path.id, 'custom')}>
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('panels.conditional.customVariable')}
           </Button>
         </div>
@@ -526,7 +534,7 @@ export function ConditionalPanel({
           {path.conditions.length > 0 ? (
             path.conditions.map((condition, index) => renderCondition(path.id, condition, index))
           ) : (
-            <div className="p-4 rounded-lg border-2 border-dashed border-border bg-muted/40 text-center">
+            <div className="rounded-xl border border-dashed bg-muted/24 p-4 text-center">
               <p className="text-muted-foreground text-sm">
                 {t('panels.conditional.noConditionsAdded')}
               </p>
@@ -545,7 +553,7 @@ export function ConditionalPanel({
       open
       variant="simple"
       title={t('panels.conditional.title')}
-      icon={<GitBranch className="h-5 w-5 text-flow-node-condition-fg" />}
+      icon={<GitBranch className="size-5 text-flow-node-condition-fg" />}
       onCancel={onClose}
       onSave={handleSave}
       dirty={dirty}
@@ -556,18 +564,18 @@ export function ConditionalPanel({
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label className="text-sidebar-foreground font-medium">
+          <h3 className="font-medium text-foreground text-sm">
             {t('panels.conditional.pathsTitle')}
-          </Label>
+          </h3>
           <Button variant="outline" size="sm" onClick={addPath}>
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('panels.conditional.addPath')}
           </Button>
         </div>
 
         {formData.paths.length > 0 ? (
           <>
-            <Tabs value={activePathId} onValueChange={setActivePathId}>
+            <Tabs value={activePathId} onValueChange={value => setActivePathId(String(value))}>
               <TabsList
                 className="grid w-full"
                 style={{
@@ -577,38 +585,30 @@ export function ConditionalPanel({
                 {formData.paths.map(path => {
                   const color = PATH_COLORS.find(c => c.value === path.color) || PATH_COLORS[0];
                   return (
-                    <TabsTrigger key={path.id} value={path.id} className="flex items-center gap-2">
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: color.hex }}
-                      />
+                    <TabsTab key={path.id} value={path.id} className="flex items-center gap-2">
+                      <div className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color.hex }} />
                       <span className="truncate">{path.name}</span>
-                    </TabsTrigger>
+                    </TabsTab>
                   );
                 })}
               </TabsList>
 
               {formData.paths.map(path => (
-                <TabsContent key={path.id} value={path.id} className="mt-4">
+                <TabsPanel key={path.id} value={path.id} className="mt-4">
                   {renderPath(path)}
-                </TabsContent>
+                </TabsPanel>
               ))}
             </Tabs>
 
             <FlowFeedbackBanner variant="info">
-              <Label className="text-sm font-medium mb-2 block">
-                {t('panels.conditional.summary.title')}
-              </Label>
+              <p className="mb-2 font-medium text-sm">{t('panels.conditional.summary.title')}</p>
               <div className="space-y-2">
                 {formData.paths.map(path => {
                   const color = PATH_COLORS.find(c => c.value === path.color) || PATH_COLORS[0];
                   return (
                     <div key={path.id} className="text-sm">
                       <div className="flex items-center gap-2 mb-1">
-                        <div
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: color.hex }}
-                        />
+                        <div className="size-2 rounded-full" style={{ backgroundColor: color.hex }} />
                         <span className="font-medium">{path.name}:</span>
                       </div>
                       {path.conditions.length > 0 ? (
@@ -638,8 +638,8 @@ export function ConditionalPanel({
             </FlowFeedbackBanner>
           </>
         ) : (
-          <div className="p-6 rounded-lg border-2 border-dashed border-border bg-muted/40 text-center">
-            <GitBranch className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+          <div className="rounded-xl border border-dashed bg-muted/24 p-6 text-center">
+            <GitBranch className="mx-auto mb-2 size-8 text-muted-foreground" />
             <p className="text-muted-foreground">
               {t('panels.conditional.emptyState.noPathsConfigured')}
             </p>

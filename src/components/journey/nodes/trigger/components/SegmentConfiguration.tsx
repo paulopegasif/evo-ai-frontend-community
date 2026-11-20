@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Separator,
-  Badge,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { segmentsService } from '@/services/segments/segmentsService';
 import { Segment } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -61,63 +56,71 @@ export function SegmentConfiguration({
   }, [t]);
 
   const selectedSegment = availableSegments.find(s => s.id === segmentId);
+  const actionItems = [
+    { value: 'entered', label: t('triggerComponents.segment.whenEntered') },
+    { value: 'exited', label: t('triggerComponents.segment.whenExited') },
+  ];
+  const segmentItems = availableSegments.map(segment => ({ value: segment.id, label: segment.name }));
 
   return (
     <>
       <Separator />
       <div className="space-y-4">
-        <Label className="text-sidebar-foreground font-medium">
+        <h3 className="font-medium text-sm text-foreground">
           {t('triggerComponents.segment.configuration')}
-        </Label>
+        </h3>
 
         {/* Ação do Segmento */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
+        <Field>
+          <FieldLabel>
             {t('triggerComponents.segment.segmentAction')}
-          </Label>
+          </FieldLabel>
           <Select
-            value={segmentAction}
-            onValueChange={(value: 'entered' | 'exited') => onSegmentActionChange(value)}
+            items={actionItems}
+            value={segmentAction || null}
+            onValueChange={value => value != null && onSegmentActionChange(value as 'entered' | 'exited')}
           >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('triggerComponents.segment.selectAction')} />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              <SelectItem value="entered" className="text-sidebar-foreground">
+            <SelectPopup alignItemWithTrigger={false}>
+              <SelectItem value="entered">
                 <div className="flex items-center gap-2">
-                  <Badge variant="default" className="bg-green-500">
+                  <Badge variant="success">
                     {t('triggerComponents.segment.entered')}
                   </Badge>
                   <span>{t('triggerComponents.segment.whenEntered')}</span>
                 </div>
               </SelectItem>
-              <SelectItem value="exited" className="text-sidebar-foreground">
+              <SelectItem value="exited">
                 <div className="flex items-center gap-2">
-                  <Badge variant="destructive">{t('triggerComponents.segment.exited')}</Badge>
+                  <Badge variant="error">{t('triggerComponents.segment.exited')}</Badge>
                   <span>{t('triggerComponents.segment.whenExited')}</span>
                 </div>
               </SelectItem>
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         {/* Seleção do Segmento */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('triggerComponents.segment.segment')}</Label>
+        <Field>
+          <FieldLabel>{t('triggerComponents.segment.segment')}</FieldLabel>
           {error ? (
-            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/30">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-            </div>
+            <Alert variant="error">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           ) : (
             <Select
-              value={segmentId}
-              onValueChange={selectedSegmentId => {
+              items={segmentItems}
+              value={segmentId || null}
+              onValueChange={value => {
+                const selectedSegmentId = String(value ?? '');
                 const selectedSegment = availableSegments.find(s => s.id === selectedSegmentId);
                 onSegmentIdChange(selectedSegmentId, selectedSegment?.name);
               }}
               disabled={loadingSegments}
             >
-              <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+              <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
                     loadingSegments
@@ -126,13 +129,13 @@ export function SegmentConfiguration({
                   }
                 />
               </SelectTrigger>
-              <SelectContent className="bg-sidebar border-sidebar-border">
+              <SelectPopup alignItemWithTrigger={false}>
                 {loadingSegments ? (
-                  <div className="p-2 text-sm text-sidebar-foreground/60 text-center">
+                  <div className="p-2 text-sm text-muted-foreground text-center">
                     {t('triggerComponents.segment.loading')}
                   </div>
                 ) : availableSegments.length === 0 ? (
-                  <div className="p-2 text-sm text-sidebar-foreground/60 text-center">
+                  <div className="p-2 text-sm text-muted-foreground text-center">
                     {t('triggerComponents.segment.noActiveSegmentsFound')}
                   </div>
                 ) : (
@@ -140,7 +143,6 @@ export function SegmentConfiguration({
                     <SelectItem
                       key={segment.id}
                       value={segment.id}
-                      className="text-sidebar-foreground"
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
@@ -150,7 +152,7 @@ export function SegmentConfiguration({
                             {t('triggerComponents.segment.contacts')}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>
                             {t('triggerComponents.segment.status')}:{' '}
                             {segment.status === 'running'
@@ -168,18 +170,18 @@ export function SegmentConfiguration({
                     </SelectItem>
                   ))
                 )}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           )}
-        </div>
+        </Field>
 
         {/* Informações do Segmento Selecionado */}
         {selectedSegment && (
-          <div className="p-4 rounded-lg bg-sidebar-accent/20 border border-sidebar-border/50">
-            <h4 className="text-sm font-medium text-sidebar-foreground mb-2">
+          <div className="rounded-xl border bg-muted/24 p-4">
+            <h4 className="text-sm font-medium text-foreground mb-2">
               {t('triggerComponents.segment.selectedSegment')}
             </h4>
-            <div className="space-y-2 text-sm text-sidebar-foreground/70">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex justify-between">
                 <span>{t('triggerComponents.segment.name')}:</span>
                 <span className="font-medium">{selectedSegment.name}</span>
@@ -214,8 +216,8 @@ export function SegmentConfiguration({
         )}
 
         {/* Descrição da Configuração */}
-        <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
+        <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+          <p className="text-sm text-info-foreground">
             {segmentAction === 'entered'
               ? t('triggerComponents.segment.enteredDescription')
               : t('triggerComponents.segment.exitedDescription')}

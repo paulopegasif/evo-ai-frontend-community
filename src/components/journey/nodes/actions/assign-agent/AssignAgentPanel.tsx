@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@/components/ui/compat';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User } from 'lucide-react';
 import { AssignAgentNodeData } from './AssignAgentNode';
 import { automationService } from '@/services/automation/automationService';
@@ -81,50 +75,54 @@ export function AssignAgentPanel({ nodeId, data, onUpdate, onClose }: AssignAgen
       cancelLabel={t('panels.actions.cancel')}
     >
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.assignAgent.user')}
-          </Label>
-          <Select value={agentId} onValueChange={setAgentId} disabled={loading}>
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+          </FieldLabel>
+          <Select
+            items={formDataOptions.agents.map(agent => ({ value: agent.id.toString(), label: agent.name }))}
+            value={agentId || null}
+            onValueChange={value => setAgentId(String(value ?? ''))}
+            disabled={loading}
+          >
+            <SelectTrigger className="w-full">
               <SelectValue
                 placeholder={
                   loading ? t('panels.assignAgent.loadingUsers') : t('panels.assignAgent.selectUser')
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {formDataOptions.agents.map(agent => (
                 <SelectItem
                   key={agent.id}
                   value={agent.id.toString()}
-                  className="text-sidebar-foreground"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-flow-node-action-pipeline-bg text-flow-node-action-pipeline-fg flex items-center justify-center text-xs font-medium">
+                    <div className="size-8 rounded-full bg-flow-node-action-pipeline-bg text-flow-node-action-pipeline-fg flex items-center justify-center text-xs font-medium">
                       {agent.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <div className="font-medium">{agent.name}</div>
-                      <div className="text-xs text-sidebar-foreground/60">{agent.email}</div>
+                      <div className="text-xs text-muted-foreground">{agent.email}</div>
                     </div>
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {!loading && formDataOptions.agents.length === 0 && (
-            <p className="text-sm text-sidebar-foreground/60">
+            <FieldDescription className="text-sm">
               {t('panels.assignAgent.noUsersFound')}
-            </p>
+            </FieldDescription>
           )}
-        </div>
+        </Field>
 
         {agentId && (
           <FlowFeedbackBanner variant="info">
             <div className="flex items-center gap-2">
-              <User className="w-4 h-4" />
+              <User className="size-4" />
               <span>
                 {t('panels.assignAgent.conversationWillBeAssigned')}{' '}
                 <strong>

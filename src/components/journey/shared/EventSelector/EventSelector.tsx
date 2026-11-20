@@ -9,8 +9,11 @@ import {
   Sparkles,
   type LucideIcon,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+// cmdk-based Command (typeahead list) — kept from the compat module on purpose:
+// it carries cmdk filtering behavior, not just a re-export.
 import {
-  Button,
   Command,
   CommandEmpty,
   CommandGroup,
@@ -18,10 +21,8 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/compat';
+} from '@/components/ui/compat/command';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import {
   EVENT_CATEGORIES,
   getEventCatalog,
@@ -103,28 +104,33 @@ export function EventSelector({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          id={id}
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          aria-haspopup="listbox"
-          disabled={disabled}
-          className={cn('w-full justify-between font-normal', className)}
-        >
-          <span className={cn('flex items-center gap-2', !selected && 'text-muted-foreground')}>
-            {selected && (() => {
-              const Icon = CATEGORY_ICON[selected.category];
-              return <Icon className="h-4 w-4" aria-hidden="true" />;
-            })()}
-            <span>{triggerLabel}</span>
-          </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            id={id}
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            disabled={disabled}
+            className={cn('w-full justify-between font-normal', className)}
+          />
+        }
+      >
+        <span className={cn('flex items-center gap-2', !selected && 'text-muted-foreground')}>
+          {selected && (() => {
+            const Icon = CATEGORY_ICON[selected.category];
+            return <Icon className="size-4" aria-hidden="true" />;
+          })()}
+          <span>{triggerLabel}</span>
+        </span>
+        <ChevronsUpDown className="ms-2 size-4 shrink-0 opacity-50" aria-hidden="true" />
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverPopup
+        className="w-(--anchor-width) p-0 **:data-[slot=popover-viewport]:p-0"
+        align="start"
+      >
         <Command>
           <CommandInput placeholder={t('selector.searchPlaceholder')} />
           <CommandList>
@@ -143,7 +149,7 @@ export function EventSelector({
             ))}
           </CommandList>
         </Command>
-      </PopoverContent>
+      </PopoverPopup>
     </Popover>
   );
 }
@@ -178,19 +184,19 @@ function CommandGroupSection({
           >
             <Check
               className={cn(
-                'mr-2 h-4 w-4',
+                'me-2 size-4',
                 value === item.eventName ? 'opacity-100' : 'opacity-0',
               )}
               aria-hidden="true"
             />
-            <Icon className="mr-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            <Icon className="me-2 size-4 text-muted-foreground" aria-hidden="true" />
             <div className="flex flex-col">
               <span className="flex items-center gap-2">
                 {selectedLabel(item, currentLanguage)}
                 {item.category === 'custom' && (
-                  <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium uppercase text-amber-700 dark:text-amber-300">
+                  <Badge variant="warning" size="sm" className="uppercase">
                     {t('selector.customBadge')}
-                  </span>
+                  </Badge>
                 )}
               </span>
               <span className="text-xs text-muted-foreground">{item.description}</span>

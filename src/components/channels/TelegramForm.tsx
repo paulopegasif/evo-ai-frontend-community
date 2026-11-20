@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { Card, CardContent, Button, Input, Skeleton } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { MessageSquare, Key, Shield, Bot } from 'lucide-react';
 import InboxesService from '@/services/channels/inboxesService';
 import type { TelegramChannelPayload } from '@/types/channels/inbox';
@@ -80,7 +83,7 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
 
       {/* Form */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="space-y-6">
             {/* Basic Information */}
             <div>
@@ -98,7 +101,7 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
                     value={formData.name}
                     onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     placeholder={t('newChannel.forms.telegramForm.fields.name.placeholder')}
-                    className={errors.name ? 'border-destructive' : ''}
+                    aria-invalid={errors.name ? true : undefined}
                   />
                   {errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
                 </div>
@@ -122,7 +125,7 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
                     value={formData.bot_token}
                     onChange={e => setFormData(prev => ({ ...prev, bot_token: e.target.value }))}
                     placeholder={t('newChannel.forms.telegramForm.fields.botToken.placeholder')}
-                    className={errors.bot_token ? 'border-destructive' : ''}
+                    aria-invalid={errors.bot_token ? true : undefined}
                   />
                   {errors.bot_token && (
                     <p className="text-destructive text-sm mt-1">{errors.bot_token}</p>
@@ -178,7 +181,7 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Submit */}
@@ -186,7 +189,7 @@ const TelegramForm: React.FC<TelegramFormProps> = ({ onSuccess, onBack }) => {
         <Button onClick={handleSubmit} disabled={isLoading} size="lg">
           {isLoading ? (
             <>
-              <Skeleton className="h-4 w-4 mr-2" />
+              <Spinner />
               {t('newChannel.forms.telegramForm.creating')}
             </>
           ) : (

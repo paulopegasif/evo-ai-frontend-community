@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Separator } from '@/components/ui/compat';
+import { Separator } from '@/components/ui/separator';
 import {
   TriggerTypeSelector,
   TriggerDescription,

@@ -73,7 +73,12 @@ function Harness({ initial, handle }: { initial: SendWebhookNodeData; handle: Ha
 
 function setup(initial: Partial<SendWebhookNodeData>) {
   const handle = { data: () => ({}) as SendWebhookNodeData, changeCount: () => 0 } as HarnessHandle;
-  const base: SendWebhookNodeData = { label: 'Webhook', method: 'POST', bodyType: 'json', ...initial };
+  const base: SendWebhookNodeData = {
+    label: 'Webhook',
+    method: 'POST',
+    bodyType: 'json',
+    ...initial,
+  };
   render(<Harness initial={base} handle={handle} />);
   return { handle, user: userEvent.setup() };
 }
@@ -90,7 +95,11 @@ describe('WebhookBodyConfig — structured builder (EVO-1742)', () => {
 
     const data = handle.data();
     expect(data.bodyStructured).toHaveLength(1);
-    expect(data.bodyStructured![0]).toMatchObject({ key: 'name', value: '{{contact.name}}', type: 'string' });
+    expect(data.bodyStructured![0]).toMatchObject({
+      key: 'name',
+      value: '{{contact.name}}',
+      type: 'string',
+    });
     expect(JSON.parse(data.body!)).toEqual({ name: '{{contact.name}}' });
   });
 
@@ -98,7 +107,13 @@ describe('WebhookBodyConfig — structured builder (EVO-1742)', () => {
     const raw = '{\n  "hi": 1\n}';
     const { handle } = setup({ bodyType: 'json', body: raw });
     // Raw textarea shows the original body; structured builder is absent.
-    expect((screen.getByPlaceholderText('panels.sendWebhook.body.jsonPlaceholder') as HTMLTextAreaElement).value).toBe(raw);
+    expect(
+      (
+        screen.getByPlaceholderText(
+          'panels.sendWebhook.body.jsonPlaceholder',
+        ) as HTMLTextAreaElement
+      ).value,
+    ).toBe(raw);
     expect(screen.queryByText(ADD_FIELD)).toBeNull();
     // F3: deriving the mode must not fire onChange on mount (no spurious dirty).
     expect(handle.changeCount()).toBe(0);
@@ -113,11 +128,19 @@ describe('WebhookBodyConfig — structured builder (EVO-1742)', () => {
     });
     await user.click(screen.getByText(MODE_RAW));
     expect(handle.data().bodyMode).toBe('raw');
-    expect((screen.getByPlaceholderText('panels.sendWebhook.body.jsonPlaceholder') as HTMLTextAreaElement).value).toContain('"a": 1');
+    expect(
+      (
+        screen.getByPlaceholderText(
+          'panels.sendWebhook.body.jsonPlaceholder',
+        ) as HTMLTextAreaElement
+      ).value,
+    ).toContain('"a": 1');
 
     await user.click(screen.getByText(MODE_STRUCTURED));
     expect(handle.data().bodyMode).toBe('structured');
-    expect(handle.data().bodyStructured!.map(f => [f.key, f.value, f.type])).toEqual([['a', '1', 'number']]);
+    expect(handle.data().bodyStructured!.map(f => [f.key, f.value, f.type])).toEqual([
+      ['a', '1', 'number'],
+    ]);
   });
 
   it('AC6: refuses raw→structured for nested bodies and shows the hint', async () => {

@@ -1,26 +1,26 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  Badge,
-  Button,
-  Input,
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Card,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  Textarea,
-  Switch,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/compat';
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, Smile, Braces } from 'lucide-react';
 import EmojiPickerReact, { Theme } from 'emoji-picker-react';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -100,21 +100,22 @@ const MessageTextarea: React.FC<{
       />
       <div className="absolute top-2 right-2 flex items-center gap-1">
         <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0"
-              aria-label={emojiLabel}
-              title={emojiLabel}
-            >
-              <Smile className="h-4 w-4" />
-            </Button>
+          <PopoverTrigger
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={emojiLabel}
+                title={emojiLabel}
+              />
+            }
+          >
+            <Smile />
           </PopoverTrigger>
           {/* Radix Popover portals + auto-flips, so the panel stays anchored to the
               button and inside the dialog instead of overflowing off-screen. */}
-          <PopoverContent align="end" className="w-auto p-0 border-none">
+          <PopoverPopup align="end" className="w-auto p-0 border-none">
             <EmojiPickerReact
               onEmojiClick={emojiData => insertAtCursor(emojiData.emoji)}
               theme={isDark ? Theme.DARK : Theme.LIGHT}
@@ -123,22 +124,23 @@ const MessageTextarea: React.FC<{
               previewConfig={{ showPreview: false }}
               lazyLoadEmojis
             />
-          </PopoverContent>
+          </PopoverPopup>
         </Popover>
         <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0"
-              aria-label={variableLabel}
-              title={variableLabel}
-            >
-              <Braces className="h-4 w-4" />
-            </Button>
+          <PopoverTrigger
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={variableLabel}
+                title={variableLabel}
+              />
+            }
+          >
+            <Braces />
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-72 space-y-3">
+          <PopoverPopup align="end" className="w-72 space-y-3">
             {variableHelpText && (
               <p className="text-xs text-muted-foreground">{variableHelpText}</p>
             )}
@@ -149,10 +151,10 @@ const MessageTextarea: React.FC<{
               className="w-full"
               onClick={insertVariable}
             >
-              <Braces className="h-4 w-4 mr-2" />
+              <Braces />
               {variableLabel}
             </Button>
-          </PopoverContent>
+          </PopoverPopup>
         </Popover>
       </div>
     </div>
@@ -260,7 +262,9 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
 
   useEffect(() => {
     setFormData(prev => {
-      const currentByName = new Map((prev.variables ?? []).map(variable => [variable.name, variable]));
+      const currentByName = new Map(
+        (prev.variables ?? []).map(variable => [variable.name, variable]),
+      );
       const nextVariables = detectedVariables.map(variable => ({
         ...variable,
         ...currentByName.get(variable.name),
@@ -345,11 +349,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
   // backend and drive the consumption surfaces (EVO-1971): `example` prefills the
   // composer / Start-Conversation value, `source` auto-maps automation
   // `send_template` to `{{contact.x}}`, `label` is the human-readable caption.
-  const updateVariable = (
-    name: string,
-    field: 'label' | 'example' | 'source',
-    value: string,
-  ) => {
+  const updateVariable = (name: string, field: 'label' | 'example' | 'source', value: string) => {
     setFormData(prev => ({
       ...prev,
       variables: prev.variables?.map(variable =>
@@ -364,9 +364,9 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="!max-w-[95vw] !w-[95vw] max-h-[90vh] overflow-hidden"
-        style={{ maxWidth: '95vw', width: '95vw' }}
+      <DialogPopup
+        bottomStickOnMobile={false}
+        className="max-h-[90vh] w-[95vw] max-w-[95vw]"
       >
         <DialogHeader>
           <DialogTitle>
@@ -376,7 +376,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
+        <DialogPanel className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Form */}
           <div className="space-y-4">
             {/* Optional channel/provider selector (global screen only) */}
@@ -384,20 +384,21 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
               <div>
                 <label className="block text-sm font-medium mb-2">{channelSelectLabel}</label>
                 <Select
-                  value={channelType}
-                  onValueChange={value => onChannelTypeChange?.(value)}
+                  items={channelOptions}
+                  value={channelType || null}
+                  onValueChange={value => onChannelTypeChange?.(String(value ?? ''))}
                   disabled={mode === 'edit'}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     {channelOptions.map(option => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
               </div>
             )}
@@ -419,24 +420,28 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                   {t('settings.messageTemplates.form.category')}
                 </label>
                 <Select
-                  value={formData.category}
-                  onValueChange={(value: string) =>
+                  items={channelConfig.categories.map((cat: string) => ({
+                    value: cat,
+                    label: t(`settings.messageTemplates.form.categories.${cat.toLowerCase()}`),
+                  }))}
+                  value={formData.category || null}
+                  onValueChange={value =>
                     setFormData(prev => ({
                       ...prev,
-                      category: value as TemplateFormData['category'],
+                      category: String(value ?? '') as TemplateFormData['category'],
                     }))
                   }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     {channelConfig.categories.map((cat: string) => (
                       <SelectItem key={cat} value={cat}>
                         {t(`settings.messageTemplates.form.categories.${cat.toLowerCase()}`)}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
                 {categoryHelp && (
                   <p className="text-xs text-muted-foreground mt-1">{categoryHelp}</p>
@@ -450,17 +455,24 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                   {t('settings.messageTemplates.form.language')}
                 </label>
                 <Select
-                  value={formData.language}
-                  onValueChange={value => setFormData(prev => ({ ...prev, language: value }))}
+                  items={[
+                    { value: 'pt_BR', label: 'Português (BR)' },
+                    { value: 'en_US', label: 'English (US)' },
+                    { value: 'es_ES', label: 'Español' },
+                  ]}
+                  value={formData.language || null}
+                  onValueChange={value =>
+                    setFormData(prev => ({ ...prev, language: String(value ?? '') }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     <SelectItem value="pt_BR">Português (BR)</SelectItem>
                     <SelectItem value="en_US">English (US)</SelectItem>
                     <SelectItem value="es_ES">Español</SelectItem>
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
               </div>
               <div>
@@ -468,24 +480,28 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                   {t('settings.messageTemplates.form.templateType')}
                 </label>
                 <Select
-                  value={formData.template_type}
-                  onValueChange={(value: string) =>
+                  items={channelConfig.templateTypes.map((type: string) => ({
+                    value: type,
+                    label: t(`settings.messageTemplates.form.templateTypes.${type}`),
+                  }))}
+                  value={formData.template_type || null}
+                  onValueChange={value =>
                     setFormData(prev => ({
                       ...prev,
-                      template_type: value as TemplateFormData['template_type'],
+                      template_type: String(value ?? '') as TemplateFormData['template_type'],
                     }))
                   }
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     {channelConfig.templateTypes.map((type: string) => (
                       <SelectItem key={type} value={type}>
                         {t(`settings.messageTemplates.form.templateTypes.${type}`)}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
               </div>
             </div>
@@ -501,23 +517,49 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                         {t('settings.messageTemplates.form.headerFormat')}
                       </label>
                       <Select
-                        value={formData.headerFormat}
-                        onValueChange={(value: string) =>
+                        items={[
+                          {
+                            value: 'NONE',
+                            label:
+                              headerNoneLabel ??
+                              t('settings.messageTemplates.form.headerFormats.none'),
+                          },
+                          {
+                            value: 'TEXT',
+                            label: t('settings.messageTemplates.form.headerFormats.text'),
+                          },
+                          {
+                            value: 'IMAGE',
+                            label: t('settings.messageTemplates.form.headerFormats.image'),
+                          },
+                          {
+                            value: 'VIDEO',
+                            label: t('settings.messageTemplates.form.headerFormats.video'),
+                          },
+                          {
+                            value: 'DOCUMENT',
+                            label: t('settings.messageTemplates.form.headerFormats.document'),
+                          },
+                        ]}
+                        value={formData.headerFormat || null}
+                        onValueChange={next => {
+                          const value = String(next ?? '');
                           setFormData(prev => ({
                             ...prev,
                             headerFormat: value as TemplateFormData['headerFormat'],
                             // No header → drop any previously typed header text so it
                             // is not folded into the stored content.
                             ...(value === 'NONE' ? { headerText: '' } : {}),
-                          }))
-                        }
+                          }));
+                        }}
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup alignItemWithTrigger={false}>
                           <SelectItem value="NONE">
-                            {headerNoneLabel ?? t('settings.messageTemplates.form.headerFormats.none')}
+                            {headerNoneLabel ??
+                              t('settings.messageTemplates.form.headerFormats.none')}
                           </SelectItem>
                           <SelectItem value="TEXT">
                             {t('settings.messageTemplates.form.headerFormats.text')}
@@ -531,7 +573,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                           <SelectItem value="DOCUMENT">
                             {t('settings.messageTemplates.form.headerFormats.document')}
                           </SelectItem>
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                     {formData.headerFormat === 'TEXT' && (
@@ -597,22 +639,33 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                         onClick={addButton}
                         disabled={(formData.buttons?.length || 0) >= 3}
                       >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus />
                         {t('settings.messageTemplates.form.addButton')}
                       </Button>
                     </div>
 
                     {formData.buttons?.map((button, index) => (
-                      <Card key={index} className="p-3 mb-2">
+                      <div key={index} className="mb-2 rounded-xl border bg-muted/24 p-3">
                         <div className="grid grid-cols-2 gap-2 mb-2">
                           <Select
-                            value={button.type}
-                            onValueChange={(value: string) => updateButton(index, 'type', value)}
+                            items={[
+                              {
+                                value: 'QUICK_REPLY',
+                                label: t('settings.messageTemplates.form.buttonTypes.quickReply'),
+                              },
+                              { value: 'URL', label: t('settings.messageTemplates.form.buttonTypes.url') },
+                              {
+                                value: 'PHONE_NUMBER',
+                                label: t('settings.messageTemplates.form.buttonTypes.phone'),
+                              },
+                            ]}
+                            value={button.type || null}
+                            onValueChange={value => updateButton(index, 'type', String(value ?? ''))}
                           >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectPopup alignItemWithTrigger={false}>
                               <SelectItem value="QUICK_REPLY">
                                 {t('settings.messageTemplates.form.buttonTypes.quickReply')}
                               </SelectItem>
@@ -622,15 +675,16 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                               <SelectItem value="PHONE_NUMBER">
                                 {t('settings.messageTemplates.form.buttonTypes.phone')}
                               </SelectItem>
-                            </SelectContent>
+                            </SelectPopup>
                           </Select>
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() => removeButton(index)}
+                            aria-label={t('actions.delete')}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 />
                           </Button>
                         </div>
 
@@ -656,7 +710,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                             placeholder={t('settings.messageTemplates.form.phonePlaceholder')}
                           />
                         )}
-                      </Card>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -714,7 +768,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                     `source` (auto-maps automation send_template to {{contact.x}}). */}
                 <div className="space-y-3">
                   {formData.variables?.map(variable => (
-                    <Card key={variable.name} className="p-3 space-y-2">
+                    <div key={variable.name} className="space-y-2 rounded-xl border bg-muted/24 p-3">
                       <Badge variant="secondary">{`{{${variable.name}}}`}</Badge>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <Input
@@ -733,7 +787,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
                           placeholder={t('settings.messageTemplates.form.variableSource')}
                         />
                       </div>
-                    </Card>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -760,9 +814,9 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
           <div className="lg:sticky lg:top-0 lg:self-start">
             <TemplatePreview template={formData} channelType={channelType} t={t} />
           </div>
-        </div>
+        </DialogPanel>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             {t('settings.messageTemplates.form.cancel')}
           </Button>
@@ -772,7 +826,7 @@ const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
               : t('settings.messageTemplates.form.save')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 };

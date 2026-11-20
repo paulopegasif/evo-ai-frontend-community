@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Checkbox,
-} from '@/components/ui/compat';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { WaitNodeData } from '../WaitNode';
 import {
   EventConfiguration,
@@ -210,49 +205,49 @@ export function WaitEventConfig({ data, onChange, journeyId }: WaitEventConfigPr
   return (
     <div className="space-y-4">
       {/* Seletor de Tipo */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">{t('panels.waitComponents.event.typeLabel')}</Label>
-        <Select value={eventType} onValueChange={handleEventTypeChange}>
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+      <Field>
+        <FieldLabel>{t('panels.waitComponents.event.typeLabel')}</FieldLabel>
+        <Select
+          items={EVENT_TYPE_OPTIONS}
+          value={eventType || null}
+          onValueChange={value => handleEventTypeChange(String(value ?? ''))}
+        >
+          <SelectTrigger className="w-full">
             <SelectValue placeholder={t('panels.waitComponents.event.selectTypePlaceholder')} />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {EVENT_TYPE_OPTIONS.map(option => (
               <SelectItem
                 key={option.value}
                 value={option.value}
-                className="text-sidebar-foreground"
               >
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {/* Configuração específica do tipo */}
       {eventType && (
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">
+        <div className="flex flex-col gap-3">
+          <h4 className="font-medium text-sm">
             {t('panels.waitComponents.event.configurationLabel')} -{' '}
             {EVENT_TYPE_OPTIONS.find(t => t.value === eventType)?.label}
-          </Label>
+          </h4>
           {renderEventConfiguration()}
         </div>
       )}
 
       {/* Caso contrário (substituindo o timeout antigo) */}
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col gap-3 rounded-lg border bg-background p-4">
+        <Label className="flex items-center gap-2 font-medium text-sm">
           <Checkbox
-            id="fallback"
             checked={data.enableFallback || false}
-            onCheckedChange={handleFallbackChange}
+            onCheckedChange={checked => handleFallbackChange(checked)}
           />
-          <Label htmlFor="fallback" className="text-sm font-medium">
-            {t('panels.waitComponents.event.fallbackLabel')}
-          </Label>
-        </div>
+          {t('panels.waitComponents.event.fallbackLabel')}
+        </Label>
 
         <p className="text-xs text-muted-foreground pl-6">
           {t('panels.waitComponents.event.fallbackDescription')}
@@ -260,47 +255,51 @@ export function WaitEventConfig({ data, onChange, journeyId }: WaitEventConfigPr
 
         {data.enableFallback && (
           <div className="grid grid-cols-2 gap-3 pl-6">
-            <div className="space-y-2">
-              <Label className="text-xs">
+            <Field>
+              <FieldLabel className="text-xs">
                 {t('panels.waitComponents.event.fallbackTimeLabel')}
-              </Label>
+              </FieldLabel>
               <Input
                 type="number"
                 min="1"
                 value={data.fallbackTime || 1}
                 onChange={e => handleFallbackTimeChange(e.target.value)}
                 placeholder={t('panels.waitComponents.event.fallbackTimePlaceholder')}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
               />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs">
+            </Field>
+            <Field>
+              <FieldLabel className="text-xs">
                 {t('panels.waitComponents.event.fallbackUnitLabel')}
-              </Label>
-              <Select value={data.fallbackUnit || 'hours'} onValueChange={handleFallbackUnitChange}>
-                <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
+              </FieldLabel>
+              <Select
+                items={TIME_UNIT_OPTIONS}
+                value={data.fallbackUnit || 'hours'}
+                onValueChange={value =>
+                  value != null && handleFallbackUnitChange(value as 'minutes' | 'hours' | 'days')
+                }
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-sidebar border-sidebar-border">
+                <SelectPopup alignItemWithTrigger={false}>
                   {TIME_UNIT_OPTIONS.map(option => (
                     <SelectItem
                       key={option.value}
                       value={option.value}
-                      className="text-sidebar-foreground"
                     >
                       {option.label}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
-            </div>
+            </Field>
           </div>
         )}
       </div>
 
       {/* Preview */}
-      <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800/30">
-        <p className="text-sm text-green-800 dark:text-green-200">
+      <div className="rounded-xl border border-success/24 bg-success/8 p-4">
+        <p className="text-sm text-success-foreground">
           <strong>{t('panels.waitComponents.event.summaryLabel')}:</strong>{' '}
           {t('panels.waitComponents.event.summaryText', { event: getEventSummary() })}.
           {data.enableFallback && data.fallbackTime && data.fallbackUnit && (

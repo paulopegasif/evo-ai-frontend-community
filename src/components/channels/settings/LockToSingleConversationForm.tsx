@@ -1,4 +1,4 @@
-import { Switch } from '@/components/ui/compat';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface LockFormData {

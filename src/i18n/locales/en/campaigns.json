@@ -245,7 +245,11 @@
       "activeFilters": "Active Filters",
       "noFiltersAdded": "No filters added. Add filters to segment your audience.",
       "totalContacts": "Total contacts in base",
-      "basedOnFilters": "Based on {{count}} applied filter(s)"
+      "basedOnFilters": "Based on {{count}} applied filter(s)",
+      "addFilter": "Add filter",
+      "removeFilter": "Remove filter {{label}}",
+      "operatorLabel": "Operator",
+      "typeLabel": "Filter type"
     },
     "step3": {
       "title": "Content",
@@ -255,7 +259,8 @@
       "inboxDescription": "Select only 1 inbox for this campaign",
       "health": "health",
       "templatesLabel": "Templates",
-      "templatesSelected": "{{count}} selected"
+      "templatesSelected": "{{count}} selected",
+      "noContentPreview": "No content preview"
     },
     "step4": {
       "title": "Settings",
@@ -305,7 +310,45 @@
       "noLimitDescription": "No limit - Send as fast as possible",
       "hours": "{{count}} hours",
       "hoursDay": "{{count}} hours ({{days}} day)",
-      "hoursDays": "{{count}} hours ({{days}} days)"
+      "hoursDays": "{{count}} hours ({{days}} days)",
+      "ui": {
+        "sendStrategy": "Sending strategy",
+        "sendStrategyDescription": "How the selected templates are distributed across contacts",
+        "distributionStrategy": "Distribution strategy",
+        "strategyOptions": {
+          "round_robin": "Sequential",
+          "weighted": "Split",
+          "random": "Random",
+          "ab_test": "A/B test"
+        },
+        "weightPerTemplate": "Distribution per template (%)",
+        "templateFallback": "Template {{id}}",
+        "weightFor": "Weight for {{name}}",
+        "total": "Total",
+        "winnerCriteria": "Winner criteria",
+        "openRate": "Open rate",
+        "clickRate": "Click rate",
+        "testSample": "Test sample",
+        "baseMessage": "Base message: {{value}}%",
+        "remainderWinner": "Remainder (winner): {{value}}%",
+        "testSuffix": "(test)",
+        "winnerMessage": "Winning message",
+        "skipWinner": "Don't send automatically",
+        "sendAt": "Send at",
+        "advancedOptions": "Advanced options",
+        "advancedOptionsDescription": "Sending pace, allowed hours and retries",
+        "spreadWindow": "Distribution window",
+        "spreadWindowDescription": "Interval between the campaign's sends",
+        "spread": {
+          "none": "No interval",
+          "minutes": "{{count}} minutes",
+          "hours": "{{count}} hours",
+          "hoursMinutes": "{{hours}} h {{minutes}} min"
+        },
+        "timeWindowsHint": "Limit sends to the allowed hours and days",
+        "retry": "Automatic retries",
+        "retryDescription": "Try to resend when a send fails"
+      }
     },
     "actions": {
       "continue": "Continue",
@@ -328,6 +371,40 @@
       "viewCampaigns": "View campaigns",
       "newCampaign": "New campaign",
       "keepEditing": "Keep editing"
+    },
+    "step5": {
+      "general": "General information",
+      "name": "Name",
+      "description": "Description",
+      "channelAndType": "Channel and type",
+      "audience": "Audience",
+      "selection": "Selection",
+      "estimatedContacts": "Estimated contacts",
+      "content": "Content",
+      "inbox": "Inbox",
+      "inboxSelected": "Inbox selected",
+      "noneSelected": "None selected",
+      "templates": "Templates",
+      "templatesSelected": "{{count}} selected",
+      "settings": "Settings",
+      "scheduling": "Scheduling",
+      "sendImmediately": "Send immediately",
+      "notAvailable": "N/A",
+      "distributionStrategy": "Distribution strategy",
+      "weightsPerTemplate": "Weights per template",
+      "winnerCriteria": "Winner criteria",
+      "sampleSize": "Sample size",
+      "sampleOfContacts": "{{value}}% of contacts",
+      "testPhase": "Test phase",
+      "immediate": "Immediate",
+      "winnerSend": "Winner send",
+      "manual": "Manual",
+      "winnerNotAutomatic": "The winner won't be sent automatically",
+      "sendInterval": "Send interval",
+      "allowedHours": "Allowed hours",
+      "noTimeRestriction": "No time restriction",
+      "rateLimit": "Rate limit",
+      "retriesEnabled": "Retries enabled"
     }
   }
 }

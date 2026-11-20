@@ -1,5 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import { Card, CardContent, Switch } from '@/components/ui/compat';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { Check, Users, Settings, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -164,9 +166,9 @@ export default function CollaboratorsForm({
       case 'busy':
         return 'bg-warning';
       case 'offline':
-        return 'bg-gray-400';
+        return 'bg-muted-foreground/48';
       default:
-        return 'bg-gray-400';
+        return 'bg-muted-foreground/48';
     }
   };
 
@@ -192,11 +194,16 @@ export default function CollaboratorsForm({
 
   if (isLoadingAgents) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">{t('settings.collaborators.agents.loading')}</p>
-        </div>
+      <div className="flex flex-col gap-3" aria-busy="true" aria-label={t('settings.collaborators.agents.loading')}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3 rounded-xl border p-3">
+            <Skeleton className="size-9 rounded-full" />
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-3 w-56" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -205,7 +212,7 @@ export default function CollaboratorsForm({
     <div className="space-y-6">
       {/* Agents Selection */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-center gap-3 pb-4 border-b border-border">
             <div className="p-2 rounded-lg bg-primary/10">
               <Users className="w-5 h-5 text-primary" />
@@ -255,7 +262,7 @@ export default function CollaboratorsForm({
                         isSelected ? 'border-primary bg-primary' : 'border-border'
                       }`}
                     >
-                      {isSelected && <Check className="w-3 h-3 text-white" />}
+                      {isSelected && <Check className="size-3 text-primary-foreground" />}
                     </div>
 
                     {/* Avatar */}
@@ -275,7 +282,7 @@ export default function CollaboratorsForm({
                       )}
                       {/* Status indicator */}
                       <div
-                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(
+                        className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${getStatusColor(
                           agent.availability_status,
                         )}`}
                       />
@@ -291,7 +298,7 @@ export default function CollaboratorsForm({
                               const roleKey = getRoleKey(agent.role).toLowerCase();
                               return roleKey === 'account_owner';
                             })()
-                              ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                              ? 'bg-primary/12 text-primary'
                               : 'bg-info/12 text-info-foreground'
                           }`}
                         >
@@ -335,12 +342,12 @@ export default function CollaboratorsForm({
               </div>
             )}
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Auto Assignment */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-center gap-3 pb-4 border-b border-border">
             <div className="p-2 rounded-lg bg-primary/10">
               <Settings className="w-5 h-5 text-primary" />
@@ -389,7 +396,7 @@ export default function CollaboratorsForm({
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

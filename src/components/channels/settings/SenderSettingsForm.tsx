@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Input, Card, CardContent } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { User, Building } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -75,7 +77,7 @@ const SenderNamePreview: React.FC<SenderNamePreviewProps> = ({
                   : 'border-border'
               }`}
             >
-              <CardContent className="p-4">
+              <CardPanel className="p-4">
                 <div className="flex flex-col gap-3">
                   {/* Header */}
                   <div className="flex items-center gap-2">
@@ -105,7 +107,7 @@ const SenderNamePreview: React.FC<SenderNamePreviewProps> = ({
                     </span>
                     <div className="flex items-center gap-2">
                       {/* Avatar */}
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-xs font-medium">
                         {getUserName(option).charAt(0).toUpperCase()}
                       </div>
 
@@ -123,7 +125,7 @@ const SenderNamePreview: React.FC<SenderNamePreviewProps> = ({
                     </div>
                   </div>
                 </div>
-              </CardContent>
+              </CardPanel>
             </Card>
           </button>
         );

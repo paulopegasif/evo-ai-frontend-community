@@ -1,13 +1,7 @@
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, X, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { VariableSelect } from './VariableSelect';
@@ -93,24 +87,18 @@ export function VariableMapping({
           <Label className="text-sm font-medium">{t('environmentManager.title')}</Label>
           <p className="text-xs text-muted-foreground mt-1">{t('environmentManager.description')}</p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={addMapping}
-          className="flex items-center gap-1"
-        >
-          <Plus className="w-4 h-4" />
+        <Button type="button" variant="outline" size="sm" onClick={addMapping}>
+          <Plus />
           {t('environmentManager.customVariables.actions.new')}
         </Button>
       </div>
 
       {/* Mostrar mapeamentos configurados em formato compacto */}
       {validMappings.length > 0 && (
-        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            <ArrowRight className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+        <div className="rounded-lg border border-info/24 bg-info/8 p-3">
+          <div className="mb-2 flex items-center gap-2">
+            <ArrowRight className="size-4 text-info-foreground" aria-hidden="true" />
+            <span className="font-medium text-info-foreground text-sm">
               {t('environmentManager.customVariables.empty.count', { count: validMappings.length })}
             </span>
           </div>
@@ -118,17 +106,17 @@ export function VariableMapping({
             {validMappings.map(mapping => (
               <div
                 key={mapping.id}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded text-xs max-w-full"
+                className="inline-flex max-w-full items-center gap-1 rounded bg-info/12 px-2 py-1 text-info-foreground text-xs"
               >
-                <code className="font-mono text-blue-700 dark:text-blue-300 truncate max-w-[150px]">
+                <code className="max-w-[150px] truncate font-mono">
                   {mapping.sourcePath}
                 </code>
-                <ArrowRight className="w-3 h-3 text-blue-500 flex-shrink-0" />
-                <span className="font-medium text-blue-800 dark:text-blue-200 truncate max-w-[120px]">
+                <ArrowRight className="size-3 shrink-0 opacity-72" aria-hidden="true" />
+                <span className="max-w-[120px] truncate font-medium">
                   ${mapping.variableName}
                 </span>
                 {mapping.transform && mapping.transform !== 'none' && (
-                  <span className="text-blue-600 dark:text-blue-400 flex-shrink-0">
+                  <span className="shrink-0 opacity-80">
                     ({mapping.transform})
                   </span>
                 )}
@@ -139,7 +127,7 @@ export function VariableMapping({
       )}
 
       {mappings.length === 0 ? (
-        <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
+        <div className="rounded-lg border-2 border-dashed py-8 text-center">
           <p className="text-sm text-muted-foreground">
             {t('environmentManager.customVariables.empty.title')}
           </p>
@@ -147,9 +135,9 @@ export function VariableMapping({
             type="button"
             variant="ghost"
             onClick={addMapping}
-            className="mt-2 text-blue-600 hover:text-blue-700"
+            className="mt-2 text-primary"
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus />
             {t('environmentManager.customVariables.actions.new')}
           </Button>
         </div>
@@ -158,7 +146,7 @@ export function VariableMapping({
           {mappings.map(mapping => (
             <div
               key={mapping.id}
-              className="p-3 border border-border rounded-lg bg-muted/48"
+              className="rounded-lg border bg-muted/24 p-3"
             >
               <div className="flex items-end gap-2">
                 {/* Caminho de origem */}
@@ -175,7 +163,12 @@ export function VariableMapping({
                           ? mapping.sourcePath
                           : '__custom__'
                       }
-                      onValueChange={value => {
+                      items={[
+                        ...paths.map(path => ({ value: path, label: path })),
+                        { value: '__custom__', label: t('environmentManager.customVariables.actions.new') },
+                      ]}
+                      onValueChange={next => {
+                        const value = next == null ? '' : String(next);
                         if (value === '__custom__') {
                           setShowCustomInput(prev => ({ ...prev, [mapping.id]: true }));
                         } else {
@@ -184,35 +177,31 @@ export function VariableMapping({
                         }
                       }}
                     >
-                      <SelectTrigger className="bg-card border-border h-8 w-full">
+                      <SelectTrigger size="sm" className="w-full min-w-0">
                         <SelectValue placeholder={t('environmentManager.searchPlaceholder')} />
                       </SelectTrigger>
-                      <SelectContent className="bg-card border-border max-h-[200px]">
+                      <SelectPopup alignItemWithTrigger={false} className="max-h-[200px]">
                         {paths.map(path => (
-                          <SelectItem
-                            key={path}
-                            value={path}
-                            className="text-foreground"
-                          >
+                          <SelectItem key={path} value={path}>
                             <span className="font-mono text-xs">{path}</span>
                           </SelectItem>
                         ))}
-                        <SelectItem value="__custom__" className="text-blue-600">
+                        <SelectItem value="__custom__" className="text-primary">
                           <div className="flex items-center gap-2">
-                            <Plus className="w-3 h-3" />
+                            <Plus className="size-3" />
                             <span className="text-xs">
                               {t('environmentManager.customVariables.actions.new')}
                             </span>
                           </div>
                         </SelectItem>
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
                   ) : (
                     <Input
                       placeholder={t('environmentManager.form.fields.name.placeholder')}
                       value={mapping.sourcePath || ''}
                       onChange={e => updateMapping(mapping.id, 'sourcePath', e.target.value)}
-                      className="bg-card border-border font-mono text-xs h-8"
+                      size="sm" className="font-mono text-xs"
                     />
                   )}
                 </div>
@@ -235,7 +224,7 @@ export function VariableMapping({
                           updateMapping(mapping.id, 'sourcePath', '');
                         }
                       }}
-                      className="bg-card border-border font-mono text-xs h-8"
+                      size="sm" className="font-mono text-xs"
                       autoFocus
                     />
                   </div>
@@ -243,7 +232,7 @@ export function VariableMapping({
 
                 {/* Seta visual */}
                 <div className="pb-2">
-                  <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                  <ArrowRight className="size-4 text-muted-foreground" aria-hidden="true" />
                 </div>
 
                 {/* Variável destino */}
@@ -258,7 +247,7 @@ export function VariableMapping({
                     placeholder={t('environmentManager.searchPlaceholder')}
                     showCreateOption={true}
                     showSystemVariables={false}
-                    className="bg-card border-border h-8 text-xs w-full"
+                    className="w-full min-w-0 text-xs"
                   />
                 </div>
 
@@ -268,10 +257,13 @@ export function VariableMapping({
                     {t('environmentManager.form.fields.type.label')}
                   </Label>
                   <Select
+                    items={TRANSFORM_OPTIONS}
                     value={mapping.transform || 'none'}
-                    onValueChange={value => updateMapping(mapping.id, 'transform', value)}
+                    onValueChange={next =>
+                      updateMapping(mapping.id, 'transform', next == null ? '' : String(next))
+                    }
                   >
-                    <SelectTrigger className="bg-card border-border h-8 w-full">
+                    <SelectTrigger size="sm" className="w-full min-w-0">
                       <SelectValue>
                         {mapping.transform && (
                           <span
@@ -286,26 +278,27 @@ export function VariableMapping({
                         )}
                       </SelectValue>
                     </SelectTrigger>
-                    <SelectContent className="bg-card border-border">
+                    <SelectPopup alignItemWithTrigger={false}>
                       {TRANSFORM_OPTIONS.map(option => (
                         <SelectItem key={option.value} value={option.value} className="text-xs">
                           {option.value === 'none' ? 'None' : option.label}
                         </SelectItem>
                       ))}
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
 
                 {/* Botão remover */}
-                <div className="pb-2">
+                <div className="pb-0.5">
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
+                    size="icon-sm"
                     onClick={() => removeMapping(mapping.id)}
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8 p-0"
+                    className="text-destructive-foreground hover:bg-destructive/8"
+                    aria-label={t('environmentManager.customVariables.actions.delete')}
                   >
-                    <X className="w-4 h-4" />
+                    <X />
                   </Button>
                 </div>
               </div>

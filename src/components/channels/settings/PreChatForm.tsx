@@ -1,14 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import {
-  Card,
-  CardContent,
-  Button,
-  Switch,
-  Textarea,
-  Select,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Select, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Info, Settings, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -146,7 +141,7 @@ export default function PreChatForm({
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-border">
             <div className="flex items-center gap-3">
@@ -177,7 +172,7 @@ export default function PreChatForm({
                   <div className="text-sm text-muted-foreground">{t('settings.preChatForm.activeFields')}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">{requiredFieldsCount}</div>
+                  <div className="text-2xl font-bold text-warning-foreground">{requiredFieldsCount}</div>
                   <div className="text-sm text-muted-foreground">{t('settings.preChatForm.requiredFields')}</div>
                 </div>
               </div>
@@ -207,21 +202,21 @@ export default function PreChatForm({
                   onClick={() => setShowPreview(!showPreview)}
                   className="flex items-center gap-2"
                 >
-                  <Eye className="h-4 w-4" />
+                  <Eye />
                   {showPreview ? t('settings.preChatForm.hidePreview') : t('settings.preChatForm.showPreview')}
                 </Button>
               </div>
 
               {/* Preview Mode */}
               {showPreview && (
-                <div className="space-y-4 p-4 border border-border rounded-lg bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
+                <div className="space-y-4 p-4 border border-border rounded-lg bg-muted/48">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Settings className="h-4 w-4" />
                     {t('settings.preChatForm.formPreview')}
                   </div>
 
                   {preChatMessage && (
-                    <div className="p-3 bg-white dark:bg-card rounded border text-sm">
+                    <div className="p-3 bg-card rounded border text-sm">
                       {preChatMessage}
                     </div>
                   )}
@@ -239,11 +234,11 @@ export default function PreChatForm({
                             <Textarea
                               placeholder={field.placeholder || ''}
                               disabled
-                              className="bg-white dark:bg-card"
+                              className="bg-card"
                             />
                           ) : field.type === 'select' ? (
                             <Select disabled>
-                              <SelectTrigger className="bg-white dark:bg-card">
+                              <SelectTrigger className="bg-card">
                                 <SelectValue placeholder={field.placeholder || ''} />
                               </SelectTrigger>
                             </Select>
@@ -252,7 +247,7 @@ export default function PreChatForm({
                               type={field.type}
                               placeholder={field.placeholder || ''}
                               disabled
-                              className="w-full px-3 py-2 border border-border rounded-md bg-white dark:bg-card text-sm"
+                              className="w-full px-3 py-2 border border-border rounded-md bg-card text-sm"
                             />
                           )}
                         </div>
@@ -301,7 +296,7 @@ export default function PreChatForm({
             </div>
           )}
 
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );
