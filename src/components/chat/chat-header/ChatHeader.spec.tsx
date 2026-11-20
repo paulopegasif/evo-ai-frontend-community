@@ -113,7 +113,7 @@ const openPipelineAndSelectStage = async (
   stageName: string,
 ) => {
   // Open main dropdown
-  const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"]')!;
+  const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
   await user.click(menuTrigger);
 
   // Find and focus the pipeline.addTo sub-trigger, then open it with ArrowRight
@@ -156,7 +156,7 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalledWith({ is_active: true }));
 
     const user = userEvent.setup();
-    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"]')!;
+    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
     await user.click(menuTrigger);
 
     await waitFor(() =>
@@ -360,7 +360,7 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalled());
 
     const user = userEvent.setup();
-    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"]')!;
+    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
     await user.click(menuTrigger);
 
     const addToTrigger = await screen.findByText('pipeline.addTo');
@@ -424,7 +424,7 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalled());
 
     const user = userEvent.setup();
-    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"]')!;
+    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
     await user.click(menuTrigger);
 
     const addToTrigger = await screen.findByText('pipeline.addTo');

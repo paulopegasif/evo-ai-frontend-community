@@ -334,7 +334,8 @@
     "closeConversation": "Cerrar conversación",
     "phoneNumber": "Número de teléfono",
     "openContactPanel": "Abrir detalles del contacto",
-    "closeContactPanel": "Cerrar detalles del contacto"
+    "closeContactPanel": "Cerrar detalles del contacto",
+    "openContact": "Ver detalles del contacto"
   },
   "chatSidebar": {
     "segments": {

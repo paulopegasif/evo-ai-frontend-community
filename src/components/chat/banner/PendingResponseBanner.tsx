@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/compat';
-import { Badge } from '@/components/ui/compat';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Shield, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -68,21 +68,21 @@ export default function PendingResponseBanner({
   }
 
   return (
-    <div className="mx-4 mb-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+    <div className="mx-4 mb-4 rounded-xl border border-primary/24 bg-primary/4 p-3">
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 p-2 bg-primary/10 rounded-lg">
-          <Shield className="h-5 w-5 text-primary" />
+        <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary/12">
+          <Shield className="size-4 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="default" className="bg-primary/20 text-primary border-primary/30">
+            <Badge variant="info">
               {t('messages.moderation.banner.pendingApproval')}
             </Badge>
             <span className="text-xs text-muted-foreground">
               {t('messages.moderation.banner.responseReady')}
             </span>
           </div>
-          <div className="bg-background rounded-md p-3 mb-3 border border-border">
+          <div className="mb-3 rounded-lg border bg-background p-3">
             <p className="text-sm font-medium mb-1 text-foreground">
               {t('messages.moderation.banner.generatedResponse')}
             </p>
@@ -93,9 +93,8 @@ export default function PendingResponseBanner({
               size="sm"
               onClick={handleApprove}
               disabled={isProcessing}
-              className="flex items-center gap-2"
             >
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 />
               {t('messages.moderation.banner.approve')}
             </Button>
             <Button
@@ -103,19 +102,17 @@ export default function PendingResponseBanner({
               variant="outline"
               onClick={handleRegenerate}
               disabled={isProcessing}
-              className="flex items-center gap-2"
             >
-              <RefreshCw className={`h-4 w-4 ${isProcessing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={isProcessing ? 'animate-spin' : undefined} />
               {t('messages.moderation.banner.regenerate')}
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="destructive-outline"
               onClick={handleReject}
               disabled={isProcessing}
-              className="flex items-center gap-2 text-destructive hover:text-destructive"
             >
-              <XCircle className="h-4 w-4" />
+              <XCircle />
               {t('messages.moderation.banner.reject')}
             </Button>
           </div>

@@ -339,7 +339,8 @@
     "closeConversation": "Close conversation",
     "phoneNumber": "Phone number",
     "openContactPanel": "Open contact details",
-    "closeContactPanel": "Close contact details"
+    "closeContactPanel": "Close contact details",
+    "openContact": "View contact details"
   },
   "chatSidebar": {
     "segments": {
