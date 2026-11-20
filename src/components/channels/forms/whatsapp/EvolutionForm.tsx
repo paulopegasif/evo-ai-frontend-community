@@ -4,6 +4,15 @@ import { FormCheckbox } from '../../shared/FormCheckbox';
 import { FormSection } from '../../shared/FormSection';
 import { FormData } from '@/hooks/channels/useChannelForm';
 import { PhoneInput } from '@/components/shared/PhoneInput';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const PROXY_PROTOCOLS = [
+  { label: 'HTTP', value: 'http' },
+  { label: 'HTTPS', value: 'https' },
+  { label: 'SOCKS4', value: 'socks4' },
+  { label: 'SOCKS5', value: 'socks5' },
+];
 
 interface EvolutionFormProps {
   form: FormData;
@@ -42,8 +51,8 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
       )}
 
       <div data-tour="whatsapp-credentials">
-        <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-          {t('twilioForm.fields.phoneNumber.label')} <span className="text-destructive">*</span>
+        <label className="mb-2 block font-medium text-sm">
+          {t('twilioForm.fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
         </label>
         <PhoneInput
           value={getStr('phone_number')}
@@ -56,7 +65,6 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
       {/* Proxy Configuration */}
       <FormSection
         title={t('evolutionForm.sections.proxy.title')}
-        className="bg-muted/48/10 border-border/20"
       >
         <div className="mb-4">
           <FormCheckbox
@@ -80,21 +88,25 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
               onChange={value => onFormChange('proxy_port', value)}
               placeholder={t('evolutionForm.sections.proxy.port.placeholder')}
             />
-            <div>
-              <label className="text-sm font-medium text-sidebar-foreground/80">
-                {t('evolutionForm.sections.proxy.protocol')}
-              </label>
-              <select
+            <Field>
+              <FieldLabel>{t('evolutionForm.sections.proxy.protocol')}</FieldLabel>
+              <Select
+                items={PROXY_PROTOCOLS}
                 value={getStr('proxy_protocol', 'http')}
-                onChange={e => onFormChange('proxy_protocol', e.target.value)}
-                className="mt-1 block w-full rounded-md border-border shadow-sm"
+                onValueChange={value => onFormChange('proxy_protocol', String(value))}
               >
-                <option value="http">HTTP</option>
-                <option value="https">HTTPS</option>
-                <option value="socks4">SOCKS4</option>
-                <option value="socks5">SOCKS5</option>
-              </select>
-            </div>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup>
+                  {PROXY_PROTOCOLS.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </Field>
             <FormField
               label={t('evolutionForm.sections.proxy.username.label')}
               value={getStr('proxy_username')}
@@ -117,7 +129,6 @@ export const EvolutionForm = ({ form, onFormChange, hasEvolutionConfig }: Evolut
       {/* Instance Settings */}
       <FormSection
         title={t('evolutionForm.sections.instance.title')}
-        className="bg-muted/48/10 border-border/20"
         data-tour="whatsapp-help"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { cn } from '@/utils/cn';
 
 interface FormSectionProps {
   title: string;
@@ -16,17 +17,12 @@ export const FormSection = ({
   'data-tour': dataTour,
 }: FormSectionProps) => {
   return (
-    <div
-      className={`p-4 rounded-lg border border-sidebar-border bg-sidebar ${className || ''}`}
-      data-tour={dataTour}
-    >
-      <div className="mb-3">
-        <h4 className="text-sm font-semibold text-sidebar-foreground">{title}</h4>
-        {description && (
-          <p className="text-xs text-sidebar-foreground/70 mt-1">{description}</p>
-        )}
+    <section className={cn('rounded-xl border bg-muted/24 p-4', className)} data-tour={dataTour}>
+      <div className="mb-4">
+        <h4 className="font-semibold text-sm">{title}</h4>
+        {description && <p className="mt-1 text-muted-foreground text-xs">{description}</p>}
       </div>
       {children}
-    </div>
+    </section>
   );
 };

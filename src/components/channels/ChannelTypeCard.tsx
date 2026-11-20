@@ -1,12 +1,7 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/compat';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChevronRight, Layers, Link2, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/utils/cn';
@@ -26,10 +21,11 @@ const statusDotClasses: Record<ChannelHealthStatus, string> = {
 
 // Capability chips are color-coded by capability (reference design, EVO-2092):
 // publishing = green, conversations = blue, campaigns = purple.
+// Campaigns has no status token, so it keeps a categorical violet tint.
 const capabilityChipClasses: Record<ChannelCapability, string> = {
-  publishing: 'bg-success/8 text-success-foreground',
-  conversations: 'bg-info/8 text-info-foreground',
-  campaigns: 'bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300',
+  publishing: 'bg-success/8 text-success-foreground dark:bg-success/16',
+  conversations: 'bg-info/8 text-info-foreground dark:bg-info/16',
+  campaigns: 'bg-violet-500/8 text-violet-700 dark:bg-violet-500/16 dark:text-violet-300',
 };
 
 interface ChannelTypeCardProps {
@@ -63,22 +59,16 @@ export default function ChannelTypeCard({
   // Only WhatsApp surfaces a provider count pill, sourced from the catalog entry.
   const providerCount = type.type === 'whatsapp' ? type.providers?.length ?? 0 : 0;
 
-  // Soft green-tint action: on-brand but calm, so the page's single solid-green
-  // CTA ("Novo Canal") stays the primary. Same treatment in both states.
+  // Outline action keeps the page's single solid CTA ("Novo Canal") as the primary.
   const actionDisabled = !!disabledReason;
   const actionButton = (
     <Button
-      variant="ghost"
-      className={cn(
-        'w-full',
-        actionDisabled
-          ? 'cursor-not-allowed bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground'
-          : 'bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary',
-      )}
+      variant="outline"
+      className="w-full"
       disabled={actionDisabled}
       onClick={() => !actionDisabled && onAdd(typeStatus)}
     >
-      <Plus className="mr-2 h-4 w-4" />
+      <Plus />
       {isConfigured ? t('overview.actions.addConnection') : t('overview.actions.connect')}
     </Button>
   );
@@ -86,27 +76,23 @@ export default function ChannelTypeCard({
   // When the type has no configured integration (e.g. email with neither Gmail nor
   // Outlook OAuth set up), disable the action and explain why on hover.
   const primaryAction = actionDisabled ? (
-    <TooltipProvider delayDuration={200}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="inline-block w-full">{actionButton}</span>
-        </TooltipTrigger>
-        <TooltipContent>{disabledReason}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger render={<span className="inline-block w-full" />}>{actionButton}</TooltipTrigger>
+      <TooltipPopup>{disabledReason}</TooltipPopup>
+    </Tooltip>
   ) : (
     actionButton
   );
 
   return (
-    <Card className="group relative flex flex-col rounded-[14px] p-0 transition-shadow duration-200 hover:shadow-md">
-      <CardContent className="flex flex-col gap-3 p-5">
+    <Card className="group relative transition-shadow duration-200 hover:shadow-md/5">
+      <CardPanel className="flex flex-col gap-4">
         {/* Header: brand tile + name + subtitle, with a connection count on the far right. */}
         <div className="flex items-start gap-3">
           <ChannelIcon channelType={type.type} size="md" brandTile />
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-base font-semibold text-foreground">{type.name}</h3>
-            <p className="truncate text-xs text-muted-foreground">{type.description}</p>
+            <h3 className="truncate font-semibold text-base">{type.name}</h3>
+            <p className="truncate text-muted-foreground text-xs">{type.description}</p>
           </div>
           {isConfigured && (
             <ChannelConnectionsPopover
@@ -118,19 +104,17 @@ export default function ChannelTypeCard({
               liveLoadingIds={liveLoadingIds}
               liveFailedIds={liveFailedIds}
             >
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-label={t('overview.actions.manage')}
-                className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="shrink-0 text-muted-foreground"
               >
-                <span
-                  className={cn('h-2 w-2 rounded-full', statusDotClasses[status])}
-                  aria-hidden="true"
-                />
-                <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+                <span className={cn('size-2 rounded-full', statusDotClasses[status])} aria-hidden="true" />
+                <Link2 aria-hidden="true" />
                 <span className="tabular-nums">{total}</span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
-              </button>
+                <ChevronRight className="opacity-60" aria-hidden="true" />
+              </Button>
             </ChannelConnectionsPopover>
           )}
         </div>
@@ -139,28 +123,21 @@ export default function ChannelTypeCard({
         {(capabilities.length > 0 || providerCount > 0) && (
           <div className="flex flex-wrap items-center gap-1.5">
             {capabilities.map(capability => (
-              <span
-                key={capability}
-                className={cn(
-                  'rounded-full px-2 py-0.5 text-xs font-medium',
-                  capabilityChipClasses[capability],
-                )}
-              >
+              <Badge key={capability} className={cn('rounded-full px-2', capabilityChipClasses[capability])}>
                 {t(`overview.capabilities.${capability}`)}
-              </span>
+              </Badge>
             ))}
             {providerCount > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                <Layers className="h-3 w-3" aria-hidden="true" />
+              <Badge variant="secondary" className="rounded-full px-2 font-normal text-muted-foreground">
+                <Layers aria-hidden="true" />
                 {t('overview.providersCount', { count: providerCount })}
-              </span>
+              </Badge>
             )}
           </div>
         )}
 
-        {/* Primary action. */}
         {primaryAction}
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 }

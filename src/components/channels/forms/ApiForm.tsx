@@ -27,10 +27,9 @@ export const ApiForm = ({ form, onFormChange }: ApiFormProps) => {
 
       <FormSection
         title={t('info.title')}
-        className="bg-muted/48/10 border-border/20"
         data-tour="api-info"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p><strong>{t('info.title')}:</strong> {t('info.description')}</p>
           <p><strong>{t('fields.webhookUrl.label')}:</strong> {t('info.webhookInfo')}</p>
           <p><strong>{t('info.documentationLabel')}:</strong> {t('info.documentation')}</p>

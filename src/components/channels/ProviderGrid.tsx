@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/compat';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChannelIcon } from '@/components/channels';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ChannelTypeId } from '@/types/channels/providers';
+import { cn } from '@/utils/cn';
 
 export interface Provider {
   id: string;
@@ -38,62 +33,48 @@ const ProviderGrid: React.FC<ProviderGridProps> = ({
   const { t } = useLanguage('channels');
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
       {providers.map(provider => {
         const disabled = isDisabled ? isDisabled(provider.id) : false;
         const tooltipText = disabled && disabledTooltip ? disabledTooltip(provider.id) : undefined;
 
         const card = (
-          <Card
+          <button
             key={provider.id}
-            className={`h-full transition-all duration-200 border-sidebar-border rounded-lg relative ${
-              disabled
-                ? 'opacity-60 cursor-not-allowed bg-sidebar'
-                : 'cursor-pointer bg-sidebar hover:bg-sidebar-accent/50 hover:border-sidebar-border hover:shadow-md'
-            }`}
+            type="button"
+            aria-disabled={disabled || undefined}
             onClick={() => !disabled && onSelect(provider)}
-          >
-            {provider.recommended && (
-              <div className="absolute -top-2 right-4 bg-success text-white text-xs px-2 py-1 rounded-full font-medium">
-                {t('newChannel.providers.badges.recommended')}
-              </div>
+            className={cn(
+              'group relative flex h-full w-full items-start gap-4 rounded-xl border bg-card p-4 text-left shadow-xs/5 outline-none transition-[box-shadow,border-color,background-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
+              disabled
+                ? 'cursor-not-allowed opacity-64'
+                : 'cursor-pointer hover:border-primary/32 hover:bg-accent/40 hover:shadow-md/5',
             )}
-
-            <CardContent className="p-5">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                  <ChannelIcon channelType={channelType} provider={provider.id} size="lg" />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-base font-semibold text-sidebar-foreground mb-1">
-                    {provider.name}
-                  </h4>
-                  <p className="text-sm text-sidebar-foreground/70 leading-relaxed">
-                    {provider.description}
-                  </p>
-                </div>
-
-                <div className="flex-shrink-0">
-                  <ArrowLeft className="w-5 h-5 text-sidebar-foreground/60 rotate-180" />
-                </div>
+          >
+            <ChannelIcon channelType={channelType} provider={provider.id} size="lg" />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h4 className="font-semibold text-sm">{provider.name}</h4>
+                {provider.recommended && (
+                  <Badge variant="success" size="sm">
+                    {t('newChannel.providers.badges.recommended')}
+                  </Badge>
+                )}
               </div>
-            </CardContent>
-          </Card>
+              <p className="mt-1 text-muted-foreground text-xs leading-relaxed">{provider.description}</p>
+            </div>
+            {!disabled && (
+              <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            )}
+          </button>
         );
 
         if (tooltipText) {
           return (
-            <TooltipProvider key={provider.id}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="h-full">{card}</div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tooltipText}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip key={provider.id}>
+              <TooltipTrigger render={<div className="h-full" />}>{card}</TooltipTrigger>
+              <TooltipPopup className="max-w-xs">{tooltipText}</TooltipPopup>
+            </Tooltip>
           );
         }
 
