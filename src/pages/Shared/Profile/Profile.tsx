@@ -1,35 +1,31 @@
-import { useState, ChangeEvent, useEffect, useCallback } from 'react';
+import { useState, ChangeEvent, useEffect, useCallback, type ReactNode } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { AlertTriangle, BellRing, Check, Keyboard, Mail, Play, Volume2, X } from 'lucide-react';
+import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Button,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Input,
-  Label,
-  Separator,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-  Checkbox,
-} from '@/components/ui/compat';
-import { AlertTriangle, Mail, Volume2, Bell, Keyboard, Play, Check, X } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuthStore } from '@/store/authStore';
@@ -485,14 +481,20 @@ const Profile = () => {
     }
   };
 
+  const requiredMark = (
+    <span className="text-destructive-foreground" aria-hidden="true">
+      *
+    </span>
+  );
+
   const renderDadosPessoais = () => (
     <Card>
       <CardHeader>
-        <CardTitle>{t('personalData.title')}</CardTitle>
+        <CardTitle className="text-base">{t('personalData.title')}</CardTitle>
         <CardDescription>{t('personalData.description')}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex">
+      <CardPanel className="flex flex-col gap-6">
+        <div className="rounded-xl border bg-muted/24 p-4">
           <ProfilePhotoUploader
             initialPhoto={userData.avatar_url}
             userName={userData.name || user?.email || t('personalData.defaultUser')}
@@ -500,11 +502,11 @@ const Profile = () => {
           />
         </div>
 
-        <Separator />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="name">{t('personalData.fields.fullName')} *</Label>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <Field>
+            <FieldLabel htmlFor="name">
+              {t('personalData.fields.fullName')} {requiredMark}
+            </FieldLabel>
             <Input
               id="name"
               type="text"
@@ -512,10 +514,10 @@ const Profile = () => {
               onChange={handleInputChange('name')}
               placeholder={t('personalData.fields.fullNamePlaceholder')}
             />
-          </div>
+          </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="display_name">{t('personalData.fields.displayName')}</Label>
+          <Field>
+            <FieldLabel htmlFor="display_name">{t('personalData.fields.displayName')}</FieldLabel>
             <Input
               id="display_name"
               type="text"
@@ -523,10 +525,12 @@ const Profile = () => {
               onChange={handleInputChange('display_name')}
               placeholder={t('personalData.fields.displayNamePlaceholder')}
             />
-          </div>
+          </Field>
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="email">{t('personalData.fields.email')} *</Label>
+          <Field className="md:col-span-2">
+            <FieldLabel htmlFor="email">
+              {t('personalData.fields.email')} {requiredMark}
+            </FieldLabel>
             <Input
               id="email"
               type="email"
@@ -535,33 +539,31 @@ const Profile = () => {
               placeholder={t('personalData.fields.emailPlaceholder')}
               disabled={!!userData.unconfirmed_email}
             />
-            {userData.unconfirmed_email && (
-              <div className="flex items-start gap-3 p-3 border rounded-lg bg-info/8 border-info/24 mt-2">
-                <Mail className="h-4 w-4 text-info-foreground mt-0.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-info-foreground">
-                    {t('personalData.emailConfirmation.pendingChange', { email: userData.unconfirmed_email })}
-                  </p>
-                  <div className="flex gap-2 mt-2">
-                    <Button size="sm" variant="outline" onClick={handleResendConfirmation} disabled={isResending}>
-                      {isResending ? '...' : t('personalData.emailConfirmation.resend')}
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={handleCancelEmailChange} disabled={isCancelling}>
-                      {isCancelling ? '...' : t('personalData.emailConfirmation.cancel')}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          </Field>
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleSaveProfile} disabled={isLoading} className="min-w-[120px]">
-            {isLoading ? t('personalData.actions.saving') : t('personalData.actions.saveChanges')}
-          </Button>
-        </div>
-      </CardContent>
+        {userData.unconfirmed_email && (
+          <Alert variant="info">
+            <Mail />
+            <AlertDescription className="text-foreground">
+              {t('personalData.emailConfirmation.pendingChange', { email: userData.unconfirmed_email })}
+            </AlertDescription>
+            <AlertAction>
+              <Button size="sm" variant="outline" onClick={handleResendConfirmation} loading={isResending}>
+                {t('personalData.emailConfirmation.resend')}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleCancelEmailChange} loading={isCancelling}>
+                {t('personalData.emailConfirmation.cancel')}
+              </Button>
+            </AlertAction>
+          </Alert>
+        )}
+      </CardPanel>
+      <CardFooter className="justify-end border-t">
+        <Button onClick={handleSaveProfile} loading={isLoading}>
+          {isLoading ? t('personalData.actions.saving') : t('personalData.actions.saveChanges')}
+        </Button>
+      </CardFooter>
     </Card>
   );
 
@@ -574,65 +576,82 @@ const Profile = () => {
       { key: 'number', met: /\d/.test(newPassword) },
       { key: 'specialChar', met: /[^A-Za-z0-9]/.test(newPassword) },
     ];
+    const mismatch =
+      passwords.password_confirmation.length > 0 && passwords.password !== passwords.password_confirmation;
 
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('password.title')}</CardTitle>
+          <CardTitle className="text-base">{t('password.title')}</CardTitle>
           <CardDescription>{t('password.description')}</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="max-w-md space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="senha-atual">{t('password.fields.currentPassword')} *</Label>
-              <Input
-                id="senha-atual"
-                type="password"
-                value={passwords.current_password}
-                onChange={handlePasswordInputChange('current_password')}
-                placeholder={t('password.fields.currentPlaceholder')}
-              />
+        <CardPanel>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel htmlFor="senha-atual">
+                  {t('password.fields.currentPassword')} {requiredMark}
+                </FieldLabel>
+                <Input
+                  id="senha-atual"
+                  type="password"
+                  autoComplete="current-password"
+                  value={passwords.current_password}
+                  onChange={handlePasswordInputChange('current_password')}
+                  placeholder={t('password.fields.currentPlaceholder')}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="nova-senha">
+                  {t('password.fields.newPassword')} {requiredMark}
+                </FieldLabel>
+                <Input
+                  id="nova-senha"
+                  type="password"
+                  autoComplete="new-password"
+                  value={passwords.password}
+                  onChange={handlePasswordInputChange('password')}
+                  placeholder={t('password.fields.newPlaceholder')}
+                />
+              </Field>
+              <Field invalid={mismatch}>
+                <FieldLabel htmlFor="confirmar-senha">
+                  {t('password.fields.confirmPassword')} {requiredMark}
+                </FieldLabel>
+                <Input
+                  id="confirmar-senha"
+                  type="password"
+                  autoComplete="new-password"
+                  aria-invalid={mismatch || undefined}
+                  value={passwords.password_confirmation}
+                  onChange={handlePasswordInputChange('password_confirmation')}
+                  placeholder={t('password.fields.confirmPlaceholder')}
+                />
+                {mismatch && <FieldError match>{t('password.validation.mismatch')}</FieldError>}
+              </Field>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="nova-senha">{t('password.fields.newPassword')} *</Label>
-              <Input
-                id="nova-senha"
-                type="password"
-                value={passwords.password}
-                onChange={handlePasswordInputChange('password')}
-                placeholder={t('password.fields.newPlaceholder')}
-              />
-              {newPassword.length > 0 && (
-                <ul className="mt-2 space-y-1">
-                  {complexityRules.map(({ key, met }) => (
-                    <li key={key} className={`flex items-center gap-1.5 text-xs ${met ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>
-                      {met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                      {t(`password.rules.${key}`)}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmar-senha">{t('password.fields.confirmPassword')} *</Label>
-              <Input
-                id="confirmar-senha"
-                type="password"
-                value={passwords.password_confirmation}
-                onChange={handlePasswordInputChange('password_confirmation')}
-                placeholder={t('password.fields.confirmPlaceholder')}
-              />
-            </div>
-
-            <div className="flex justify-end">
-              <Button onClick={handleChangePassword} disabled={isLoading} className="min-w-[120px]">
-                {isLoading ? t('password.actions.changing') : t('password.actions.changePassword')}
-              </Button>
-            </div>
+            <ul className="flex h-fit flex-col gap-2 rounded-xl border bg-muted/24 p-4">
+              {complexityRules.map(({ key, met }) => (
+                <li
+                  key={key}
+                  className={`flex items-center gap-2 text-sm ${met ? 'text-success-foreground' : 'text-muted-foreground'}`}
+                >
+                  <span
+                    className={`flex size-4 items-center justify-center rounded-full ${met ? 'bg-success/16' : 'bg-muted'}`}
+                  >
+                    {met ? <Check className="size-3" /> : <X className="size-3" />}
+                  </span>
+                  {t(`password.rules.${key}`)}
+                </li>
+              ))}
+            </ul>
           </div>
-        </CardContent>
+        </CardPanel>
+        <CardFooter className="justify-end border-t">
+          <Button onClick={handleChangePassword} loading={isLoading}>
+            {isLoading ? t('password.actions.changing') : t('password.actions.changePassword')}
+          </Button>
+        </CardFooter>
       </Card>
     );
   };
@@ -808,331 +827,314 @@ const Profile = () => {
     }
   }, []);
 
-  const renderInterfaceSettings = () => (
-    <div className="space-y-6">
-      {/* Configurações de Interface */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('interface.title')}</CardTitle>
-          <CardDescription>{t('interface.description')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Tamanho da fonte */}
-          <div className="flex gap-2 justify-between w-full items-start">
-            <div>
-              <Label className="text-sm font-medium leading-6">
-                {t('interface.fontSize.title')}
-              </Label>
-              <p className="text-sm text-muted-foreground">{t('interface.fontSize.description')}</p>
-            </div>
-            <Select value={uiSettings.font_size} onValueChange={handleFontSizeChange}>
-              <SelectTrigger className="min-w-28 mt-px">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="small">{t('interface.fontSize.options.small')}</SelectItem>
-                <SelectItem value="medium">{t('interface.fontSize.options.default')}</SelectItem>
-                <SelectItem value="large">{t('interface.fontSize.options.large')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+  const hotkeyOption = (value: 'enter' | 'cmd_enter', title: ReactNode, description: string, keys: string[]) => {
+    const active = uiSettings.editor_message_key === value;
+    return (
+      <button
+        type="button"
+        role="radio"
+        aria-checked={active}
+        onClick={() => handleHotKeyChange(value)}
+        className={`flex flex-1 flex-col gap-3 rounded-xl border p-4 text-start outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+          active ? 'border-primary/48 bg-primary/4' : 'hover:bg-accent/50'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-semibold text-sm">{title}</span>
+          <span
+            className={`flex size-4.5 shrink-0 items-center justify-center rounded-full border ${
+              active ? 'border-primary bg-primary text-primary-foreground' : 'border-input'
+            }`}
+          >
+            {active && <Check className="size-3" />}
+          </span>
+        </div>
+        <p className="text-muted-foreground text-sm">{description}</p>
+        <KbdGroup>
+          <Keyboard className="size-4 text-muted-foreground" />
+          {keys.map((k, i) => (
+            <Kbd key={i}>{k}</Kbd>
+          ))}
+        </KbdGroup>
+      </button>
+    );
+  };
 
-      {/* Assinatura de Mensagem */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('interface.messageSignature.title')}</CardTitle>
-          <CardDescription>{t('interface.messageSignature.description')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="message-signature">{t('interface.messageSignature.label')}</Label>
-            <Textarea
-              id="message-signature"
-              value={userData.message_signature || ''}
-              onChange={e => setUserData(prev => ({ ...prev, message_signature: e.target.value }))}
-              placeholder={t('interface.messageSignature.placeholder')}
-              rows={4}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={handleSaveProfile} disabled={isLoading} className="min-w-[120px]">
+  const renderInterfaceSettings = () => {
+    const fontItems = [
+      { value: 'small', label: t('interface.fontSize.options.small') },
+      { value: 'medium', label: t('interface.fontSize.options.default') },
+      { value: 'large', label: t('interface.fontSize.options.large') },
+    ];
+    return (
+      <div className="flex flex-col gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t('interface.title')}</CardTitle>
+            <CardDescription>{t('interface.description')}</CardDescription>
+          </CardHeader>
+          <CardPanel>
+            <div className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-1">
+                <span className="font-medium text-sm">{t('interface.fontSize.title')}</span>
+                <span className="text-muted-foreground text-sm">{t('interface.fontSize.description')}</span>
+              </div>
+              <Select
+                items={fontItems}
+                value={uiSettings.font_size}
+                onValueChange={v => v && handleFontSizeChange(v as 'small' | 'medium' | 'large')}
+              >
+                <SelectTrigger className="sm:w-40" aria-label={t('interface.fontSize.title')}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup>
+                  {fontItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </div>
+          </CardPanel>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t('interface.hotkeys.title')}</CardTitle>
+            <CardDescription>{t('interface.hotkeys.description')}</CardDescription>
+          </CardHeader>
+          <CardPanel>
+            <div role="radiogroup" aria-label={t('interface.hotkeys.title')} className="flex flex-col gap-3 sm:flex-row">
+              {hotkeyOption('enter', t('interface.hotkeys.enter.title'), t('interface.hotkeys.enter.description'), ['Enter'])}
+              {hotkeyOption(
+                'cmd_enter',
+                <>
+                  {modifierKey} + Enter ({modifierKey === 'Cmd' ? '⌘' : 'Ctrl'} + ↵)
+                </>,
+                t('interface.hotkeys.cmdEnter.description'),
+                [modifierKey, 'Enter'],
+              )}
+            </div>
+          </CardPanel>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t('interface.messageSignature.title')}</CardTitle>
+            <CardDescription>{t('interface.messageSignature.description')}</CardDescription>
+          </CardHeader>
+          <CardPanel>
+            <Field>
+              <FieldLabel htmlFor="message-signature">{t('interface.messageSignature.label')}</FieldLabel>
+              <Textarea
+                id="message-signature"
+                value={userData.message_signature || ''}
+                onChange={e => setUserData(prev => ({ ...prev, message_signature: e.target.value }))}
+                placeholder={t('interface.messageSignature.placeholder')}
+                rows={4}
+              />
+            </Field>
+          </CardPanel>
+          <CardFooter className="justify-end border-t">
+            <Button onClick={handleSaveProfile} loading={isLoading}>
               {isLoading ? t('personalData.actions.saving') : t('personalData.actions.saveChanges')}
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  };
 
-      {/* Teclas de Atalho para Enviar Mensagens */}
+  const renderNotificationSettings = () => {
+    const types = [...new Set(notificationSettings.available_types)].filter(
+      key => key in notificationSettings.email_notifications || key in notificationSettings.push_notifications,
+    );
+    return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('interface.hotkeys.title')}</CardTitle>
-          <CardDescription>{t('interface.hotkeys.description')}</CardDescription>
+          <CardTitle className="text-base">{t('notifications.title')}</CardTitle>
+          <CardDescription>{t('notifications.description')}</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col justify-between w-full gap-5 sm:gap-4 sm:flex-row">
-            <button
-              className={`px-0 reset-base w-full sm:flex-1 rounded-xl outline ${
-                uiSettings.editor_message_key === 'enter'
-                  ? 'outline-green-500/30'
-                  : 'outline-gray-300'
-              }`}
-              onClick={() => handleHotKeyChange('enter')}
-            >
-              <div className="p-6 text-left">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-lg">{t('interface.hotkeys.enter.title')}</h4>
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      uiSettings.editor_message_key === 'enter'
-                        ? 'border-success bg-success'
-                        : 'border-border'
-                    }`}
-                  >
-                    {uiSettings.editor_message_key === 'enter' && (
-                      <div className="w-2 h-2 bg-white rounded-full" />
-                    )}
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t('interface.hotkeys.enter.description')}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Keyboard className="h-4 w-4" />
-                  <span className="text-xs bg-muted px-2 py-1 rounded">Enter</span>
-                </div>
+        <CardPanel className="flex flex-col gap-5">
+          <div
+            className={`flex items-center justify-between gap-4 rounded-xl border p-4 ${
+              notificationSettings.browser_push_enabled ? '' : 'border-warning/32 bg-warning/4'
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              {notificationSettings.browser_push_enabled ? (
+                <BellRing className="mt-0.5 size-4.5 shrink-0 text-success" />
+              ) : (
+                <AlertTriangle className="mt-0.5 size-4.5 shrink-0 text-warning" />
+              )}
+              <div className="flex flex-col gap-0.5">
+                <Label htmlFor="browser-push">{t('notifications.browserPermission.title')}</Label>
+                <p className="text-muted-foreground text-sm">{t('notifications.browserPermission.description')}</p>
               </div>
-            </button>
-
-            <button
-              className={`px-0 reset-base w-full sm:flex-1 rounded-xl outline ${
-                uiSettings.editor_message_key === 'cmd_enter'
-                  ? 'outline-green-500/30'
-                  : 'outline-gray-300'
-              }`}
-              onClick={() => handleHotKeyChange('cmd_enter')}
-            >
-              <div className="p-6 text-left">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-lg">
-                    {modifierKey} + Enter ({modifierKey === 'Cmd' ? '⌘' : 'Ctrl'} + ↵)
-                  </h4>
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      uiSettings.editor_message_key === 'cmd_enter'
-                        ? 'border-success bg-success'
-                        : 'border-border'
-                    }`}
-                  >
-                    {uiSettings.editor_message_key === 'cmd_enter' && (
-                      <div className="w-2 h-2 bg-white rounded-full" />
-                    )}
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t('interface.hotkeys.cmdEnter.description')}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Keyboard className="h-4 w-4" />
-                  <span className="text-xs bg-muted px-2 py-1 rounded">{modifierKey}</span>
-                  <span className="text-xs">+</span>
-                  <span className="text-xs bg-muted px-2 py-1 rounded">Enter</span>
-                </div>
-              </div>
-            </button>
+            </div>
+            <Switch
+              id="browser-push"
+              checked={notificationSettings.browser_push_enabled}
+              onCheckedChange={requestNotificationPermission}
+            />
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
 
-  const renderNotificationSettings = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bell className="h-5 w-5" />
-          {t('notifications.title')}
-        </CardTitle>
-        <CardDescription>{t('notifications.description')}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Permissão do navegador */}
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
-            <div>
-              <p className="font-medium">{t('notifications.browserPermission.title')}</p>
-              <p className="text-sm text-muted-foreground">
-                {t('notifications.browserPermission.description')}
+          {notificationSettings.available_types.length === 0 ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-muted-foreground text-sm">
+                {t('notifications.loading') || 'Loading notification preferences...'}
               </p>
             </div>
-          </div>
-          <Switch
-            checked={notificationSettings.browser_push_enabled}
-            onCheckedChange={requestNotificationPermission}
-          />
-        </div>
-
-        {/* Notificações por email */}
-        <div className="space-y-4">
-          <h4 className="font-medium">{t('notifications.email.title')}</h4>
-          {notificationSettings.available_types.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t('notifications.loading') || 'Loading notification preferences...'}
-            </p>
           ) : (
-            <div className="space-y-3">
-              {Object.entries(notificationSettings.email_notifications)
-                .filter(([key]) => notificationSettings.available_types.includes(key))
-                .map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between">
-                    <Label htmlFor={`email-${key}`} className="text-sm">
-                      {getNotificationLabel(key)}
-                    </Label>
-                    <Checkbox
-                      id={`email-${key}`}
-                      checked={value}
-                      onCheckedChange={checked =>
-                        handleNotificationChange('email', key, checked === true)
-                      }
-                    />
-                  </div>
-                ))}
+            <div className="overflow-hidden rounded-xl border">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/40 text-muted-foreground text-xs">
+                    <th className="px-4 py-2.5 text-start font-medium" />
+                    <th className="w-28 px-2 py-2.5 text-center font-medium">{t('notifications.email.title')}</th>
+                    <th className="w-28 px-2 py-2.5 text-center font-medium">{t('notifications.push.title')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {types.map(key => (
+                    <tr key={key} className="border-b last:border-0 hover:bg-accent/32">
+                      <td className="px-4 py-2.5">{getNotificationLabel(key)}</td>
+                      {(['email', 'push'] as const).map(kind => {
+                        const map = notificationSettings[`${kind}_notifications`];
+                        return (
+                          <td key={kind} className="px-2 py-2.5">
+                            <div className="flex justify-center">
+                              {key in map ? (
+                                <Checkbox
+                                  id={`${kind}-${key}`}
+                                  aria-label={`${getNotificationLabel(key)}: ${t(`notifications.${kind}.title`)}`}
+                                  checked={map[key]}
+                                  onCheckedChange={checked => handleNotificationChange(kind, key, checked === true)}
+                                />
+                              ) : (
+                                <span className="text-muted-foreground/40">–</span>
+                              )}
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
-        </div>
+        </CardPanel>
+      </Card>
+    );
+  };
 
-        {/* Notificações push */}
-        <div className="space-y-4">
-          <h4 className="font-medium">{t('notifications.push.title')}</h4>
-          {notificationSettings.available_types.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t('notifications.loading') || 'Loading notification preferences...'}
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(notificationSettings.push_notifications)
-                .filter(([key]) => notificationSettings.available_types.includes(key))
-                .map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between">
-                    <Label htmlFor={`push-${key}`} className="text-sm">
-                      {getNotificationLabel(key)}
-                    </Label>
-                    <Checkbox
-                      id={`push-${key}`}
-                      checked={value}
-                      onCheckedChange={checked =>
-                        handleNotificationChange('push', key, checked === true)
-                      }
-                    />
-                  </div>
-                ))}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderAudioSettings = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Volume2 className="h-5 w-5" />
-          {t('audio.title')}
-        </CardTitle>
-        <CardDescription>{t('audio.description')}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Habilitar alertas de áudio */}
-        <div className="flex items-center justify-between">
-          <div>
-            <Label>{t('audio.enable.title')}</Label>
-            <p className="text-sm text-muted-foreground">{t('audio.enable.description')}</p>
-          </div>
-          <Switch
-            checked={audioSettings.enable_audio_alerts}
-            onCheckedChange={checked => handleAudioSettingsChange({ enable_audio_alerts: checked })}
-          />
-        </div>
-
-        {audioSettings.enable_audio_alerts && (
-          <>
-            {/* Tom de notificação */}
-            <div className="space-y-2">
-              <Label>{t('audio.tone.title')}</Label>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={audioSettings.notification_tone}
-                  onValueChange={(value: 'ding' | 'chime' | 'bell' | 'notification' | 'magic') =>
-                    handleAudioSettingsChange({ notification_tone: value })
-                  }
-                >
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ding">{t('audio.tone.options.ding')}</SelectItem>
-                    <SelectItem value="chime">{t('audio.tone.options.chime')}</SelectItem>
-                    <SelectItem value="bell">{t('audio.tone.options.bell')}</SelectItem>
-                    <SelectItem value="notification">
-                      {t('audio.tone.options.notification')}
-                    </SelectItem>
-                    <SelectItem value="magic">
-                      {t('audio.tone.options.magic') || 'Magic'}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => playNotificationSoundPreview(audioSettings.notification_tone)}
-                  title={t('audio.tone.preview') || 'Preview sound'}
-                >
-                  <Play className="h-4 w-4" />
-                </Button>
+  const renderAudioSettings = () => {
+    const toneItems = (['ding', 'chime', 'bell', 'notification', 'magic'] as const).map(value => ({
+      value,
+      label: t(`audio.tone.options.${value}`) || value,
+    }));
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Volume2 className="size-4.5 text-muted-foreground" />
+            {t('audio.title')}
+          </CardTitle>
+          <CardDescription>{t('audio.description')}</CardDescription>
+        </CardHeader>
+        <CardPanel>
+          <div className="flex flex-col divide-y rounded-xl border">
+            <div className="flex items-center justify-between gap-4 p-4">
+              <div className="flex flex-col gap-0.5">
+                <Label htmlFor="enable-audio">{t('audio.enable.title')}</Label>
+                <p className="text-muted-foreground text-sm">{t('audio.enable.description')}</p>
               </div>
+              <Switch
+                id="enable-audio"
+                checked={audioSettings.enable_audio_alerts}
+                onCheckedChange={checked => handleAudioSettingsChange({ enable_audio_alerts: checked })}
+              />
             </div>
 
-            {/* Condições de áudio */}
-            <div className="space-y-4">
-              <Label>{t('audio.conditions.title')}</Label>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="play-when-inactive" className="text-sm">
+            {audioSettings.enable_audio_alerts && (
+              <>
+                <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <span className="font-medium text-sm">{t('audio.tone.title')}</span>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      items={toneItems}
+                      value={audioSettings.notification_tone}
+                      onValueChange={value =>
+                        value &&
+                        handleAudioSettingsChange({
+                          notification_tone: value as 'ding' | 'chime' | 'bell' | 'notification' | 'magic',
+                        })
+                      }
+                    >
+                      <SelectTrigger className="w-44" aria-label={t('audio.tone.title')}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectPopup>
+                        {toneItems.map(item => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectPopup>
+                    </Select>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            aria-label={t('audio.tone.preview') || 'Preview sound'}
+                            onClick={() => playNotificationSoundPreview(audioSettings.notification_tone)}
+                          />
+                        }
+                      >
+                        <Play />
+                      </TooltipTrigger>
+                      <TooltipPopup>{t('audio.tone.preview') || 'Preview sound'}</TooltipPopup>
+                    </Tooltip>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 p-4">
+                  <span className="font-medium text-sm">{t('audio.conditions.title')}</span>
+                  <Label htmlFor="play-when-inactive" className="font-normal">
+                    <Checkbox
+                      id="play-when-inactive"
+                      checked={!audioSettings.always_play_audio_alert}
+                      onCheckedChange={checked =>
+                        handleAudioSettingsChange({ always_play_audio_alert: checked !== true })
+                      }
+                    />
                     {t('audio.conditions.playWhenInactive')}
                   </Label>
-                  <Checkbox
-                    id="play-when-inactive"
-                    checked={!audioSettings.always_play_audio_alert}
-                    onCheckedChange={checked =>
-                      handleAudioSettingsChange({ always_play_audio_alert: checked !== true })
-                    }
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="alert-unread" className="text-sm">
+                  <Label htmlFor="alert-unread" className="font-normal">
+                    <Checkbox
+                      id="alert-unread"
+                      checked={audioSettings.alert_if_unread_assigned_conversation_exist}
+                      onCheckedChange={checked =>
+                        handleAudioSettingsChange({
+                          alert_if_unread_assigned_conversation_exist: checked === true,
+                        })
+                      }
+                    />
                     {t('audio.conditions.alertUnread')}
                   </Label>
-                  <Checkbox
-                    id="alert-unread"
-                    checked={audioSettings.alert_if_unread_assigned_conversation_exist}
-                    onCheckedChange={checked =>
-                      handleAudioSettingsChange({
-                        alert_if_unread_assigned_conversation_exist: checked === true,
-                      })
-                    }
-                  />
                 </div>
-              </div>
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
+              </>
+            )}
+          </div>
+        </CardPanel>
+      </Card>
+    );
+  };
 
   const getNotificationLabel = (key: string) => {
     const labels: Record<string, string> = {
@@ -1153,142 +1155,157 @@ const Profile = () => {
   };
 
   const renderZonaPerigo = () => (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-destructive" />
-          <CardTitle className="text-destructive">{t('dangerZone.title')}</CardTitle>
-        </div>
+    <Card className="border-destructive/32">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base text-destructive-foreground">
+          <AlertTriangle className="size-4.5" />
+          {t('dangerZone.title')}
+        </CardTitle>
         <CardDescription>{t('dangerZone.description')}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
-          <h3 className="font-semibold text-destructive mb-2">
-            {t('dangerZone.deleteAccount.title')}
-          </h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            {t('dangerZone.deleteAccount.description')}
-          </p>
-          <Button
-            variant="destructive"
-            onClick={() => setDeleteDialogOpen(true)}
-            className="min-w-[140px]"
-          >
+      <CardPanel>
+        <div className="flex flex-col gap-4 rounded-xl border border-destructive/24 bg-destructive/4 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <span className="font-semibold text-sm">{t('dangerZone.deleteAccount.title')}</span>
+            <p className="text-muted-foreground text-sm">{t('dangerZone.deleteAccount.description')}</p>
+          </div>
+          <Button variant="destructive" className="shrink-0" onClick={() => setDeleteDialogOpen(true)}>
             {t('dangerZone.deleteAccount.button')}
           </Button>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 
   // Loading state se não há usuário
   if (!user) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{t('loading')}</p>
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6" aria-busy="true">
+        <div className="flex items-center gap-4 rounded-2xl border p-6">
+          <div className="size-16 animate-pulse rounded-full bg-muted" />
+          <div className="flex flex-col gap-2">
+            <div className="h-5 w-48 animate-pulse rounded bg-muted" />
+            <div className="h-4 w-64 animate-pulse rounded bg-muted" />
+          </div>
         </div>
+        <p className="sr-only">{t('loading')}</p>
       </div>
     );
   }
 
   const isDeleteConfirmValid = deleteConfirmEmail === user.email;
+  const displayName = userData.display_name || userData.name || user.name || user.email;
+  const initials = (userData.name || user.name || user.email || '?')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase())
+    .join('');
+  const roleName = (user as { role?: { name?: string } }).role?.name;
 
   return (
-    <div className="container max-w-4xl mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
-        <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6">
+        <div>
+          <h1 className="font-semibold text-xl md:text-2xl">{t('title')}</h1>
+          <p className="mt-1 text-muted-foreground text-sm">{t('subtitle')}</p>
+        </div>
+
+        {/* Avatar header */}
+        <Card className="overflow-hidden">
+          <div className="h-20 bg-gradient-to-r from-primary/16 via-primary/8 to-transparent" aria-hidden="true" />
+          <div className="relative -mt-10 flex flex-col gap-4 px-6 pb-5 sm:flex-row sm:items-end">
+            <Avatar className="size-20 border-4 border-card text-xl shadow-sm">
+              {normalizeAvatarUrl(userData.avatar_url) && (
+                <AvatarImage src={normalizeAvatarUrl(userData.avatar_url)} alt={displayName} />
+              )}
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <div className="flex min-w-0 flex-1 flex-col gap-1 sm:pt-12">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="truncate font-semibold text-lg">{displayName}</span>
+                {roleName && <Badge variant="secondary">{roleName}</Badge>}
+              </div>
+              <span className="flex items-center gap-1.5 truncate text-muted-foreground text-sm">
+                <Mail className="size-3.5 shrink-0" />
+                {userData.email || user.email}
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        <Tabs value={activeTab} onValueChange={value => handleTabChange(value as string)} className="gap-6">
+          <TabsList variant="underline" className="w-full justify-start overflow-x-auto border-b">
+            <TabsTab value="dados">{t('tabs.personalData')}</TabsTab>
+            <TabsTab value="interface">{t('tabs.interface')}</TabsTab>
+            <TabsTab value="notificacoes">{t('tabs.notifications')}</TabsTab>
+            <TabsTab value="seguranca">{t('tabs.security')}</TabsTab>
+          </TabsList>
+
+          <TabsPanel value="dados" className="flex flex-col gap-6">
+            {renderDadosPessoais()}
+          </TabsPanel>
+
+          <TabsPanel value="interface" className="flex flex-col gap-6">
+            {renderInterfaceSettings()}
+          </TabsPanel>
+
+          <TabsPanel value="notificacoes" className="flex flex-col gap-6">
+            {renderNotificationSettings()}
+            {renderAudioSettings()}
+          </TabsPanel>
+
+          <TabsPanel value="seguranca" className="flex flex-col gap-6">
+            {renderSenha()}
+            <TwoFactorSetup onUpdate={refreshUser} />
+            {renderZonaPerigo()}
+          </TabsPanel>
+        </Tabs>
       </div>
-
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-8">
-          <TabsTrigger value="dados">{t('tabs.personalData')}</TabsTrigger>
-          <TabsTrigger value="interface">{t('tabs.interface')}</TabsTrigger>
-          <TabsTrigger value="notificacoes">{t('tabs.notifications')}</TabsTrigger>
-          <TabsTrigger value="seguranca">{t('tabs.security')}</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="dados" className="space-y-6">
-          {renderDadosPessoais()}
-        </TabsContent>
-
-        <TabsContent value="interface" className="space-y-6">
-          {renderInterfaceSettings()}
-        </TabsContent>
-
-        <TabsContent value="notificacoes" className="space-y-6">
-          {renderNotificationSettings()}
-          {renderAudioSettings()}
-        </TabsContent>
-
-        <TabsContent value="seguranca" className="space-y-6">
-          {renderSenha()}
-          <TwoFactorSetup onUpdate={refreshUser} />
-          {/* Zona de Perigo - movida para aba Segurança */}
-          {renderZonaPerigo()}
-        </TabsContent>
-      </Tabs>
 
       {/* Dialog de Confirmação de Exclusão */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader className="space-y-3">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-6 w-6 text-destructive" />
-              <DialogTitle className="text-destructive">
-                {t('dangerZone.deleteAccount.confirmTitle')}
-              </DialogTitle>
-            </div>
-            <DialogDescription className="text-left space-y-2">
-              <p className="font-medium">{t('dangerZone.deleteAccount.confirmDescription')}</p>
+        <DialogPopup>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive-foreground">
+              <AlertTriangle className="size-5" />
+              {t('dangerZone.deleteAccount.confirmTitle')}
+            </DialogTitle>
+            <DialogDescription render={<div />} className="flex flex-col gap-2">
+              <p className="font-medium text-foreground">{t('dangerZone.deleteAccount.confirmDescription')}</p>
               <p>{t('dangerZone.deleteAccount.permanentWarning')}</p>
-              <p className="text-sm text-muted-foreground">
-                {t('dangerZone.deleteAccount.emailConfirmText')} <strong>{user.email}</strong>
+              <p>
+                {t('dangerZone.deleteAccount.emailConfirmText')} <strong className="text-foreground">{user.email}</strong>
               </p>
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="confirm-email">{t('dangerZone.deleteAccount.emailLabel')}</Label>
+          <DialogPanel>
+            <Field invalid={Boolean(deleteConfirmEmail) && !isDeleteConfirmValid}>
+              <FieldLabel htmlFor="confirm-email">{t('dangerZone.deleteAccount.emailLabel')}</FieldLabel>
               <Input
                 id="confirm-email"
                 type="email"
                 value={deleteConfirmEmail}
                 onChange={e => setDeleteConfirmEmail(e.target.value)}
                 placeholder={t('dangerZone.deleteAccount.emailPlaceholder')}
-                className={deleteConfirmEmail && !isDeleteConfirmValid ? 'border-destructive' : ''}
+                aria-invalid={(Boolean(deleteConfirmEmail) && !isDeleteConfirmValid) || undefined}
               />
               {deleteConfirmEmail && !isDeleteConfirmValid && (
-                <p className="text-sm text-destructive">
-                  {t('dangerZone.deleteAccount.emailMismatch')}
-                </p>
+                <FieldError match>{t('dangerZone.deleteAccount.emailMismatch')}</FieldError>
               )}
-            </div>
-          </div>
+            </Field>
+          </DialogPanel>
 
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={isDeleting}
-            >
+          <DialogFooter>
+            <DialogClose render={<Button variant="ghost" />} disabled={isDeleting}>
               {t('dangerZone.deleteAccount.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteAccount}
-              disabled={!isDeleteConfirmValid || isDeleting}
-              className="min-w-[100px]"
-            >
-              {isDeleting
-                ? t('dangerZone.deleteAccount.deleting')
-                : t('dangerZone.deleteAccount.confirmButton')}
+            </DialogClose>
+            <Button variant="destructive" onClick={handleDeleteAccount} disabled={!isDeleteConfirmValid} loading={isDeleting}>
+              {isDeleting ? t('dangerZone.deleteAccount.deleting') : t('dangerZone.deleteAccount.confirmButton')}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogPopup>
       </Dialog>
     </div>
   );
