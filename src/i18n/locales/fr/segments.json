@@ -63,19 +63,52 @@
     "combineWith": "Combiner avec",
     "selectNode": "Sélectionnez un nœud sur le canevas pour le modifier, ou faites glisser une nouvelle condition depuis le panneau.",
     "categories": {
-      "identity": { "label": "Identité", "description": "Qui est le contact" },
-      "behavior": { "label": "Comportement", "description": "Ce que le contact a fait" },
-      "messages": { "label": "Messages", "description": "Interactions par canal" }
+      "identity": {
+        "label": "Identité",
+        "description": "Qui est le contact"
+      },
+      "behavior": {
+        "label": "Comportement",
+        "description": "Ce que le contact a fait"
+      },
+      "messages": {
+        "label": "Messages",
+        "description": "Interactions par canal"
+      }
     },
     "nodes": {
-      "Everyone": { "label": "Tout le monde", "description": "Tous les contacts du compte" },
-      "UserProperty": { "label": "Propriété de l'utilisateur", "description": "Filtrer par une propriété du contact" },
-      "CustomAttribute": { "label": "Attribut personnalisé", "description": "Filtrer par un attribut personnalisé" },
-      "Label": { "label": "Étiquette", "description": "Possède / ne possède pas une étiquette" },
-      "Performed": { "label": "Événement réalisé", "description": "A déclenché un événement suivi" },
-      "RandomBucket": { "label": "Échantillon aléatoire", "description": "Un % aléatoire de contacts" },
-      "Email": { "label": "E-mail", "description": "Interaction par e-mail" },
-      "WhatsApp": { "label": "Canal", "description": "Atteint sur un canal (WhatsApp/Web/SMS)" }
+      "Everyone": {
+        "label": "Tout le monde",
+        "description": "Tous les contacts du compte"
+      },
+      "UserProperty": {
+        "label": "Propriété de l'utilisateur",
+        "description": "Filtrer par une propriété du contact"
+      },
+      "CustomAttribute": {
+        "label": "Attribut personnalisé",
+        "description": "Filtrer par un attribut personnalisé"
+      },
+      "Label": {
+        "label": "Étiquette",
+        "description": "Possède / ne possède pas une étiquette"
+      },
+      "Performed": {
+        "label": "Événement réalisé",
+        "description": "A déclenché un événement suivi"
+      },
+      "RandomBucket": {
+        "label": "Échantillon aléatoire",
+        "description": "Un % aléatoire de contacts"
+      },
+      "Email": {
+        "label": "E-mail",
+        "description": "Interaction par e-mail"
+      },
+      "WhatsApp": {
+        "label": "Canal",
+        "description": "Atteint sur un canal (WhatsApp/Web/SMS)"
+      }
     }
   },
   "messages": {
@@ -353,6 +386,8 @@
       "description": "Téléchargez un fichier CSV avec les IDs des utilisateurs",
       "uploadButton": "📁 Upload CSV",
       "format": "Format : Une colonne avec user_id"
-    }
+    },
+    "removeCondition": "Supprimer la condition",
+    "removeProperty": "Supprimer la propriété"
   }
 }

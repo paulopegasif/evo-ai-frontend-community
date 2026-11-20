@@ -1,4 +1,7 @@
-import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/compat';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import OptionSelect from './OptionSelect';
 import { Clock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -31,20 +34,19 @@ export default function TimeWindowSelector({
   onUnitChange,
 }: TimeWindowSelectorProps) {
   const { t } = useLanguage('segments');
+  const units = ['minutes', 'hours', 'days', 'weeks', 'months'].map(u => ({
+    value: u,
+    label: t(`timeWindow.units.${u}`),
+  }));
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium flex items-center gap-2">
-          <Clock className="w-4 h-4" />
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <Label htmlFor="segment-time-window" className="flex items-center gap-2">
+          <Clock className="size-4 text-muted-foreground" />
           {t('timeWindow.title')}
         </Label>
-        <button
-          type="button"
-          onClick={() => onToggleShow(!show)}
-          className={`w-4 h-4 rounded border ${
-            show ? 'bg-info border-info' : 'border-border'
-          }`}
-        />
+        <Switch id="segment-time-window" checked={show} onCheckedChange={checked => onToggleShow(checked)} />
       </div>
 
       {show && (
@@ -57,22 +59,9 @@ export default function TimeWindowSelector({
               onValueChange(newValue);
             }}
             className="w-24"
+            aria-label={t('timeWindow.title')}
           />
-          <Select
-            value={unit}
-            onValueChange={onUnitChange}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="minutes">{t('timeWindow.units.minutes')}</SelectItem>
-              <SelectItem value="hours">{t('timeWindow.units.hours')}</SelectItem>
-              <SelectItem value="days">{t('timeWindow.units.days')}</SelectItem>
-              <SelectItem value="weeks">{t('timeWindow.units.weeks')}</SelectItem>
-              <SelectItem value="months">{t('timeWindow.units.months')}</SelectItem>
-            </SelectContent>
-          </Select>
+          <OptionSelect value={unit} onValueChange={onUnitChange} options={units} className="flex-1" />
         </div>
       )}
     </div>

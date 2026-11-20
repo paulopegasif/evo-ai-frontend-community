@@ -1,12 +1,6 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Label,
-} from '@/components/ui/compat';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import OptionSelect from '../ui/OptionSelect';
 import { UserPropertyNode } from '@/types/analytics';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -63,64 +57,44 @@ export default function UserPropertyEditor({
     onUpdate(updatedCondition);
   };
 
+  const showValue = operatorType !== 'Exists' && operatorType !== 'NotExists';
+
   return (
-    <div className="space-y-4">
-      <div>
-        <Label>{t('userPropertyEditor.propertyPath')}</Label>
-        <Select
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Field>
+        <FieldLabel htmlFor={`up-path-${condition.id}`}>{t('userPropertyEditor.propertyPath')}</FieldLabel>
+        <OptionSelect
+          id={`up-path-${condition.id}`}
           value={condition.path || ''}
           onValueChange={handlePropertyPathChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t('userPropertyEditor.selectProperty')} />
-          </SelectTrigger>
-          <SelectContent>
-            <div className="font-medium p-2 text-sm text-muted-foreground border-b">
-              {t('userPropertyEditor.categories.basicInfo')}
-            </div>
-            {userProperties.slice(0, 6).map((prop) => (
-              <SelectItem key={prop.value} value={prop.value}>
-                {prop.label}
-              </SelectItem>
-            ))}
-            
-            <div className="font-medium p-2 text-sm text-muted-foreground border-b">
-              {t('userPropertyEditor.categories.metadata')}
-            </div>
-            {userProperties.slice(6).map((prop) => (
-              <SelectItem key={prop.value} value={prop.value}>
-                {prop.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          placeholder={t('userPropertyEditor.selectProperty')}
+          groups={[
+            { key: 'basic', label: t('userPropertyEditor.categories.basicInfo') },
+            { key: 'meta', label: t('userPropertyEditor.categories.metadata') },
+          ]}
+          options={userProperties.map((prop, i) => ({
+            value: prop.value,
+            label: prop.label,
+            group: i < 6 ? 'basic' : 'meta',
+          }))}
+        />
+      </Field>
 
-      <div>
-        <Label>{t('userPropertyEditor.operator')}</Label>
-        <Select value={operatorType} onValueChange={onOperatorTypeChange}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {operators.map((op) => (
-              <SelectItem key={op.value} value={op.value}>
-                {op.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <Field>
+        <FieldLabel htmlFor={`up-op-${condition.id}`}>{t('userPropertyEditor.operator')}</FieldLabel>
+        <OptionSelect id={`up-op-${condition.id}`} value={operatorType} onValueChange={onOperatorTypeChange} options={operators} />
+      </Field>
 
-      {operatorType !== 'Exists' && operatorType !== 'NotExists' && (
-        <div>
-          <Label>{t('userPropertyEditor.value')}</Label>
+      {showValue && (
+        <Field className="sm:col-span-2">
+          <FieldLabel htmlFor={`up-val-${condition.id}`}>{t('userPropertyEditor.value')}</FieldLabel>
           <Input
+            id={`up-val-${condition.id}`}
             value={operatorValue}
-            onChange={(e) => onOperatorValueChange(e.target.value)}
+            onChange={e => onOperatorValueChange(e.target.value)}
             placeholder={t('userPropertyEditor.valuePlaceholder')}
           />
-        </div>
+        </Field>
       )}
     </div>
   );
