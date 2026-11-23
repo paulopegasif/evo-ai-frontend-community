@@ -1,16 +1,11 @@
 import { useEffect, useLayoutEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import {
-  Card,
-  CardContent,
-  Button,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Textarea,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import {
   ArrowLeft,
   Check,
@@ -591,10 +586,23 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">{t('settings.loading')}</p>
+      <div className="flex h-full flex-col" aria-busy="true" aria-label={t('settings.loading')}>
+        <div className="flex flex-col gap-3 border-b bg-card p-4 md:p-6">
+          <Skeleton className="h-4 w-40" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="size-10 rounded-full" />
+            <Skeleton className="h-7 w-56" />
+          </div>
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <div className="flex flex-col gap-4 p-4 md:p-6">
+          <div className="flex gap-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-8 w-28 rounded-full" />
+            ))}
+          </div>
+          <Skeleton className="h-48 w-full rounded-2xl" />
+          <Skeleton className="h-32 w-full rounded-2xl" />
         </div>
       </div>
     );
@@ -603,38 +611,40 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
   return (
     <div className="h-full flex flex-col">
       {/* Header: breadcrumb + compact channel identity */}
-      <div className="border-b border-border bg-card">
+      <div className="flex flex-col gap-3 border-b bg-card p-4 md:p-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 px-6 pt-4">
+        <nav className="flex items-center gap-1.5 text-sm">
           <button
+            type="button"
             onClick={exitToChannels}
-            className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            <span className="text-sm font-medium">{t('settings.breadcrumb.channels')}</span>
+            <ArrowLeft className="size-4" />
+            {t('settings.breadcrumb.channels')}
           </button>
           <span className="text-muted-foreground">/</span>
-          <span className="text-sm font-medium text-primary">
-            {t('settings.breadcrumb.settings')}
-          </span>
-        </div>
+          <span className="font-medium text-foreground">{t('settings.breadcrumb.settings')}</span>
+        </nav>
 
         {/* Channel identity */}
-        <div className="flex items-center gap-3 px-6 pb-4 pt-3">
+        <div className="flex min-w-0 items-center gap-3">
           {formData.avatar_url && (
             <img
               src={formData.avatar_url}
-              alt="Inbox avatar"
-              className="w-10 h-10 rounded-full object-cover border border-border"
+              alt=""
+              className="size-10 shrink-0 rounded-full border object-cover"
             />
           )}
-          <h1 className="text-xl font-semibold text-foreground truncate">{inboxName}</h1>
+          <div className="min-w-0">
+            <h1 className="truncate font-semibold text-foreground text-xl md:text-2xl">{inboxName}</h1>
+            <p className="text-muted-foreground text-sm">{t('settings.description')}</p>
+          </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        <div className="w-full px-6 py-6">
+        <div className="flex w-full flex-col gap-4 p-4 md:p-6">
           {/* Authorization banners */}
           <AuthorizationBanners
             inbox={inbox}
@@ -644,30 +654,30 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
           />
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="flex w-full justify-start gap-2 bg-transparent p-0 h-auto overflow-x-auto scrollbar-hidden">
+          <Tabs value={activeTab} onValueChange={value => setActiveTab(String(value))}>
+            <TabsList className="flex h-auto w-full justify-start gap-2 overflow-x-auto bg-transparent p-0 scrollbar-hidden [&>[data-slot=tab-indicator]]:hidden">
               {tabs.map(tab => {
                 const Icon = tab.icon;
                 return (
-                  <TabsTrigger
+                  <TabsTab
                     key={tab.key}
                     value={tab.key}
-                    className="flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap text-sm text-muted-foreground hover:bg-muted data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                    className="flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap text-sm text-muted-foreground hover:bg-muted data-active:bg-primary/10 data-active:text-primary"
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="size-4" />
                     <span className="text-sm">{tab.name}</span>
-                  </TabsTrigger>
+                  </TabsTab>
                 );
               })}
             </TabsList>
 
             {/* Tab Contents */}
             <div className="mt-4">
-            <TabsContent value="inbox_settings">
-              {activeTab === 'inbox_settings' && <div className="space-y-6">
+            <TabsPanel value="inbox_settings">
+              {activeTab === 'inbox_settings' && <div className="flex flex-col gap-4">
                 {/* Basic Settings */}
                 <Card>
-                  <CardContent className="p-6">
+                  <CardPanel>
                     <BasicSettingsForm
                       formData={formData}
                       inboxHook={inboxHook}
@@ -676,55 +686,55 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                       onAvatarDelete={handleAvatarDelete}
                       canManageAvatar={canUpdate}
                     />
-                  </CardContent>
+                  </CardPanel>
                 </Card>
 
                 {/* Greeting Settings */}
                 <Card>
-                  <CardContent className="p-6">
+                  <CardPanel>
                     <GreetingSettingsForm formData={formData} onFormChange={handleFormChange} />
-                  </CardContent>
+                  </CardPanel>
                 </Card>
 
                 {/* Web Widget Advanced Settings */}
                 {inboxHook.isAWebWidgetInbox && (
                   <Card>
-                    <CardContent className="p-6">
+                    <CardPanel>
                       <WebWidgetAdvancedForm
                         formData={formData}
                         onFormChange={handleFormChange}
                         onFeatureFlagChange={handleFeatureFlag}
                       />
-                    </CardContent>
+                    </CardPanel>
                   </Card>
                 )}
 
                 {/* Lock to Single Conversation */}
                 {inboxHook.canLocktoSingleConversation && (
                   <Card>
-                    <CardContent className="p-6">
+                    <CardPanel>
                       <LockToSingleConversationForm
                         formData={formData}
                         onFormChange={handleFormChange}
                       />
-                    </CardContent>
+                    </CardPanel>
                   </Card>
                 )}
 
                 {/* Default Conversation Status */}
                 <Card>
-                  <CardContent className="p-6">
+                  <CardPanel>
                     <DefaultConversationStatusForm
                       formData={formData}
                       onFormChange={handleFormChange}
                     />
-                  </CardContent>
+                  </CardPanel>
                 </Card>
 
                 {/* Sender Name Settings */}
                 {canUpdate && (inboxHook.isAWebWidgetInbox || inboxHook.isAnEmailChannel) && (
                   <Card>
-                    <CardContent className="p-6">
+                    <CardPanel>
                       <SenderSettingsForm
                         senderNameType={formData.sender_name_type as 'friendly' | 'professional'}
                         businessName={formData.business_name || ''}
@@ -740,66 +750,59 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                           }
                         }}
                       />
-                    </CardContent>
+                    </CardPanel>
                   </Card>
                 )}
 
                 {/* Email Signature */}
                 {canUpdate && inboxHook.isAnEmailChannel && (
                   <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <Mail className="w-5 h-5 text-primary mt-1" />
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-foreground">
-                            {t('settings.configuration.email.signature.title')}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {t('settings.configuration.email.signature.description')}
-                          </p>
-
-                          <div className="mt-4">
-                            <Textarea
-                              value={emailSignature}
-                              onChange={e => setEmailSignature(e.target.value)}
-                              placeholder={t('settings.configuration.email.signature.placeholder')}
-                              rows={6}
-                              className="font-mono text-sm"
-                            />
-                          </div>
-
-                          <Button
-                            onClick={async () => {
-                              if (!ensureCanUpdate()) return;
-                              setIsSavingSignature(true);
-                              try {
-                                await InboxesService.update(inboxId, {
-                                  channel: { email_signature: emailSignature },
-                                });
-                                toast.success(t('settings.configuration.email.success.updated'));
-                                await loadChannelData();
-                              } catch (error) {
-                                console.error('Error updating email signature:', error);
-                                toast.error(t('settings.configuration.email.errors.updateError'));
-                              } finally {
-                                setIsSavingSignature(false);
-                              }
-                            }}
-                            loading={isSavingSignature}
-                            className="mt-4"
-                          >
-                            {t('settings.configuration.email.signature.save', { defaultValue: 'Save Signature' })}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Mail className="size-5 text-primary" />
+                        {t('settings.configuration.email.signature.title')}
+                      </CardTitle>
+                      <CardDescription>
+                        {t('settings.configuration.email.signature.description')}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardPanel className="flex flex-col items-start gap-4">
+                      <Textarea
+                        value={emailSignature}
+                        onChange={e => setEmailSignature(e.target.value)}
+                        placeholder={t('settings.configuration.email.signature.placeholder')}
+                        rows={6}
+                        className="font-mono text-sm"
+                      />
+                      <Button
+                        onClick={async () => {
+                          if (!ensureCanUpdate()) return;
+                          setIsSavingSignature(true);
+                          try {
+                            await InboxesService.update(inboxId, {
+                              channel: { email_signature: emailSignature },
+                            });
+                            toast.success(t('settings.configuration.email.success.updated'));
+                            await loadChannelData();
+                          } catch (error) {
+                            console.error('Error updating email signature:', error);
+                            toast.error(t('settings.configuration.email.errors.updateError'));
+                          } finally {
+                            setIsSavingSignature(false);
+                          }
+                        }}
+                        loading={isSavingSignature}
+                      >
+                        {t('settings.configuration.email.signature.save', { defaultValue: 'Save Signature' })}
+                      </Button>
+                    </CardPanel>
                   </Card>
                 )}
               </div>}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Collaborators Tab */}
-            <TabsContent value="collaborators">
+            <TabsPanel value="collaborators">
               {activeTab === 'collaborators' && <CollaboratorsForm
                 inboxId={inboxId}
                 registerSave={handle => registerTabSave('collaborators', handle)}
@@ -822,10 +825,10 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   await loadChannelData(); // Refresh data after update
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Business Hours Tab */}
-            <TabsContent value="businesshours">
+            <TabsPanel value="businesshours">
               {activeTab === 'businesshours' && <BusinessHoursForm
                 inboxId={inboxId}
                 registerSave={handle => registerTabSave('businesshours', handle)}
@@ -848,10 +851,10 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   await loadChannelData(); // Refresh data after update
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* CSAT Tab */}
-            <TabsContent value="csat">
+            <TabsPanel value="csat">
               {activeTab === 'csat' && <CSATForm
                 inboxId={inboxId}
                 registerSave={handle => registerTabSave('csat', handle)}
@@ -872,10 +875,10 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   await loadChannelData(); // Refresh data after update
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Pre-Chat Form Tab */}
-            <TabsContent value="preChatForm">
+            <TabsPanel value="preChatForm">
               {activeTab === 'preChatForm' && <PreChatForm
                 inboxId={inboxId}
                 registerSave={handle => registerTabSave('preChatForm', handle)}
@@ -894,10 +897,10 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   await loadChannelData(); // Refresh data after update
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Widget Builder Tab */}
-            <TabsContent value="widgetBuilder">
+            <TabsPanel value="widgetBuilder">
               {activeTab === 'widgetBuilder' && <WidgetBuilderForm
                 inboxId={inboxId}
                 registerSave={handle => registerTabSave('widgetBuilder', handle)}
@@ -920,10 +923,10 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   await loadChannelData();
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Agent Bot Configuration Tab */}
-            <TabsContent value="botConfiguration">
+            <TabsPanel value="botConfiguration">
               {activeTab === 'botConfiguration' && <AgentBotConfigurationForm
                 inboxId={inboxId}
                 onUpdate={success => {
@@ -933,10 +936,10 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   }
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Configuration Tab */}
-            <TabsContent value="configuration">
+            <TabsPanel value="configuration">
               {activeTab === 'configuration' && <ConfigurationForm
                 inboxId={inboxId}
                 inbox={inbox}
@@ -952,22 +955,22 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
                   }
                 }}
               />}
-            </TabsContent>
+            </TabsPanel>
 
             {/* Message Templates are now managed on the single global screen
                 (Settings → Message Templates, EVO-1907); the per-channel tab was removed. */}
 
             {/* Moderation Tab */}
-            <TabsContent value="moderation">
+            <TabsPanel value="moderation">
               {activeTab === 'moderation' && <ModerationDashboard />}
-            </TabsContent>
+            </TabsPanel>
             </div>
           </Tabs>
         </div>
       </div>
 
       {/* Fixed footer: single unified save action, anchored to the content box */}
-      <div className="flex items-center justify-end gap-3 border-t border-border bg-card px-6 py-3">
+      <div className="flex items-center justify-end gap-3 border-t bg-card px-4 py-3 md:px-6">
         {!currentTabIsSavable && (
           <span className="text-xs text-muted-foreground">
             {t('settings.info.tabSpecificSave')}
@@ -979,7 +982,7 @@ export default function ChannelSettings({ inboxId: inboxIdProp, onExit }: Channe
           disabled={!footerCanSave || isFooterSaving || isSaving}
           className="min-w-48"
         >
-          <Check className="h-4 w-4 mr-2" />
+          <Check />
           {t('settings.updateConfig')}
         </Button>
       </div>

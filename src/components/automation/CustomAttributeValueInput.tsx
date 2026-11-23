@@ -1,12 +1,6 @@
-import {
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Checkbox,
-} from '@evoapi/design-system';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import OptionSelect from './OptionSelect';
 import type { CustomAttributeDefinition } from '@/types/settings';
 
 interface Props {
@@ -36,18 +30,12 @@ export default function CustomAttributeValueInput({ attribute, value, onChange, 
 
   if (type === 'list') {
     return (
-      <Select value={value || ''} onValueChange={onChange}>
-        <SelectTrigger>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {(attribute.attribute_values ?? []).map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <OptionSelect
+        items={(attribute.attribute_values ?? []).map((option) => ({ value: option, label: option }))}
+        value={value || ''}
+        onValueChange={onChange}
+        placeholder={placeholder}
+      />
     );
   }
 

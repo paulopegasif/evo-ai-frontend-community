@@ -1,6 +1,6 @@
 # `<NodeConfigModal>`
 
-Shared modal chrome for any Flow Builder node configuration form. Composite component built on `@evoapi/design-system` primitives (Radix-based `Dialog`, `Tabs`, `Collapsible`, `Button`) + the `--color-flow-panel-*` chrome tokens declared by [EVO-1253](../../_ui/README.md).
+Shared modal chrome for any Flow Builder node configuration form. Composite component built on coss ui primitives (Base UI `Dialog`, `Tabs`, `Collapsible`, `Button` from `@/components/ui/*`) + the `--color-flow-panel-*` chrome tokens declared by [EVO-1253](../../_ui/README.md).
 
 **Card:** EVO-1264
 **Folder boundary:** `shared/` is for **composite** components that combine `_ui/` primitives, design-system primitives, and flow tokens. `_ui/` stays reserved for **primitive bridges** that consume tokens directly (FlowNode, FlowCategoryBadge, FlowFeedbackBanner).
@@ -105,11 +105,11 @@ import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 
 ## Accessibility
 
-Focus trap, ESC handling, ARIA roles, and the X close button all come from `@evoapi/design-system`'s `Dialog` (Radix). Specifically:
+Focus trap, ESC handling, ARIA roles, and the X close button all come from the coss ui `Dialog` (Base UI). Specifically:
 
 - ESC anywhere inside the modal → `onOpenChange(false)` → wired to `onCancel`.
 - Click outside → same.
-- X button (built-in to `DialogContent`) → same.
+- X button (built-in to `DialogPopup`) → same.
 - Focus is trapped within the dialog while open.
 - `<DialogTitle>` becomes the accessible name; `<DialogDescription>` (when `description` is provided) the accessible description.
 
@@ -138,7 +138,7 @@ All consumed via Tailwind utilities (`bg-flow-panel-bg`, `border-flow-panel-divi
 
 ## Promotion criterion
 
-Per [EVO-1253 architecture, D7](../../../../docs/architecture/flow-builder-design-system/architecture.md): NodeConfigModal stays in `journey/shared/` indefinitely. It does NOT promote to `@evoapi/design-system` because it consumes `--color-flow-panel-*` tokens that don't exist outside the Flow Builder. A reusable modal chrome WITHOUT flow tokens would be a different (generic) component owned by the design system team, not this card.
+Per [EVO-1253 architecture, D7](../../../../docs/architecture/flow-builder-design-system/architecture.md): NodeConfigModal stays in `journey/shared/` indefinitely. It does NOT promote to `src/components/ui` because it consumes `--color-flow-panel-*` tokens that don't exist outside the Flow Builder. A reusable modal chrome WITHOUT flow tokens would be a different (generic) component owned by the design system team, not this card.
 
 ---
 

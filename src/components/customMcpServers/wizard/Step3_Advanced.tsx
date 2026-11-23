@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Input, Label, Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowRight, ArrowLeft, Clock, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -45,17 +47,16 @@ export default function Step3_Advanced({ data, onChange, onNext, onBack }: Step3
                 {t('form.labels.timeout')}
               </Label>
               <Input
+                size="lg"
                 type="number"
                 min="1"
                 max="300"
                 value={data.timeout}
-                onChange={e =>
-                  onChange({ ...data, timeout: parseInt(e.target.value) || 30 })
-                }
-                className={`h-10 text-sm ${errors.timeout ? 'border-red-500' : ''}`}
+                onChange={e => onChange({ ...data, timeout: parseInt(e.target.value) || 30 })}
+                aria-invalid={!!errors.timeout || undefined}
               />
               {errors.timeout && (
-                <p className="text-sm text-red-600 mt-2">{errors.timeout}</p>
+                <p className="text-sm text-destructive-foreground mt-2">{errors.timeout}</p>
               )}
             </div>
 
@@ -65,17 +66,16 @@ export default function Step3_Advanced({ data, onChange, onNext, onBack }: Step3
                 {t('form.labels.retries')}
               </Label>
               <Input
+                size="lg"
                 type="number"
                 min="0"
                 max="10"
                 value={data.retry_count}
-                onChange={e =>
-                  onChange({ ...data, retry_count: parseInt(e.target.value) || 3 })
-                }
-                className={`h-10 text-sm ${errors.retry_count ? 'border-red-500' : ''}`}
+                onChange={e => onChange({ ...data, retry_count: parseInt(e.target.value) || 3 })}
+                aria-invalid={!!errors.retry_count || undefined}
               />
               {errors.retry_count && (
-                <p className="text-sm text-red-600 mt-2">{errors.retry_count}</p>
+                <p className="text-sm text-destructive-foreground mt-2">{errors.retry_count}</p>
               )}
             </div>
           </div>

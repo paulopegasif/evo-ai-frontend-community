@@ -1,4 +1,5 @@
-import { Avatar, AvatarFallback, Badge } from '@evoapi/design-system';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Shield } from 'lucide-react';
 import { User } from '@/types/users';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -45,17 +46,6 @@ export default function UsersTable({
       .toUpperCase()
       .slice(0, 2);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return 'text-green-600';
-      case 'busy':
-        return 'text-yellow-600';
-      case 'offline':
-      default:
-        return 'text-gray-600';
-    }
-  };
 
   const getStatusLabel = (status: string) => {
     return t(`details.status.${status}` as any) || t('details.status.offline');
@@ -78,18 +68,9 @@ export default function UsersTable({
       width: '300px',
       render: user => (
         <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            {user.thumbnail ? (
-              <img
-                src={user.thumbnail}
-                alt={user.name}
-                className="h-8 w-8 rounded-full object-cover"
-              />
-            ) : (
-              <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
-                {getInitials(user.name)}
-              </AvatarFallback>
-            )}
+          <Avatar className="size-8">
+            {user.thumbnail && <AvatarImage src={user.thumbnail} alt={user.name} />}
+            <AvatarFallback className="text-xs">{getInitials(user.name)}</AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
             <div className="font-medium text-foreground truncate">{user.name}</div>
@@ -116,10 +97,11 @@ export default function UsersTable({
       width: '120px',
       render: user => (
         <div>
-          <Badge
-            variant={user.availability === 'online' ? 'secondary' : 'outline'}
-            className={`text-xs ${getStatusColor(user.availability)}`}
-          >
+          <Badge variant={user.availability === 'online' ? 'success' : user.availability === 'busy' ? 'warning' : 'secondary'}>
+            <span
+              aria-hidden="true"
+              className={`size-1.5 rounded-full ${user.availability === 'online' ? 'bg-success' : user.availability === 'busy' ? 'bg-warning' : 'bg-muted-foreground/60'}`}
+            />
             {getStatusLabel(user.availability)}
           </Badge>
         </div>
@@ -132,11 +114,11 @@ export default function UsersTable({
       render: user => (
         <div>
           {user.confirmed ? (
-            <Badge variant="secondary" className="text-xs text-green-600">
+            <Badge variant="success">
               {t('table.columns.confirmed')}
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-xs text-yellow-600">
+            <Badge variant="warning">
               {t('table.columns.pending')}
             </Badge>
           )}

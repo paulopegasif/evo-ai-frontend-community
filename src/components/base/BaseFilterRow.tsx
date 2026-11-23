@@ -1,18 +1,10 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Calendar,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Button,
-} from '@evoapi/design-system';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import { CalendarIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -72,57 +64,59 @@ export default function BaseFilterRow<T extends BaseFilter>({
       case 'date':
         return (
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent truncate min-w-0"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-                <span className="truncate">
-                  {filter.values
-                    ? format(new Date(filter.values as string), 'dd/MM/yyyy', { locale: pt })
-                    : tCommon('base.filter.selectDate')}
-                </span>
-              </Button>
+            <PopoverTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="w-full min-w-0 justify-start truncate text-left font-normal"
+                />
+              }
+            >
+              <CalendarIcon className="shrink-0" />
+              <span className="truncate">
+                {filter.values
+                  ? format(new Date(filter.values as string), 'dd/MM/yyyy', { locale: pt })
+                  : tCommon('base.filter.selectDate')}
+              </span>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 bg-sidebar border-sidebar-border" align="start">
+            <PopoverPopup className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={filter.values ? new Date(filter.values as string) : undefined}
                 onSelect={handleDateSelect}
-                initialFocus
-                className="bg-sidebar text-sidebar-foreground"
+                autoFocus
               />
-            </PopoverContent>
+            </PopoverPopup>
           </Popover>
         );
-      case 'search_select':
+      case 'search_select': {
+        // Check if label is a translation key (contains a dot, indicating namespace.key format)
+        const valueItems = (currentFilterType.options ?? []).map(option => {
+          const isTranslationKey = typeof option.label === 'string' && option.label.includes('.');
+          return {
+            value: option.value.toString(),
+            label: isTranslationKey ? t(option.label) : option.label,
+          };
+        });
         return (
           <Select
-            value={filter.values as string}
-            onValueChange={value => onUpdate(index, 'values' as keyof T, value)}
+            items={valueItems}
+            value={(filter.values as string) || null}
+            onValueChange={value => onUpdate(index, 'values' as keyof T, value == null ? '' : String(value))}
           >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground truncate min-w-0">
+            <SelectTrigger className="w-full min-w-0 truncate">
               <SelectValue placeholder={tCommon('base.filter.selectOption')} className="truncate" />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              {currentFilterType.options?.map(option => {
-                // Check if label is a translation key (contains a dot, indicating namespace.key format)
-                const isTranslationKey = typeof option.label === 'string' && option.label.includes('.');
-                const displayLabel = isTranslationKey ? t(option.label) : option.label;
-                return (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value.toString()}
-                    className="text-sidebar-foreground focus:bg-sidebar-accent truncate"
-                  >
-                    {displayLabel}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
+            <SelectPopup alignItemWithTrigger={false}>
+              {valueItems.map(item => (
+                <SelectItem key={item.value} value={item.value} className="truncate">
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectPopup>
           </Select>
         );
+      }
       case 'number':
         return (
           <Input
@@ -130,7 +124,7 @@ export default function BaseFilterRow<T extends BaseFilter>({
             value={filter.values as string}
             onChange={e => onUpdate(index, 'values' as keyof T, e.target.value)}
             placeholder={tCommon('base.filter.enterNumber')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 truncate min-w-0"
+            className="w-full min-w-0"
           />
         );
       default:
@@ -140,36 +134,49 @@ export default function BaseFilterRow<T extends BaseFilter>({
             value={filter.values as string}
             onChange={e => onUpdate(index, 'values' as keyof T, e.target.value)}
             placeholder={tCommon('base.filter.enterValue')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 truncate min-w-0"
+            className="w-full min-w-0"
           />
         );
     }
   };
 
+  const queryOperatorItems = [
+    { value: 'and', label: tCommon('base.filter.and') },
+    { value: 'or', label: tCommon('base.filter.or') },
+  ];
+  const attributeItems = filterTypes.map(filterType => ({
+    value: filterType.attributeKey,
+    label: t(filterType.attributeI18nKey),
+  }));
+  const operatorItems = (currentFilterType?.filterOperators ?? []).map(operator => ({
+    value: operator.key,
+    label: translateOperatorLabel(operator.label),
+  }));
+
   return (
     <div
-      className={`flex items-center gap-3 p-4 rounded-lg bg-sidebar-accent/30 border border-sidebar-border min-w-0 overflow-hidden ${className}`}
+      className={`flex min-w-0 items-center gap-3 overflow-hidden rounded-lg border bg-muted/24 p-4 ${className}`}
     >
       {/* Query Operator */}
       {showQueryOperator && (
         <div className="flex-shrink-0">
           <Select
-            value={filter.queryOperator}
-            onValueChange={(value: 'and' | 'or') =>
-              onUpdate(index, 'queryOperator' as keyof T, value)
+            items={queryOperatorItems}
+            value={filter.queryOperator || null}
+            onValueChange={value =>
+              onUpdate(index, 'queryOperator' as keyof T, value == null ? '' : String(value))
             }
           >
-            <SelectTrigger className="w-20 bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-20">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              <SelectItem value="and" className="text-sidebar-foreground focus:bg-sidebar-accent">
-                {tCommon('base.filter.and')}
-              </SelectItem>
-              <SelectItem value="or" className="text-sidebar-foreground focus:bg-sidebar-accent">
-                {tCommon('base.filter.or')}
-              </SelectItem>
-            </SelectContent>
+            <SelectPopup alignItemWithTrigger={false}>
+              {queryOperatorItems.map(item => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectPopup>
           </Select>
         </div>
       )}
@@ -177,46 +184,45 @@ export default function BaseFilterRow<T extends BaseFilter>({
       {/* Attribute */}
       <div className="min-w-0 flex-1">
         <Select
-          value={filter.attributeKey}
-          onValueChange={value => onUpdate(index, 'attributeKey' as keyof T, value)}
+          items={attributeItems}
+          value={filter.attributeKey || null}
+          onValueChange={value =>
+            onUpdate(index, 'attributeKey' as keyof T, value == null ? '' : String(value))
+          }
         >
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
-            <SelectValue />
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={tCommon('base.filter.selectOption')} />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
-            {filterTypes.map(filterType => (
-              <SelectItem
-                key={filterType.attributeKey}
-                value={filterType.attributeKey}
-                className="text-sidebar-foreground focus:bg-sidebar-accent"
-              >
-                {t(filterType.attributeI18nKey)}
+          <SelectPopup alignItemWithTrigger={false}>
+            {attributeItems.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
       {/* Operator */}
       <div className="min-w-0 flex-1">
         <Select
-          value={filter.filterOperator}
-          onValueChange={value => onUpdate(index, 'filterOperator' as keyof T, value)}
+          items={operatorItems}
+          // Without an attribute there are no operators to label; show the placeholder.
+          value={operatorItems.length ? filter.filterOperator || null : null}
+          onValueChange={value =>
+            onUpdate(index, 'filterOperator' as keyof T, value == null ? '' : String(value))
+          }
         >
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
-            <SelectValue />
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={tCommon('base.filter.selectOption')} />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
-            {currentFilterType?.filterOperators.map(operator => (
-              <SelectItem
-                key={operator.key}
-                value={operator.key}
-                className="text-sidebar-foreground focus:bg-sidebar-accent"
-              >
-                {translateOperatorLabel(operator.label)}
+          <SelectPopup alignItemWithTrigger={false}>
+            {operatorItems.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -226,11 +232,12 @@ export default function BaseFilterRow<T extends BaseFilter>({
       {/* Remove Button */}
       <Button
         variant="ghost"
-        size="sm"
+        size="icon-sm"
         onClick={() => onRemove(index)}
-        className="flex-shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+        aria-label={tCommon('base.filter.removeFilter')}
+        className="flex-shrink-0 text-muted-foreground hover:text-foreground"
       >
-        <X className="h-4 w-4" />
+        <X />
       </Button>
     </div>
   );

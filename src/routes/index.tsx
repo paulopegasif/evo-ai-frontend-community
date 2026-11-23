@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 import CustomerRoute from './CustomerRoute';
@@ -82,11 +83,18 @@ import ShopifyPage from '../pages/Customer/Settings/Integrations/ShopifyPage';
 import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
 import GoogleCalendarPage from '../pages/Customer/Settings/Integrations/GoogleCalendarPage';
 import MetaAdsPage from '../pages/Customer/Settings/Integrations/MetaAdsPage';
+import MetaConversionsPage from '../pages/Customer/Settings/Integrations/MetaConversionsPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
 import LeadTrackingPage from '@/pages/Customer/LeadTracking';
 
 // Páginas admin
 import AdminSettingsLayout from '@/pages/Admin/Settings';
+
+/** Old dashboard sub-route: keep period and filters from bookmarks and shared links. */
+const LegacyTrackingRedirect = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/tracking${search}`} replace />;
+};
 const RolesList = React.lazy(() => import('@/pages/Admin/Roles/RolesList'));
 const RoleDetail = React.lazy(() => import('@/pages/Admin/Roles/RoleDetail'));
 const SmtpConfig = React.lazy(() => import('@/pages/Admin/Settings/SmtpConfig'));
@@ -1082,6 +1090,20 @@ const AppRouter = () => {
             }
           />
           <Route
+            path="/settings/integrations/meta_conversions"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <PermissionRoute resource="integrations" action="read">
+                      <MetaConversionsPage />
+                    </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/settings/integrations/meta-ads"
             element={
               <PrivateRoute>
@@ -1426,7 +1448,7 @@ const AppRouter = () => {
             }
           />
 
-          <Route path="/dashboard/leads" element={<Navigate to="/tracking" replace />} />
+          <Route path="/dashboard/leads" element={<LegacyTrackingRedirect />} />
 
           <Route
             path="/tracking"

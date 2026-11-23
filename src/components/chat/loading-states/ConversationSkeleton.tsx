@@ -1,34 +1,29 @@
 import React from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ConversationSkeletonProps {
   count?: number;
 }
 
+const NAME_WIDTHS = ['w-32', 'w-24', 'w-36', 'w-28', 'w-20'];
+const PREVIEW_WIDTHS = ['w-48', 'w-40', 'w-52', 'w-36', 'w-44'];
+
+/** Shaped like a conversation row: avatar, inbox line, name + time, preview. */
 const ConversationSkeleton: React.FC<ConversationSkeletonProps> = ({ count = 5 }) => {
   return (
-    <div className="space-y-1">
+    <div aria-hidden="true">
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="p-4 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            {/* Avatar skeleton */}
-            <div className="h-10 w-10 rounded-full bg-muted animate-pulse flex-shrink-0" />
-
-            <div className="flex-1 min-w-0">
-              {/* Name skeleton */}
-              <div className="h-4 bg-muted rounded animate-pulse mb-2" style={{ width: '60%' }} />
-
-              {/* Message skeleton */}
-              <div className="h-3 bg-muted/70 rounded animate-pulse" style={{ width: '80%' }} />
+        <div key={index} className="flex items-start gap-2.5 border-border/60 border-b px-3 py-2.5">
+          <Skeleton className="mt-0.5 size-10 shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-1.5 pt-0.5">
+            <Skeleton className="h-3 w-20" />
+            <div className="flex items-center justify-between gap-2">
+              <Skeleton className={`h-3.5 ${NAME_WIDTHS[index % NAME_WIDTHS.length]}`} />
+              <Skeleton className="h-3 w-8" />
             </div>
-
-            <div className="flex flex-col items-end gap-1">
-              {/* Time skeleton */}
-              <div className="h-3 w-8 bg-muted/70 rounded animate-pulse" />
-
-              {/* Unread badge skeleton (sometimes) */}
-              {index % 3 === 0 && (
-                <div className="h-5 w-5 bg-muted/70 rounded-full animate-pulse" />
-              )}
+            <div className="flex items-center justify-between gap-2">
+              <Skeleton className={`h-3 ${PREVIEW_WIDTHS[index % PREVIEW_WIDTHS.length]}`} />
+              {index % 3 === 0 && <Skeleton className="size-4.5 rounded-full" />}
             </div>
           </div>
         </div>

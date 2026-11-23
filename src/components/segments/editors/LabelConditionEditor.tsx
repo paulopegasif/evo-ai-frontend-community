@@ -1,11 +1,5 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@evoapi/design-system';
+import { Field, FieldLabel } from '@/components/ui/field';
+import OptionSelect from '../ui/OptionSelect';
 import { LabelNode } from '@/types/analytics';
 import { Label as LabelType } from '@/types/settings';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -53,50 +47,36 @@ export default function LabelConditionEditor({
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <Label>{t('labelEditor.label')}</Label>
-        <Select
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Field>
+        <FieldLabel htmlFor={`label-cond-${condition.id}`}>{t('labelEditor.label')}</FieldLabel>
+        <OptionSelect
+          id={`label-cond-${condition.id}`}
           value={selectedLabelId}
           onValueChange={handleLabelChange}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (open && availableLabels.length === 0) {
               onLoadLabels();
             }
           }}
-        >
-          <SelectTrigger>
-            <SelectValue 
-              placeholder={loadingLabels ? t('labelEditor.loading') : t('labelEditor.selectLabel')}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {availableLabels.length === 0 && !loadingLabels && (
-              <div className="p-2 text-sm text-gray-500">
-                {t('labelEditor.noLabels')}
-              </div>
-            )}
-            {availableLabels.map((label) => (
-              <SelectItem key={label.id} value={label.title}>
-                {label.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          placeholder={loadingLabels ? t('labelEditor.loading') : t('labelEditor.selectLabel')}
+          empty={!loadingLabels ? t('labelEditor.noLabels') : undefined}
+          options={availableLabels.map(label => ({ value: label.title, label: label.title }))}
+        />
+      </Field>
 
-      <div>
-        <Label>{t('labelEditor.condition')}</Label>
-        <Select value={labelConditionType} onValueChange={handleConditionChange}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="has">{t('labelEditor.has')}</SelectItem>
-            <SelectItem value="not_has">{t('labelEditor.notHas')}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Field>
+        <FieldLabel htmlFor={`label-op-${condition.id}`}>{t('labelEditor.condition')}</FieldLabel>
+        <OptionSelect
+          id={`label-op-${condition.id}`}
+          value={labelConditionType}
+          onValueChange={v => handleConditionChange(v as 'has' | 'not_has')}
+          options={[
+            { value: 'has', label: t('labelEditor.has') },
+            { value: 'not_has', label: t('labelEditor.notHas') },
+          ]}
+        />
+      </Field>
     </div>
   );
 }

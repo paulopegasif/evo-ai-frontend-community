@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AlertTriangle } from 'lucide-react';
-import { Badge, Card, CardContent } from '@evoapi/design-system';
+import { AlertTriangle, RotateCcw, X } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { BaseHeader } from '@/components/base';
-import type { HeaderFilter } from '@/components/base';
+import DateRangePicker from '@/pages/Customer/LeadTracking/components/DateRangePicker';
 import { useLanguage } from '@/hooks/useLanguage';
 import { pipelinesService } from '@/services/pipelines';
 import TeamsService from '@/services/teams/teamsService';
@@ -11,7 +16,6 @@ import InboxesService from '@/services/channels/inboxesService';
 import { usersService } from '@/services/users';
 import { customerDashboardService } from '@/services/dashboard/customerDashboardService';
 import type { CustomerDashboardParams, CustomerDashboardResponse } from '@/types/analytics/dashboard';
-import DashboardFiltersDialog from './components/DashboardFiltersDialog';
 import DashboardMetricsSection from './components/DashboardMetricsSection';
 import DashboardTrendsSection from './components/DashboardTrendsSection';
 import DashboardPerformanceSection from './components/DashboardPerformanceSection';
@@ -79,22 +83,13 @@ const buildDashboardParams = (filters: DashboardFilterState): CustomerDashboardP
   return params;
 };
 
-const formatDateLabel = (value: string) => {
-  if (!value) return '-';
-  const [year, month, day] = value.split('-');
-  if (!year || !month || !day) return value;
-  return `${day}/${month}/${year}`;
-};
-
 const CustomerDashboardPage = () => {
   const { t } = useLanguage('customerDashboard');
   const [defaultFilters] = useState<DashboardFilterState>(() => getDefaultFilterState());
   const [data, setData] = useState<CustomerDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [draftFilters, setDraftFilters] = useState<DashboardFilterState>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<DashboardFilterState>(defaultFilters);
-  const [filterModalOpen, setFilterModalOpen] = useState(false);
   // Lead tracking moved to its own sidebar entry (/tracking); keep old
   // /dashboard?tab=leads links working.
   const [searchParams] = useSearchParams();
@@ -149,82 +144,26 @@ const CustomerDashboardPage = () => {
     loadFilterOptions();
   }, []);
 
-  const normalizeAndSetDraft = (changes: Partial<DashboardFilterState>) => {
-    setDraftFilters(prev => ({ ...prev, ...changes }));
-  };
+  // Filters apply as soon as they change; the date range is normalized (since <= until).
+  const updateFilters = (changes: Partial<DashboardFilterState>) =>
+    setAppliedFilters(prev => normalizeDateRange({ ...prev, ...changes }));
 
-  const handleOpenFilter = () => {
-    setDraftFilters(appliedFilters);
-    setFilterModalOpen(true);
-  };
+  const handleClearFilters = () => setAppliedFilters(defaultFilters);
 
-  const handleApplyFilters = () => {
-    const normalized = normalizeDateRange(draftFilters);
-    setDraftFilters(normalized);
-    setAppliedFilters(normalized);
-    setFilterModalOpen(false);
-  };
+  const hasActiveFilters =
+    appliedFilters.pipelineId !== ALL_FILTER_VALUE ||
+    appliedFilters.teamId !== ALL_FILTER_VALUE ||
+    appliedFilters.inboxId !== ALL_FILTER_VALUE ||
+    appliedFilters.userId !== ALL_FILTER_VALUE ||
+    appliedFilters.since !== defaultFilters.since ||
+    appliedFilters.until !== defaultFilters.until;
 
-  const handleClearFilters = () => {
-    setDraftFilters(defaultFilters);
-    setAppliedFilters(defaultFilters);
-    setFilterModalOpen(false);
-  };
-
-  const appliedHeaderFilters = useMemo<HeaderFilter[]>(() => {
-    const filters: HeaderFilter[] = [];
-    const pipeline = pipelines.find(item => item.id === appliedFilters.pipelineId);
-    const team = teams.find(item => item.id === appliedFilters.teamId);
-    const inbox = inboxes.find(item => item.id === appliedFilters.inboxId);
-    const user = users.find(item => item.id === appliedFilters.userId);
-    const hasCustomPeriod = appliedFilters.since !== defaultFilters.since || appliedFilters.until !== defaultFilters.until;
-
-    if (pipeline) {
-      filters.push({
-        label: t('dashboard.filters.pipeline') || 'Pipeline',
-        value: pipeline.name,
-        onRemove: () => setAppliedFilters(prev => ({ ...prev, pipelineId: ALL_FILTER_VALUE })),
-      });
-    }
-
-    if (team) {
-      filters.push({
-        label: t('dashboard.filters.team') || 'Equipe',
-        value: team.name,
-        onRemove: () => setAppliedFilters(prev => ({ ...prev, teamId: ALL_FILTER_VALUE })),
-      });
-    }
-
-    if (inbox) {
-      filters.push({
-        label: t('dashboard.filters.channel') || 'Canal',
-        value: inbox.name,
-        onRemove: () => setAppliedFilters(prev => ({ ...prev, inboxId: ALL_FILTER_VALUE })),
-      });
-    }
-
-    if (user) {
-      filters.push({
-        label: t('dashboard.filters.user') || 'Usuário',
-        value: user.name,
-        onRemove: () => setAppliedFilters(prev => ({ ...prev, userId: ALL_FILTER_VALUE })),
-      });
-    }
-
-    if (hasCustomPeriod) {
-      filters.push({
-        label: t('dashboard.filters.period') || 'Período',
-        value: `${formatDateLabel(appliedFilters.since)} - ${formatDateLabel(appliedFilters.until)}`,
-        onRemove: () => setAppliedFilters(prev => ({ ...prev, since: defaultFilters.since, until: defaultFilters.until })),
-      });
-    }
-
-    return filters;
-  }, [appliedFilters, defaultFilters.since, defaultFilters.until, inboxes, pipelines, t, teams, users]);
-
-  useEffect(() => {
-    setDraftFilters(appliedFilters);
-  }, [appliedFilters]);
+  const filterSelects = [
+    { key: 'pipelineId' as const, label: t('dashboard.filters.pipeline') || 'Pipeline', all: t('dashboard.filters.allPipelines') || 'Todos os pipelines', options: pipelines },
+    { key: 'teamId' as const, label: t('dashboard.filters.team') || 'Equipe', all: t('dashboard.filters.allTeams') || 'Todas as equipes', options: teams },
+    { key: 'inboxId' as const, label: t('dashboard.filters.channel') || 'Canal', all: t('dashboard.filters.allChannels') || 'Todos os canais', options: inboxes },
+    { key: 'userId' as const, label: t('dashboard.filters.user') || 'Usuário', all: t('dashboard.filters.allUsers') || 'Todos os usuários', options: users },
+  ];
 
   useEffect(() => {
     setAppliedFilters(prev => ({
@@ -244,9 +183,13 @@ const CustomerDashboardPage = () => {
     }));
   }, [inboxes, pipelines, teams, users]);
 
-  const currentPeriodLabel = useMemo(() => {
-    return `${formatDateLabel(appliedFilters.since)} - ${formatDateLabel(appliedFilters.until)}`;
-  }, [appliedFilters.since, appliedFilters.until]);
+  const dateRange = useMemo(
+    () => ({
+      from: new Date(`${appliedFilters.since}T00:00:00`),
+      to: new Date(`${appliedFilters.until}T00:00:00`),
+    }),
+    [appliedFilters.since, appliedFilters.until],
+  );
 
   const channelShareData = useMemo(() => {
     if (!data) return [];
@@ -260,72 +203,113 @@ const CustomerDashboardPage = () => {
     }));
   }, [data]);
 
-  if (loading) {
-    return <div className="p-4">{t('dashboard.loading') || 'Carregando dashboard...'}</div>;
-  }
-
-  if (error || !data) {
-    return (
-      <div className="p-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-red-600 font-medium">
-              <AlertTriangle className="h-4 w-4" />
-              {error || (t('dashboard.error') || 'Falha ao carregar dashboard')}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const toolbar = (
+    <Card className="gap-0" data-tour="dashboard-filter-button">
+      <CardPanel className="flex flex-col gap-3 p-3 lg:flex-row lg:flex-wrap lg:items-center">
+        <div className="flex flex-wrap items-center gap-2" data-tour="dashboard-period-badge">
+          <DateRangePicker
+            value={dateRange}
+            onChange={range => updateFilters({ since: toDateInputValue(range.from), until: toDateInputValue(range.to) })}
+            ariaLabel={t('dashboard.filters.period') || 'Período'}
+          />
+          {data && (
+            <Badge variant="secondary" className="tabular-nums">
+              {data.period.days} {t('dashboard.filters.days')}
+            </Badge>
+          )}
+        </div>
+        <div className="flex flex-1 flex-wrap items-center gap-2 lg:justify-end">
+          {filterSelects.map(filter => {
+            const items = [{ value: ALL_FILTER_VALUE, label: filter.all }, ...filter.options.map(o => ({ value: o.id, label: o.name }))];
+            return (
+              <Select
+                key={filter.key}
+                items={items}
+                value={appliedFilters[filter.key]}
+                onValueChange={value => updateFilters({ [filter.key]: value ?? ALL_FILTER_VALUE })}
+              >
+                <SelectTrigger className="w-full sm:w-44" aria-label={filter.label}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup>
+                  {items.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            );
+          })}
+          {hasActiveFilters && (
+            <Button variant="ghost" onClick={handleClearFilters}>
+              <X />
+              {t('dashboard.filters.clear') || 'Limpar filtros'}
+            </Button>
+          )}
+        </div>
+      </CardPanel>
+    </Card>
+  );
 
   return (
-    <div className="h-full flex flex-col p-4 gap-6">
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 md:gap-6 md:p-6">
       <DashboardTour />
-      <div data-tour="dashboard-header" className="space-y-4">
-        <BaseHeader
-          title={t('dashboard.title')}
-          subtitle={t('dashboard.subtitle')}
-          filters={appliedHeaderFilters}
-          onFilterClick={handleOpenFilter}
-          showFilters
-          filterButtonDataTour="dashboard-filter-button"
-        />
-
+      <div data-tour="dashboard-header">
+        <BaseHeader title={t('dashboard.title')} subtitle={t('dashboard.subtitle')} />
       </div>
 
-      <div className="-mt-3 flex justify-end" data-tour="dashboard-period-badge">
-        <Badge variant="secondary">
-          {currentPeriodLabel} ({data.period.days} dias)
-        </Badge>
-      </div>
+      {toolbar}
 
-      <div data-tour="dashboard-metrics">
-        <DashboardMetricsSection data={data} t={t} />
-      </div>
-      <div data-tour="dashboard-trends">
-        <DashboardTrendsSection data={data} t={t} channelShareData={channelShareData} />
-      </div>
-      <div data-tour="dashboard-performance">
-        <DashboardPerformanceSection data={data} t={t} />
-      </div>
-
-      <DashboardFiltersDialog
-        open={filterModalOpen}
-        onOpenChange={setFilterModalOpen}
-        draftFilters={draftFilters}
-        onFiltersChange={normalizeAndSetDraft}
-        onApply={handleApplyFilters}
-        onClear={handleClearFilters}
-        pipelines={pipelines}
-        teams={teams}
-        inboxes={inboxes}
-        users={users}
-        allValue={ALL_FILTER_VALUE}
-        t={t}
-      />
+      {loading && !data ? (
+        <DashboardSkeleton />
+      ) : error || !data ? (
+        <Alert variant="error">
+          <AlertTriangle />
+          <AlertTitle>{error || t('dashboard.error') || 'Falha ao carregar dashboard'}</AlertTitle>
+          <AlertDescription>
+            <Button variant="outline" size="sm" onClick={() => loadDashboard(appliedFilters)}>
+              <RotateCcw />
+              {t('dashboard.retry')}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <div className={loading ? 'pointer-events-none opacity-64 transition-opacity' : 'transition-opacity'} aria-busy={loading}>
+          <div className="flex flex-col gap-6 md:gap-8">
+            <div data-tour="dashboard-metrics">
+              <DashboardMetricsSection data={data} t={t} />
+            </div>
+            <div data-tour="dashboard-trends">
+              <DashboardTrendsSection data={data} t={t} channelShareData={channelShareData} />
+            </div>
+            <div data-tour="dashboard-performance">
+              <DashboardPerformanceSection data={data} t={t} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+/** Placeholder shaped like the KPI row and the two chart rows. */
+const DashboardSkeleton = () => (
+  <div className="flex flex-col gap-6" aria-hidden="true">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {Array.from({ length: 4 }, (_, i) => (
+        <Skeleton key={i} className="h-36 rounded-2xl" />
+      ))}
+    </div>
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+      <Skeleton className="h-64 rounded-2xl xl:col-span-7" />
+      <Skeleton className="h-64 rounded-2xl xl:col-span-5" />
+    </div>
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <Skeleton className="h-80 rounded-2xl" />
+      <Skeleton className="h-80 rounded-2xl" />
+    </div>
+  </div>
+);
 
 export default CustomerDashboardPage;

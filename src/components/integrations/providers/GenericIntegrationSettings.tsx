@@ -1,22 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
+import { Power, Settings, type LucideIcon } from 'lucide-react';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@evoapi/design-system';
-import { Settings, LucideIcon } from 'lucide-react';
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { integrationsService } from '@/services/integrations';
 import { IntegrationHook } from '@/types/integrations';
 
-import IntegrationBackButton from '../shared/IntegrationBackButton';
+import IntegrationPageHeader from '../shared/IntegrationPageHeader';
 
 interface GenericIntegrationSettingsProps {
   appId: string;
@@ -144,89 +146,82 @@ export default function GenericIntegrationSettings({
     }
   };
 
-  return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="flex-none p-4 pb-0">
-        <div className="flex items-center gap-4 mb-6">
-          <IntegrationBackButton onBack={onBack} />
-          <div className="flex items-center gap-3">
-            <Icon className="w-6 h-6 text-primary" />
-            <div>
-              <h1 className="text-2xl font-semibold">
-                {t('genericSettings.title', { name: displayName })}
-              </h1>
-              <p className="text-muted-foreground text-sm">{description}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+  const connected = Boolean(hook);
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
+  return (
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        <IntegrationPageHeader
+          brandId={appId}
+          icon={Icon}
+          title={t('genericSettings.title', { name: displayName })}
+          description={description}
+          loading={loading.get}
+          status={
+            connected
+              ? { label: t('status.connected'), variant: 'success' }
+              : { label: t('status.notConfigured'), variant: 'outline' }
+          }
+          onBack={onBack}
+          actions={
+            connected && (
+              <>
+                <Button variant="destructive-outline" size="sm" onClick={handleDeleteIntegration}>
+                  <Power />
+                  {t('genericSettings.disconnect')}
+                </Button>
+              </>
+            )
+          }
+        />
+
         {loading.get ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('genericSettings.loadingConfig')}</div>
-          </div>
+          <Card className="p-6">
+            <Skeleton className="h-5 w-48" />
+            <Skeleton className="mt-3 h-4 w-80" />
+          </Card>
+        ) : connected ? (
+          <Card>
+            <CardPanel className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <span className="flex items-center gap-3">
+                <span aria-hidden className="size-2 shrink-0 rounded-full bg-success" />
+                <span className="text-sm">{t('status.connected')}</span>
+              </span>
+
+              <Button variant="outline" size="sm" onClick={handleConfigure}>
+                <Settings />
+                {t('genericSettings.configure')}
+              </Button>
+            </CardPanel>
+          </Card>
         ) : (
-          <Card className="p-4">
-            <div className="flex items-center">
-              <div className="flex h-16 w-16 items-center justify-center mr-4">
-                <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                  <Icon className="w-10 h-10 text-primary" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-medium mb-1">{displayName}</h3>
-                <p className="text-muted-foreground text-sm">{description}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                {hook ? (
-                  <>
-                    <Button variant="outline" onClick={handleConfigure}>
-                      <Settings className="w-4 h-4 mr-2" />
-                      {t('genericSettings.configure')}
-                    </Button>
-                    <Button variant="destructive" onClick={handleDeleteIntegration}>
-                      {t('genericSettings.disconnect')}
-                    </Button>
-                  </>
-                ) : (
-                  <Button onClick={handleConfigure}>{t('genericSettings.connect')}</Button>
-                )}
-              </div>
-            </div>
+          <Card>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Icon />
+                </EmptyMedia>
+                <EmptyTitle>{displayName}</EmptyTitle>
+                <EmptyDescription>{description}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={handleConfigure}>{t('genericSettings.connect')}</Button>
+              </EmptyContent>
+            </Empty>
           </Card>
         )}
       </div>
 
-      {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t('genericSettings.dialog.deleteTitle', { name: displayName })}
-            </DialogTitle>
-            <DialogDescription>
-              {t('genericSettings.dialog.deleteDescription', { name: displayName })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={loading.delete}
-            >
-              {t('genericSettings.dialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={loading.delete}>
-              {loading.delete
-                ? t('genericSettings.dialog.removing')
-                : t('genericSettings.dialog.remove')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('genericSettings.dialog.deleteTitle', { name: displayName })}
+        description={t('genericSettings.dialog.deleteDescription', { name: displayName })}
+        cancelLabel={t('genericSettings.dialog.cancel')}
+        confirmLabel={t('genericSettings.dialog.remove')}
+        onConfirm={confirmDelete}
+        loading={loading.delete}
+      />
 
       {/* Config Modal */}
       <ConfigComponent

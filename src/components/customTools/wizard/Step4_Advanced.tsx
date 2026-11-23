@@ -1,4 +1,7 @@
-import { Button, Input, Label, Textarea } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowRight, ArrowLeft, SkipForward } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
@@ -65,7 +68,6 @@ export default function Step4_Advanced({ data, onChange, onNext, onBack }: Step4
                       timeout: e.target.value === '' ? undefined : Number(e.target.value),
                     })
                   }
-                  className="h-9 text-sm"
                 />
               </div>
               <div>
@@ -79,11 +81,9 @@ export default function Step4_Advanced({ data, onChange, onNext, onBack }: Step4
                   value={data.error_handling.retry_count ?? ''}
                   onChange={e =>
                     updateError({
-                      retry_count:
-                        e.target.value === '' ? undefined : Number(e.target.value),
+                      retry_count: e.target.value === '' ? undefined : Number(e.target.value),
                     })
                   }
-                  className="h-9 text-sm"
                 />
               </div>
             </div>
@@ -100,12 +100,10 @@ export default function Step4_Advanced({ data, onChange, onNext, onBack }: Step4
                 }
                 placeholder={t('form.fields.errorHandling.fallbackPlaceholder')}
                 rows={2}
-                className="text-sm font-mono"
+                className="font-mono"
               />
             </div>
-            <p className="text-xs text-muted-foreground">
-              {t('form.fields.errorHandling.hint')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('form.fields.errorHandling.hint')}</p>
           </div>
         </div>
       </div>

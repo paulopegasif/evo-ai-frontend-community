@@ -18,8 +18,8 @@ export const ZapiForm = ({ form, onFormChange }: ZapiFormProps) => {
     <div className="space-y-6">
       {/* Phone Number */}
       <div data-tour="whatsapp-credentials">
-        <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-          {t('zapiForm.fields.phoneNumber.label')} <span className="text-destructive">*</span>
+        <label className="mb-2 block font-medium text-sm">
+          {t('zapiForm.fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
         </label>
         <PhoneInput
           value={getStr('phone_number')}
@@ -64,10 +64,10 @@ export const ZapiForm = ({ form, onFormChange }: ZapiFormProps) => {
       {/* Help Section */}
       <FormSection
         title={t('zapiForm.help.title')}
-        className="bg-blue-50/10 border-blue-200/20"
+        className="bg-info/8 border-info/24"
         data-tour="whatsapp-help"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p>
             <strong>{t('zapiForm.help.instanceId.title')}:</strong>{' '}
             {t('zapiForm.help.instanceId.description')}

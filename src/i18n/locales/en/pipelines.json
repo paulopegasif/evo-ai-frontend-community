@@ -109,7 +109,8 @@
       "label": "Teams",
       "placeholder": "Select teams...",
       "required": "Select at least one team",
-      "noTeams": "No teams available"
+      "noTeams": "No teams available",
+      "remove": "Remove {{name}}"
     },
     "stages": "Stages",
     "stagesCount": "{{count}} stages",
@@ -213,7 +214,8 @@
     },
     "pageTitle": "Creating a new Pipeline",
     "back": "Back",
-    "newStageColor": "Stage color"
+    "newStageColor": "Stage color",
+    "removeStage": "Remove stage {{name}}"
   },
   "createStage": {
     "title": "Create New Stage",
@@ -343,7 +345,8 @@
     "saving": "Saving...",
     "save": "Save Changes",
     "scheduleAction": "Schedule action",
-    "stageLabel": "Stage:"
+    "stageLabel": "Stage:",
+    "removeService": "Remove service"
   },
   "editConversation": {
     "title": "Edit Conversation in Pipeline",
@@ -399,7 +402,8 @@
       "label": "Teams",
       "placeholder": "Select teams...",
       "required": "Select at least one team",
-      "noTeams": "No teams available"
+      "noTeams": "No teams available",
+      "remove": "Remove {{name}}"
     },
     "pipelineActive": "Pipeline active",
     "cancel": "Cancel",
@@ -457,7 +461,8 @@
       "send_direct_message": "Direct message",
       "send_template": "Send template",
       "finalize": "End conversation"
-    }
+    },
+    "removeRule": "Remove rule"
   },
   "editStage": {
     "title": "Edit Stage",
@@ -495,7 +500,9 @@
     "stageName": "Stage Name",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "save": "Save Changes"
+    "save": "Save Changes",
+    "countsAsQualified": "Counts as a qualified lead",
+    "countsAsQualifiedHint": "In Lead Tracking, anyone who reaches this stage counts as “qualified”, even without a booked evaluation."
   },
   "pipelineCard": {
     "active": "Active",
@@ -624,7 +631,9 @@
     "noStages": "No stage found to reorder.",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "save": "Save Order"
+    "save": "Save Order",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   },
   "kanban": {
     "search": {
@@ -722,7 +731,9 @@
         "snoozed": "Snoozed"
       },
       "valueLabel": "Total Value:",
-      "system": "System"
+      "system": "System",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing"
     },
     "messages": {
       "itemMoved": "Item moved successfully",
@@ -749,7 +760,9 @@
       "conversationUpdated": "Item updated successfully",
       "conversationUpdateError": "Error updating item",
       "itemHiddenByFilter": "Card moved — it may be hidden by the active filters",
-      "newItemMayBeHidden": "Card added — it may be hidden by the active filters"
+      "newItemMayBeHidden": "Card added — it may be hidden by the active filters",
+      "notInPipeline": "This contact is not in any pipeline",
+      "conversationNotInPipeline": "This conversation is not in any pipeline"
     },
     "tasks": {
       "pending": "pending",
@@ -863,7 +876,16 @@
       "moveSuccess": "Task moved successfully",
       "moveError": "Error moving task",
       "addSubtaskSuccess": "Subtask added successfully",
-      "addSubtaskError": "Error adding subtask"
+      "addSubtaskError": "Error adding subtask",
+      "deleteWithSubtasksConfirm": "This task has {{count}} subtask(s). Delete them all?"
+    },
+    "edit": "Edit task",
+    "delete": "Delete task",
+    "confirm": {
+      "completeTitle": "Complete task",
+      "reopenTitle": "Reopen task",
+      "complete": "Complete",
+      "reopen": "Reopen"
     }
   },
   "dialog": {
@@ -894,5 +916,8 @@
     "loadError": "Failed to load forms",
     "saveError": "Failed to save form",
     "deleteError": "Failed to delete form"
+  },
+  "attributes": {
+    "remove": "Remove {{name}}"
   }
 }

@@ -1,14 +1,18 @@
 import { useState, useRef } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-} from '@evoapi/design-system';
-import { Upload, CheckCircle2, AlertTriangle } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Upload, CheckCircle2, AlertTriangle, FileArchive } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { templatesService } from '@/services/templates/templatesService';
@@ -82,8 +86,8 @@ export default function ImportModal({ open, onClose }: Props) {
   );
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && closeAndReset()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={o => !o && closeAndReset()}>
+      <DialogPopup className="sm:max-w-2xl">
         {!report && (
           <>
             <DialogHeader>
@@ -91,23 +95,31 @@ export default function ImportModal({ open, onClose }: Props) {
               <DialogDescription>{t('import.subtitle')}</DialogDescription>
             </DialogHeader>
 
-            <div className="py-4">
+            <DialogPanel>
               <input
                 ref={inputRef}
                 type="file"
                 accept=".zip,.evotpl,application/zip"
                 hidden
-                onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+                onChange={e => handleFile(e.target.files?.[0] ?? null)}
               />
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="w-full border-2 border-dashed rounded-md p-8 hover:bg-muted transition-colors flex flex-col items-center gap-2"
+                className={`flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed p-8 outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring ${
+                  file ? 'border-primary/48 bg-primary/4' : ''
+                }`}
               >
-                <Upload className="w-8 h-8 text-muted-foreground" />
-                <span className="text-sm font-medium">{t('import.selectFile')}</span>
+                <span className="flex size-10 items-center justify-center rounded-lg border bg-background">
+                  {file ? (
+                    <FileArchive className="size-5 text-primary" />
+                  ) : (
+                    <Upload className="size-5 text-muted-foreground" />
+                  )}
+                </span>
+                <span className="font-medium text-sm">{t('import.selectFile')}</span>
                 {file && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {t('import.fileSelected', {
                       name: file.name,
                       size: `${(file.size / 1024).toFixed(1)} KB`,
@@ -115,13 +127,11 @@ export default function ImportModal({ open, onClose }: Props) {
                   </span>
                 )}
               </button>
-            </div>
+            </DialogPanel>
 
             <DialogFooter>
-              <Button variant="outline" onClick={closeAndReset}>
-                {t('import.report.close')}
-              </Button>
-              <Button onClick={handleSubmit} disabled={!file || importing}>
+              <DialogClose render={<Button variant="ghost" />}>{t('import.report.close')}</DialogClose>
+              <Button onClick={handleSubmit} disabled={!file} loading={importing}>
                 {importing ? t('import.importing') : t('import.submit')}
               </Button>
             </DialogFooter>
@@ -132,63 +142,70 @@ export default function ImportModal({ open, onClose }: Props) {
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <CheckCircle2 className="size-5 text-success-foreground" />
                 {t('import.report.title')}
               </DialogTitle>
               <DialogDescription>{t('import.report.subtitle')}</DialogDescription>
             </DialogHeader>
 
-            <div className="py-2 space-y-3">
-              <div className="flex gap-4 text-sm">
-                <span>{t('import.report.createdCount', { count: counts.created ?? 0 })}</span>
-                <span>{t('import.report.renamedCount', { count: counts.renamed ?? 0 })}</span>
+            <DialogPanel className="flex flex-col gap-4">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="success">{t('import.report.createdCount', { count: counts.created ?? 0 })}</Badge>
+                <Badge variant="info">{t('import.report.renamedCount', { count: counts.renamed ?? 0 })}</Badge>
                 {(counts.skipped ?? 0) > 0 && (
-                  <span>{t('import.report.skippedCount', { count: counts.skipped })}</span>
+                  <Badge variant="secondary">{t('import.report.skippedCount', { count: counts.skipped })}</Badge>
                 )}
               </div>
 
               {report.warnings.length > 0 && (
-                <div className="rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-3">
-                  <p className="font-medium flex items-center gap-2 text-amber-700 dark:text-amber-300">
-                    <AlertTriangle className="w-4 h-4" />
-                    {t('import.report.warningsTitle')}
-                  </p>
-                  <ul className="mt-2 space-y-1 text-sm">
-                    {report.warnings.map((w, idx) => (
-                      <li key={idx}>
-                        <span className="font-mono text-xs">
-                          {t(`categories.${w.category as TemplateCategory}`)}
-                        </span>
-                        {' · '}
-                        {w.new_name || w.slug}
-                        {w.warning === 'configure_credentials' &&
-                          ` — ${t('import.warnings.channelRequiresCredentials')}`}
-                        {w.reason && ` — ${w.reason}`}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <Alert variant="warning">
+                  <AlertTriangle />
+                  <AlertTitle>{t('import.report.warningsTitle')}</AlertTitle>
+                  <AlertDescription>
+                    <ul className="flex flex-col gap-1">
+                      {report.warnings.map((w, idx) => (
+                        <li key={idx}>
+                          <span className="font-mono text-xs">
+                            {t(`categories.${w.category as TemplateCategory}`)}
+                          </span>
+                          {' · '}
+                          {w.new_name || w.slug}
+                          {w.warning === 'configure_credentials' &&
+                            ` — ${t('import.warnings.channelRequiresCredentials')}`}
+                          {w.reason && ` — ${w.reason}`}
+                        </li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
               )}
 
-              <details className="text-sm">
-                <summary className="cursor-pointer">{t('import.report.title')} ({report.items.length})</summary>
-                <ul className="mt-2 space-y-1 max-h-60 overflow-y-auto">
+              <details className="rounded-xl border text-sm">
+                <summary className="cursor-pointer px-4 py-2.5 font-medium">
+                  {t('import.report.title')} ({report.items.length})
+                </summary>
+                <ul className="flex max-h-60 flex-col divide-y overflow-y-auto border-t">
                   {report.items.map((item, idx) => (
-                    <li key={idx}>
-                      <span className="font-mono text-xs">{item.category}</span> · {item.new_name || item.slug}{' '}
-                      <span className="text-xs text-muted-foreground">[{item.status}]</span>
+                    <li key={idx} className="flex items-center justify-between gap-3 px-4 py-2">
+                      <span className="min-w-0 truncate">
+                        <span className="font-mono text-muted-foreground text-xs">{item.category}</span> ·{' '}
+                        {item.new_name || item.slug}
+                      </span>
+                      <Badge variant="outline" className="shrink-0">
+                        {item.status}
+                      </Badge>
                     </li>
                   ))}
                 </ul>
               </details>
-            </div>
+            </DialogPanel>
 
             <DialogFooter>
               <Button onClick={closeAndReset}>{t('import.report.close')}</Button>
             </DialogFooter>
           </>
         )}
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

@@ -1,16 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Button,
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  Input,
-  Label,
-  ScrollArea,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, X, Users, Plus, Check, Loader2 } from 'lucide-react';
 import { listAgents } from '@/services/agents';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -128,8 +122,8 @@ const SubAgentsForm = ({
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <div className="p-1 rounded-lg bg-blue-500/10">
-              <Users className="h-3.5 w-3.5 text-blue-500" />
+            <div className="p-1 rounded-lg bg-info/10">
+              <Users className="h-3.5 w-3.5 text-info" />
             </div>
             <div>
               <CardTitle className="text-sm">{t('subAgents.title')}</CardTitle>
@@ -137,7 +131,7 @@ const SubAgentsForm = ({
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-1.5 pt-0 pb-3">
+        <CardPanel className="space-y-1.5 pt-0 pb-3">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">{t('subAgents.complexCompositions')}</p>
             <Badge variant="outline" className="text-xs">
@@ -180,7 +174,7 @@ const SubAgentsForm = ({
               </p>
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Card de Agentes Disponíveis */}
@@ -190,7 +184,7 @@ const SubAgentsForm = ({
             <CardTitle className="text-sm">{t('subAgents.availableAgents')}</CardTitle>
             <CardDescription className="text-xs">{t('subAgents.selectToAdd')}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 pt-0">
+          <CardPanel className="space-y-3 pt-0">
             {/* Campo de busca */}
             <div className="space-y-1.5">
               <Label htmlFor="search-agents" className="text-sm">
@@ -203,7 +197,7 @@ const SubAgentsForm = ({
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                   placeholder={t('subAgents.searchPlaceholder')}
-                  className="pl-9 h-9 text-sm"
+                  className="pl-9"
                   disabled={isLoading}
                 />
                 {searchTerm && (
@@ -306,7 +300,7 @@ const SubAgentsForm = ({
                 </div>
               </ScrollArea>
             )}
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
@@ -316,7 +310,7 @@ const SubAgentsForm = ({
           <CardHeader className="pb-1.5">
             <CardTitle className="text-xs">{t('subAgents.howItWorks.title')}</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 pb-3 space-y-1 text-xs text-muted-foreground">
+          <CardPanel className="pt-0 pb-3 space-y-1 text-xs text-muted-foreground">
             <p>
               • <strong>{t('subAgents.howItWorks.composition.title')}:</strong>{' '}
               {t('subAgents.howItWorks.composition.description')}
@@ -333,7 +327,7 @@ const SubAgentsForm = ({
               • <strong>{t('subAgents.howItWorks.flexibility.title')}:</strong>{' '}
               {t('subAgents.howItWorks.flexibility.description')}
             </p>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
     </div>

@@ -211,6 +211,7 @@
         "qrCodeError": "Si le problème persiste, utilisez la clé manuelle ci-dessous",
         "manualKey": "Clé Manuelle",
         "manualKeyDescription": "Utilisez cette clé si vous ne pouvez pas scanner le code QR",
+        "copyKey": "Copier la clé",
         "actions": {
           "cancel": "Annuler",
           "configured": "J'ai Déjà Configuré"

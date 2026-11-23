@@ -1,14 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import {
-  Card,
-  CardContent,
-  Button,
-  Switch,
-  Textarea,
-  Select,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Select, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Info, Settings, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -146,7 +141,7 @@ export default function PreChatForm({
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-border">
             <div className="flex items-center gap-3">
@@ -173,11 +168,11 @@ export default function PreChatForm({
                   <div className="text-sm text-muted-foreground">{t('settings.preChatForm.totalFields')}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{enabledFieldsCount}</div>
+                  <div className="text-2xl font-bold text-success-foreground">{enabledFieldsCount}</div>
                   <div className="text-sm text-muted-foreground">{t('settings.preChatForm.activeFields')}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">{requiredFieldsCount}</div>
+                  <div className="text-2xl font-bold text-warning-foreground">{requiredFieldsCount}</div>
                   <div className="text-sm text-muted-foreground">{t('settings.preChatForm.requiredFields')}</div>
                 </div>
               </div>
@@ -207,21 +202,21 @@ export default function PreChatForm({
                   onClick={() => setShowPreview(!showPreview)}
                   className="flex items-center gap-2"
                 >
-                  <Eye className="h-4 w-4" />
+                  <Eye />
                   {showPreview ? t('settings.preChatForm.hidePreview') : t('settings.preChatForm.showPreview')}
                 </Button>
               </div>
 
               {/* Preview Mode */}
               {showPreview && (
-                <div className="space-y-4 p-4 border border-border rounded-lg bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
+                <div className="space-y-4 p-4 border border-border rounded-lg bg-muted/48">
                   <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Settings className="h-4 w-4" />
                     {t('settings.preChatForm.formPreview')}
                   </div>
 
                   {preChatMessage && (
-                    <div className="p-3 bg-white dark:bg-card rounded border text-sm">
+                    <div className="p-3 bg-card rounded border text-sm">
                       {preChatMessage}
                     </div>
                   )}
@@ -233,17 +228,17 @@ export default function PreChatForm({
                         <div key={field.name} className="space-y-1">
                           <label className="text-sm font-medium text-foreground flex items-center gap-1">
                             {field.label}
-                            {field.required && <span className="text-red-500">*</span>}
+                            {field.required && <span className="text-destructive">*</span>}
                           </label>
                           {field.type === 'textarea' ? (
                             <Textarea
                               placeholder={field.placeholder || ''}
                               disabled
-                              className="bg-white dark:bg-card"
+                              className="bg-card"
                             />
                           ) : field.type === 'select' ? (
                             <Select disabled>
-                              <SelectTrigger className="bg-white dark:bg-card">
+                              <SelectTrigger className="bg-card">
                                 <SelectValue placeholder={field.placeholder || ''} />
                               </SelectTrigger>
                             </Select>
@@ -252,7 +247,7 @@ export default function PreChatForm({
                               type={field.type}
                               placeholder={field.placeholder || ''}
                               disabled
-                              className="w-full px-3 py-2 border border-border rounded-md bg-white dark:bg-card text-sm"
+                              className="w-full px-3 py-2 border border-border rounded-md bg-card text-sm"
                             />
                           )}
                         </div>
@@ -273,13 +268,13 @@ export default function PreChatForm({
               </div>
 
               {/* Info Box */}
-              <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <Info className="w-5 h-5 text-blue-700 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-4 bg-info/8 rounded-lg border border-info/24">
+                <Info className="w-5 h-5 text-info-foreground mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
-                  <h6 className="font-medium text-blue-700 dark:text-blue-300 mb-1">
+                  <h6 className="font-medium text-info-foreground mb-1">
                     {t('settings.preChatForm.howItWorksTitle')}
                   </h6>
-                  <div className="text-blue-600 dark:text-blue-400 space-y-1">
+                  <div className="text-info-foreground space-y-1">
                     <p>• {t('settings.preChatForm.howItWorks.point1')}</p>
                     <p>• {t('settings.preChatForm.howItWorks.point2')}</p>
                     <p>• {t('settings.preChatForm.howItWorks.point3')}</p>
@@ -301,7 +296,7 @@ export default function PreChatForm({
             </div>
           )}
 
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

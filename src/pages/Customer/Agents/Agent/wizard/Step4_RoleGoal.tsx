@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Input, Label, Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowRight, ArrowLeft, Target, User } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -29,42 +31,37 @@ const Step4_RoleGoal = ({ data, onChange, onNext, onBack }: Step4Props) => {
         <div className="w-full max-w-5xl space-y-3">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-blue-500" />
+              <User className="h-4 w-4 text-info" />
               <Label className="text-sm font-semibold">
-                {t('wizard.step4.roleLabel')} <span className="text-red-500">*</span>
+                {t('wizard.step4.roleLabel')} <span className="text-destructive">*</span>
               </Label>
             </div>
             <Input
+              size="lg"
               value={data.role || ''}
-              onChange={(e) => {
+              onChange={e => {
                 onChange({ ...data, role: e.target.value });
                 if (e.target.value.trim()) setRoleError('');
               }}
               placeholder={t('wizard.step4.rolePlaceholder')}
-              className={`h-10 ${roleError ? 'border-red-500' : ''}`}
+              aria-invalid={!!roleError || undefined}
             />
-            {roleError && <p className="text-sm text-red-600">{roleError}</p>}
-            <p className="text-xs text-muted-foreground">
-              {t('wizard.step4.roleHelp')}
-            </p>
+            {roleError && <p className="text-sm text-destructive-foreground">{roleError}</p>}
+            <p className="text-xs text-muted-foreground">{t('wizard.step4.roleHelp')}</p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-blue-500" />
-              <Label className="text-sm font-semibold">
-                {t('wizard.step4.goalLabel')}
-              </Label>
+              <Target className="h-4 w-4 text-info" />
+              <Label className="text-sm font-semibold">{t('wizard.step4.goalLabel')}</Label>
             </div>
             <Input
+              size="lg"
               value={data.goal || ''}
-              onChange={(e) => onChange({ ...data, goal: e.target.value })}
+              onChange={e => onChange({ ...data, goal: e.target.value })}
               placeholder={t('wizard.step4.goalPlaceholder')}
-              className="h-10"
             />
-            <p className="text-xs text-muted-foreground">
-              {t('wizard.step4.goalHelp')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('wizard.step4.goalHelp')}</p>
           </div>
         </div>
       </div>
@@ -74,11 +71,7 @@ const Step4_RoleGoal = ({ data, onChange, onNext, onBack }: Step4Props) => {
           <ArrowLeft className="h-4 w-4" />
           {t('actions.back')}
         </Button>
-        <Button
-          onClick={handleNext}
-          disabled={!data.role?.trim()}
-          className="gap-2 px-6"
-        >
+        <Button onClick={handleNext} disabled={!data.role?.trim()} className="gap-2 px-6">
           {t('actions.continue')}
           <ArrowRight className="h-4 w-4" />
         </Button>

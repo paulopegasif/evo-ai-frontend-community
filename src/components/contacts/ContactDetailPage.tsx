@@ -1,9 +1,16 @@
-import { Button } from '@evoapi/design-system';
-import { ArrowLeft, MessageSquare, Users, X } from 'lucide-react';
+import { ArrowLeft, GitBranch, Mail, MessageSquare, Phone, Users } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import EmptyState from '@/components/base/EmptyState';
+import ContactAvatar from '@/components/chat/contact/ContactAvatar';
 import ContactDetailsCard from './ContactDetailsCard';
 import ContactNotesCard from './ContactNotesCard';
+import ContactStatusBadge from './ContactStatusBadge';
+import ContactTypeBadge from './ContactTypeBadge';
 import ContactPipelineItem from '@/components/pipelines/ContactPipelineItem';
 import ContactEventsTab from './ContactEventsTab';
 import ContactEventsErrorBoundary from './ContactEventsErrorBoundary';
@@ -20,6 +27,27 @@ interface ContactDetailPageProps {
   onContactUpdated?: () => void;
 }
 
+function DetailSkeleton() {
+  return (
+    <div className="flex flex-col gap-6" aria-busy="true">
+      <div className="flex items-center gap-4">
+        <Skeleton className="size-16 rounded-full" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="flex flex-col gap-6">
+          <Skeleton className="h-96 rounded-2xl" />
+          <Skeleton className="h-40 rounded-2xl" />
+        </div>
+        <Skeleton className="h-[28rem] rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
 export default function ContactDetailPage({
   contact,
   loading,
@@ -31,80 +59,104 @@ export default function ContactDetailPage({
   onContactUpdated,
 }: ContactDetailPageProps) {
   const { t } = useLanguage('contacts');
+  const { shouldMask, maskPhone, maskEmail } = useContactPiiMasking();
+
+  const backButton = (
+    <Tooltip>
+      <TooltipTrigger
+        render={<Button variant="ghost" size="icon-sm" onClick={onClose} aria-label={t('details.page.back')} />}
+      >
+        <ArrowLeft />
+      </TooltipTrigger>
+      <TooltipPopup>{t('details.page.back')}</TooltipPopup>
+    </Tooltip>
+  );
+
+  if (loading) {
+    return (
+      <div className="flex h-full flex-col gap-4 overflow-auto">
+        <div>{backButton}</div>
+        <DetailSkeleton />
+      </div>
+    );
+  }
+
+  if (notFound || !contact) {
+    return (
+      <div className="flex h-full flex-col">
+        <div>{backButton}</div>
+        <EmptyState
+          icon={Users}
+          title={t('details.page.notFound.title')}
+          description={t('details.page.notFound.description')}
+          action={{ label: t('details.page.back'), onClick: onClose }}
+          className="flex-1"
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between gap-3 pb-3 border-b border-border shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <Button variant="ghost" size="sm" onClick={onClose} className="shrink-0">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('details.page.back')}
-          </Button>
-          {contact && (
-            <h1 className="text-base font-semibold truncate">{contact.name}</h1>
-          )}
+    <div className="flex h-full flex-col overflow-auto">
+      {/* Identity header */}
+      <div className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          {backButton}
+          <ContactAvatar contact={contact} size="mdlg" showColoredFallback />
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="truncate font-semibold text-xl md:text-2xl">{contact.name}</h1>
+              <ContactTypeBadge type={contact.type || 'person'} />
+              <ContactStatusBadge blocked={contact.blocked} />
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
+              {contact.email && (
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <Mail className="size-3.5 shrink-0" />
+                  <span className="truncate">{shouldMask ? maskEmail(contact.email) : contact.email}</span>
+                </span>
+              )}
+              {contact.phone_number && (
+                <span className="flex items-center gap-1.5 tabular-nums">
+                  <Phone className="size-3.5 shrink-0" />
+                  {shouldMask ? maskPhone(contact.phone_number) : contact.phone_number}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {contact && (
-            // Deliberate exception to the semantic-token rule: the prototype calls for a
-            // green "Iniciar Conversa" CTA (WhatsApp-style action-affordance, same family as
-            // the online-status green used elsewhere), and the design system has no
-            // general-purpose success/green button token — `--flow-feedback-success-*` is a
-            // light-tint banner triad (bg/fg/border for flow-canvas feedback), not a solid
-            // CTA fill, so it doesn't fit here. Using Tailwind's named green until a
-            // dedicated `bg-success`-style button token exists.
-            <Button
-              size="sm"
-              onClick={() => onStartConversation(contact)}
-              disabled={contact.blocked}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              {t('details.actions.startConversation')}
-            </Button>
-          )}
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label={t('details.page.close')}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button onClick={() => onStartConversation(contact)} disabled={contact.blocked} className="shrink-0">
+          <MessageSquare />
+          {t('details.actions.startConversation')}
+        </Button>
       </div>
 
-      <div className="flex-1 overflow-auto pt-4">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading.contacts')}</div>
-          </div>
-        ) : notFound || !contact ? (
-          <EmptyState
-            icon={Users}
-            title={t('details.page.notFound.title')}
-            description={t('details.page.notFound.description')}
-            action={{
-              label: t('details.page.back'),
-              onClick: onClose,
-            }}
-            className="h-full"
-          />
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-4">
-            <div className="flex flex-col gap-4 min-w-0">
-              <ContactDetailsCard contact={contact} loading={formSaving} onSave={onSave} />
-              <div className="rounded-xl border border-border p-4">
-                <h3 className="text-sm font-semibold mb-3">{t('details.tabs.pipeline')}</h3>
-                <ContactPipelineItem contactId={contact.id} onPipelineUpdated={onContactUpdated} />
-              </div>
-              <ContactNotesCard contactId={contact.id} />
-            </div>
-            <div className="min-w-0">
-              <ContactEventsErrorBoundary
-                fallbackTitle={t('events.timeline.crashed.title')}
-                fallbackReload={t('events.timeline.crashed.reload')}
-              >
-                <ContactEventsTab contactId={contact.id} />
-              </ContactEventsErrorBoundary>
-            </div>
-          </div>
-        )}
+      <div className="grid grid-cols-1 gap-6 pb-4 lg:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-6">
+          <ContactDetailsCard contact={contact} loading={formSaving} onSave={onSave} />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <GitBranch className="size-4 text-muted-foreground" />
+                {t('details.tabs.pipeline')}
+              </CardTitle>
+            </CardHeader>
+            <CardPanel>
+              <ContactPipelineItem contactId={contact.id} onPipelineUpdated={onContactUpdated} />
+            </CardPanel>
+          </Card>
+          <ContactNotesCard contactId={contact.id} />
+        </div>
+        <Card className="min-w-0 self-start">
+          <CardPanel>
+            <ContactEventsErrorBoundary
+              fallbackTitle={t('events.timeline.crashed.title')}
+              fallbackReload={t('events.timeline.crashed.reload')}
+            >
+              <ContactEventsTab contactId={contact.id} />
+            </ContactEventsErrorBoundary>
+          </CardPanel>
+        </Card>
       </div>
     </div>
   );

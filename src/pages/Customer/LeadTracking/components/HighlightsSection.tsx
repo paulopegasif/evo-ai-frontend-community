@@ -1,11 +1,8 @@
 import type { LucideIcon } from 'lucide-react';
 import { Award, BadgeDollarSign, MessageCircle, PiggyBank } from 'lucide-react';
-import { Card, CardContent } from '@evoapi/design-system';
-import {
-  deltaToneClass,
-  formatDelta,
-  type MetricDirection,
-} from '@/pages/Customer/Dashboard/components/metricComparison';
+import { Card } from '@/components/ui/card';
+import { DeltaBadge } from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
+import type { MetricDirection } from '@/pages/Customer/Dashboard/components/metricComparison';
 import type { CampaignPerformance } from '@/types/leadTracking';
 import { variation } from '../periods';
 import { currencyOrDash, formatNumber, roasOrDash } from './format';
@@ -84,30 +81,29 @@ const HighlightsSection = ({ campaigns, previousCampaigns }: HighlightsSectionPr
         const delta = campaign && previousCampaigns ? variation(metric(campaign), previous ? metric(previous) : null) : null;
 
         return (
-          <Card key={title}>
-            <CardContent className="p-4 space-y-1.5">
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                <Icon className="h-4 w-4 text-primary" />
-                {title}
-              </p>
-              {campaign ? (
-                <>
-                  <p className="font-medium truncate" title={campaign.name}>
-                    {campaign.name}
-                  </p>
-                  <p className="text-sm tabular-nums">
-                    {format(metric(campaign))}
-                    {previousCampaigns && (
-                      <span className={`ml-2 text-xs ${deltaToneClass(delta, direction)}`}>
-                        {delta == null ? 'sem base de comparação' : formatDelta(delta)}
-                      </span>
-                    )}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">Sem dados suficientes</p>
-              )}
-            </CardContent>
+          <Card key={title} className="gap-0 p-4">
+            <p className="flex items-center gap-1.5 text-muted-foreground text-sm">
+              <Icon className="size-4 text-primary" />
+              {title}
+            </p>
+            {campaign ? (
+              <>
+                <p className="mt-1.5 truncate font-medium" title={campaign.name}>
+                  {campaign.name}
+                </p>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-sm tabular-nums">
+                  {format(metric(campaign))}
+                  {previousCampaigns &&
+                    (delta == null ? (
+                      <span className="text-muted-foreground text-xs">sem base de comparação</span>
+                    ) : (
+                      <DeltaBadge comparison={{ value: '', delta, direction }} />
+                    ))}
+                </div>
+              </>
+            ) : (
+              <p className="mt-1.5 text-muted-foreground text-sm">Sem dados suficientes</p>
+            )}
           </Card>
         );
       })}

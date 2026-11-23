@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import { Wrench, Eye } from 'lucide-react';
 import { Tool } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -147,7 +147,6 @@ export default function ToolsTable({
       emptyTitle={t('table.empty.title')}
       emptyDescription={t('table.empty.description')}
       getRowKey={tool => String(tool.id)}
-      className="border-0 shadow-none"
     />
   );
 }

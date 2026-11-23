@@ -1,7 +1,9 @@
+import { Check, Plus, Settings, Server } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button } from '@evoapi/design-system';
-import { Plus, Check, Settings } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import BrandIcon, { getBrandIcon } from '@/components/BrandIcon';
+import { IntegrationTile } from '@/components/integrations/agentConfig/IntegrationTile';
 
 interface AvailableMCP {
   id: string;
@@ -19,6 +21,8 @@ interface MCPCardProps {
   showComingSoon?: boolean;
 }
 
+const MONOCHROME = new Set(['github', 'notion']);
+
 export function MCPCard({
   mcp,
   isEnabled,
@@ -30,64 +34,44 @@ export function MCPCard({
 }: MCPCardProps) {
   const { t } = useLanguage('aiAgents');
 
-  const renderActionButtons = () => {
-    // Not configured - show disabled button
+  const renderActions = () => {
     if (!isConfigured) {
       return (
-        <Button variant="outline" className="w-full gap-2 opacity-50 cursor-not-allowed" disabled>
-          <Plus className="h-4 w-4" />
+        <Button variant="outline" size="sm" className="w-full" disabled>
+          <Plus />
           {t('edit.integrations.activate') || 'ATIVAR INTEGRAÇÃO'}
         </Button>
       );
     }
 
-    // Connected - show active status and configure button
     if (isConnected) {
-      return (
-        <>
-          <Button
-            variant="success"
-            className="w-full gap-2 bg-green-600 text-white hover:bg-green-700 border-green-600 cursor-default"
-            disabled
-          >
-            <Check className="h-4 w-4" />
-            {t('edit.integrations.active') || 'ATIVO'}
-          </Button>
-          {onConfigure && (
-            <Button variant="outline" className="w-full gap-2" onClick={onConfigure}>
-              <Settings className="h-4 w-4" />
-              {t('edit.integrations.configure') || 'CONFIGURAR'}
-            </Button>
-          )}
-        </>
-      );
+      return onConfigure ? (
+        <Button variant="outline" size="sm" className="w-full" onClick={onConfigure}>
+          <Settings />
+          {t('edit.integrations.configure') || 'CONFIGURAR'}
+        </Button>
+      ) : null;
     }
 
-    // Configured but not connected - show activate button
     if (onConfigure) {
       return (
-        <Button variant="outline" className="w-full gap-2" onClick={onConfigure}>
-          <Plus className="h-4 w-4" />
+        <Button size="sm" className="w-full" onClick={onConfigure}>
+          <Plus />
           {t('edit.integrations.activate') || 'ATIVAR INTEGRAÇÃO'}
         </Button>
       );
     }
 
-    // Simple toggle for other MCPs
     if (onToggle) {
       return (
-        <Button variant="outline" className="w-full gap-2" onClick={onToggle}>
-          {isEnabled ? (
-            <>
-              <Check className="h-4 w-4" />
-              {t('mcpServers.enabled') || 'ATIVO'}
-            </>
-          ) : (
-            <>
-              <Plus className="h-4 w-4" />
-              {t('mcpServers.enable') || 'ATIVAR'}
-            </>
-          )}
+        <Button
+          variant={isEnabled ? 'outline' : 'default'}
+          size="sm"
+          className="w-full"
+          onClick={onToggle}
+        >
+          {isEnabled ? <Check /> : <Plus />}
+          {isEnabled ? t('mcpServers.enabled') || 'ATIVO' : t('mcpServers.enable') || 'ATIVAR'}
         </Button>
       );
     }
@@ -95,34 +79,33 @@ export function MCPCard({
     return null;
   };
 
-  const hasBrandIcon = Boolean(getBrandIcon(mcp.id));
+  const status = isConnected ? (
+    <Badge variant="success">
+      <Check />
+      {t('edit.integrations.active') || 'ATIVO'}
+    </Badge>
+  ) : showComingSoon ? (
+    <Badge variant="info">{t('mcpServers.comingSoon') || 'Em breve'}</Badge>
+  ) : null;
 
   return (
-    <Card className="hover:border-primary/50 transition-colors flex flex-col">
-      <CardHeader className="flex flex-col items-center text-center space-y-4 pb-4">
-        {/* Logo — BrandIcon applies the official brand color so each MCP card
-            renders in its real brand palette instead of monochrome. */}
-        <div className="flex items-center justify-center w-20 h-20 p-3 rounded-lg bg-muted/50">
-          {hasBrandIcon ? <BrandIcon id={mcp.id} size={48} className="h-12 w-12" /> : null}
-        </div>
-
-        {/* Title */}
-        <CardTitle className="text-xl font-semibold">{mcp.name}</CardTitle>
-
-        {/* Coming Soon Badge */}
-        {showComingSoon && (
-          <span className="px-1 py-0.5 text-[12px] font-medium bg-blue-500/20 text-blue-400 rounded border border-blue-500/30">
-            {t('mcpServers.comingSoon') || 'Em breve'}
-          </span>
-        )}
-
-        {/* Description */}
-        <CardDescription className="text-sm leading-relaxed">{mcp.description}</CardDescription>
-      </CardHeader>
-
-      {/* Action Buttons */}
-      <CardContent className="mt-auto pt-0 space-y-2">{renderActionButtons()}</CardContent>
-    </Card>
+    <IntegrationTile
+      icon={
+        getBrandIcon(mcp.id) ? (
+          <BrandIcon
+            id={mcp.id}
+            size={24}
+            color={MONOCHROME.has(mcp.id) ? 'currentColor' : undefined}
+          />
+        ) : (
+          <Server className="text-muted-foreground" />
+        )
+      }
+      name={mcp.name}
+      description={mcp.description}
+      status={status}
+      actions={renderActions()}
+      muted={!isConfigured}
+    />
   );
 }
-

@@ -1,4 +1,4 @@
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import SubAgentsForm from '@/components/ai_agents/Forms/SubAgentsForm';
 import { SubAgentsData } from '@/components/ai_agents/Forms/SubAgentsForm';
@@ -12,12 +12,7 @@ interface WizardStep3Props {
   agentType: string;
 }
 
-const WizardStep3_SubAgents = ({
-  data,
-  onChange,
-  onNext,
-  onBack,
-}: WizardStep3Props) => {
+const WizardStep3_SubAgents = ({ data, onChange, onNext, onBack }: WizardStep3Props) => {
   const { t } = useLanguage('aiAgents');
 
   return (

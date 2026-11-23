@@ -68,7 +68,8 @@
     "saving": "Enregistrement...",
     "updateAutoResolve": "Mettre à Jour la Résolution Automatique",
     "deleteAccount": "Supprimer le Compte",
-    "cancelDeletion": "Annuler la Suppression"
+    "cancelDeletion": "Annuler la Suppression",
+    "copyAccountId": "Copier l'ID du compte"
   },
   "messages": {
     "permissionDenied": {

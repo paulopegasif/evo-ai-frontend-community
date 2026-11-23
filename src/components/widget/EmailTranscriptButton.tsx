@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { widgetService } from '@/services/widget/widgetService';
+import { Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface EmailTranscriptButtonProps {
@@ -37,46 +39,17 @@ const EmailTranscriptButton: React.FC<EmailTranscriptButtonProps> = ({
   };
 
   return (
-    <button
+    <Button
+      variant="outline"
+      size="xs"
       onClick={handleSendTranscript}
-      disabled={disabled || isLoading}
-      className={`
-        inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
-        rounded-md transition-all duration-200 border
-        ${
-          disabled || isLoading
-            ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500 border-gray-200'
-            : 'hover:opacity-80 bg-white text-slate-700 border-slate-200 hover:border-slate-300'
-        }
-      `}
-      style={
-        !disabled && !isLoading
-          ? {
-              borderColor: `${widgetColor}20`,
-              color: widgetColor,
-            }
-          : undefined
-      }
+      disabled={disabled}
+      loading={isLoading}
+      style={disabled ? undefined : { color: widgetColor }}
     >
-      {isLoading ? (
-        <>
-          <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-          {t('emailTranscript.sending')}
-        </>
-      ) : (
-        <>
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-            />
-          </svg>
-          {t('emailTranscript.button')}
-        </>
-      )}
-    </button>
+      <Mail />
+      {isLoading ? t('emailTranscript.sending') : t('emailTranscript.button')}
+    </Button>
   );
 };
 

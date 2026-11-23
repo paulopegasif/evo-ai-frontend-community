@@ -1,4 +1,6 @@
-import { Input, Label } from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
   id: string;
@@ -24,24 +26,21 @@ export function FormField({
   readOnly = false,
 }: FormFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>
+    <Field>
+      <FieldLabel htmlFor={id}>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </Label>
+        {required && <span className="text-destructive-foreground">*</span>}
+      </FieldLabel>
       <Input
         id={id}
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         readOnly={readOnly}
-        className={readOnly ? 'bg-muted cursor-not-allowed' : ''}
+        className={cn(readOnly && 'cursor-not-allowed bg-muted')}
       />
-      {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
-      )}
-    </div>
+      {description && <FieldDescription>{description}</FieldDescription>}
+    </Field>
   );
 }
-

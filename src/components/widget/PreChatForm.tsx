@@ -2,7 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Textarea, Checkbox } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/useLanguage';
 import { PhoneInput } from '@/components/shared/PhoneInput';
 import '@/components/shared/PhoneInput.css';
@@ -36,40 +41,43 @@ const SERVER_TO_FORM_FIELD: Record<string, string> = {
 const createValidationSchema = (fields: PreChatField[], hasActiveCampaign: boolean, t: (key: string) => string) => {
   const schemaFields: Record<string, z.ZodTypeAny> = {};
 
+  // Untouched fields are undefined, so give the type check the same translated message.
+  const req = { required_error: t('preChatForm.validation.required') };
+
   fields.forEach(field => {
     let validator: z.ZodTypeAny;
 
     // Base validation based on type
     switch (field.type) {
       case 'email':
-        validator = z.string().email(t('preChatForm.validation.invalidEmail'));
+        validator = z.string(req).email(t('preChatForm.validation.invalidEmail'));
         break;
       case 'phone':
         validator = z
-          .string()
+          .string(req)
           .refine(
             val => val.startsWith('+') && /^\+[1-9]\d{1,14}$/.test(val),
             t('preChatForm.validation.invalidPhone'),
           );
         break;
       case 'url':
-        validator = z.string().url(t('preChatForm.validation.invalidUrl'));
+        validator = z.string(req).url(t('preChatForm.validation.invalidUrl'));
         break;
       case 'number':
         validator = z
-          .string()
+          .string(req)
           .refine(val => !isNaN(Number(val)), t('preChatForm.validation.invalidNumber'));
         break;
       case 'date':
         validator = z
-          .string()
+          .string(req)
           .refine(val => !isNaN(Date.parse(val)), t('preChatForm.validation.invalidDate'));
         break;
       case 'checkbox':
-        validator = z.boolean();
+        validator = z.boolean(req);
         break;
       default:
-        validator = z.string();
+        validator = z.string(req);
     }
 
     // Apply regex pattern if provided
@@ -100,7 +108,9 @@ const createValidationSchema = (fields: PreChatField[], hasActiveCampaign: boole
 
   // Add message field if no active campaign
   if (!hasActiveCampaign) {
-    schemaFields.message = z.string().min(1, t('preChatForm.validation.messageRequired'));
+    schemaFields.message = z
+      .string({ required_error: t('preChatForm.validation.messageRequired') })
+      .min(1, t('preChatForm.validation.messageRequired'));
   }
 
   return z.object(schemaFields);
@@ -108,9 +118,12 @@ const createValidationSchema = (fields: PreChatField[], hasActiveCampaign: boole
 
 // Phone input component removed - now using shared PhoneInput
 
+// Stable default so the field memo below doesn't recompute (and loop) on every render.
+const NO_USER: CurrentUser = {};
+
 export const PreChatForm: React.FC<PreChatFormProps> = ({
   config,
-  currentUser = {},
+  currentUser = NO_USER,
   activeCampaign,
   widgetColor = '#1f93ff',
   onSubmit,
@@ -245,47 +258,47 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
     onSubmit(submissionData);
   };
 
+  const errorText = (message?: unknown) =>
+    message ? <p className="text-destructive-foreground text-xs">{String(message)}</p> : null;
+
   const renderField = (field: PreChatField) => {
     const fieldError = errors[field.name];
     const hasError = !!fieldError;
+    const id = `prechat-${field.name}`;
 
     switch (field.type) {
-      case 'select':
+      case 'select': {
+        const items = (field.values ?? []).map((value, index) => ({ value: String(index), label: value }));
         return (
           <Controller
             key={field.name}
             name={field.name as any}
             control={control}
             render={({ field: formField }) => (
-              <div className="mb-4">
-                <label
-                  className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-slate-700'
-                  }`}
+              <Field invalid={hasError}>
+                <FieldLabel>{field.label}</FieldLabel>
+                <Select
+                  items={items}
+                  value={formField.value || null}
+                  onValueChange={v => v != null && formField.onChange(String(v))}
                 >
-                  {field.label}
-                </label>
-                <select
-                  value={formField.value || ''}
-                  onChange={e => formField.onChange(e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    hasError ? 'border-red-500' : 'border-slate-300'
-                  }`}
-                >
-                  <option value="" disabled>
-                    {field.placeholder || t('preChatForm.selectOption')}
-                  </option>
-                  {field.values?.map((value, index) => (
-                    <option key={index} value={String(index)}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-                {fieldError && <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>}
-              </div>
+                  <SelectTrigger id={id} aria-invalid={hasError || undefined}>
+                    <SelectValue placeholder={field.placeholder || t('preChatForm.selectOption')} />
+                  </SelectTrigger>
+                  <SelectPopup alignItemWithTrigger={false}>
+                    {items.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+                {errorText(fieldError?.message)}
+              </Field>
             )}
           />
         );
+      }
 
       case 'checkbox':
         return (
@@ -294,19 +307,17 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
             name={field.name as any}
             control={control}
             render={({ field: formField }) => (
-              <div className="mb-4 flex items-center gap-2">
-                <Checkbox
-                  checked={!!formField.value}
-                  onCheckedChange={formField.onChange}
-                  id={field.name}
-                />
-                <label
-                  htmlFor={field.name}
-                  className={`text-sm ${hasError ? 'text-red-500' : 'text-slate-700'}`}
-                >
+              <div className="flex flex-col gap-1">
+                <label htmlFor={id} className="flex cursor-pointer items-center gap-2 text-foreground text-sm">
+                  <Checkbox
+                    id={id}
+                    checked={!!formField.value}
+                    onCheckedChange={checked => formField.onChange(checked)}
+                    aria-invalid={hasError || undefined}
+                  />
                   {field.label}
                 </label>
-                {fieldError && <p className="text-red-500 text-xs">{fieldError.message}</p>}
+                {errorText(fieldError?.message)}
               </div>
             )}
           />
@@ -319,14 +330,8 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
             name={field.name as any}
             control={control}
             render={({ field: formField }) => (
-              <div className="mb-4">
-                <label
-                  className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-slate-700'
-                  }`}
-                >
-                  {field.label}
-                </label>
+              <Field invalid={hasError}>
+                <FieldLabel>{field.label}</FieldLabel>
                 <PhoneInput
                   value={formField.value || ''}
                   onChange={formField.onChange}
@@ -334,8 +339,8 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
                   error={hasError}
                   defaultCountry="BR"
                 />
-                {fieldError && <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>}
-              </div>
+                {errorText(fieldError?.message)}
+              </Field>
             )}
           />
         );
@@ -347,31 +352,26 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
             name={field.name as any}
             control={control}
             render={({ field: formField }) => (
-              <div className="mb-4">
-                <label
-                  className={`text-sm font-medium mb-1 block ${
-                    hasError ? 'text-red-500' : 'text-slate-700'
-                  }`}
-                >
-                  {field.label}
-                </label>
+              <Field invalid={hasError}>
+                <FieldLabel>{field.label}</FieldLabel>
                 <Input
+                  id={id}
                   type={
                     field.type === 'email'
                       ? 'email'
                       : field.type === 'date'
-                      ? 'date'
-                      : field.type === 'url'
-                      ? 'url'
-                      : 'text'
+                        ? 'date'
+                        : field.type === 'url'
+                          ? 'url'
+                          : 'text'
                   }
                   value={formField.value || ''}
                   onChange={e => formField.onChange(e.target.value)}
                   placeholder={field.placeholder}
-                  className={hasError ? 'border-red-500' : ''}
+                  aria-invalid={hasError || undefined}
                 />
-                {fieldError && <p className="text-red-500 text-xs mt-1">{fieldError.message}</p>}
-              </div>
+                {errorText(fieldError?.message)}
+              </Field>
             )}
           />
         );
@@ -387,15 +387,15 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
     : '';
 
   return (
-    <div className="flex flex-col flex-1 w-full p-6 overflow-y-auto">
+    <div className="flex w-full flex-1 flex-col overflow-y-auto bg-background p-5">
       {shouldShowHeaderMessage && (
         <div
-          className="mb-4 text-base leading-5 text-slate-700"
+          className="mb-5 rounded-xl border bg-muted/40 p-3 text-foreground text-sm leading-relaxed"
           dangerouslySetInnerHTML={{ __html: headerMessage || '' }}
         />
       )}
 
-      <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col flex-1">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-1 flex-col gap-4">
         {formFields.map(renderField)}
 
         {!hasActiveCampaign && (
@@ -403,43 +403,30 @@ export const PreChatForm: React.FC<PreChatFormProps> = ({
             name="message"
             control={control}
             render={({ field }) => (
-              <div className="mb-4">
-                <label
-                  className={`text-sm font-medium mb-1 block ${
-                    errors.message ? 'text-red-500' : 'text-slate-700'
-                  }`}
-                >
-                  {t('preChatForm.message')}
-                </label>
+              <Field invalid={!!errors.message}>
+                <FieldLabel>{t('preChatForm.message')}</FieldLabel>
                 <Textarea
+                  id="prechat-message"
                   value={field.value || ''}
                   onChange={e => field.onChange(e.target.value)}
                   placeholder={t('preChatForm.messagePlaceholder')}
-                  className={errors.message ? 'border-red-500' : ''}
+                  aria-invalid={errors.message ? true : undefined}
                   rows={4}
                 />
-                {errors.message && (
-                  <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>
-                )}
-              </div>
+                {errorText(errors.message?.message)}
+              </Field>
             )}
           />
         )}
 
         <Button
           type="submit"
-          disabled={isLoading}
-          className="mt-3 mb-5 font-medium flex items-center justify-center gap-2"
-          style={{ backgroundColor: widgetColor }}
+          size="lg"
+          loading={isLoading}
+          className="mt-auto w-full text-white hover:opacity-90"
+          style={{ backgroundColor: widgetColor, borderColor: widgetColor }}
         >
-          {isLoading ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              {t('preChatForm.starting')}
-            </>
-          ) : (
-            t('preChatForm.startConversation')
-          )}
+          {isLoading ? t('preChatForm.starting') : t('preChatForm.startConversation')}
         </Button>
       </form>
     </div>

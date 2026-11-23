@@ -160,7 +160,9 @@
       "title": "Équipe introuvable",
       "description": "L'équipe que vous recherchez n'a pas été trouvée.",
       "action": "Retour aux équipes"
-    }
+    },
+    "pendingChanges": "{{added}} à ajouter · {{removed}} à retirer",
+    "noPendingChanges": "Aucune modification en attente"
   },
   "dialog": {
     "delete": {
@@ -185,5 +187,9 @@
     "saving": "Enregistrement en cours...",
     "save": "Enregistrer",
     "addUsers": "Ajouter des Utilisateurs"
+  },
+  "viewMode": {
+    "cards": "Vue en cartes",
+    "table": "Vue en tableau"
   }
 }

@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import { Server, Eye, Wrench } from 'lucide-react';
 import { MCPServer } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -22,22 +22,23 @@ export default function MCPServersTable({
   const { t } = useLanguage('mcpServers');
   const serversList = servers || [];
 
-  const getTypeColor = (type: string) => {
+  const getTypeBadge = (
+    type: string,
+  ): { variant: 'success' | 'warning' | 'info' | 'outline'; className?: string } => {
     switch (type) {
       case 'official':
-        return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30';
-      case 'community':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'oauth':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
       case 'webhook':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
+        return { variant: 'success' };
+      case 'community':
       case 'basic_auth':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
+        return { variant: 'warning' };
+      case 'oauth':
+        return { variant: 'info' };
       case 'credentials':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
+        // categorical accent, no status token for it
+        return { variant: 'outline', className: 'border-purple-500/30 bg-purple-500/8 text-purple-600 dark:text-purple-400' };
       default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+        return { variant: 'outline', className: 'text-muted-foreground' };
     }
   };
 
@@ -57,10 +58,10 @@ export default function MCPServersTable({
           <div className="min-w-0 flex-1">
             <div className="font-medium text-sm truncate mb-1">{server.name || t('table.noName')}</div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className={`text-xs ${getTypeColor(server.type)}`}>
+              <Badge variant={getTypeBadge(server.type).variant} className={getTypeBadge(server.type).className}>
                 {server.type}
               </Badge>
-              <Badge variant="outline" className={`text-xs ${getTypeColor(server.config_type)}`}>
+              <Badge variant={getTypeBadge(server.config_type).variant} className={getTypeBadge(server.config_type).className}>
                 {server.config_type?.toUpperCase() || 'N/A'}
               </Badge>
             </div>
@@ -86,7 +87,7 @@ export default function MCPServersTable({
       sortable: false,
       render: server => (
         <div className="flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-emerald-400" />
+          <Wrench className="h-4 w-4 text-success" />
           <span className="text-sm text-muted-foreground">
             {server.tools?.length || 0}
           </span>
@@ -118,7 +119,6 @@ export default function MCPServersTable({
       emptyDescription={t('table.empty.description')}
       emptyAction={undefined}
       getRowKey={server => String(server.id)}
-      className="border-0 shadow-none"
     />
   );
 }

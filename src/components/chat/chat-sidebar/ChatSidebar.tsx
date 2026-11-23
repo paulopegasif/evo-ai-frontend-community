@@ -1,32 +1,20 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Button } from '@evoapi/design-system/button';
-import { Checkbox } from '@evoapi/design-system/checkbox';
-import { Input } from '@evoapi/design-system/input';
-import { Badge } from '@evoapi/design-system/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import {
   ContextMenu,
   ContextMenuTrigger,
-  ContextMenuContent,
+  ContextMenuPopup,
   ContextMenuItem,
-} from '@evoapi/design-system/context-menu';
+  ContextMenuSeparator,
+} from '@/components/ui/context-menu';
+import { Menu, MenuPopup, MenuItem, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@evoapi/design-system/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
-import {
-  Search,
   Mail,
   MailOpen,
   MoreVertical,
@@ -42,6 +30,7 @@ import {
   Check,
   User as UserIcon,
   Inbox as InboxIcon,
+  MessagesSquare,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useChatContext } from '@/contexts/chat/ChatContext';
@@ -67,6 +56,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useConversationDrafts } from '../message-input/useConversationDrafts';
 import { ASSIGNEE_TABS, buildAssigneeTabFilters, getActiveAssigneeTab, type AssigneeTab } from './assigneeTabs';
 import GlobalSearchPanel from '../search/GlobalSearchPanel';
+import GlobalSearchInput from '../search/GlobalSearchInput';
 import { BaseFilter } from '@/types/core';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -590,8 +580,8 @@ const ChatSidebar = ({
 
     return (
       <ContextMenu key={conversation.id}>
-        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-        <ContextMenuContent className="w-56">
+        <ContextMenuTrigger render={children as React.ReactElement} />
+        <ContextMenuPopup className="w-56">
           <ContextMenuItem
             onClick={e => {
               e.stopPropagation();
@@ -600,11 +590,11 @@ const ChatSidebar = ({
                 onToggleSelect(String(conversation.display_id));
               }
             }}
-            className="flex items-center gap-2"
           >
-            <Check className="h-4 w-4" />
+            <Check />
             {t('chatSidebar.select')}
           </ContextMenuItem>
+          <ContextMenuSeparator />
 
           <ContextMenuItem
             onClick={e => {
@@ -615,9 +605,8 @@ const ChatSidebar = ({
                 onPinConversation(conversation);
               }
             }}
-            className="flex items-center gap-2"
           >
-            <Pin className="h-4 w-4" />
+            <Pin />
             {isPinned
               ? t('chatHeader.actions.unpinConversation')
               : t('chatHeader.actions.pinConversation')}
@@ -632,26 +621,26 @@ const ChatSidebar = ({
                 onArchiveConversation(conversation);
               }
             }}
-            className="flex items-center gap-2"
           >
-            <Archive className="h-4 w-4" />
+            <Archive />
             {isArchived
               ? t('chatHeader.actions.unarchiveConversation')
               : t('chatHeader.actions.archiveConversation')}
           </ContextMenuItem>
+
+          <ContextMenuSeparator />
 
           <ContextMenuItem
             onClick={e => {
               e.stopPropagation();
               onDeleteConversation(conversation);
             }}
-            className="flex items-center gap-2"
             variant="destructive"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 />
             {t('chatHeader.actions.deleteConversation')}
           </ContextMenuItem>
-        </ContextMenuContent>
+        </ContextMenuPopup>
       </ContextMenu>
     );
   };
@@ -666,27 +655,25 @@ const ChatSidebar = ({
       style={width != null ? { width: `${width}px` } : undefined}
     >
       {/* Search and Filter Header */}
-      <div className="p-4 border-b space-y-3">
+      <div className="space-y-3 border-b px-3 pt-3 pb-2.5">
         {/* Search */}
         <div className="relative" data-tour="chat-search">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-          <Input
-            type="text"
-            placeholder={t('chatSidebar.searchPlaceholder')}
-            value={searchInput}
-            onChange={e => handleSearchChange(e.target.value)}
-            onFocus={handleSearchFocus}
-            className="pl-10"
-          />
           <GlobalSearchPanel
             isOpen={isSearchPanelOpen && searchInput.trim().length > 0}
             searchTerm={debouncedSearchTerm}
             rawInputValue={searchInput}
+            onInputValueChange={handleSearchChange}
             onClose={() => setIsSearchPanelOpen(false)}
             onSelectConversation={handleSelectConversation}
             onSelectContact={handleSelectContact}
             onSelectMessage={handleSelectMessage}
-          />
+          >
+            <GlobalSearchInput
+              placeholder={t('chatSidebar.searchPlaceholder')}
+              aria-label={t('chatSidebar.searchPlaceholder')}
+              onFocus={handleSearchFocus}
+            />
+          </GlobalSearchPanel>
         </div>
 
         {/* Chips de segmento (Abertas/Pendentes/Concluídas/Agente/Grupos) — SÓ
@@ -707,7 +694,7 @@ const ChatSidebar = ({
             só tooltip. Espelha exatamente o protótipo (não é um segmented
             control nem duas seções empilhadas). */}
         {!selectionMode && (
-          <div className="flex items-center justify-between border-b pb-0">
+          <div className="flex items-center justify-between">
             <button
               type="button"
               onClick={() => {
@@ -719,28 +706,34 @@ const ChatSidebar = ({
                   () => {},
                 );
               }}
-              className={`flex items-center gap-1.5 pb-2.5 text-sm cursor-pointer ${
-                !showArchived
-                  ? 'font-semibold text-foreground border-b-2 border-primary'
-                  : 'font-medium text-muted-foreground hover:text-foreground'
+              className={`-ms-1 flex cursor-pointer items-center gap-1.5 rounded-md px-1 py-0.5 font-semibold text-base outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                !showArchived ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {showArchived && <ArrowLeft className="h-3.5 w-3.5" />}
-              {t('chatSidebar.view.active', 'Ativas')}
+              {showArchived && <ArrowLeft className="size-4" />}
+              {showArchived
+                ? t('chatSidebar.view.archived')
+                : t('chatSidebar.view.active', 'Ativas')}
             </button>
             {!showArchived && (
-              <button
-                type="button"
-                title={t('chatSidebar.view.archived')}
-                aria-label={t('chatSidebar.view.archived')}
-                onClick={() => {
-                  setShowArchived(true);
-                  void conversations.loadConversations({ status: 'all', archived: true, per_page: 100 });
-                }}
-                className="flex items-center pb-2.5 text-muted-foreground hover:text-primary cursor-pointer"
-              >
-                <Archive className="h-[22px] w-[22px]" strokeWidth={2} />
-              </button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={t('chatSidebar.view.archived')}
+                      onClick={() => {
+                        setShowArchived(true);
+                        void conversations.loadConversations({ status: 'all', archived: true, per_page: 100 });
+                      }}
+                    />
+                  }
+                >
+                  <Archive />
+                </TooltipTrigger>
+                <TooltipPopup>{t('chatSidebar.view.archived')}</TooltipPopup>
+              </Tooltip>
             )}
           </div>
         )}
@@ -750,7 +743,7 @@ const ChatSidebar = ({
           <div
             role="tablist"
             aria-label={t('chatSidebar.assigneeTabs.label', 'Filtrar por responsável')}
-            className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1"
+            className="grid grid-cols-3 gap-0.5 rounded-lg bg-muted p-0.5"
           >
             {ASSIGNEE_TABS.map(tab => {
               const selected = activeAssigneeTab === tab.id;
@@ -762,9 +755,9 @@ const ChatSidebar = ({
                   aria-selected={selected}
                   disabled={filters.state.isApplyingFilters}
                   onClick={() => handleAssigneeTab(tab.id)}
-                  className={`truncate rounded-md px-2 py-1 text-xs font-medium transition-colors cursor-pointer disabled:cursor-wait ${
+                  className={`h-7 cursor-pointer truncate rounded-md px-2 font-medium text-xs outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-wait ${
                     selected
-                      ? 'bg-background text-foreground shadow-sm'
+                      ? 'bg-background text-foreground shadow-xs/5 dark:bg-input/64'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -779,7 +772,7 @@ const ChatSidebar = ({
             via clique-direito → "Selecionar Conversa", ver context menu). */}
         {!selectionMode && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-xs tabular-nums">
               {(conversations.state.conversationsPagination?.total || visibleConversations.length)}{' '}
               {(conversations.state.conversationsPagination?.total || visibleConversations.length) === 1
                 ? t('chatSidebar.conversation')
@@ -788,7 +781,7 @@ const ChatSidebar = ({
             <div className="flex items-center gap-2">
               {/* Indicador de filtros ativos (status é navegação, não conta) */}
               {appliedFilterCount > 0 && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="info">
                   {appliedFilterCount}{' '}
                   {appliedFilterCount === 1
                     ? t('chatSidebar.filter')
@@ -813,132 +806,124 @@ const ChatSidebar = ({
 
       {/* Barra de ações em lote (estilo WhatsApp: ✕ N selecionadas + kebab ⋮) */}
       {selectionMode && (
-        <div className="px-3 py-2 border-b bg-muted/40 flex items-center justify-between gap-2 flex-shrink-0">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex flex-shrink-0 items-center justify-between gap-2 border-b bg-primary/6 px-3 py-2">
+          <div className="flex min-w-0 items-center gap-2">
             <Button
               variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 cursor-pointer"
+              size="icon-sm"
               onClick={exitSelection}
               aria-label={t('chatSidebar.doneSelection')}
             >
-              <X className="h-4 w-4" />
+              <X />
             </Button>
-            <span className="text-sm font-medium truncate">
+            <span className="truncate font-medium text-sm tabular-nums">
               {t('chatSidebar.selectedCount', { count: selectedConversationIds.size })}
             </span>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 cursor-pointer"
-                disabled={selectedConversationIds.size === 0 || bulkRunning}
-                aria-label={t('chatSidebar.bulkActions')}
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+          <Menu>
+            <MenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={selectedConversationIds.size === 0 || bulkRunning}
+                  aria-label={t('chatSidebar.bulkActions')}
+                />
+              }
+            >
+              <MoreVertical />
+            </MenuTrigger>
+            <MenuPopup align="end">
               {canBulkUpdateStatus && (
                 <>
-                  <DropdownMenuItem
-                    className="cursor-pointer"
+                  <MenuItem
                     disabled={isBulkUpdatingStatus}
                     onClick={() => {
                       void onBulkSetStatus('resolved').finally(() => setSelectionMode(false));
                     }}
                   >
-                    <CheckCircle className="h-4 w-4 mr-2" />
+                    <CheckCircle />
                     {t('chatHeader.actions.markAsResolved')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer"
+                  </MenuItem>
+                  <MenuItem
                     disabled={isBulkUpdatingStatus}
                     onClick={() => {
                       void onBulkSetStatus('open').finally(() => setSelectionMode(false));
                     }}
                   >
-                    <MessageCircle className="h-4 w-4 mr-2" />
+                    <MessageCircle />
                     {t('chatHeader.actions.markAsOpen')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer"
+                  </MenuItem>
+                  <MenuItem
                     disabled={isBulkUpdatingStatus}
                     onClick={() => {
                       void onBulkSetStatus('pending').finally(() => setSelectionMode(false));
                     }}
                   >
-                    <Clock className="h-4 w-4 mr-2" />
+                    <Clock />
                     {t('chatHeader.actions.markAsPending')}
-                  </DropdownMenuItem>
+                  </MenuItem>
                 </>
               )}
               {showArchived ? (
-                <DropdownMenuItem
-                  className="cursor-pointer"
+                <MenuItem
                   onClick={() => void runBulk(c => conversations.unarchiveConversation(c.id, undefined, { silent: true }))}
                 >
-                  <Archive className="h-4 w-4 mr-2" />
+                  <Archive />
                   {t('chatHeader.actions.unarchiveConversation')}
-                </DropdownMenuItem>
+                </MenuItem>
               ) : (
-                <DropdownMenuItem
-                  className="cursor-pointer"
+                <MenuItem
                   onClick={() => void runBulk(c => conversations.archiveConversation(c.id, undefined, { silent: true }))}
                 >
-                  <Archive className="h-4 w-4 mr-2" />
+                  <Archive />
                   {t('chatHeader.actions.archiveConversation')}
-                </DropdownMenuItem>
+                </MenuItem>
               )}
-              <DropdownMenuItem
-                className="cursor-pointer"
+              <MenuItem
                 onClick={() =>
                   void runBulk(c => conversations.markAsRead(c.id, { silent: true }), revertRead)
                 }
               >
-                <MailOpen className="h-4 w-4 mr-2" />
+                <MailOpen />
                 {t('chatHeader.actions.markAsRead')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
+              </MenuItem>
+              <MenuItem
                 onClick={() => void runBulk(c => conversations.markAsUnread(c.id, { silent: true }), revertRead)}
               >
-                <Mail className="h-4 w-4 mr-2" />
+                <Mail />
                 {t('chatHeader.actions.markAsUnread')}
-              </DropdownMenuItem>
+              </MenuItem>
               {can('conversations', 'delete') && (
-                <DropdownMenuItem
-                  className="cursor-pointer text-destructive focus:text-destructive"
+                <>
+                <MenuSeparator />
+                <MenuItem
+                  variant="destructive"
                   onClick={() => setBulkDeleteOpen(true)}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 />
                   {t('chatHeader.actions.deleteConversation')}
-                </DropdownMenuItem>
+                </MenuItem>
+                </>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </MenuPopup>
+          </Menu>
         </div>
       )}
 
       {/* Confirmação de exclusão em lote */}
-      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteDialog.title')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('chatSidebar.bulkDeleteDescription', { count: selectedConversationIds.size })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('deleteDialog.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => void runBulk(c => conversations.deleteConversation(c.id, { silent: true }), undefined, 'chatSidebar.bulkDeleted')}>
-              {t('deleteDialog.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+        title={t('deleteDialog.title')}
+        description={t('chatSidebar.bulkDeleteDescription', { count: selectedConversationIds.size })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={() => {
+          setBulkDeleteOpen(false);
+          void runBulk(c => conversations.deleteConversation(c.id, { silent: true }), undefined, 'chatSidebar.bulkDeleted');
+        }}
+      />
 
       {/* Conversations List */}
       <div
@@ -957,36 +942,47 @@ const ChatSidebar = ({
           // with items on screen the bottom cushion is the loading feedback.
           <ConversationSkeleton count={8} />
         ) : conversations.state.conversationsError ? (
-          <div className="p-4 text-center">
-            <div className="text-destructive mb-2">{t('chatSidebar.errors.loadConversations')}</div>
-            <p className="text-sm text-muted-foreground mb-4">
-              {conversations.state.conversationsError}
-            </p>
-            <Button variant="outline" size="sm" onClick={() => conversations.loadConversations({})}>
-              {t('chatSidebar.errors.tryAgain')}
-            </Button>
+          <div className="p-3">
+            <Alert variant="error">
+              <AlertTitle>{t('chatSidebar.errors.loadConversations')}</AlertTitle>
+              <AlertDescription>
+                <p>{conversations.state.conversationsError}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => conversations.loadConversations({})}
+                >
+                  {t('chatSidebar.errors.tryAgain')}
+                </Button>
+              </AlertDescription>
+            </Alert>
           </div>
         ) : visibleConversations.length === 0 ? (
-          <div className="p-4 text-center">
+          <div>
             {searchInput ? (
               <NoConversations
                 searchTerm={searchInput}
                 onCreateNew={() => console.log('Create new conversation')}
               />
             ) : (
-              <div className="py-8">
-                <div className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {showArchived
-                    ? t('chatSidebar.emptyArchived.title')
-                    : t('chatSidebar.empty.title')}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {showArchived
-                    ? t('chatSidebar.emptyArchived.description')
-                    : t('chatSidebar.empty.description')}
-                </p>
-              </div>
+              <Empty className="md:py-12">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    {showArchived ? <Archive /> : <MessagesSquare />}
+                  </EmptyMedia>
+                  <EmptyTitle>
+                    {showArchived
+                      ? t('chatSidebar.emptyArchived.title')
+                      : t('chatSidebar.empty.title')}
+                  </EmptyTitle>
+                  <EmptyDescription>
+                    {showArchived
+                      ? t('chatSidebar.emptyArchived.description')
+                      : t('chatSidebar.empty.description')}
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             )}
           </div>
         ) : (
@@ -1015,14 +1011,25 @@ const ChatSidebar = ({
                 <div
                   key={conversation.id}
                   data-testid="conversation-row"
+                  role="button"
+                  tabIndex={0}
+                  aria-current={isSelected ? 'true' : undefined}
+                  onKeyDown={e => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      if (selectionMode) onToggleSelect(String(conversation.display_id));
+                      else onConversationSelect(conversation);
+                    }
+                  }}
                   // Moldura (border-b + barra esquerda de 2px) é a MESMA em todo estado —
                   // só a cor muda — para a row não "pular" ao (des)selecionar.
-                  className={`flex items-start gap-2.5 px-3 py-2.5 border-b border-border/60 border-l-2 cursor-pointer transition-colors ${
+                  className={`flex cursor-pointer items-start gap-2.5 border-border/60 border-b border-l-2 px-3 py-2.5 outline-none transition-colors focus-visible:bg-muted/72 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset ${
                     isBulkSelected
-                      ? 'bg-muted border-l-primary/40'
+                      ? 'border-l-primary/40 bg-primary/6'
                       : isSelected
-                        ? 'bg-accent border-l-primary'
-                        : 'border-l-transparent hover:bg-muted/50'
+                        ? 'border-l-primary bg-accent'
+                        : 'border-l-transparent hover:bg-muted/56'
                   }`}
                   onClick={() =>
                     selectionMode
@@ -1034,14 +1041,13 @@ const ChatSidebar = ({
                     <div className="mt-2.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
                       <Checkbox
                         checked={selectedConversationIds.has(String(conversation.display_id))}
-                        onCheckedChange={(checked: boolean | 'indeterminate') => {
+                        onCheckedChange={(checked: boolean) => {
                           const isSelected = selectedConversationIds.has(String(conversation.display_id));
                           if ((checked === true && !isSelected) || (checked === false && isSelected)) {
                             onToggleSelect(String(conversation.display_id));
                           }
                         }}
                         aria-label={t('chatSidebar.selectConversation')}
-                        className="border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                       />
                     </div>
                   )}
@@ -1092,12 +1098,8 @@ const ChatSidebar = ({
                           <Pin className="h-3 w-3 text-primary flex-shrink-0" />
                         )}
                         {conversation.additional_attributes?.conversation_type === 'post' && (
-                          <Badge
-                            variant="outline"
-                            className="h-4 px-1.5 text-[10px] bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-700 flex-shrink-0"
-                            title="Facebook Post"
-                          >
-                            <FileText className="h-2.5 w-2.5 mr-0.5" />
+                          <Badge variant="info" size="sm" className="flex-shrink-0" title="Facebook Post">
+                            <FileText />
                             Post
                           </Badge>
                         )}
@@ -1167,7 +1169,7 @@ const ChatSidebar = ({
                   className="w-full"
                   onClick={handleLoadMoreClick}
                 >
-                  Carregar mais
+                  {t('chatSidebar.loadMore', 'Carregar mais')}
                 </Button>
               </div>
             )}

@@ -1,5 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@evoapi/design-system';
-import PipelineAutomation, { PipelineAutomationConfig } from '@/pages/Customer/Agents/Agent/sections/PipelineAutomation';
+import { useLanguage } from '@/hooks/useLanguage';
+import {
+  Dialog,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import PipelineAutomation, {
+  PipelineAutomationConfig,
+} from '@/pages/Customer/Agents/Agent/sections/PipelineAutomation';
 
 interface PipelineAutomationModalProps {
   open: boolean;
@@ -20,18 +29,21 @@ const PipelineAutomationModal = ({
   onChange,
   availablePipelines = [],
 }: PipelineAutomationModalProps) => {
+  const { t } = useLanguage('aiAgents');
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogPopup className="sm:max-w-6xl">
         <DialogHeader>
-          <DialogTitle>Automação de Pipelines</DialogTitle>
+          <DialogTitle>{t('edit.configuration.pipelineAutomation.modalTitle')}</DialogTitle>
         </DialogHeader>
-        <PipelineAutomation
-          rules={rules}
-          onChange={onChange}
-          availablePipelines={availablePipelines}
-        />
-      </DialogContent>
+        <DialogPanel>
+          <PipelineAutomation
+            rules={rules}
+            onChange={onChange}
+            availablePipelines={availablePipelines}
+          />
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 };

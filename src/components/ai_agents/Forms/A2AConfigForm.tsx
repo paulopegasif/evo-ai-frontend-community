@@ -1,16 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Label,
-  Input,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  Button,
-  Switch,
-  Badge,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { ExternalLink, Settings, Share2, Plus, X, Globe } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -87,7 +81,9 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
 
       // Validar allowlist se habilitado
       if (externalSharing.allowlist && externalSharing.allowlist.length === 0) {
-        newErrors.allowlist = t('validation.allowlistRequired') || 'At least one allowlist entry is required for external sharing';
+        newErrors.allowlist =
+          t('validation.allowlistRequired') ||
+          'At least one allowlist entry is required for external sharing';
       }
     }
 
@@ -152,21 +148,19 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/10">
-              <ExternalLink className="h-5 w-5 text-blue-500" />
+            <div className="p-2 rounded-lg bg-info/10">
+              <ExternalLink className="h-5 w-5 text-info" />
             </div>
             <div>
               <CardTitle>{t('a2aConfig.title')}</CardTitle>
-              <CardDescription>
-                {t('a2aConfig.description')}
-              </CardDescription>
+              <CardDescription>{t('a2aConfig.description')}</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="agent-card-url">
-              {t('a2aConfig.agentCardUrl')} <span className="text-red-500">*</span>
+              {t('a2aConfig.agentCardUrl')} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="agent-card-url"
@@ -174,24 +168,22 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
               onChange={e => handleInputChange('agent_card_url', e.target.value)}
               placeholder={t('a2aConfig.agentCardUrlPlaceholder')}
               disabled={isReadOnly}
-              className={errors.agent_card_url ? 'border-red-500 focus:border-red-500' : ''}
+              aria-invalid={!!errors.agent_card_url || undefined}
             />
             {errors.agent_card_url && (
-              <p className="text-xs text-red-600">{errors.agent_card_url}</p>
+              <p className="text-xs text-destructive-foreground">{errors.agent_card_url}</p>
             )}
-            <p className="text-xs text-muted-foreground">
-              {t('a2aConfig.urlDescription')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('a2aConfig.urlDescription')}</p>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Card da Chave de Saída */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-teal-500/10">
-              <Settings className="h-5 w-5 text-teal-500" />
+            <div className="p-2 rounded-lg bg-success/10">
+              <Settings className="h-5 w-5 text-success-foreground" />
             </div>
             <div>
               <CardTitle>{t('a2aConfig.advancedTitle')}</CardTitle>
@@ -199,7 +191,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardPanel className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="output-key" className="text-sm font-medium">
               {t('a2aConfig.outputKey')}
@@ -210,51 +202,56 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
               onChange={e => handleInputChange('output_key', sanitizeAgentName(e.target.value))}
               placeholder={t('a2aConfig.outputKeyPlaceholder')}
               disabled={isReadOnly}
-              className={errors.output_key ? 'border-red-500 focus:border-red-500' : ''}
+              aria-invalid={!!errors.output_key || undefined}
             />
-            {errors.output_key && <p className="text-xs text-red-600">{errors.output_key}</p>}
-            <p className="text-xs text-muted-foreground">
-              {t('a2aConfig.outputKeyDescription')}
-            </p>
+            {errors.output_key && (
+              <p className="text-xs text-destructive-foreground">{errors.output_key}</p>
+            )}
+            <p className="text-xs text-muted-foreground">{t('a2aConfig.outputKeyDescription')}</p>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Card de Compartilhamento Externo */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-500/10">
-              <Share2 className="h-5 w-5 text-purple-500" />
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Share2 className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
-              <CardTitle>{t('a2aConfig.externalSharingTitle') || 'Compartilhamento Externo'}</CardTitle>
+              <CardTitle>
+                {t('a2aConfig.externalSharingTitle') || 'Compartilhamento Externo'}
+              </CardTitle>
               <CardDescription>
-                {t('a2aConfig.externalSharingDescription') || 'Configure o compartilhamento externo do agente A2A'}
+                {t('a2aConfig.externalSharingDescription') ||
+                  'Configure o compartilhamento externo do agente A2A'}
               </CardDescription>
             </div>
             <Switch
               checked={externalSharing.enabled}
-              onCheckedChange={(checked) => handleExternalSharingChange({ enabled: checked })}
+              onCheckedChange={checked => handleExternalSharingChange({ enabled: checked })}
               disabled={isReadOnly}
             />
           </div>
         </CardHeader>
         {externalSharing.enabled && (
-          <CardContent className="space-y-4">
+          <CardPanel className="space-y-4">
             {/* Estado de Publicação */}
             <div className="space-y-2">
               <Label htmlFor="publish-state" className="text-sm font-medium">
                 {t('a2aConfig.publishState') || 'Estado de Publicação'}
               </Label>
               <div className="flex gap-2">
-                {(['draft', 'published', 'archived'] as const).map((state) => (
+                {(['draft', 'published', 'archived'] as const).map(state => (
                   <Button
                     key={state}
                     type="button"
                     variant={externalSharing.publish_state === state ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => !isReadOnly && handleExternalSharingChange({ publish_state: state })}
+                    onClick={() =>
+                      !isReadOnly && handleExternalSharingChange({ publish_state: state })
+                    }
                     disabled={isReadOnly}
                   >
                     {t(`a2aConfig.publishState.${state}`) || state}
@@ -262,35 +259,41 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">
-                {t('a2aConfig.publishStateDescription') || 'O estado de publicação controla a disponibilidade do agente para acesso externo'}
+                {t('a2aConfig.publishStateDescription') ||
+                  'O estado de publicação controla a disponibilidade do agente para acesso externo'}
               </p>
             </div>
 
             {/* Callback URL */}
             <div className="space-y-2">
               <Label htmlFor="callback-url" className="text-sm font-medium">
-                {t('a2aConfig.callbackUrl') || 'Callback URL'} <span className="text-red-500">*</span>
+                {t('a2aConfig.callbackUrl') || 'Callback URL'}{' '}
+                <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="callback-url"
                 value={externalSharing.callback_url || ''}
                 onChange={e => handleExternalSharingChange({ callback_url: e.target.value })}
-                placeholder={t('a2aConfig.callbackUrlPlaceholder') || 'https://exemplo.com/callback'}
+                placeholder={
+                  t('a2aConfig.callbackUrlPlaceholder') || 'https://exemplo.com/callback'
+                }
                 disabled={isReadOnly}
-                className={errors.callback_url ? 'border-red-500 focus:border-red-500' : ''}
+                aria-invalid={!!errors.callback_url || undefined}
               />
               {errors.callback_url && (
-                <p className="text-xs text-red-600">{errors.callback_url}</p>
+                <p className="text-xs text-destructive-foreground">{errors.callback_url}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                {t('a2aConfig.callbackUrlDescription') || 'URL HTTPS para receber notificações de eventos do agente'}
+                {t('a2aConfig.callbackUrlDescription') ||
+                  'URL HTTPS para receber notificações de eventos do agente'}
               </p>
             </div>
 
             {/* Allowlist */}
             <div className="space-y-2">
               <Label htmlFor="allowlist" className="text-sm font-medium">
-                {t('a2aConfig.allowlist') || 'Allowlist'} <span className="text-red-500">*</span>
+                {t('a2aConfig.allowlist') || 'Allowlist'}{' '}
+                <span className="text-destructive">*</span>
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -299,7 +302,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                   onChange={e => setNewAllowlistEntry(e.target.value)}
                   placeholder={t('a2aConfig.allowlistPlaceholder') || 'exemplo.com ou 192.168.1.1'}
                   disabled={isReadOnly}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === 'Enter' && !isReadOnly) {
                       e.preventDefault();
                       handleAddAllowlistEntry();
@@ -317,7 +320,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                 </Button>
               </div>
               {errors.allowlist && (
-                <p className="text-xs text-red-600">{errors.allowlist}</p>
+                <p className="text-xs text-destructive-foreground">{errors.allowlist}</p>
               )}
               {externalSharing.allowlist && externalSharing.allowlist.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -329,7 +332,7 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                         <button
                           type="button"
                           onClick={() => handleRemoveAllowlistEntry(index)}
-                          className="ml-1 hover:text-red-500"
+                          className="ml-1 hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -339,10 +342,11 @@ const A2AConfigForm = ({ mode, data, onChange, onValidationChange }: A2AConfigFo
                 </div>
               )}
               <p className="text-xs text-muted-foreground">
-                {t('a2aConfig.allowlistDescription') || 'Domínios ou IPs permitidos para acessar o agente externamente'}
+                {t('a2aConfig.allowlistDescription') ||
+                  'Domínios ou IPs permitidos para acessar o agente externamente'}
               </p>
             </div>
-          </CardContent>
+          </CardPanel>
         )}
       </Card>
     </div>

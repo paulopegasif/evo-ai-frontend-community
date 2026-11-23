@@ -44,16 +44,10 @@ vi.mock('sonner', () => ({
   toast: { loading: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
 
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/button', () => ({
   Button: ({ children, onClick, ...props }: any) => (
     <button type="button" onClick={onClick} {...props}>{children}</button>
   ),
-  Dialog: ({ children }: any) => <>{children}</>,
-  DialogContent: ({ children }: any) => <div>{children}</div>,
-  DialogHeader: ({ children }: any) => <div>{children}</div>,
-  DialogTitle: ({ children }: any) => <div>{children}</div>,
-  DialogDescription: ({ children }: any) => <div>{children}</div>,
-  DialogFooter: ({ children }: any) => <div>{children}</div>,
 }));
 
 const mockUseMenuState = vi.hoisted(() => vi.fn());

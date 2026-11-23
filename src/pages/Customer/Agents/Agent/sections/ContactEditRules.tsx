@@ -1,12 +1,9 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Switch,
-  Textarea,
-  Card,
-  CardContent,
-  Checkbox,
-  Label,
-} from '@evoapi/design-system';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Info } from 'lucide-react';
 
 export interface ContactEditConfig {
@@ -96,11 +93,12 @@ const ContactEditRules = ({ config, onChange }: ContactEditRulesProps) => {
 
       {/* Enable/Disable */}
       <Card>
-        <CardContent className="p-4">
+        <CardPanel className="p-4">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <Label className="text-base font-medium">
-                {t('edit.configuration.contactEditRules.enableEditing') || 'Permitir edição de contatos'}
+                {t('edit.configuration.contactEditRules.enableEditing') ||
+                  'Permitir edição de contatos'}
               </Label>
               <p className="text-sm text-muted-foreground">
                 {t('edit.configuration.contactEditRules.enableEditingDescription') ||
@@ -109,14 +107,14 @@ const ContactEditRules = ({ config, onChange }: ContactEditRulesProps) => {
             </div>
             <Switch checked={config.enabled} onCheckedChange={handleToggle} />
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Fields Selection */}
       {config.enabled && (
         <>
           <Card>
-            <CardContent className="p-4 space-y-4">
+            <CardPanel className="p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-medium">
                   {t('edit.configuration.contactEditRules.editableFields') || 'Campos editáveis'}
@@ -192,12 +190,12 @@ const ContactEditRules = ({ config, onChange }: ContactEditRulesProps) => {
                 {config.editableFields.length}{' '}
                 {t('edit.configuration.contactEditRules.fieldsSelected') || 'campos selecionados'}
               </p>
-            </CardContent>
+            </CardPanel>
           </Card>
 
           {/* Instructions */}
           <Card>
-            <CardContent className="p-4 space-y-3">
+            <CardPanel className="p-4 space-y-3">
               <Label className="text-base font-medium">
                 {t('edit.configuration.contactEditRules.instructions') || 'Instruções'}
               </Label>
@@ -221,9 +219,9 @@ const ContactEditRules = ({ config, onChange }: ContactEditRulesProps) => {
                   {t('edit.configuration.contactEditRules.tipContent') ||
                     'Seja específico sobre quando cada campo deve ser editado'}
                 </span>
-                <span>{(config.instructions?.length || 0)}/500</span>
+                <span>{config.instructions?.length || 0}/500</span>
               </div>
-            </CardContent>
+            </CardPanel>
           </Card>
         </>
       )}

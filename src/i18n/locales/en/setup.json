@@ -67,6 +67,7 @@
     "english": "English",
     "spanish": "Espanol",
     "french": "Francais",
-    "italian": "Italiano"
+    "italian": "Italiano",
+    "selector": "Language"
   }
 }
