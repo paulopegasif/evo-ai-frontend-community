@@ -1,19 +1,11 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import {
-  Card,
-  CardContent,
-  Button,
-  Input,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  RadioGroup,
-  RadioGroupItem,
-} from '@evoapi/design-system';
-import { Label } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Code2, Upload, Trash2, Eye, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -220,7 +212,7 @@ export default function WidgetBuilderForm({
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-border">
             <div className="flex items-center gap-3">
@@ -264,11 +256,12 @@ export default function WidgetBuilderForm({
                         <Button
                           type="button"
                           variant="destructive"
-                          size="sm"
-                          className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                          size="icon-xs"
+                          className="absolute -top-2 -right-2 rounded-full"
                           onClick={handleAvatarDelete}
+                          aria-label={t('settings.widgetBuilder.avatar.remove')}
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 />
                         </Button>
                       </div>
                     ) : (
@@ -279,13 +272,11 @@ export default function WidgetBuilderForm({
 
                     <div>
                       <Label htmlFor="avatar-upload" className="cursor-pointer">
-                        <Button type="button" variant="outline" size="sm" asChild>
-                          <span>
-                            <Upload className="w-4 h-4 mr-2" />
-                            {config.avatarUrl
-                              ? t('settings.widgetBuilder.avatar.change')
-                              : t('settings.widgetBuilder.avatar.upload')}
-                          </span>
+                        <Button variant="outline" size="sm" render={<span />}>
+                          <Upload />
+                          {config.avatarUrl
+                            ? t('settings.widgetBuilder.avatar.change')
+                            : t('settings.widgetBuilder.avatar.upload')}
                         </Button>
                       </Label>
                       <input
@@ -344,21 +335,22 @@ export default function WidgetBuilderForm({
                 <div className="space-y-2">
                   <Label htmlFor="replyTime">{t('settings.widgetBuilder.replyTime.label')}</Label>
                   <Select
-                    value={config.replyTime}
-                    onValueChange={value => handleConfigChange('replyTime', value)}
+                    items={replyTimeOptions.map(option => ({ value: option.value, label: option.text }))}
+                    value={config.replyTime || null}
+                    onValueChange={value => handleConfigChange('replyTime', String(value ?? ''))}
                   >
                     <SelectTrigger>
                       <SelectValue
                         placeholder={t('settings.widgetBuilder.replyTime.placeholder')}
                       />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectPopup alignItemWithTrigger={false}>
                       {replyTimeOptions.map(option => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.text}
                         </SelectItem>
                       ))}
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
 
@@ -377,8 +369,9 @@ export default function WidgetBuilderForm({
                         <button
                           key={color}
                           type="button"
-                          className="w-8 h-8 rounded border border-border"
+                          className="size-8 rounded border"
                           style={{ backgroundColor: color }}
+                          aria-label={color}
                           onClick={() => handleConfigChange('widgetColor', color)}
                         />
                       ))}
@@ -391,7 +384,7 @@ export default function WidgetBuilderForm({
                   <Label>{t('settings.widgetBuilder.position.label')}</Label>
                   <RadioGroup
                     value={config.widgetBubblePosition}
-                    onValueChange={handleBubblePositionChange}
+                    onValueChange={value => handleBubblePositionChange(String(value))}
                     className="flex gap-4"
                   >
                     {bubblePositions.map(position => (
@@ -408,7 +401,7 @@ export default function WidgetBuilderForm({
                   <Label>{t('settings.widgetBuilder.bubbleType.label')}</Label>
                   <RadioGroup
                     value={config.widgetBubbleType}
-                    onValueChange={handleBubbleTypeChange}
+                    onValueChange={value => handleBubbleTypeChange(String(value))}
                     className="flex gap-4"
                   >
                     {bubbleTypes.map(type => (
@@ -468,11 +461,11 @@ export default function WidgetBuilderForm({
 
               {/* Preview/Script Content */}
               {viewMode === 'preview' ? (
-                <div className="flex flex-col items-center justify-end min-h-[650px] mx-5 mb-5 p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                <div className="flex flex-col items-center justify-end min-h-[650px] mx-5 mb-5 p-2.5 bg-muted/48 rounded-lg">
                   <WidgetPreview config={config} websiteToken={previewWebsiteToken} />
                 </div>
               ) : (
-                <div className="mx-5 p-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                <div className="mx-5 p-2.5 bg-muted rounded-lg">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Code2 className="w-5 h-5" />
@@ -504,7 +497,7 @@ export default function WidgetBuilderForm({
                         {t('settings.widgetBuilder.widgetCode.copyCode')}
                       </Button>
                     </div>
-                    <div className="bg-slate-900 text-white p-4 rounded-lg text-sm font-mono overflow-x-auto">
+                    <div className="border bg-muted text-foreground p-4 rounded-lg text-sm font-mono overflow-x-auto">
                       <pre>
                         {widgetScript || t('settings.widgetBuilder.widgetCode.placeholder')}
                       </pre>
@@ -533,7 +526,7 @@ export default function WidgetBuilderForm({
                         {t('settings.widgetBuilder.widgetCode.copyCode')}
                       </Button>
                     </div>
-                    <div className="bg-slate-900 text-white p-4 rounded-lg text-sm font-mono overflow-x-auto">
+                    <div className="border bg-muted text-foreground p-4 rounded-lg text-sm font-mono overflow-x-auto">
                       <pre>
                         {widgetIframeEmbed || '<iframe ...></iframe>'}
                       </pre>
@@ -551,7 +544,7 @@ export default function WidgetBuilderForm({
               )}
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

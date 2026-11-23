@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@evoapi/design-system';
-import { X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CustomTool, CustomToolFormData } from '@/types/ai';
-import WizardProgress from '@/pages/Customer/Agents/Agent/wizard/WizardProgress';
+import WizardShell from '@/components/agents/wizard/WizardShell';
 import {
   Step1_Identity,
   Step2_Endpoint,
@@ -396,66 +394,20 @@ export default function CustomToolWizardModal({
 
   const header = stepHeader[currentStep];
 
-  const wizardContent = (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="flex items-center justify-end px-3 pt-3 pb-0 flex-shrink-0">
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Close wizard"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-
-      <div className="flex flex-col flex-1 min-h-0">
-        <div className="border-b bg-transparent p-3 pt-1.5 flex-shrink-0">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold leading-tight">{header.title}</h2>
-            {header.subtitle && (
-              <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
-                {header.subtitle}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="py-2 px-4 flex-shrink-0 bg-transparent">
-          <WizardProgress
-            currentStep={currentStep}
-            totalSteps={TOTAL_STEPS}
-            steps={steps}
-          />
-        </div>
-
-        <div
-          ref={contentRef}
-          className="flex-1 overflow-y-auto px-3 min-h-0"
-        >
-          {renderStep()}
-        </div>
-      </div>
-    </div>
-  );
-
-  if (embedded) {
-    return (
-      <div className="w-full h-full min-h-0 bg-background overflow-hidden">
-        {wizardContent}
-      </div>
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        className="!w-[72vw] !max-w-[72vw] h-[94vh] max-h-[94vh] overflow-hidden p-0 sm:!max-w-[72vw]"
-      >
-        <DialogTitle className="sr-only">{t('modal.title.create')}</DialogTitle>
-        {wizardContent}
-      </DialogContent>
-    </Dialog>
+    <WizardShell
+      open={open}
+      onOpenChange={onOpenChange}
+      embedded={embedded}
+      title={header.title}
+      subtitle={header.subtitle}
+      dialogTitle={t('modal.title.create')}
+      steps={steps}
+      currentStep={currentStep}
+      totalSteps={TOTAL_STEPS}
+      contentRef={contentRef}
+    >
+      {renderStep()}
+    </WizardShell>
   );
 }

@@ -1,12 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Button } from '@evoapi/design-system/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@evoapi/design-system/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { BaseFilter } from '@/types/core/filters';
 import type { ConversationFilter } from '@/types/chat/api';
@@ -23,7 +18,7 @@ interface ConversationSegmentsProps {
 const GAP = 4; // matches gap-1 (0.25rem)
 // Chips compactos (px-2.5 + text-xs) pra caberem mais na largura da lista. A
 // camada de medição usa a MESMA classe pro cálculo de overflow bater.
-const CHIP_CLASS = 'h-8 shrink-0 cursor-pointer px-2.5 text-xs';
+const CHIP_CLASS = 'shrink-0 rounded-full px-2.5';
 
 /**
  * WhatsApp/CRM-style primary navigation for the conversation list. Chips são
@@ -111,12 +106,12 @@ const ConversationSegments = ({
         className="pointer-events-none absolute -z-10 flex items-center gap-1 opacity-0"
       >
         {CONVERSATION_SEGMENTS.map(segment => (
-          <Button key={segment.id} data-measure-chip variant="ghost" size="sm" className={CHIP_CLASS}>
+          <Button key={segment.id} data-measure-chip variant="outline" size="xs" className={CHIP_CLASS}>
             {t(segment.labelKey)}
           </Button>
         ))}
-        <Button data-measure-more variant="ghost" size="sm" className="h-8 shrink-0 px-2">
-          <ChevronDown className="h-4 w-4" />
+        <Button data-measure-more variant="ghost" size="icon-xs" className="shrink-0">
+          <ChevronDown />
         </Button>
       </div>
 
@@ -126,12 +121,11 @@ const ConversationSegments = ({
         return (
           <Button
             key={segment.id}
-            type="button"
             role="tab"
             aria-selected={isActive}
-            variant={isActive ? 'secondary' : 'ghost'}
-            size="sm"
-            className={CHIP_CLASS}
+            variant="outline"
+            size="xs"
+            className={`${CHIP_CLASS} ${isActive ? 'border-primary/40 bg-primary/10 text-foreground hover:bg-primary/14' : 'text-muted-foreground'}`}
             disabled={disabled}
             onClick={() => applySegment(segment.id, segment.preset)}
           >
@@ -142,31 +136,32 @@ const ConversationSegments = ({
 
       {/* Botão de overflow (▾) → dropdown com os chips que não couberam */}
       {overflow.length > 0 && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant={overflowHasActive ? 'secondary' : 'ghost'}
-              size="sm"
-              className="h-8 shrink-0 px-2 cursor-pointer"
-              disabled={disabled}
-              aria-label={t('chatSidebar.segments.ariaLabel')}
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+        <Menu>
+          <MenuTrigger
+            disabled={disabled}
+            render={
+              <Button
+                variant={overflowHasActive ? 'secondary' : 'ghost'}
+                size="icon-xs"
+                className="shrink-0"
+                aria-label={t('chatSidebar.segments.ariaLabel')}
+              />
+            }
+          >
+            <ChevronDown />
+          </MenuTrigger>
+          <MenuPopup align="end">
             {overflow.map(segment => (
-              <DropdownMenuItem
+              <MenuItem
                 key={segment.id}
-                className={`cursor-pointer ${segment.id === activeId ? 'font-semibold' : ''}`}
+                className={segment.id === activeId ? 'font-semibold' : undefined}
                 onClick={() => applySegment(segment.id, segment.preset)}
               >
                 {t(segment.labelKey)}
-              </DropdownMenuItem>
+              </MenuItem>
             ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </MenuPopup>
+        </Menu>
       )}
     </div>
   );

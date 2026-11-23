@@ -14,10 +14,6 @@ const mockHookResolve = vi.hoisted(() => ({
   fn: vi.fn<[Conversation, (() => Promise<void>)?], Promise<void>>(),
 }));
 
-const capturedProps = vi.hoisted(() => ({
-  onMarkAsResolved: null as ((conv: Conversation) => Promise<void>) | null,
-}));
-
 const capturedHeaderProps = vi.hoisted(() => ({
   onMarkAsResolved: null as ((conv: Conversation) => Promise<void>) | null,
   conversation: null as Conversation | null,
@@ -128,12 +124,9 @@ vi.mock('@/services/contacts/labelsService', () => ({
   labelsService: { createLabel: vi.fn() },
 }));
 
-// ─── Sub-components — capture onMarkAsResolved from ChatSidebar ───────────────
+// ─── Sub-components — ChatHeader is the resolve entry point ───────────────────
 vi.mock('@/components/chat/chat-sidebar/ChatSidebar', () => ({
-  default: (props: any) => {
-    capturedProps.onMarkAsResolved = props.onMarkAsResolved;
-    return <div data-testid="chat-sidebar" />;
-  },
+  default: () => <div data-testid="chat-sidebar" />,
 }));
 
 vi.mock('@/components/chat/chat-header/ChatHeader', () => ({
@@ -160,20 +153,6 @@ vi.mock('@/tours', () => ({
   ChatTour: () => null,
 }));
 
-vi.mock('@evoapi/design-system/alert-dialog', () => ({
-  AlertDialog: ({ children }: any) => <>{children}</>,
-  AlertDialogContent: ({ children }: any) => <>{children}</>,
-  AlertDialogHeader: ({ children }: any) => <>{children}</>,
-  AlertDialogTitle: ({ children }: any) => <>{children}</>,
-  AlertDialogDescription: ({ children }: any) => <>{children}</>,
-  AlertDialogFooter: ({ children }: any) => <>{children}</>,
-  AlertDialogAction: ({ children, onClick }: any) => (
-    <button type="button" onClick={onClick}>
-      {children}
-    </button>
-  ),
-  AlertDialogCancel: ({ children }: any) => <button type="button">{children}</button>,
-}));
 
 vi.mock('sonner', () => ({
   toast: { error: vi.fn(), success: vi.fn() },
@@ -196,7 +175,6 @@ const otherConv: Conversation = {
 describe('Chat — handleMarkAsResolved navigation behavior', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    capturedProps.onMarkAsResolved = null;
     capturedHeaderProps.onMarkAsResolved = null;
     capturedHeaderProps.conversation = null;
     mockState.selectedConversationId = null;
@@ -208,10 +186,11 @@ describe('Chat — handleMarkAsResolved navigation behavior', () => {
   it('clears URL and selection when resolving the currently-selected conversation', async () => {
     mockState.selectedConversationId = 'uuid-selected';
 
+    mockSelectedConversation.value = selectedConv;
     const { unmount } = render(<Chat />);
 
     await act(async () => {
-      await capturedProps.onMarkAsResolved!(selectedConv);
+      await capturedHeaderProps.onMarkAsResolved!(selectedConv);
     });
 
     expect(mockNavigate).toHaveBeenCalledWith('/conversations', { replace: true });
@@ -223,10 +202,11 @@ describe('Chat — handleMarkAsResolved navigation behavior', () => {
   it('does not navigate when resolving a non-selected conversation', async () => {
     mockState.selectedConversationId = 'uuid-selected';
 
+    mockSelectedConversation.value = selectedConv;
     const { unmount } = render(<Chat />);
 
     await act(async () => {
-      await capturedProps.onMarkAsResolved!(otherConv);
+      await capturedHeaderProps.onMarkAsResolved!(otherConv);
     });
 
     expect(mockNavigate).not.toHaveBeenCalled();
@@ -238,10 +218,11 @@ describe('Chat — handleMarkAsResolved navigation behavior', () => {
   it('does not navigate when no conversation is selected', async () => {
     mockState.selectedConversationId = null;
 
+    mockSelectedConversation.value = selectedConv;
     const { unmount } = render(<Chat />);
 
     await act(async () => {
-      await capturedProps.onMarkAsResolved!(selectedConv);
+      await capturedHeaderProps.onMarkAsResolved!(selectedConv);
     });
 
     expect(mockNavigate).not.toHaveBeenCalled();
@@ -271,10 +252,11 @@ describe('Chat — handleMarkAsResolved navigation behavior', () => {
     mockState.selectedConversationId = 'uuid-selected';
     mockHookResolve.fn.mockRejectedValueOnce(new Error('API error'));
 
+    mockSelectedConversation.value = selectedConv;
     const { unmount } = render(<Chat />);
 
     await act(async () => {
-      await capturedProps.onMarkAsResolved!(selectedConv);
+      await capturedHeaderProps.onMarkAsResolved!(selectedConv);
     });
 
     expect(mockNavigate).not.toHaveBeenCalled();

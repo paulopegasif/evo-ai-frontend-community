@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/button';
 
 interface BannerProps {
   /**
@@ -51,18 +51,19 @@ const Banner: React.FC<BannerProps> = ({
 }) => {
   // Color scheme classes mapping
   const colorSchemeClasses = {
-    primary: 'bg-primary text-primary-foreground',
-    secondary: 'bg-secondary text-secondary-foreground',
-    alert: 'bg-destructive/90 text-destructive-foreground',
-    warning: 'bg-yellow-500 text-white dark:bg-yellow-600',
+    primary: 'border-primary/24 bg-primary/8 text-foreground [&>div>svg]:text-primary',
+    secondary: 'border-border bg-secondary text-secondary-foreground',
+    alert: 'border-destructive/24 bg-destructive/8 text-foreground [&>div>svg]:text-destructive-foreground',
+    warning: 'border-warning/24 bg-warning/8 text-foreground [&>div>svg]:text-warning-foreground',
   };
 
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-3 text-xs rounded-lg mx-2 mt-2 ${colorSchemeClasses[colorScheme]}`}
+      role={colorScheme === 'alert' || colorScheme === 'warning' ? 'alert' : 'status'}
+      className={`mx-3 mt-2 flex items-center justify-between gap-4 rounded-lg border px-3 py-2 text-sm ${colorSchemeClasses[colorScheme]}`}
     >
       <div className="flex items-center gap-2 flex-1">
-        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+        <AlertCircle aria-hidden="true" className="size-4 flex-shrink-0" />
         <span className="banner-message">
           {bannerMessage}
           {hrefLink && hrefLinkText && (
@@ -72,7 +73,7 @@ const Banner: React.FC<BannerProps> = ({
                 href={hrefLink}
                 rel="noopener noreferrer nofollow"
                 target="_blank"
-                className="underline hover:opacity-80 transition-opacity"
+                className="font-medium underline underline-offset-2 hover:opacity-80"
               >
                 {hrefLinkText}
               </a>
@@ -82,12 +83,7 @@ const Banner: React.FC<BannerProps> = ({
       </div>
 
       {hasActionButton && actionButtonLabel && (
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={onPrimaryAction}
-          className="flex-shrink-0 h-8 text-xs"
-        >
+        <Button size="sm" variant="outline" onClick={onPrimaryAction} className="flex-shrink-0">
           {actionButtonLabel}
         </Button>
       )}

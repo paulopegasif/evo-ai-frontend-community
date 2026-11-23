@@ -1,12 +1,6 @@
-import {
-  Button,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { useId, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -65,54 +59,67 @@ export function ContactEventsFilters({ value, onChange, disabled }: ContactEvent
     onChange({});
   };
 
+  const eventTypeItems = [
+    { value: ALL_VALUE, label: t('events.types.all') },
+    ...EVENT_TYPES.map(type => ({ value: type, label: t(`events.types.${type}`) })),
+  ];
+  const periodItems = (['today', '7d', '30d', 'all'] as const).map(preset => ({
+    value: preset,
+    label: t(`events.filters.periodPresets.${preset}`),
+  }));
+
   const eventTypeId = `${baseId}-event-type`;
   const periodId = `${baseId}-period`;
 
   return (
-    <div className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-muted/30 p-3">
+    <div className="flex flex-wrap items-end gap-3 rounded-xl border bg-muted/48 p-3 dark:bg-muted/24">
       <div className="flex min-w-[140px] flex-col gap-1">
         <Label htmlFor={eventTypeId}>{t('events.filters.eventType')}</Label>
         <Select
+          items={eventTypeItems}
           value={value.event_type ?? ALL_VALUE}
           onValueChange={(v) =>
+            v != null &&
             update('event_type', v === ALL_VALUE ? undefined : (v as ContactEventType))
           }
           disabled={disabled}
         >
-          <SelectTrigger id={eventTypeId}>
+          <SelectTrigger id={eventTypeId} className="w-full">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_VALUE}>{t('events.types.all')}</SelectItem>
-            {EVENT_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>
-                {t(`events.types.${type}`)}
+          <SelectPopup>
+            {eventTypeItems.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
       <div className="flex min-w-[180px] flex-col gap-1">
         <Label htmlFor={periodId}>{t('events.filters.period')}</Label>
         <Select
+          items={periodItems}
           value={periodPreset}
           onValueChange={(v) => {
+            if (v == null) return;
             const preset = v as PeriodPreset;
             setPeriodPreset(preset);
             update('occurred_after', presetToOccurredAfter(preset));
           }}
           disabled={disabled}
         >
-          <SelectTrigger id={periodId}>
+          <SelectTrigger id={periodId} className="w-full">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="today">{t('events.filters.periodPresets.today')}</SelectItem>
-            <SelectItem value="7d">{t('events.filters.periodPresets.7d')}</SelectItem>
-            <SelectItem value="30d">{t('events.filters.periodPresets.30d')}</SelectItem>
-            <SelectItem value="all">{t('events.filters.periodPresets.all')}</SelectItem>
-          </SelectContent>
+          <SelectPopup>
+            {periodItems.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectPopup>
         </Select>
       </div>
 
@@ -122,9 +129,8 @@ export function ContactEventsFilters({ value, onChange, disabled }: ContactEvent
           size="sm"
           onClick={handleClear}
           disabled={disabled}
-          className="gap-1"
         >
-          <X className="h-3.5 w-3.5" />
+          <X />
           {t('events.filters.clear')}
         </Button>
       )}

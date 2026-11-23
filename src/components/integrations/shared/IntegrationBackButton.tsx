@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 
 interface IntegrationBackButtonProps {
   onBack?: () => void;
@@ -12,16 +12,9 @@ export default function IntegrationBackButton({ onBack }: IntegrationBackButtonP
   if (!onBack) return null;
 
   return (
-    <div className="mb-4">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onBack}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        {t('actions.backToIntegrations')}
-      </Button>
-    </div>
+    <Button variant="ghost" size="sm" onClick={onBack} className="w-fit">
+      <ArrowLeft />
+      {t('actions.backToIntegrations')}
+    </Button>
   );
 }

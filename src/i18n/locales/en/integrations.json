@@ -104,7 +104,9 @@
     "visitOfficialSite": "Visit official site",
     "delete": "Delete",
     "reconnect": "Reconnect",
-    "backToIntegrations": "Back to Integrations"
+    "backToIntegrations": "Back to Integrations",
+    "showSecret": "Show",
+    "hideSecret": "Hide"
   },
   "status": {
     "active": "Active",
@@ -1357,5 +1359,10 @@
   "email": {
     "name": "Email",
     "description": "Integrated email support"
+  },
+  "confirmDisconnect": {
+    "title": "Disconnect {{name}}?",
+    "description": "The integration stops working until it is connected again. Its saved data is kept.",
+    "cancel": "Cancel"
   }
 }

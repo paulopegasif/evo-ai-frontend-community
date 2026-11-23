@@ -1,5 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Input } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Plus, Search, Trash2, X } from 'lucide-react';
 import BaseHeader from '@/components/base/BaseHeader';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -29,22 +31,22 @@ export default function CannedResponsesHeader({
   const { can, isReady } = usePermissions();
 
   return (
-    <BaseHeader
-      title={t('header.title')}
-      totalCount={totalCount}
-    >
+    <BaseHeader title={t('header.title')} totalCount={totalCount}>
       {/* Search and Actions */}
       <div className="flex items-center justify-between gap-4">
         {/* Search */}
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+        <InputGroup className="flex-1 max-w-sm">
+          <InputGroupAddon>
+            <Search aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            type="search"
             placeholder={t('header.searchPlaceholder')}
+            aria-label={t('header.searchPlaceholder')}
             value={searchValue}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9"
+            onChange={e => onSearchChange(e.target.value)}
           />
-        </div>
+        </InputGroup>
 
         {/* Bulk Actions */}
         {showBulkActions && (
@@ -53,30 +55,34 @@ export default function CannedResponsesHeader({
               {t('header.selected', { count: selectedCount })}
             </span>
             {isReady && can('canned_responses', 'delete') && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onBulkDelete}
-                className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-              >
-                <Trash2 className="h-4 w-4" />
+              <Button type="button" variant="destructive-outline" size="sm" onClick={onBulkDelete}>
+                <Trash2 />
                 {t('header.bulkDelete')}
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearSelection}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={t('header.clearSelection')}
+                    onClick={onClearSelection}
+                  />
+                }
+              >
+                <X />
+              </TooltipTrigger>
+              <TooltipPopup>{t('header.clearSelection')}</TooltipPopup>
+            </Tooltip>
           </div>
         )}
 
         {/* New Canned Response Button */}
         {!showBulkActions && isReady && can('canned_responses', 'create') && (
-          <Button onClick={onNewCannedResponse}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button type="button" onClick={onNewCannedResponse}>
+            <Plus />
             {t('header.newResponse')}
           </Button>
         )}

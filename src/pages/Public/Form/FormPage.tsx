@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   formsService,
@@ -167,7 +169,7 @@ const FormPage = () => {
 
   if (notFound) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
         <div className="w-full max-w-lg bg-card rounded-lg shadow-md border border-border p-8 text-center">
           <p className="text-lg font-medium text-foreground">{t('public.notFoundTitle')}</p>
           <p className="text-sm text-muted-foreground mt-2">{t('public.notFoundDescription')}</p>
@@ -179,8 +181,8 @@ const FormPage = () => {
   const accent = config?.appearance?.primary_color;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <div className="w-full max-w-lg bg-card rounded-lg shadow-md border border-border">
+    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+      <div className="w-full max-w-lg rounded-2xl border bg-card shadow-xs/5">
         <div className="p-8 space-y-6">
           {config?.appearance?.logo_url && (
             <img src={config.appearance.logo_url} alt={config.title} className="h-12 object-contain" />
@@ -201,30 +203,32 @@ const FormPage = () => {
           </div>
 
           {submitted ? (
-            <div className="p-4 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400">
-              <p className="text-sm font-medium">
+            <Alert variant="success">
+              <CheckCircle2 />
+              <AlertDescription className="font-medium text-foreground">
                 {config?.appearance?.success_message || t('public.successMessage')}
-              </p>
-            </div>
+              </AlertDescription>
+            </Alert>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               {serverError && (
-                <div className="p-4 rounded-lg bg-destructive/10 text-destructive">
-                  <p className="text-sm font-medium">{serverError}</p>
-                </div>
+                <Alert variant="error">
+                  <AlertCircle />
+                  <AlertDescription className="font-medium text-foreground">{serverError}</AlertDescription>
+                </Alert>
               )}
 
               {config?.fields.map(field => (
                 <div key={field.key}>
                   {field.type !== 'checkbox' && (
-                    <label htmlFor={field.key} className="text-sm font-medium text-muted-foreground mb-2 block">
+                    <label htmlFor={field.key} className="mb-2 block font-medium text-foreground text-sm">
                       {field.label}
                       {field.required && <span className="text-destructive"> *</span>}
                     </label>
                   )}
                   {renderField(field)}
                   {fieldErrors[field.key] && (
-                    <p className="text-xs text-destructive mt-1">{fieldErrors[field.key]}</p>
+                    <p className="mt-1 text-destructive-foreground text-xs">{fieldErrors[field.key]}</p>
                   )}
                 </div>
               ))}

@@ -87,42 +87,42 @@ export default function GoogleCallback() {
   const getStatusIcon = () => {
     switch (status) {
       case 'processing':
-        return <Loader2 className="h-12 w-12 animate-spin text-blue-500" />;
+        return <Loader2 className="h-12 w-12 animate-spin text-info" />;
       case 'success':
-        return <CheckCircle className="h-12 w-12 text-green-500" />;
+        return <CheckCircle className="h-12 w-12 text-success" />;
       case 'error':
-        return <AlertTriangle className="h-12 w-12 text-red-500" />;
+        return <AlertTriangle className="h-12 w-12 text-destructive" />;
     }
   };
 
   const getStatusColor = () => {
     switch (status) {
       case 'processing':
-        return 'text-blue-600 dark:text-blue-400';
+        return 'text-info-foreground';
       case 'success':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-success-foreground';
       case 'error':
-        return 'text-red-600 dark:text-red-400';
+        return 'text-destructive-foreground';
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40 relative">
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <AppLogo className="h-10 mx-auto" />
+          <AppLogo className="h-9 mx-auto" />
         </div>
 
         {/* Card de Callback */}
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           {/* Header com Google Icon */}
           <div className="text-center pb-6 border-b">
             <div className="flex items-center justify-center gap-3">
               <div className="p-3 rounded-full bg-gradient-to-br from-red-500 via-yellow-500 to-green-500">
                 <Mail className="h-8 w-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">Gmail</h1>
+              <h1 className="font-semibold text-xl">Gmail</h1>
             </div>
           </div>
 

@@ -1,16 +1,10 @@
 import { Controller, type Control, useWatch } from 'react-hook-form';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Textarea,
-  Button,
-  Checkbox,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import OptionSelect from './OptionSelect';
 import { Trash2 } from 'lucide-react';
 import {
   ALL_ACTION_NAMES,
@@ -50,29 +44,20 @@ export default function ActionRow({
   const actionName = useWatch({ control, name: `actions.${index}.action_name` });
 
   return (
-    <div className="flex items-start gap-2 p-3 border rounded-md">
+    <div className="flex items-start gap-2 rounded-xl border bg-muted/24 p-3">
       <div className="flex-1 grid grid-cols-2 gap-2">
         <Controller
           control={control}
           name={`actions.${index}.action_name`}
           render={({ field }) => (
-            <Select
+            <OptionSelect
+              items={ALL_ACTION_NAMES.map((name) => ({ value: name, label: t(actionRegistry[name].i18nKey) }))}
               value={field.value ?? ''}
               onValueChange={(value) => {
                 onActionChange(index, value as AutomationActionType);
               }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('form.fields.actionRow.action')} />
-              </SelectTrigger>
-              <SelectContent>
-                {ALL_ACTION_NAMES.map((name) => (
-                  <SelectItem key={name} value={name}>
-                    {t(actionRegistry[name].i18nKey)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder={t('form.fields.actionRow.action')}
+            />
           )}
         />
 
@@ -87,7 +72,8 @@ export default function ActionRow({
       <Button
         type="button"
         variant="ghost"
-        size="icon"
+        size="icon-sm"
+        className="shrink-0 text-muted-foreground hover:text-destructive-foreground"
         onClick={onRemove}
         aria-label={t('form.fields.actionRow.remove')}
       >
@@ -141,23 +127,14 @@ function ActionParamsRenderer({ control, index, actionName, formData, t }: Param
                 : (raw as string | number | undefined);
             const selectedValue = currentId != null ? String(currentId) : '';
             return (
-              <Select
+              <OptionSelect
+                items={formData.cannedResponses.map((opt) => ({ value: String(opt.id), label: opt.name }))}
                 value={selectedValue}
                 onValueChange={(value) =>
                   field.onChange([{ canned_response_id: value }])
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('form.fields.actionRow.params.send_canned_response')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {formData.cannedResponses.map((opt) => (
-                    <SelectItem key={String(opt.id)} value={String(opt.id)}>
-                      {opt.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder={t('form.fields.actionRow.params.send_canned_response')}
+              />
             );
           }}
         />
@@ -197,8 +174,9 @@ function ActionParamsRenderer({ control, index, actionName, formData, t }: Param
                 return acc;
               }, {});
             return (
-              <div className="space-y-2">
-                <Select
+              <div className="flex flex-col gap-2">
+                <OptionSelect
+                  items={formData.messageTemplates.map((opt) => ({ value: String(opt.id), label: opt.name }))}
                   value={selectedValue}
                   onValueChange={(value) => {
                     const tpl = formData.messageTemplates.find((t) => String(t.id) === value);
@@ -213,18 +191,8 @@ function ActionParamsRenderer({ control, index, actionName, formData, t }: Param
                       },
                     ]);
                   }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('form.fields.actionRow.params.send_template')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formData.messageTemplates.map((opt) => (
-                      <SelectItem key={String(opt.id)} value={String(opt.id)}>
-                        {opt.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t('form.fields.actionRow.params.send_template')}
+                />
                 {selectedTemplate?.variables?.map((variable, variableIndex) => {
                   const key = variable.name || String(variableIndex + 1);
                   return (
@@ -332,11 +300,11 @@ function ActionParamsRenderer({ control, index, actionName, formData, t }: Param
               field.onChange([{ ...current, team_ids: next, message: current.message ?? '' }]);
             };
             return (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <label className="text-xs font-medium text-muted-foreground">
                   {t('form.fields.actionRow.params.send_email_to_team_teams')}
                 </label>
-                <div className="space-y-1 max-h-32 overflow-y-auto rounded-md border p-2">
+                <div className="flex max-h-32 flex-col gap-1.5 overflow-y-auto rounded-lg border bg-background p-2">
                   {formData.teams.length === 0 ? (
                     <p className="text-xs text-muted-foreground">
                       {t('form.fields.actionRow.params.send_email_to_team_no_teams')}
@@ -382,7 +350,7 @@ function ActionParamsRenderer({ control, index, actionName, formData, t }: Param
             const setField = (key: string, value: unknown) =>
               field.onChange([{ ...current, [key]: value }]);
             return (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Input
                   value={(current.title as string) ?? ''}
                   onChange={(e) => setField('title', e.target.value)}
@@ -470,7 +438,7 @@ function ActionParamsRenderer({ control, index, actionName, formData, t }: Param
               }
             };
             return (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Input
                   value={idsAsText}
                   onChange={(e) => setIdsFromText(e.target.value)}
@@ -524,7 +492,8 @@ function SelectParam({ control, index, options, placeholder, coerce = 'single' }
               : '';
 
         return (
-          <Select
+          <OptionSelect
+            items={options.map((opt) => ({ value: String(opt.id), label: opt.name }))}
             value={selectedValue}
             onValueChange={(value) => {
               if (value === '') {
@@ -539,18 +508,8 @@ function SelectParam({ control, index, options, placeholder, coerce = 'single' }
                 field.onChange([parsed]);
               }
             }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((opt) => (
-                <SelectItem key={String(opt.id)} value={String(opt.id)}>
-                  {opt.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={placeholder}
+          />
         );
       }}
     />
@@ -603,22 +562,16 @@ function CustomAttributeParam({
         };
 
         return (
-          <div className="space-y-2">
-            <Select value={composite} onValueChange={pickAttribute}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('form.fields.actionRow.params.update_custom_attribute')} />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((attr) => (
-                  <SelectItem
-                    key={`${attr.attribute_model}::${attr.attribute_key}`}
-                    value={`${attr.attribute_model}::${attr.attribute_key}`}
-                  >
-                    {`${attr.attribute_display_name} · ${t(`form.fields.customAttributeModels.${attr.attribute_model}`)}`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col gap-2">
+            <OptionSelect
+              items={options.map((attr) => ({
+                value: `${attr.attribute_model}::${attr.attribute_key}`,
+                label: `${attr.attribute_display_name} · ${t(`form.fields.customAttributeModels.${attr.attribute_model}`)}`,
+              }))}
+              value={composite}
+              onValueChange={pickAttribute}
+              placeholder={t('form.fields.actionRow.params.update_custom_attribute')}
+            />
             {selectedAttribute && (
               <CustomAttributeValueInput
                 attribute={selectedAttribute}

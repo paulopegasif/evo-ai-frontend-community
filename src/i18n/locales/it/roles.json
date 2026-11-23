@@ -64,7 +64,8 @@
       "writeDescription": "Creare e modificare questa risorsa, inclusa ogni azione che la altera.",
       "delete": "Eliminazione",
       "deleteDescription": "Eliminare questa risorsa."
-    }
+    },
+    "unsavedChanges": "{{count}} modifica/che non salvata/e"
   },
   "createModal": {
     "title": "Crea Profilo",

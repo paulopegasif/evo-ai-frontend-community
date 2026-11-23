@@ -1,21 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Card
-} from '@evoapi/design-system';
-import { Monitor, AlertCircle } from 'lucide-react';
+import { Monitor } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DialogClose } from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DashboardApp, DashboardAppFormData } from '@/types/integrations';
+import { AgentIntegrationDialog } from '../../agentConfig/AgentIntegrationDialog';
+import IntegrationNotice from '../../shared/IntegrationNotice';
+
+const SIDEBAR_MENUS = [
+  'conversations',
+  'contacts',
+  'pipelines',
+  'campaigns',
+  'automation',
+  'agents',
+  'channels',
+  'settings',
+] as const;
 
 interface DashboardAppModalProps {
   app?: DashboardApp | null;
@@ -35,6 +39,7 @@ export default function DashboardAppModal({
   loading: submitting = false
 }: DashboardAppModalProps) {
   const { t } = useLanguage('integrations');
+  const formId = useId();
 
   const [formData, setFormData] = useState<DashboardAppFormData>({
     title: '',
@@ -114,180 +119,205 @@ export default function DashboardAppModal({
     }
   };
 
+  const clearError = (field: string) => {
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const displayTypes = [
+    {
+      value: 'conversation',
+      label: t('dashboardApps.modal.fields.displayType.conversation'),
+      description: t('dashboardApps.modal.fields.displayType.conversationDescription'),
+    },
+    {
+      value: 'sidebar',
+      label: t('dashboardApps.modal.fields.displayType.sidebar'),
+      description: t('dashboardApps.modal.fields.displayType.sidebarDescription'),
+    },
+  ];
+  const sidebarMenus = SIDEBAR_MENUS.map(value => ({
+    value,
+    label: t(`dashboardApps.modal.fields.sidebarMenu.${value}`),
+  }));
+  const sidebarPositions = [
+    {
+      value: 'before',
+      label: t('dashboardApps.modal.fields.sidebarPosition.before'),
+      description: t('dashboardApps.modal.fields.sidebarPosition.beforeDescription'),
+    },
+    {
+      value: 'after',
+      label: t('dashboardApps.modal.fields.sidebarPosition.after'),
+      description: t('dashboardApps.modal.fields.sidebarPosition.afterDescription'),
+    },
+  ];
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Monitor className="w-5 h-5" />
-            {app ? t('dashboardApps.modal.updateTitle') : t('dashboardApps.modal.title')}
-          </DialogTitle>
-        </DialogHeader>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<Monitor className="text-muted-foreground" />}
+      title={app ? t('dashboardApps.modal.updateTitle') : t('dashboardApps.modal.title')}
+      footer={
+        <>
+          <DialogClose render={<Button type="button" variant="ghost" />} disabled={submitting}>
+            {t('dashboardApps.modal.actions.cancel')}
+          </DialogClose>
+          <Button type="submit" form={formId} loading={submitting}>
+            {submitting
+              ? t('dashboardApps.modal.actions.saving')
+              : app
+                ? t('dashboardApps.modal.actions.update')
+                : t('dashboardApps.modal.actions.create')}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        {/* Basic information */}
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('dashboardApps.modal.basicInfo')}</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('dashboardApps.modal.basicInfo')}</h4>
+          <Field invalid={Boolean(errors.title)}>
+            <FieldLabel htmlFor="dashboard-app-title">
+              {t('dashboardApps.modal.fields.title.label')}{' '}
+              <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Input
+              id="dashboard-app-title"
+              placeholder={t('dashboardApps.modal.fields.title.placeholder')}
+              value={formData.title}
+              onChange={e => {
+                setFormData(prev => ({ ...prev, title: e.target.value }));
+                clearError('title');
+              }}
+              aria-invalid={errors.title ? true : undefined}
+              autoFocus={!app}
+            />
+            {errors.title && <FieldError match>{errors.title}</FieldError>}
+          </Field>
 
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('dashboardApps.modal.fields.title.label')} *
-                </label>
-                <Input
-                  id="title"
-                  placeholder={t('dashboardApps.modal.fields.title.placeholder')}
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className={errors.title ? 'border-red-500' : ''}
-                />
-                {errors.title && (
-                  <p className="text-sm text-red-600 mt-1">{errors.title}</p>
-                )}
-              </div>
+          <Field invalid={Boolean(errors.url)}>
+            <FieldLabel htmlFor="dashboard-app-url">
+              {t('dashboardApps.modal.fields.url.label')}{' '}
+              <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Input
+              id="dashboard-app-url"
+              type="url"
+              inputMode="url"
+              placeholder={t('dashboardApps.modal.fields.url.placeholder')}
+              value={formData.content.url}
+              onChange={e => {
+                setFormData(prev => ({ ...prev, content: { ...prev.content, url: e.target.value } }));
+                clearError('url');
+              }}
+              aria-invalid={errors.url ? true : undefined}
+            />
+            {errors.url ? (
+              <FieldError match>{errors.url}</FieldError>
+            ) : (
+              <FieldDescription>{t('dashboardApps.modal.fields.url.hint')}</FieldDescription>
+            )}
+          </Field>
+        </section>
 
-              <div>
-                <label htmlFor="url" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('dashboardApps.modal.fields.url.label')} *
-                </label>
-                <Input
-                  id="url"
-                  placeholder={t('dashboardApps.modal.fields.url.placeholder')}
-                  value={formData.content.url}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    content: { ...prev.content, url: e.target.value }
-                  }))}
-                  className={errors.url ? 'border-red-500' : ''}
-                />
-                {errors.url && (
-                  <p className="text-sm text-red-600 mt-1">{errors.url}</p>
-                )}
-                <p className="text-xs text-slate-500 mt-1">
-                  {t('dashboardApps.modal.fields.url.hint')}
-                </p>
-              </div>
-            </div>
-          </Card>
+        {/* Display */}
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('dashboardApps.modal.displayConfig')}</h3>
 
-          {/* Display Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('dashboardApps.modal.displayConfig')}</h4>
+          <Field>
+            <FieldLabel htmlFor="dashboard-app-display-type">
+              {t('dashboardApps.modal.fields.displayType.label')}{' '}
+              <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Select
+              items={displayTypes}
+              value={formData.display_type}
+              onValueChange={value =>
+                value && setFormData(prev => ({ ...prev, display_type: value as 'conversation' | 'sidebar' }))
+              }
+            >
+              <SelectTrigger id="dashboard-app-display-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectPopup>
+                {displayTypes.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    <span className="flex flex-col py-0.5">
+                      <span className="font-medium">{item.label}</span>
+                      <span className="text-muted-foreground text-xs">{item.description}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectPopup>
+            </Select>
+          </Field>
 
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="display_type" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('dashboardApps.modal.fields.displayType.label')} *
-                </label>
+          {formData.display_type === 'sidebar' && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="dashboard-app-sidebar-menu">
+                  {t('dashboardApps.modal.fields.sidebarMenu.label')}
+                </FieldLabel>
                 <Select
-                  value={formData.display_type}
-                  onValueChange={(value: 'conversation' | 'sidebar') =>
-                    setFormData(prev => ({ ...prev, display_type: value }))
+                  items={sidebarMenus}
+                  value={formData.sidebar_menu}
+                  onValueChange={value =>
+                    value &&
+                    setFormData(prev => ({
+                      ...prev,
+                      sidebar_menu: value as DashboardAppFormData['sidebar_menu'],
+                    }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="dashboard-app-sidebar-menu">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="conversation">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{t('dashboardApps.modal.fields.displayType.conversation')}</span>
-                        <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.displayType.conversationDescription')}</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="sidebar">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{t('dashboardApps.modal.fields.displayType.sidebar')}</span>
-                        <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.displayType.sidebarDescription')}</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
+                  <SelectPopup>
+                    {sidebarMenus.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
                 </Select>
-              </div>
+              </Field>
 
-              {formData.display_type === 'sidebar' && (
-                <>
-                  <div>
-                    <label htmlFor="sidebar_menu" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      {t('dashboardApps.modal.fields.sidebarMenu.label')}
-                    </label>
-                    <Select
-                      value={formData.sidebar_menu}
-                      onValueChange={(value) =>
-                        setFormData(prev => ({ ...prev, sidebar_menu: value as 'conversations' | 'contacts' | 'campaigns' | 'automation' | 'reports' | 'settings' }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="conversations">{t('dashboardApps.modal.fields.sidebarMenu.conversations')}</SelectItem>
-                        <SelectItem value="contacts">{t('dashboardApps.modal.fields.sidebarMenu.contacts')}</SelectItem>
-                        <SelectItem value="pipelines">{t('dashboardApps.modal.fields.sidebarMenu.pipelines')}</SelectItem>
-                        <SelectItem value="campaigns">{t('dashboardApps.modal.fields.sidebarMenu.campaigns')}</SelectItem>
-                        <SelectItem value="automation">{t('dashboardApps.modal.fields.sidebarMenu.automation')}</SelectItem>
-                        <SelectItem value="agents">{t('dashboardApps.modal.fields.sidebarMenu.agents')}</SelectItem>
-                        <SelectItem value="channels">{t('dashboardApps.modal.fields.sidebarMenu.channels')}</SelectItem>
-                        <SelectItem value="settings">{t('dashboardApps.modal.fields.sidebarMenu.settings')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="sidebar_position" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      {t('dashboardApps.modal.fields.sidebarPosition.label')}
-                    </label>
-                    <Select
-                      value={formData.sidebar_position}
-                      onValueChange={(value: 'before' | 'after') =>
-                        setFormData(prev => ({ ...prev, sidebar_position: value }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="before">
-                          <div className="flex flex-col">
-                            <span className="font-medium">{t('dashboardApps.modal.fields.sidebarPosition.before')}</span>
-                            <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.sidebarPosition.beforeDescription')}</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="after">
-                          <div className="flex flex-col">
-                            <span className="font-medium">{t('dashboardApps.modal.fields.sidebarPosition.after')}</span>
-                            <span className="text-xs text-slate-500">{t('dashboardApps.modal.fields.sidebarPosition.afterDescription')}</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
-              )}
+              <Field>
+                <FieldLabel htmlFor="dashboard-app-sidebar-position">
+                  {t('dashboardApps.modal.fields.sidebarPosition.label')}
+                </FieldLabel>
+                <Select
+                  items={sidebarPositions}
+                  value={formData.sidebar_position}
+                  onValueChange={value =>
+                    value && setFormData(prev => ({ ...prev, sidebar_position: value as 'before' | 'after' }))
+                  }
+                >
+                  <SelectTrigger id="dashboard-app-sidebar-position">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {sidebarPositions.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        <span className="flex flex-col py-0.5">
+                          <span className="font-medium">{item.label}</span>
+                          <span className="text-muted-foreground text-xs">{item.description}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
             </div>
-          </Card>
+          )}
+        </section>
 
-          {/* Info Box */}
-          <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-700 dark:text-blue-300">
-                <strong>{t('dashboardApps.modal.info.title')}</strong> {t('dashboardApps.modal.info.description')}
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t('dashboardApps.modal.actions.cancel')}
-            </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? t('dashboardApps.modal.actions.saving') : (app ? t('dashboardApps.modal.actions.update') : t('dashboardApps.modal.actions.create'))}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <IntegrationNotice variant="info" title={t('dashboardApps.modal.info.title')}>
+          {t('dashboardApps.modal.info.description')}
+        </IntegrationNotice>
+      </form>
+    </AgentIntegrationDialog>
   );
 }

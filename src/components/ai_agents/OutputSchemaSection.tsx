@@ -1,14 +1,7 @@
 import { useCallback } from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-} from '@evoapi/design-system';
-import {
-  FileText,
-  Plus,
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { FileText, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import SchemaField from './SchemaField';
 
@@ -39,15 +32,15 @@ const OutputSchemaSection = ({
   const handleSchemaFieldUpdate = useCallback(
     (originalKey: string, newKey: string, field: { type?: string; description?: string }) => {
       const newSchema = { ...outputSchema };
-      
+
       // Se a chave mudou, remover a antiga
       if (originalKey !== newKey) {
         delete newSchema[originalKey];
       }
-      
+
       // Adicionar/atualizar com a nova chave
       newSchema[newKey] = field;
-      
+
       onOutputSchemaChange(newSchema);
     },
     [outputSchema, onOutputSchemaChange],
@@ -83,7 +76,7 @@ const OutputSchemaSection = ({
         <CollapsibleHeader
           title={t('outputSchema.title')}
           description={t('outputSchema.subtitle')}
-          icon={<FileText className="h-5 w-5 text-blue-500" />}
+          icon={<FileText className="h-5 w-5 text-info" />}
           count={Object.keys(outputSchema).length}
           isOpen={isOpen}
           onToggle={onToggle}
@@ -91,17 +84,17 @@ const OutputSchemaSection = ({
       </CardHeader>
 
       {isOpen && (
-        <CardContent className="space-y-4">
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+        <CardPanel className="space-y-4">
+          <div className="p-4 bg-info/8 rounded-lg border border-info/24">
             <div className="flex items-start gap-3">
-              <div className="p-1 bg-blue-100 dark:bg-blue-900 rounded">
-                <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="p-1 bg-info/12 rounded">
+                <FileText className="h-4 w-4 text-info-foreground" />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                <h4 className="font-medium text-info-foreground mb-1">
                   {t('outputSchema.structuredSchema')}
                 </h4>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="text-sm text-info-foreground">
                   {t('outputSchema.structuredDescription')}
                 </p>
               </div>
@@ -115,7 +108,9 @@ const OutputSchemaSection = ({
                   key={fieldKey}
                   fieldKey={fieldKey}
                   field={field}
-                  onUpdate={(newKey, newField) => handleSchemaFieldUpdate(fieldKey, newKey, newField)}
+                  onUpdate={(newKey, newField) =>
+                    handleSchemaFieldUpdate(fieldKey, newKey, newField)
+                  }
                   onRemove={handleSchemaFieldRemove}
                   isReadOnly={isReadOnly}
                 />
@@ -150,7 +145,7 @@ const OutputSchemaSection = ({
               )}
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       )}
     </Card>
   );

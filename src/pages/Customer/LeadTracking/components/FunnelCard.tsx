@@ -1,5 +1,5 @@
 import { ChevronRight, Layers } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 import type { FunnelStage } from '@/types/leadTracking';
 import { percentOrDash } from './format';
@@ -24,13 +24,13 @@ const FunnelCard = ({ funnel }: FunnelCardProps) => {
         </CardTitle>
         <CardDescription>Pessoas que entraram no período, da captura à venda</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardPanel>
         {leads === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">Nenhum lead no período.</p>
+          <p className="py-6 text-center text-muted-foreground text-sm">Nenhum lead no período.</p>
         ) : (
           <ol className="space-y-2.5">
             {funnel.map((stage, idx) => (
-              <li key={stage.key} className="grid grid-cols-[minmax(96px,170px)_minmax(0,1fr)_auto] items-center gap-3">
+              <li key={stage.key} className="grid grid-cols-[minmax(96px,170px)_minmax(0,1fr)_9.5rem] items-center gap-3">
                 <span className="text-sm leading-tight text-muted-foreground break-words">{stage.stage}</span>
                 <div className="h-7 w-full rounded-md bg-muted overflow-hidden">
                   <div
@@ -57,7 +57,7 @@ const FunnelCard = ({ funnel }: FunnelCardProps) => {
             ))}
           </ol>
         )}
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

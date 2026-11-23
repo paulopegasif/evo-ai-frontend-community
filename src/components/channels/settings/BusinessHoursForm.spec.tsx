@@ -48,8 +48,8 @@ vi.mock('./helpers/businessHours', async () => {
   };
 });
 
-vi.mock('@evoapi/design-system', async () => {
-  const actual = await vi.importActual('@evoapi/design-system');
+vi.mock('@/components/ui/switch', async () => {
+  const actual = await vi.importActual('@/components/ui/switch');
   return {
     ...actual,
     Switch: ({ checked }: { checked: boolean }) => (

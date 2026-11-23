@@ -1,14 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-  Input,
-  Textarea,
-} from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { ClipboardList, AlertCircle } from 'lucide-react';
 import {
   CreatePipelineTaskNodeData,
@@ -133,131 +127,153 @@ export function CreatePipelineTaskPanel({
         {loadError && (
           <FlowFeedbackBanner variant="error">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="size-4" />
               <span>{t('panels.createPipelineTask.loadErrorBanner')}</span>
             </div>
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.createPipelineTask.taskTitle')}
-          </Label>
+          </FieldLabel>
           <Input
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder={t('panels.createPipelineTask.taskTitlePlaceholder')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
             aria-label={t('panels.createPipelineTask.taskTitle')}
           />
-          <p className="text-xs text-sidebar-foreground/60">
-            {t('panels.createPipelineTask.variablesHint')}
-          </p>
-        </div>
+          <FieldDescription>{t('panels.createPipelineTask.variablesHint')}</FieldDescription>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.createPipelineTask.description')}
-          </Label>
+          </FieldLabel>
           <Textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder={t('panels.createPipelineTask.descriptionPlaceholder')}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+            className="w-full"
           />
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.createPipelineTask.taskType')}
-          </Label>
-          <Select value={taskType} onValueChange={setTaskType}>
+          </FieldLabel>
+          <Select
+            items={TASK_TYPES.map(type => ({
+              value: type,
+              label: t(`panels.createPipelineTask.taskTypes.${type}`),
+            }))}
+            value={taskType || null}
+            onValueChange={value => setTaskType(String(value ?? ''))}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.createPipelineTask.taskType')}
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {TASK_TYPES.map(type => (
-                <SelectItem key={type} value={type} className="text-sidebar-foreground">
+                <SelectItem key={type} value={type}>
                   {t(`panels.createPipelineTask.taskTypes.${type}`)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.createPipelineTask.assignee')}
-          </Label>
-          <Select value={assignedToId} onValueChange={setAssignedToId} disabled={loading}>
+          </FieldLabel>
+          <Select
+            items={agents.map(agent => ({ value: agent.id.toString(), label: agent.name }))}
+            value={assignedToId || null}
+            onValueChange={value => setAssignedToId(String(value ?? ''))}
+            disabled={loading}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.createPipelineTask.assignee')}
             >
               <SelectValue placeholder={t('panels.createPipelineTask.noAssignee')} />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {agents.map(agent => (
                 <SelectItem
                   key={agent.id}
                   value={agent.id.toString()}
-                  className="text-sidebar-foreground"
                 >
                   {agent.name}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.createPipelineTask.dueDate')}
-          </Label>
-          <Select value={duePreset} onValueChange={setDuePreset}>
+          </FieldLabel>
+          <Select
+            items={DUE_PRESETS.map(preset => ({
+              value: preset.key,
+              label: t(`panels.createPipelineTask.due.${preset.key}`),
+            }))}
+            value={duePreset || null}
+            onValueChange={value => setDuePreset(String(value ?? ''))}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.createPipelineTask.dueDate')}
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {DUE_PRESETS.map(preset => (
                 <SelectItem
                   key={preset.key}
                   value={preset.key}
-                  className="text-sidebar-foreground"
                 >
                   {t(`panels.createPipelineTask.due.${preset.key}`)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.createPipelineTask.priority')}
-          </Label>
-          <Select value={priority} onValueChange={setPriority}>
+          </FieldLabel>
+          <Select
+            items={PRIORITIES.map(p => ({
+              value: p,
+              label: t(`panels.createPipelineTask.priorities.${p}`),
+            }))}
+            value={priority || null}
+            onValueChange={value => setPriority(String(value ?? ''))}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.createPipelineTask.priority')}
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {PRIORITIES.map(p => (
-                <SelectItem key={p} value={p} className="text-sidebar-foreground">
+                <SelectItem key={p} value={p}>
                   {t(`panels.createPipelineTask.priorities.${p}`)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
       </div>
     </NodeConfigModal>
   );

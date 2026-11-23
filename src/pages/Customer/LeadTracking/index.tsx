@@ -8,7 +8,12 @@ import {
   Info,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import BaseHeader from '@/components/base/BaseHeader';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
@@ -39,15 +44,15 @@ import { granularityFor, parseIsoDate, toApiRange, type DateRange } from './peri
 const viewerTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const SectionTitle = ({ title, description }: { title: string; description: string }) => (
-  <div className="pt-2">
-    <h2 className="text-base font-semibold">{title}</h2>
-    <p className="text-sm text-muted-foreground">{description}</p>
+  <div className="-mb-1 md:-mb-3">
+    <h2 className="font-semibold text-base">{title}</h2>
+    <p className="text-muted-foreground text-sm">{description}</p>
   </div>
 );
 
 const Notice = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-    <Info className="h-3.5 w-3.5 shrink-0" />
+  <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+    <Info className="size-3.5 shrink-0" />
     {children}
   </p>
 );
@@ -129,48 +134,70 @@ export const LeadTrackingPage: React.FC = () => {
   const segmented = Boolean(filters.source || filters.campaign);
 
   return (
-    <div className="h-full min-w-0 flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
+    <div className="flex h-full min-w-0 flex-col gap-4 overflow-y-auto overflow-x-hidden p-4 md:gap-6 md:p-6">
       <BaseHeader
         title="Tracking de Leads & Funil"
         subtitle="Campanhas, mídia paga, conversão do funil, comparecimento e desempenho por procedimento"
-      >
-        <div className="flex items-start gap-2 flex-wrap">
-          <PeriodControls
-            preset={filters.preset}
-            range={range}
-            compareMode={filters.compareMode}
-            comparison={comparison}
-            onPresetChange={setPreset}
-            onCompareChange={setCompare}
-          />
-          <Button variant="outline" size="sm" className="h-9" onClick={fetchTrackingData} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
-        </div>
-      </BaseHeader>
-
-      <FiltersBar
-        sources={data?.filter_options.sources ?? []}
-        campaigns={data?.filter_options.campaigns ?? []}
-        professionals={users}
-        source={filters.source}
-        campaign={filters.campaign}
-        user={filters.user}
-        onChange={setFilter}
-        onClear={clearFilters}
       />
 
-      <Tabs value={tab} onValueChange={setTab} className="flex flex-col gap-4">
+      {/* Toolbar: period, comparison and segment filters */}
+      <Card className="gap-0">
+        <CardPanel className="flex flex-col gap-3 p-3 xl:flex-row xl:items-start xl:justify-between">
+          <div className="flex items-start gap-2">
+            <PeriodControls
+              preset={filters.preset}
+              range={range}
+              compareMode={filters.compareMode}
+              comparison={comparison}
+              onPresetChange={setPreset}
+              onCompareChange={setCompare}
+            />
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-muted-foreground"
+                    onClick={fetchTrackingData}
+                    disabled={loading}
+                    aria-label="Atualizar"
+                  />
+                }
+              >
+                <RefreshCw className={cn(loading && 'animate-spin')} />
+              </TooltipTrigger>
+              <TooltipPopup>Atualizar</TooltipPopup>
+            </Tooltip>
+          </div>
+          <FiltersBar
+            sources={data?.filter_options.sources ?? []}
+            campaigns={data?.filter_options.campaigns ?? []}
+            professionals={users}
+            source={filters.source}
+            campaign={filters.campaign}
+            user={filters.user}
+            onChange={setFilter}
+            onClear={clearFilters}
+          />
+        </CardPanel>
+      </Card>
+
+      <Tabs value={tab} onValueChange={(value) => setTab(String(value))} className="flex flex-col gap-4 md:gap-6">
         <TabsList className="self-start">
-          <TabsTrigger value="overview">Visão geral</TabsTrigger>
-          <TabsTrigger value="leads">Leads</TabsTrigger>
-          <TabsTrigger value="review">
-            Revisão{(kpis?.unlinked_sales ?? 0) > 0 ? ` (${kpis?.unlinked_sales})` : ''}
-          </TabsTrigger>
+          <TabsTab value="overview">Visão geral</TabsTab>
+          <TabsTab value="leads">Leads</TabsTab>
+          <TabsTab value="review">
+            Revisão
+            {(kpis?.unlinked_sales ?? 0) > 0 && (
+              <Badge variant="warning" size="sm" className="tabular-nums">
+                {kpis?.unlinked_sales}
+              </Badge>
+            )}
+          </TabsTab>
         </TabsList>
 
-        <TabsContent value="overview" className="flex flex-col gap-4 mt-0">
+        <TabsPanel value="overview" className="flex flex-col gap-4 md:gap-6">
           {historyIncomplete && (
             <Notice>
               O histórico da Meta Ads está completo a partir de {historyStart.toLocaleDateString('pt-BR')}; o investimento
@@ -178,7 +205,7 @@ export const LeadTrackingPage: React.FC = () => {
             </Notice>
           )}
 
-          <ExecutiveSummary kpis={kpis} compare={compare} />
+          <ExecutiveSummary kpis={kpis} compare={compare} timeline={data?.timeline} />
 
           <VelocityAlertsSection velocity={data?.velocity} alerts={data?.alerts} onOpenLead={setJourneyContact} />
 
@@ -219,19 +246,21 @@ export const LeadTrackingPage: React.FC = () => {
           {segmented && <Notice>Os filtros de origem e campanha não se aplicam à agenda, que mostra as consultas de todos os leads.</Notice>}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <DashboardMetricCard
+              loading={!kpis}
               title="Consultas no período"
               value={kpis?.total_appointments ?? 0}
               subtitle={`${plural(kpis?.total_confirmed ?? 0, 'confirmada', 'confirmadas')} • ${plural(kpis?.total_cancelled ?? 0, 'cancelada', 'canceladas')}`}
               icon={CalendarDays}
-              accentClassName="bg-primary/15 text-primary"
+              accentClassName="bg-primary/10 text-primary"
               comparison={compare('total_appointments', count)}
             />
             <DashboardMetricCard
+              loading={!kpis}
               title="Comparecimento"
               value={percentOrDash(kpis?.show_rate)}
               subtitle={`${plural(kpis?.appointments_attended ?? 0, 'realizada', 'realizadas')} • ${plural(kpis?.total_no_show ?? 0, 'falta', 'faltas')}`}
               icon={CheckCircle2}
-              accentClassName="bg-primary/15 text-primary"
+              accentClassName="bg-primary/10 text-primary"
               tooltip={{
                 title: 'Comparecimento',
                 content: 'Realizadas ÷ (realizadas + faltas). Consultas futuras ou pendentes não entram na taxa.',
@@ -239,33 +268,35 @@ export const LeadTrackingPage: React.FC = () => {
               comparison={compare('show_rate', percent)}
             />
             <DashboardMetricCard
+              loading={!kpis}
               title="Faturamento"
               value={formatCurrency(kpis?.total_revenue ?? 0)}
               subtitle={plural(kpis?.paid_appointments ?? 0, 'consulta paga', 'consultas pagas')}
               icon={DollarSign}
-              accentClassName="bg-primary/15 text-primary"
+              accentClassName="bg-primary/10 text-primary"
               comparison={compare('total_revenue', currency)}
             />
             <DashboardMetricCard
+              loading={!kpis}
               title="Ticket médio"
               value={currencyOrDash(kpis?.average_ticket)}
               subtitle="Faturamento ÷ consultas pagas"
               icon={Receipt}
-              accentClassName="bg-primary/15 text-primary"
+              accentClassName="bg-primary/10 text-primary"
               comparison={compare('average_ticket', currency)}
             />
           </div>
 
           <AgendaSection categories={data?.categories ?? []} professionals={data?.professionals ?? []} />
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="leads" className="mt-0">
+        <TabsPanel value="leads">
           <LeadsTab params={{ ...baseParams, ...toApiRange(range) }} />
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="review" className="mt-0">
+        <TabsPanel value="review">
           <ReviewQueueTab />
-        </TabsContent>
+        </TabsPanel>
       </Tabs>
 
       <LeadJourneySheet

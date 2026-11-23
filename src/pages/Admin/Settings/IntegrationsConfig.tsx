@@ -1,20 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useForm, UseFormRegister } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { Check, ChevronRight, Trash2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  Input,
-  Label,
-  Button,
   Dialog,
-  DialogContent,
+  DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-} from '@evoapi/design-system';
-import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X, Check, ChevronRight, Trash2 } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Spinner } from '@/components/ui/spinner';
+import { SecretField, SettingsHeader, TextField } from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -58,17 +62,17 @@ function emptyData(def: IntegrationDef): AdminConfigData {
 const ACCENT: Record<string, string> = {
   linear: 'bg-indigo-500',
   hubspot: 'bg-orange-500',
-  shopify: 'bg-green-600',
+  shopify: 'bg-success',
   slack: 'bg-purple-600',
   github: 'bg-neutral-800',
   notion: 'bg-neutral-900',
-  asana: 'bg-rose-500',
+  asana: 'bg-destructive',
   canva: 'bg-sky-500',
-  google_calendar: 'bg-blue-500',
-  google_sheets: 'bg-emerald-600',
-  monday: 'bg-red-500',
+  google_calendar: 'bg-info',
+  google_sheets: 'bg-success',
+  monday: 'bg-destructive',
   paypal: 'bg-blue-700',
-  atlassian: 'bg-blue-600',
+  atlassian: 'bg-info',
 };
 
 function accent(key: string): string {
@@ -84,10 +88,10 @@ function monogram(title: string): string {
 // Brand logo (simple-icons via BrandIcon) with a monogram-tile fallback for any
 // integration that has no glyph in the brand set.
 function IntegrationLogo({ integrationKey, title }: { integrationKey: string; title: string }) {
-  const box = 'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg';
+  const box = 'flex size-10 shrink-0 items-center justify-center rounded-xl';
   if (getBrandIcon(integrationKey)) {
     return (
-      <span className={`${box} bg-muted`} aria-hidden="true">
+      <span className={`${box} border bg-card shadow-xs/5`} aria-hidden="true">
         <BrandIcon id={integrationKey} size={22} />
       </span>
     );
@@ -96,78 +100,6 @@ function IntegrationLogo({ integrationKey, title }: { integrationKey: string; ti
     <span className={`${box} text-sm font-semibold text-white ${accent(integrationKey)}`} aria-hidden="true">
       {monogram(title)}
     </span>
-  );
-}
-
-// --- SecretField subcomponent ---
-
-interface SecretFieldProps {
-  label: string;
-  placeholder: string;
-  register: UseFormRegister<IntegrationFormData>;
-  secretModified: boolean;
-  onSecretModifiedChange: (modified: boolean) => void;
-  secretConfigured: boolean;
-  onClear: () => void;
-  sectionKey: string;
-  t: (key: string) => string;
-}
-
-function SecretField({
-  label,
-  placeholder,
-  register,
-  secretModified,
-  onSecretModifiedChange,
-  secretConfigured,
-  onClear,
-  sectionKey,
-  t,
-}: SecretFieldProps) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={`${sectionKey}-clientSecret`}>{label}</Label>
-        {!secretModified && (
-          secretConfigured ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
-              <Lock className="h-3 w-3" />
-              {t('integrations.secretConfigured')}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t('integrations.secretNotConfigured')}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={`${sectionKey}-clientSecret`}
-          type="password"
-          // new-password (not "off"): Chrome ignores "off" on password inputs and
-          // fills saved credentials anyway. See the decoy pair in the form too.
-          autoComplete="new-password"
-          placeholder={placeholder}
-          {...register('clientSecret', {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              onSecretModifiedChange(e.target.value.length > 0),
-          })}
-        />
-        {secretConfigured && !secretModified && (
-          <button
-            type="button"
-            onClick={onClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t('integrations.clearSecret')}
-            aria-label={t('integrations.clearSecret')}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -228,90 +160,91 @@ function IntegrationDialogContent({ def, initialData, onClose, onSaved, t }: Int
   };
 
   return (
-    <DialogContent>
-      <DialogHeader>
-        <div className="flex items-center gap-3">
-          <IntegrationLogo integrationKey={def.key} title={title} />
-          <div className="space-y-1 text-left">
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{t('integrations.dialogSubtitle')}</DialogDescription>
-          </div>
-        </div>
-      </DialogHeader>
-
+    <DialogPopup>
       <form
         data-testid={`${def.key}-form`}
         onSubmit={form.handleSubmit(onSave)}
         autoComplete="off"
-        className="space-y-5"
+        className="flex min-h-0 flex-col"
       >
         {/* Decoy credential pair: absorbs the browser's autofill so the real
             Client ID / Secret fields are left untouched. Off-screen, not focusable. */}
         <input type="text" name="_decoy_user" autoComplete="username" tabIndex={-1} aria-hidden="true" className="absolute h-0 w-0 opacity-0" />
         <input type="password" name="_decoy_pass" autoComplete="new-password" tabIndex={-1} aria-hidden="true" className="absolute h-0 w-0 opacity-0" />
 
-        <div className="space-y-2">
-          <Label htmlFor={`${def.key}-clientId`}>{t(`integrations.${def.key}.fields.clientId`)}</Label>
-          <Input
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <IntegrationLogo integrationKey={def.key} title={title} />
+            <div className="flex flex-col gap-1.5 text-start">
+              <DialogTitle className="text-lg">{title}</DialogTitle>
+              <DialogDescription>{t('integrations.dialogSubtitle')}</DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <DialogPanel className="flex flex-col gap-5">
+          <TextField
             id={`${def.key}-clientId`}
-            autoComplete="off"
+            label={t(`integrations.${def.key}.fields.clientId`)}
             placeholder={t(`integrations.${def.key}.placeholders.clientId`)}
-            {...form.register('clientId')}
+            registration={form.register('clientId')}
           />
-        </div>
 
-        <SecretField
-          label={t(`integrations.${def.key}.fields.clientSecret`)}
-          placeholder={t(`integrations.${def.key}.placeholders.clientSecret`)}
-          register={form.register}
-          secretModified={secretModified}
-          onSecretModifiedChange={setSecretModified}
-          secretConfigured={secretConfigured}
-          onClear={() => {
-            form.setValue('clientSecret', '');
-            setSecretModified(true);
-          }}
-          sectionKey={def.key}
-          t={t}
-        />
-
-        {def.callbackPath && (
-          <CopyCallbackUrl
-            url={`${window.location.origin}${def.callbackPath}`}
-            label={t('integrations.callbackUrl.label')}
-            hint={t('integrations.callbackUrl.hint')}
-            copyLabel={t('integrations.callbackUrl.copy')}
-            copiedMessage={t('integrations.callbackUrl.copied')}
+          <SecretField
+            id={`${def.key}-clientSecret`}
+            label={t(`integrations.${def.key}.fields.clientSecret`)}
+            placeholder={t(`integrations.${def.key}.placeholders.clientSecret`)}
+            registration={form.register('clientSecret', {
+              onChange: (e) => setSecretModified(e.target.value.length > 0),
+            })}
+            configured={secretConfigured}
+            modified={secretModified}
+            onClear={() => {
+              form.setValue('clientSecret', '');
+              setSecretModified(true);
+            }}
+            configuredLabel={t('integrations.secretConfigured')}
+            notConfiguredLabel={t('integrations.secretNotConfigured')}
+            clearLabel={t('integrations.clearSecret')}
           />
-        )}
 
-        <DialogFooter className="gap-2 sm:justify-between">
+          {def.callbackPath && (
+            <CopyCallbackUrl
+              url={`${window.location.origin}${def.callbackPath}`}
+              label={t('integrations.callbackUrl.label')}
+              hint={t('integrations.callbackUrl.hint')}
+              copyLabel={t('integrations.callbackUrl.copy')}
+              copiedMessage={t('integrations.callbackUrl.copied')}
+            />
+          )}
+        </DialogPanel>
+
+        <DialogFooter className="sm:justify-between">
           {configured ? (
             <Button
               type="button"
-              variant="ghost"
+              variant="destructive-outline"
               onClick={onRemove}
-              disabled={removing || saving}
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              disabled={saving}
+              loading={removing}
             >
-              {removing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+              <Trash2 />
               {removing ? t('integrations.removing') : t('integrations.remove')}
             </Button>
           ) : (
             <span />
           )}
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose} disabled={saving || removing}>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row">
+            <DialogClose render={<Button type="button" variant="ghost" />} disabled={saving || removing}>
               {t('integrations.cancel')}
-            </Button>
-            <Button type="submit" disabled={saving || removing}>
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            </DialogClose>
+            <Button type="submit" disabled={removing} loading={saving}>
               {saving ? t('integrations.saving') : t('integrations.save')}
             </Button>
           </div>
         </DialogFooter>
       </form>
-    </DialogContent>
+    </DialogPopup>
   );
 }
 
@@ -347,23 +280,36 @@ export default function IntegrationsConfig() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex max-w-5xl flex-col gap-6" aria-busy="true">
+        <div className="flex items-center gap-2">
+          <Spinner className="size-4 text-muted-foreground" />
+          <Skeleton className="h-6 w-48" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-18 rounded-xl" />
+          ))}
+        </div>
       </div>
     );
   }
 
+  const configuredCount = INTEGRATIONS.filter((def) => configs[def.key] && isConfigured(configs[def.key], def)).length;
   const activeDef = activeKey ? INTEGRATIONS.find((d) => d.key === activeKey) ?? null : null;
   const activeData = activeDef ? configs[activeDef.key] : undefined;
 
   return (
-    <div className="max-w-5xl">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-sidebar-foreground">{t('integrations.title')}</h2>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('integrations.description')}</p>
-      </div>
+    <div className="flex max-w-5xl flex-col gap-6">
+      <SettingsHeader
+        title={t('integrations.title')}
+        description={t('integrations.description')}
+        status={{
+          label: `${configuredCount}/${INTEGRATIONS.length} ${t('integrations.statusConfigured').toLowerCase()}`,
+          variant: configuredCount > 0 ? 'success' : 'outline',
+        }}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {INTEGRATIONS.map((def) => {
           const data = configs[def.key];
           if (!data) return null;
@@ -375,23 +321,23 @@ export default function IntegrationsConfig() {
               type="button"
               data-testid={`${def.key}-card`}
               onClick={() => setActiveKey(def.key)}
-              className="group flex items-center gap-3 rounded-lg border border-sidebar-border bg-card p-4 text-left transition hover:border-primary/50 hover:shadow-sm"
+              className="group flex items-center gap-3 rounded-xl border bg-card p-4 text-start shadow-xs/5 outline-none transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring"
             >
               <IntegrationLogo integrationKey={def.key} title={title} />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-sidebar-foreground">{title}</span>
+              <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                <span className="w-full truncate font-medium text-sm">{title}</span>
                 {configured ? (
-                  <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-green-600">
-                    <Check className="h-3 w-3" />
+                  <Badge variant="success">
+                    <Check />
                     {t('integrations.statusConfigured')}
-                  </span>
+                  </Badge>
                 ) : (
-                  <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
+                  <Badge variant="outline" className="text-muted-foreground">
                     {t('integrations.statusNotConfigured')}
-                  </span>
+                  </Badge>
                 )}
               </span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-sidebar-foreground/30 transition group-hover:text-sidebar-foreground/60" />
+              <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
             </button>
           );
         })}
@@ -412,9 +358,7 @@ export default function IntegrationsConfig() {
 
       {/* Non-OAuth front-end service keys (reCAPTCHA, Clarity) — own section, not
           part of the OAuth catalog above. Self-loads its own config. */}
-      <div className="mt-8">
-        <FrontendServicesSection />
-      </div>
+      <FrontendServicesSection />
     </div>
   );
 }

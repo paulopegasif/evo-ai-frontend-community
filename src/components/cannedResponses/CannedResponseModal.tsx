@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Input,
-  Label as UILabel,
-  Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   CannedResponse,
   CannedResponseFormData,
@@ -181,10 +183,10 @@ export default function CannedResponseModal({
   };
 
   const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) return <ImageIcon className="h-4 w-4" />;
-    if (fileType.startsWith('audio/')) return <Music className="h-4 w-4" />;
-    if (fileType.startsWith('video/')) return <Film className="h-4 w-4" />;
-    return <FileText className="h-4 w-4" />;
+    if (fileType.startsWith('image/')) return <ImageIcon className="size-4" />;
+    if (fileType.startsWith('audio/')) return <Music className="size-4" />;
+    if (fileType.startsWith('video/')) return <Film className="size-4" />;
+    return <FileText className="size-4" />;
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -234,7 +236,7 @@ export default function CannedResponseModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogPopup className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
             {isNew ? t('modal.new.title') : t('modal.edit.title')}
@@ -246,33 +248,30 @@ export default function CannedResponseModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <DialogPanel>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {/* Short Code */}
-          <div className="space-y-2">
-            <UILabel htmlFor="short_code">
-              {t('modal.fields.shortCode.label')} <span className="text-destructive">*</span>
-            </UILabel>
+          <Field invalid={!!errors.short_code}>
+            <FieldLabel htmlFor="short_code">
+              {t('modal.fields.shortCode.label')} <span className="text-destructive-foreground" aria-hidden="true">*</span>
+            </FieldLabel>
             <Input
               id="short_code"
               value={formData.short_code}
               onChange={(e) => handleInputChange('short_code', e.target.value)}
               placeholder={t('modal.fields.shortCode.placeholder')}
-              className={`font-mono ${errors.short_code ? 'border-destructive' : ''}`}
+              className="font-mono"
               disabled={!isNew} // Can't change code when editing
             />
-            {errors.short_code && (
-              <p className="text-sm text-destructive">{errors.short_code}</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {t('modal.fields.shortCode.hint')}
-            </p>
-          </div>
+            <FieldError match={!!errors.short_code}>{errors.short_code}</FieldError>
+            <FieldDescription>{t('modal.fields.shortCode.hint')}</FieldDescription>
+          </Field>
 
           {/* Content */}
-          <div className="space-y-2">
-            <UILabel htmlFor="content">
-              {t('modal.fields.content.label')} <span className="text-destructive">*</span>
-            </UILabel>
+          <Field invalid={!!errors.content}>
+            <FieldLabel htmlFor="content">
+              {t('modal.fields.content.label')} <span className="text-destructive-foreground" aria-hidden="true">*</span>
+            </FieldLabel>
             <Textarea
               id="content"
               ref={contentRef}
@@ -282,20 +281,16 @@ export default function CannedResponseModal({
               onClick={(e) => updateSelection(e.currentTarget)}
               onKeyUp={(e) => updateSelection(e.currentTarget)}
               placeholder={t('modal.fields.content.placeholder')}
-              className={`resize-none min-h-[120px] ${errors.content ? 'border-destructive' : ''}`}
+              className="min-h-[120px] *:resize-none"
               rows={6}
             />
-            {errors.content && (
-              <p className="text-sm text-destructive">{errors.content}</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {t('modal.fields.content.hint')}
-            </p>
-          </div>
+            <FieldError match={!!errors.content}>{errors.content}</FieldError>
+            <FieldDescription>{t('modal.fields.content.hint')}</FieldDescription>
+          </Field>
 
           {/* 🎯 ATTACHMENTS: Upload de arquivos */}
-          <div className="space-y-2">
-            <UILabel>{t('modal.fields.attachments.label')}</UILabel>
+          <div className="flex flex-col gap-2">
+            <Label>{t('modal.fields.attachments.label')}</Label>
 
             {/* Botão de upload */}
             <div className="flex items-center gap-2">
@@ -314,7 +309,7 @@ export default function CannedResponseModal({
                 onClick={() => document.getElementById('file-upload')?.click()}
                 disabled={loading || attachmentLimitReached}
               >
-                <Paperclip className="h-4 w-4 mr-2" />
+                <Paperclip />
                 {t('modal.fields.attachments.addButton')}
               </Button>
               <p className="text-xs text-muted-foreground">
@@ -333,13 +328,13 @@ export default function CannedResponseModal({
                   .map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center justify-between p-2 bg-muted/30 rounded-md"
+                    className="flex items-center justify-between rounded-lg border bg-muted/24 p-2"
                   >
                     <div className="flex items-center gap-2">
-                      {attachment.file_type === 'image' && <ImageIcon className="h-4 w-4 text-blue-500" />}
-                      {attachment.file_type === 'audio' && <Music className="h-4 w-4 text-purple-500" />}
-                      {attachment.file_type === 'video' && <Film className="h-4 w-4 text-red-500" />}
-                      {attachment.file_type === 'file' && <FileText className="h-4 w-4 text-gray-500" />}
+                      {attachment.file_type === 'image' && <ImageIcon className="size-4 text-info" />}
+                      {attachment.file_type === 'audio' && <Music className="size-4 text-purple-500" />}
+                      {attachment.file_type === 'video' && <Film className="size-4 text-destructive" />}
+                      {attachment.file_type === 'file' && <FileText className="size-4 text-muted-foreground" />}
                       <div className="flex-1 min-w-0">
                         {/* não temos file_name; usa fallback_title ou o final da URL */}
                         <p className="text-sm font-medium truncate">
@@ -366,13 +361,12 @@ export default function CannedResponseModal({
                       <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="icon-sm"
                         aria-label={t('modal.fields.attachments.removeAriaLabel')}
                         onClick={() => setRemovedAttachmentIds(prev => [...prev, attachment.id])}
                         disabled={loading}
                       >
-                        <X className="h-4 w-4" />
+                        <X />
                       </Button>
                     </div>
                   </div>
@@ -390,7 +384,7 @@ export default function CannedResponseModal({
                 {formData.attachments.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950 rounded-md"
+                    className="flex items-center justify-between rounded-lg border border-info/24 bg-info/8 p-2"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       {getFileIcon(file.type)}
@@ -404,13 +398,13 @@ export default function CannedResponseModal({
                     <Button
                       type="button"
                       variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 flex-shrink-0"
+                      size="icon-sm"
+                      className="shrink-0"
                       aria-label={t('modal.fields.attachments.removeAriaLabel')}
                       onClick={() => handleRemoveFile(index)}
                       disabled={loading}
                     >
-                      <X className="h-4 w-4" />
+                      <X />
                     </Button>
                   </div>
                 ))}
@@ -419,11 +413,11 @@ export default function CannedResponseModal({
           </div>
 
           {/* Variables Help */}
-          <div className="rounded-md bg-blue-50 dark:bg-blue-950 p-4">
-            <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+          <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+            <h4 className="text-sm font-medium text-info-foreground mb-2">
               {t('modal.variables.title')}
             </h4>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+            <p className="text-xs text-info-foreground mb-3">
               {t('modal.variables.clickToInsert')}
             </p>
             <div className="space-y-2">
@@ -431,17 +425,17 @@ export default function CannedResponseModal({
                 <button
                   key={variable.placeholder}
                   type="button"
-                  className="w-full rounded-md border border-blue-200 dark:border-blue-800 bg-white/70 dark:bg-blue-900/40 px-3 py-2 text-left transition-colors hover:bg-blue-100 dark:hover:bg-blue-900"
+                  className="w-full rounded-md border border-info/24 bg-background/70 px-3 py-2 text-left transition-colors hover:bg-info/12"
                   onClick={() => insertVariableAtCursor(variable.placeholder)}
                   disabled={loading}
                   aria-label={`${t('modal.variables.insertAction')} ${variable.placeholder}`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <div className="text-xs text-blue-700 dark:text-blue-300">
-                      <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">{variable.placeholder}</code>
+                    <div className="text-xs text-info-foreground">
+                      <code className="bg-info/12 px-1 rounded">{variable.placeholder}</code>
                       <span className="ml-2">- {t(`modal.variables.${variable.key}`)}</span>
                     </div>
-                    <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                    <span className="text-xs font-medium text-info-foreground">
                       {t('modal.variables.insertAction')}
                     </span>
                   </div>
@@ -450,6 +444,7 @@ export default function CannedResponseModal({
             </div>
           </div>
         </form>
+        </DialogPanel>
 
         <DialogFooter>
           <Button
@@ -461,14 +456,14 @@ export default function CannedResponseModal({
             {t('actions.cancel')}
           </Button>
           <Button
-            type="submit"
+            type="button"
             onClick={handleSubmit}
-            disabled={loading}
+            loading={loading}
           >
             {loading ? t('modal.saving') : isNew ? t('actions.create') : t('actions.update')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

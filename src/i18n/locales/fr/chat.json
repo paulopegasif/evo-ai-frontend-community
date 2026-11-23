@@ -80,7 +80,8 @@
       "downloadFallbackReason": {
         "serverError": "Le serveur a renvoyé {{status}} — impossible de télécharger directement.",
         "network": "Erreur réseau ou blocage CORS — impossible de télécharger directement."
-      }
+      },
+      "download": "Télécharger"
     },
     "messageImage": {
       "downloadStarted": "Téléchargement démarré",
@@ -260,7 +261,8 @@
     "paused": "(en pause)",
     "send": "Envoyer",
     "preparingConverter": "Préparation du convertisseur audio...",
-    "maxDurationReached": "Durée maximale d'enregistrement atteinte (5 min). Audio arrêté automatiquement."
+    "maxDurationReached": "Durée maximale d'enregistrement atteinte (5 min). Audio arrêté automatiquement.",
+    "cancel": "Annuler"
   },
   "cannedResponses": {
     "loading": "Chargement des réponses prédéfinies...",
@@ -283,7 +285,9 @@
       "whatsappMessage": "Vous ne pouvez répondre à cette conversation qu'en utilisant un modèle de message en raison de",
       "cannotReply": "Vous ne pouvez pas répondre car",
       "linkText": "Restrictions de fenêtre de messagerie de 24 heures",
-      "zapiDisconnected": "WhatsApp déconnecté. Connectez le numéro pour envoyer des messages."
+      "zapiDisconnected": "WhatsApp déconnecté. Connectez le numéro pour envoyer des messages.",
+      "readOnlyMirror": "Copie en lecture seule des conversations Bitrix24. Répondez depuis Bitrix24 jusqu’à ce que WhatsApp soit connecté ici.",
+      "whatsappDisconnected": "WhatsApp déconnecté. Connectez le numéro pour envoyer des messages."
     },
     "noteBanner": {
       "title": "Note de suivi",
@@ -314,7 +318,8 @@
       "bulkStatusSuccess": "{{count}} conversation(s) mise(s) à jour",
       "bulkStatusPartialSuccess": "{{success}} mise(s) à jour, {{failed}} échouée(s)",
       "bulkStatusError": "Erreur lors de la mise à jour des conversations",
-      "bulkStatusNoPermission": "Vous n'avez pas la permission de mettre à jour des conversations"
+      "bulkStatusNoPermission": "Vous n'avez pas la permission de mettre à jour des conversations",
+      "priorityLabel": "Priorité"
     },
     "contactNoName": "Contact sans nom",
     "status": "Statut :",
@@ -322,7 +327,9 @@
       "open": "Ouvrir",
       "complete": "Terminer",
       "reopen": "Rouvrir",
-      "more": "Plus d'options de statut"
+      "more": "Plus d'options de statut",
+      "openFull": "Ouvrir la conversation",
+      "pause": "Mettre en pause"
     },
     "statusPill": {
       "open": "Prise en Charge en Cours",
@@ -334,7 +341,8 @@
     "closeConversation": "Fermer la conversation",
     "phoneNumber": "Numéro de téléphone",
     "openContactPanel": "Ouvrir les détails du contact",
-    "closeContactPanel": "Fermer les détails du contact"
+    "closeContactPanel": "Fermer les détails du contact",
+    "openContact": "Voir les détails du contact"
   },
   "chatSidebar": {
     "segments": {
@@ -394,7 +402,8 @@
       "all": "Toutes",
       "chipCleared": "Non lues/Groupes ne se combinent pas avec cet onglet et ont été retirés"
     },
-    "draftPrefix": "Brouillon :"
+    "draftPrefix": "Brouillon :",
+    "loadMore": "Charger plus"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -708,7 +717,8 @@
       "helper": "Enregistrez des notes importantes sur la conversation afin que d'autres utilisateurs puissent les consulter plus tard.",
       "placeholder": "Ajouter une note à la conversation...",
       "save": "Enregistrer",
-      "saving": "Enregistrement..."
+      "saving": "Enregistrement...",
+      "cancel": "Annuler"
     },
     "emojiPicker": {
       "searchPlaceholder": "Rechercher des emojis..."
@@ -1047,6 +1057,14 @@
     "send": "Envoyer",
     "recordAudio": "Enregistrer un audio",
     "moreActions": "Plus d’actions",
-    "back": "Retour"
+    "back": "Retour",
+    "remove": "Retirer"
+  },
+  "globalSearch": {
+    "hints": {
+      "navigate": "naviguer",
+      "open": "ouvrir",
+      "close": "fermer"
+    }
   }
 }

@@ -1,13 +1,10 @@
-import {
-  Card,
-  CardContent,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@evoapi/design-system';
+import { ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChannelIcon } from '@/components/channels';
 import { ChannelType } from '@/hooks/channels/useChannelForm';
+import { useLanguage } from '@/hooks/useLanguage';
+import { cn } from '@/utils/cn';
 
 interface ChannelCardProps {
   channel: ChannelType;
@@ -24,40 +21,43 @@ export const ChannelCard = ({
   onClick,
   'data-tour': dataTour,
 }: ChannelCardProps) => {
+  const { t } = useLanguage('channels');
+
   const card = (
-    <Card
-      className={`h-full transition-all duration-200 border-sidebar-border rounded-lg ${
-        disabled
-          ? 'opacity-60 cursor-not-allowed bg-sidebar'
-          : 'cursor-pointer bg-sidebar hover:bg-sidebar-accent/50 hover:border-sidebar-border hover:shadow-md'
-      }`}
+    <button
+      type="button"
       onClick={() => !disabled && onClick()}
+      aria-disabled={disabled || undefined}
       data-tour={dataTour}
+      className={cn(
+        'group relative flex h-full w-full items-start gap-3 rounded-xl border bg-card p-4 text-left shadow-xs/5 outline-none transition-[box-shadow,border-color,background-color] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
+        disabled ? 'cursor-not-allowed opacity-64' : 'cursor-pointer hover:border-primary/32 hover:bg-accent/40 hover:shadow-md/5',
+      )}
     >
-      <CardContent className="p-6 text-center">
-        <div className="flex justify-center mb-4">
-          <ChannelIcon channelType={channel.type} size="xl" />
+      <ChannelIcon channelType={channel.type} size="md" brandTile />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h3 className="truncate font-semibold text-sm">{channel.name}</h3>
+          {disabled && (
+            <Badge variant="outline" size="sm" className="shrink-0 font-normal text-muted-foreground">
+              {t('newChannel.channelGrid.notConfigured')}
+            </Badge>
+          )}
         </div>
-        <h3 className="font-semibold text-sidebar-foreground mb-2">{channel.name}</h3>
-        <p className="text-sm text-sidebar-foreground/70 leading-relaxed">
-          {channel.description}
-        </p>
-      </CardContent>
-    </Card>
+        <p className="mt-0.5 line-clamp-2 text-muted-foreground text-xs leading-relaxed">{channel.description}</p>
+      </div>
+      {!disabled && (
+        <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+      )}
+    </button>
   );
 
   if (disabled && disabledTooltip) {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="h-full">{card}</div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{disabledTooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger render={<div className="h-full" />}>{card}</TooltipTrigger>
+        <TooltipPopup className="max-w-xs">{disabledTooltip}</TooltipPopup>
+      </Tooltip>
     );
   }
 

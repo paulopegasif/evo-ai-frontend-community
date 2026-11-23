@@ -1,45 +1,31 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { getContactColor } from '@/utils/avatar';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  Input,
-} from '@evoapi/design-system';
-import { Popover, PopoverContent, PopoverTrigger } from '@evoapi/design-system/popover';
-import {
   ArrowLeft,
-  Plus,
-  MoreVertical,
-  Edit,
-  Trash2,
-  Copy,
   ArrowUpDown,
-  Phone,
-  User,
-  CalendarClock,
-  AlertCircle,
-  Clock,
-  Search,
-  X,
-  ChevronDown,
   Check,
-  CircleDot,
-  Calendar,
-  Lock,
-  Star,
-  Filter,
-  ArrowLeftRight,
-  GitBranch,
-  MessageSquare,
+  ChevronsUpDown,
+  Copy,
+  Edit,
   FileText,
+  GitBranch,
+  Lock,
+  MoreHorizontal,
+  Plus,
+  Search,
+  SearchX,
+  Star,
+  Trash2,
+  X,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 
 import { pipelinesService } from '@/services/pipelines';
 import { useAppDataStore } from '@/store/appDataStore';
@@ -50,6 +36,11 @@ import {
   UpdatePipelineData,
   CreateStageData,
 } from '@/types/analytics';
+import KanbanBoardSkeleton from '@/components/pipelines/kanban/KanbanBoardSkeleton';
+import KanbanCard from '@/components/pipelines/kanban/KanbanCard';
+import KanbanColumn from '@/components/pipelines/kanban/KanbanColumn';
+import KanbanFilters from '@/components/pipelines/kanban/KanbanFilters';
+import { calculateStageTotal, formatCurrency, priorityBucket } from '@/components/pipelines/kanban/kanbanUtils';
 import EditPipelineModal from '@/components/pipelines/EditPipelineModal';
 import CreateStageModal from '@/components/pipelines/CreateStageModal';
 import AddItemModal from '@/components/pipelines/AddItemModal';
@@ -62,48 +53,9 @@ import ReorderStagesModal from '@/components/pipelines/ReorderStagesModal';
 import PipelineCaptureFormsModal from '@/components/pipelines/PipelineCaptureFormsModal';
 import { ScheduleActionModal } from '@/components/scheduledActions';
 
-// Status/priority badge styles use the design system's semantic Tailwind classes
-// (same palette Chat/Contacts use), with dark-mode variants — NOT arbitrary hex.
-// Small indicator dots in the Filtros popover still use these hexes for a compact
-// swatch; the cards use the class maps below.
-const STATUS_HEX: Record<string, string> = {
-  open: '#359558',
-  pending: '#F59E0B',
-  resolved: '#9aa3b2',
-  snoozed: '#8B5CF6',
-};
-const statusColorHex = (status?: string) => STATUS_HEX[status ?? ''] ?? '#9aa3b2';
-
-const STATUS_BADGE_CLASS: Record<string, string> = {
-  open: 'bg-primary/10 text-primary',
-  pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  resolved: 'bg-muted text-muted-foreground',
-  snoozed: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-};
-const statusBadgeClass = (status?: string) =>
-  STATUS_BADGE_CLASS[status ?? ''] ?? 'bg-muted text-muted-foreground';
-
-// Chatwoot priority → mockup 3-bucket key.
-const priorityBucket = (priority?: string | null): string => {
-  const p = (priority ?? '').toLowerCase();
-  if (p === 'urgent' || p === 'high') return 'alta';
-  if (p === 'medium') return 'media';
-  if (p === 'low') return 'baixa';
-  return '';
-};
-const PRIORITY_HEX: Record<string, string> = {
-  alta: '#EF4444',
-  media: '#F59E0B',
-  baixa: '#359558',
-};
-const PRIORITY_BADGE_CLASS: Record<string, string> = {
-  alta: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  media: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  baixa: 'bg-primary/10 text-primary',
-};
-
 export default function PipelineKanban() {
   const { t } = useLanguage('pipelines');
+  const { t: tc } = useLanguage('common');
   const { pipelineId } = useParams<{ pipelineId: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -234,10 +186,6 @@ export default function PipelineKanban() {
     suppressClickUntilRef.current = Date.now() + 200;
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
   const handleDrop = async (e: React.DragEvent, targetStageId: string) => {
     e.preventDefault();
 
@@ -280,6 +228,7 @@ export default function PipelineKanban() {
   };
 
   const handleDragEnd = () => {
+    setDraggedItem(null);
     isDraggingRef.current = false;
     suppressClickUntilRef.current = Date.now() + 200;
   };
@@ -450,10 +399,6 @@ export default function PipelineKanban() {
     (dateFrom || dateTo ? 1 : 0) +
     (priorityFilter ? 1 : 0);
 
-  // Consolidated "Filtros" popover (mockup) + which accordion section is expanded.
-  const [filtersPopoverOpen, setFiltersPopoverOpen] = useState(false);
-  const [filterSection, setFilterSection] = useState<string | null>('assignee');
-
   // Memoize filtered items per stage to avoid recomputing 3× per stage per render
   const filteredItemsByStage = useMemo(() => {
     const map = new Map<string, PipelineItem[]>();
@@ -492,20 +437,6 @@ export default function PipelineKanban() {
     return keys.map(k => defs[k]?.attribute_display_name || k);
   }, [pipeline]);
 
-
-  // Per-column total: sum of the stage's cards' value. item.value === services_info
-  // .total_value server-side (both = services_total_value); guard undefined with ?? 0.
-  const calculateStageTotal = (items: PipelineItem[] = []) => {
-    return items.reduce((total, item) => total + (item.value ?? item.services_info?.total_value ?? 0), 0);
-  };
-
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
 
   // Move a card to a target stage from the card menu (mirrors the drag-and-drop
   // moveItem path; both call pipelinesService.moveItem then reload).
@@ -759,756 +690,302 @@ export default function PipelineKanban() {
     }
   };
 
+  const copyId = async (id: string) => {
+    await navigator.clipboard.writeText(id);
+    toast.success(t('kanban.idCopied'));
+  };
+
+  const openCard = (item: PipelineItem) => {
+    if (isDraggingRef.current || Date.now() <= suppressClickUntilRef.current) return;
+    // Clicking a card always opens the detail sheet; "open conversation" lives in its menu.
+    handleEditItem(item);
+  };
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
+    return <KanbanBoardSkeleton />;
   }
 
-  return (
-    <div className="flex w-full h-full min-w-0 overflow-hidden">
-      <div className="flex-1 h-full flex flex-col bg-muted/30 min-w-0">
-        {/* Header */}
-        <div className="flex-shrink-0 bg-background border-b border-border shadow-sm">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-3 py-3 lg:flex-row lg:items-center lg:justify-between lg:py-3">
-              {/* Navigation and Pipeline Info */}
-              <div className="flex items-center gap-3 min-w-0">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/pipelines')}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
+  const leadCount = pipeline?.item_count || pipeline?.conversations_count || 0;
 
-                {/* Pipeline identity: themed icon tile + name (with a switch-pipeline
-                    dropdown arrow) + description + badges + edit pencil. */}
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
-                  <GitBranch className="w-[19px] h-[19px]" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    {pipeline?.visibility === 'private' && (
-                      <Lock className="w-4 h-4 text-muted-foreground shrink-0" aria-label={t('kanban.header.private')} />
-                    )}
-                    {/* Name + switch-pipeline dropdown arrow */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          type="button"
-                          className="flex items-center gap-1 min-w-0 rounded-md hover:bg-muted px-1 -mx-1 transition-colors"
-                        >
-                          <h1 className="text-base font-bold text-foreground truncate">
-                            {pipeline?.name}
-                          </h1>
-                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="max-h-72 overflow-y-auto w-56">
-                        {allPipelines.map(p => (
-                          <DropdownMenuItem
-                            key={p.id}
-                            onClick={() => handlePipelineChange(p.id)}
-                            className={p.id === pipeline?.id ? 'bg-primary/10 text-primary' : ''}
-                          >
-                            {p.visibility === 'private' && (
-                              <Lock className="h-3.5 w-3.5 mr-2 text-muted-foreground shrink-0" />
-                            )}
-                            <span className="truncate">{p.name}</span>
-                            {p.id === pipeline?.id && <Check className="h-3.5 w-3.5 ml-auto" />}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    {pipeline && !pipeline.is_active && (
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground shrink-0">
-                        {t('pipelinesTable.status.inactive')}
-                      </span>
-                    )}
-                    {pipeline?.is_default && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
-                        <Star className="w-3 h-3 fill-current" />
-                        {t('pipelinesTable.default')}
-                      </span>
-                    )}
+  return (
+    <div className="flex h-full w-full min-w-0 overflow-hidden">
+      <div className="flex h-full min-w-0 flex-1 flex-col bg-background">
+        {/* Header */}
+        <div className="shrink-0 border-b bg-background px-4 pt-3 md:px-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
                     <Button
                       variant="ghost"
-                      size="sm"
-                      onClick={handleEditPipeline}
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-primary shrink-0"
-                      aria-label={t('kanban.header.editPipeline')}
-                    >
-                      <Edit className="w-[15px] h-[15px]" />
-                    </Button>
-                  </div>
-                  <p className="text-[12.5px] text-muted-foreground truncate">
-                    {pipeline?.description || t('kanban.header.noDescription')}
-                  </p>
-                </div>
+                      size="icon-sm"
+                      onClick={() => navigate('/pipelines')}
+                      aria-label={tc('base.buttons.back')}
+                    />
+                  }
+                >
+                  <ArrowLeft />
+                </TooltipTrigger>
+                <TooltipPopup>{tc('base.buttons.back')}</TooltipPopup>
+              </Tooltip>
+
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                <GitBranch className="size-4.5" />
               </div>
 
-              {/* Quick Stats and Actions */}
-              <div className="flex w-full flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm lg:w-auto">
-                <div className="text-center min-w-16">
-                  <div className="font-semibold text-foreground">
-                    {pipeline?.item_count || pipeline?.conversations_count || 0}
-                  </div>
-                  <div className="text-muted-foreground">{t('kanban.header.conversations')}</div>
-                </div>
-                <div className="text-center min-w-14">
-                  <div className="font-semibold text-foreground">{stages.length}</div>
-                  <div className="text-muted-foreground">{t('kanban.header.stages')}</div>
-                </div>
-                {/* Header total = SERVER pipeline value (whole pipeline, unfiltered).
-                    It can exceed the sum of visible column sums when filters are active
-                    — that's intended (header = true total; columns = current view).
-                    Always shown (R$ 0,00 when empty), matching the mockup. */}
-                <div className="text-center min-w-20">
-                  <div className="font-semibold text-primary whitespace-nowrap">
-                    R$ {formatCurrency(pipeline?.services_info?.total_value ?? 0)}
-                  </div>
-                  <div className="text-muted-foreground">{t('kanban.header.totalValue')}</div>
-                </div>
-
-                {/* Pipeline Options Menu */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem onClick={handleEditPipeline}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      {t('kanban.header.editPipeline')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={async () => {
-                        if (!pipeline?.id) return;
-                        await navigator.clipboard.writeText(String(pipeline.id));
-                        toast.success(t('kanban.idCopied'));
-                      }}
+              <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  {pipeline?.visibility === 'private' && (
+                    <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t('kanban.header.private')} />
+                  )}
+                  {/* Pipeline name doubles as the pipeline switcher */}
+                  <Menu>
+                    <MenuTrigger
+                      render={
+                        <Button variant="ghost" size="sm" className="-mx-2 min-w-0 px-2 font-semibold text-base sm:text-base" />
+                      }
                     >
-                      <Copy className="h-4 w-4 mr-2" />
-                      {t('kanban.copyId')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleReorderStages}>
-                      <ArrowUpDown className="h-4 w-4 mr-2" />
-                      {t('kanban.header.reorderStages')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowCaptureFormsModal(true)}>
-                      <FileText className="h-4 w-4 mr-2" />
-                      {t('kanban.header.captureForms')}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive" onClick={handleDeletePipeline}>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      {t('kanban.header.deletePipeline')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <h1 className="truncate">{pipeline?.name}</h1>
+                      <ChevronsUpDown className="opacity-64" />
+                    </MenuTrigger>
+                    <MenuPopup align="start" className="max-h-72 w-60">
+                      {allPipelines.map(p => (
+                        <MenuItem key={p.id} onClick={() => handlePipelineChange(p.id)}>
+                          {p.visibility === 'private' ? <Lock /> : <GitBranch />}
+                          <span className="flex-1 truncate">{p.name}</span>
+                          {p.id === pipeline?.id && <Check className="text-primary" />}
+                        </MenuItem>
+                      ))}
+                    </MenuPopup>
+                  </Menu>
+                  {pipeline && !pipeline.is_active && (
+                    <Badge variant="secondary">{t('pipelinesTable.status.inactive')}</Badge>
+                  )}
+                  {pipeline?.is_default && (
+                    <Badge variant="warning">
+                      <Star className="fill-current" />
+                      {t('pipelinesTable.default')}
+                    </Badge>
+                  )}
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={handleEditPipeline}
+                          aria-label={t('kanban.header.editPipeline')}
+                        />
+                      }
+                    >
+                      <Edit />
+                    </TooltipTrigger>
+                    <TooltipPopup>{t('kanban.header.editPipeline')}</TooltipPopup>
+                  </Tooltip>
+                </div>
+                <p className="truncate text-muted-foreground text-xs">
+                  {pipeline?.description || t('kanban.header.noDescription')}
+                </p>
               </div>
             </div>
 
-            {/* Green attribute chips (defined pipeline attributes — names only; per-item
-                values have no pipeline-scope home). Hidden when none. */}
-            {pipelineAttributeNames.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 pb-2">
-                {pipelineAttributeNames.map(name => (
-                  <span
-                    key={name}
-                    className="inline-flex items-center gap-1 text-[11.5px] font-semibold px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary"
-                  >
-                    {name}
-                  </span>
-                ))}
-              </div>
+            {/* Quick stats + actions */}
+            <div className="flex items-center gap-2">
+              <dl className="flex items-center divide-x rounded-lg border bg-muted/32 text-sm">
+                <div className="px-3 py-1.5">
+                  <dt className="text-muted-foreground text-xs">{t('kanban.header.conversations')}</dt>
+                  <dd className="font-semibold tabular-nums">{leadCount}</dd>
+                </div>
+                <div className="px-3 py-1.5">
+                  <dt className="text-muted-foreground text-xs">{t('kanban.header.stages')}</dt>
+                  <dd className="font-semibold tabular-nums">{stages.length}</dd>
+                </div>
+                {/* Header total = server pipeline value (whole pipeline, unfiltered). */}
+                <div className="px-3 py-1.5">
+                  <dt className="text-muted-foreground text-xs">{t('kanban.header.totalValue')}</dt>
+                  <dd className="whitespace-nowrap font-semibold text-primary tabular-nums">
+                    R$ {formatCurrency(pipeline?.services_info?.total_value ?? 0)}
+                  </dd>
+                </div>
+              </dl>
+
+              <Button className="hidden sm:inline-flex" onClick={() => handleAddItem()} disabled={stages.length === 0}>
+                <Plus />
+                {t('kanban.header.addItem')}
+              </Button>
+
+              <Menu>
+                <MenuTrigger render={<Button variant="outline" size="icon" aria-label={tc('base.table.actions')} />}>
+                  <MoreHorizontal />
+                </MenuTrigger>
+                <MenuPopup align="end" className="w-56">
+                  <MenuItem onClick={handleEditPipeline}>
+                    <Edit />
+                    {t('kanban.header.editPipeline')}
+                  </MenuItem>
+                  <MenuItem onClick={() => pipeline?.id && copyId(String(pipeline.id))}>
+                    <Copy />
+                    {t('kanban.copyId')}
+                  </MenuItem>
+                  <MenuItem onClick={handleReorderStages}>
+                    <ArrowUpDown />
+                    {t('kanban.header.reorderStages')}
+                  </MenuItem>
+                  <MenuItem onClick={() => setShowCaptureFormsModal(true)}>
+                    <FileText />
+                    {t('kanban.header.captureForms')}
+                  </MenuItem>
+                  <MenuSeparator />
+                  <MenuItem variant="destructive" onClick={handleDeletePipeline}>
+                    <Trash2 />
+                    {t('kanban.header.deletePipeline')}
+                  </MenuItem>
+                </MenuPopup>
+              </Menu>
+            </div>
+          </div>
+
+          {/* Defined pipeline attributes (names only) */}
+          {pipelineAttributeNames.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+              {pipelineAttributeNames.map(name => (
+                <Badge key={name} variant="outline">
+                  {name}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Search & filters */}
+          <div className="flex flex-wrap items-center gap-2 py-3">
+            <InputGroup className="w-full sm:w-72">
+              <InputGroupAddon>
+                <Search />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
+                aria-label={t('kanban.search.placeholder')}
+                placeholder={t('kanban.search.placeholder')}
+                value={searchInput}
+                onChange={e => handleSearchChange(e.target.value)}
+              />
+            </InputGroup>
+
+            <KanbanFilters
+              value={{ assignee: assigneeFilter, status: statusFilter, period: periodFilter, priority: priorityFilter }}
+              assignees={uniqueAssignees}
+              activeCount={activeFilterCount}
+              onChange={updateFilters}
+              onPeriodChange={applyPeriod}
+              onClear={clearFilters}
+            />
+
+            {hasActiveFilters && (
+              <Button variant="ghost" onClick={clearFilters}>
+                <X />
+                {t('kanban.search.clearFilters')}
+              </Button>
             )}
 
-            {/* Search & consolidated Filtros bar */}
-            <div className="border-t border-border/50 py-2.5">
-              <div className="flex items-center gap-3">
-                {/* Search input */}
-                <div className="relative w-[300px] shrink-0">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    placeholder={t('kanban.search.placeholder')}
-                    value={searchInput}
-                    onChange={e => handleSearchChange(e.target.value)}
-                    className="pl-9 h-9 text-sm"
-                  />
-                  {searchInput && (
-                    <button
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      onClick={() => handleSearchChange('')}
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Consolidated Filtros popover */}
-                <Popover open={filtersPopoverOpen} onOpenChange={setFiltersPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`h-9 gap-2 whitespace-nowrap ${activeFilterCount > 0 ? 'border-primary/40 bg-primary/5 text-primary' : ''}`}
-                    >
-                      <Filter className="w-4 h-4" />
-                      {t('kanban.search.filters')}
-                      {activeFilterCount > 0 && (
-                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[11px] font-bold">
-                          {activeFilterCount}
-                        </span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="w-[300px] p-0 overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border">
-                      <span className="text-sm font-semibold text-foreground">
-                        {t('kanban.search.filters')}
-                      </span>
-                      {activeFilterCount > 0 && (
-                        <button
-                          onClick={clearFilters}
-                          className="text-xs font-semibold text-primary hover:text-primary/70 transition-colors"
-                        >
-                          {t('kanban.search.clearFilters')}
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="max-h-[380px] overflow-y-auto p-2 space-y-1.5">
-                      {/* Responsável */}
-                      <div className="rounded-lg border border-border overflow-hidden">
-                        <button
-                          className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted/40 transition-colors"
-                          onClick={() => setFilterSection(s => (s === 'assignee' ? null : 'assignee'))}
-                        >
-                          <span className="flex items-center gap-2">
-                            <User className="w-4 h-4 text-primary" />
-                            {t('kanban.search.assigneeFilter')}
-                          </span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${filterSection === 'assignee' ? 'rotate-180' : ''}`} />
-                        </button>
-                        {filterSection === 'assignee' && (
-                          <div className="px-2 pb-2 max-h-40 overflow-y-auto space-y-0.5">
-                            <button
-                              onClick={() => updateFilters({ assignee: undefined })}
-                              className="flex items-center justify-between w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                            >
-                              <span className="text-foreground">{t('kanban.search.all')}</span>
-                              {!assigneeFilter && <Check className="w-4 h-4 text-primary" />}
-                            </button>
-                            {uniqueAssignees.map(a => (
-                              <button
-                                key={a.id}
-                                onClick={() => updateFilters({ assignee: a.id })}
-                                className="flex items-center gap-2.5 w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                              >
-                                {a.avatar_url ? (
-                                  <img src={a.avatar_url} alt={a.name} className="w-6 h-6 rounded-full object-cover shrink-0" />
-                                ) : (
-                                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0" style={{ backgroundColor: getContactColor(a.name) }}>
-                                    {a.name?.[0]?.toUpperCase() || 'U'}
-                                  </div>
-                                )}
-                                <span className="flex-1 text-left truncate text-foreground">{a.name}</span>
-                                {assigneeFilter === a.id && <Check className="w-4 h-4 text-primary shrink-0" />}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Status */}
-                      <div className="rounded-lg border border-border overflow-hidden">
-                        <button
-                          className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted/40 transition-colors"
-                          onClick={() => setFilterSection(s => (s === 'status' ? null : 'status'))}
-                        >
-                          <span className="flex items-center gap-2">
-                            <CircleDot className="w-4 h-4 text-primary" />
-                            {t('kanban.search.statusFilter')}
-                          </span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${filterSection === 'status' ? 'rotate-180' : ''}`} />
-                        </button>
-                        {filterSection === 'status' && (
-                          <div className="px-2 pb-2 space-y-0.5">
-                            <button
-                              onClick={() => updateFilters({ status: undefined })}
-                              className="flex items-center justify-between w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                            >
-                              <span className="text-foreground">{t('kanban.search.all')}</span>
-                              {!statusFilter && <Check className="w-4 h-4 text-primary" />}
-                            </button>
-                            {(['open', 'pending', 'resolved', 'snoozed'] as const).map(s => (
-                              <button
-                                key={s}
-                                onClick={() => updateFilters({ status: s })}
-                                className="flex items-center gap-2.5 w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                              >
-                                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: statusColorHex(s) }} />
-                                <span className="flex-1 text-left text-foreground">{t(`kanban.search.status.${s}`)}</span>
-                                {statusFilter === s && <Check className="w-4 h-4 text-primary shrink-0" />}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Período */}
-                      <div className="rounded-lg border border-border overflow-hidden">
-                        <button
-                          className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted/40 transition-colors"
-                          onClick={() => setFilterSection(s => (s === 'period' ? null : 'period'))}
-                        >
-                          <span className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-primary" />
-                            {t('kanban.search.periodFilter')}
-                          </span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${filterSection === 'period' ? 'rotate-180' : ''}`} />
-                        </button>
-                        {filterSection === 'period' && (
-                          <div className="px-2 pb-2 space-y-0.5">
-                            {([
-                              { key: '', label: t('kanban.search.period.all') },
-                              { key: 'today', label: t('kanban.search.period.today') },
-                              { key: '7d', label: t('kanban.search.period.last7') },
-                              { key: '30d', label: t('kanban.search.period.last30') },
-                              { key: 'month', label: t('kanban.search.period.month') },
-                            ]).map(p => (
-                              <button
-                                key={p.key || 'all'}
-                                onClick={() => applyPeriod(p.key)}
-                                className="flex items-center justify-between w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                              >
-                                <span className="text-foreground">{p.label}</span>
-                                {(periodFilter === p.key || (!periodFilter && !p.key)) && <Check className="w-4 h-4 text-primary" />}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Prioridade */}
-                      <div className="rounded-lg border border-border overflow-hidden">
-                        <button
-                          className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-foreground hover:bg-muted/40 transition-colors"
-                          onClick={() => setFilterSection(s => (s === 'priority' ? null : 'priority'))}
-                        >
-                          <span className="flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4 text-primary" />
-                            {t('kanban.search.priorityFilter')}
-                          </span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${filterSection === 'priority' ? 'rotate-180' : ''}`} />
-                        </button>
-                        {filterSection === 'priority' && (
-                          <div className="px-2 pb-2 space-y-0.5">
-                            <button
-                              onClick={() => updateFilters({ priority: undefined })}
-                              className="flex items-center justify-between w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                            >
-                              <span className="text-foreground">{t('kanban.search.all')}</span>
-                              {!priorityFilter && <Check className="w-4 h-4 text-primary" />}
-                            </button>
-                            {(['alta', 'media', 'baixa'] as const).map(p => (
-                              <button
-                                key={p}
-                                onClick={() => updateFilters({ priority: p })}
-                                className="flex items-center gap-2.5 w-full px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
-                              >
-                                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PRIORITY_HEX[p] }} />
-                                <span className="flex-1 text-left text-foreground">{t(`kanban.search.priority.${p}`)}</span>
-                                {priorityFilter === p && <Check className="w-4 h-4 text-primary shrink-0" />}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-end gap-2 px-3 py-2.5 border-t border-border">
-                      <Button variant="outline" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0}>
-                        {t('kanban.search.clearFilters')}
-                      </Button>
-                      <Button size="sm" onClick={() => setFiltersPopoverOpen(false)}>
-                        {t('kanban.search.apply')}
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-
-                {/* Inline clear when any filter active */}
-                {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 text-primary hover:bg-primary/10"
-                    onClick={clearFilters}
-                  >
-                    <X className="w-4 h-4 mr-1.5" />
-                    {t('kanban.search.clearFilters')}
-                  </Button>
-                )}
-
-                {/* Results summary */}
-                {hasActiveFilters && (
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    {t('kanban.search.resultsCount', {
-                      count: totalFilteredCount,
-                      total: totalItemCount,
-                      stages: stagesWithResults,
-                    })}
-                  </span>
-                )}
-              </div>
-
-              {/* Global empty state: all stages empty with active filters */}
-              {hasActiveFilters && totalFilteredCount === 0 && (
-                <div className="flex items-center gap-3 py-2 px-3 mt-2 rounded-lg bg-muted/60 border border-border/50">
-                  <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-sm text-muted-foreground flex-1">
-                    {t('kanban.search.globalNoResults')}
-                  </span>
-                  <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={clearFilters}>
-                    {t('kanban.search.clearFilters')}
-                  </Button>
-                </div>
-              )}
-            </div>
+            {hasActiveFilters && (
+              <span className="ms-auto text-muted-foreground text-xs">
+                {t('kanban.search.resultsCount', {
+                  count: totalFilteredCount,
+                  total: totalItemCount,
+                  stages: stagesWithResults,
+                })}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Kanban Board */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-x-auto overflow-y-hidden px-4 sm:px-6 lg:px-8 py-6">
-            {/* Kanban Content */}
-            <div
-              className="flex gap-4 h-full pb-6"
-              style={{ width: 'fit-content', minWidth: '100%' }}
-            >
-              {/* Stage Columns */}
+        {/* Global empty state: every stage empty under active filters */}
+        {hasActiveFilters && totalFilteredCount === 0 && stages.length > 0 && (
+          <div className="mx-4 mt-4 flex items-center gap-3 rounded-lg border bg-muted/48 px-3 py-2 md:mx-6">
+            <SearchX className="size-4 shrink-0 text-muted-foreground" />
+            <span className="flex-1 text-muted-foreground text-sm">{t('kanban.search.globalNoResults')}</span>
+            <Button variant="ghost" size="xs" onClick={clearFilters}>
+              {t('kanban.search.clearFilters')}
+            </Button>
+          </div>
+        )}
+
+        {/* Board */}
+        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden">
+          {stages.length === 0 ? (
+            <Empty className="h-full">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <GitBranch />
+                </EmptyMedia>
+                <EmptyTitle>{t('kanban.stage.noStages')}</EmptyTitle>
+                <EmptyDescription>{t('kanban.stage.addStageDescription')}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={() => setShowCreateStageModal(true)}>
+                  <Plus />
+                  {t('kanban.stage.addStage')}
+                </Button>
+              </EmptyContent>
+            </Empty>
+          ) : (
+            <div className="flex h-full w-fit min-w-full gap-3 p-4 md:p-6">
               {stages.map((stage: PipelineStage) => {
                 const stageItems = filteredItemsByStage.get(stage.id) || [];
-                const stageSum = calculateStageTotal(stage.items);
+                const moveTargets = stages.filter(s => s.id !== stage.id);
                 return (
-                <div key={stage.id} className="flex-shrink-0 min-w-0" style={{ flex: '0 0 288px' }}>
-                  <div className="bg-background rounded-xl border border-border h-full flex flex-col overflow-hidden">
-                    {/* Stage Header — clean: color only on the top border + dot */}
-                    <div
-                      className="flex-shrink-0 flex items-center justify-between gap-2 px-3.5 py-3 border-b border-border border-t-[3px]"
-                      style={{ borderTopColor: stage.color }}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-[9px] h-[9px] rounded-full shrink-0" style={{ backgroundColor: stage.color }} />
-                        <h3 className="text-sm font-bold text-foreground truncate">{stage.name}</h3>
-                        <span className="text-[13px] text-muted-foreground shrink-0">
-                          {hasActiveFilters
-                            ? `${stageItems.length}/${stage.items?.length || stage.item_count || 0}`
-                            : (stage.items?.length || stage.item_count || 0)}
-                        </span>
-                        {stageSum > 0 && (
-                          <span className="text-[11.5px] font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary shrink-0">
-                            R$ {formatCurrency(stageSum)}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
-                          onClick={() => handleAddItem(stage)}
-                          aria-label={t('kanban.header.addItem')}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground">
-                              <MoreVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditStage(stage)}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              {t('kanban.stage.editStage')}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={async () => {
-                                await navigator.clipboard.writeText(String(stage.id));
-                                toast.success(t('kanban.idCopied'));
-                              }}
-                            >
-                              <Copy className="h-4 w-4 mr-2" />
-                              {t('kanban.copyId')}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteStage(stage)}>
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              {t('kanban.stage.deleteStage')}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-
-                    {/* Items Drop Zone */}
-                    <div
-                      className="flex-1 overflow-y-auto p-3 space-y-3"
-                      onDragOver={handleDragOver}
-                      onDrop={e => handleDrop(e, stage.id)}
-                    >
-                      {stageItems.map(item => {
-                        const pBucket = priorityBucket(item.conversation?.priority);
-                        const firstLabel = item.conversation?.labels?.[0]?.title;
-                        const moveTargets = stages.filter(s => s.id !== item.stage_id);
-                        return (
-                        <div
-                          key={item.id}
-                          className="group relative bg-background rounded-xl p-3.5 border border-border hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer select-none"
-                          draggable
-                          onDragStart={() => handleDragStart(item)}
-                          onDragEnd={handleDragEnd}
-                          onClick={() => {
-                            if (isDraggingRef.current || Date.now() <= suppressClickUntilRef.current) return;
-                            // Clicking a card ALWAYS opens the detail ficha (mockup §3.5).
-                            // "Abrir conversa" lives in the ⋮ menu for conversation items.
-                            handleEditItem(item);
-                          }}
-                        >
-                          {/* Card menus: move + ⋮ */}
-                          <div
-                            className="absolute top-2 right-2 flex items-center gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                            onClick={e => e.stopPropagation()}
-                          >
-                            {moveTargets.length > 0 && (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="h-auto p-1 text-muted-foreground hover:bg-muted" aria-label={t('kanban.item.moveCard')}>
-                                    <ArrowLeftRight className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <div className="px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                                    {t('kanban.item.moveTo')}
-                                  </div>
-                                  {moveTargets.map(target => (
-                                    <DropdownMenuItem key={target.id} onClick={() => moveItemToStage(item, target.id)}>
-                                      <span className="w-2.5 h-2.5 rounded-full mr-2 shrink-0" style={{ backgroundColor: target.color }} />
-                                      {target.name}
-                                    </DropdownMenuItem>
-                                  ))}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            )}
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-auto p-1 text-muted-foreground hover:bg-muted">
-                                  <MoreVertical className="w-4 h-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleEditItem(item)}>
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  {t('kanban.item.editItem')}
-                                </DropdownMenuItem>
-                                {item.conversation?.uuid && (
-                                  <DropdownMenuItem
-                                    onClick={() => navigate(`/conversations/${item.conversation!.uuid}`)}
-                                  >
-                                    <MessageSquare className="h-4 w-4 mr-2" />
-                                    {t('kanban.item.openConversation')}
-                                  </DropdownMenuItem>
-                                )}
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    await navigator.clipboard.writeText(String(item.id));
-                                    toast.success(t('kanban.idCopied'));
-                                  }}
-                                >
-                                  <Copy className="h-4 w-4 mr-2" />
-                                  {t('kanban.copyId')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setSelectedConversationForSchedule(item);
-                                    setScheduleActionOpen(true);
-                                  }}
-                                >
-                                  <CalendarClock className="h-4 w-4 mr-2" />
-                                  {t('kanban.item.scheduleAction')}
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive" onClick={() => handleRemoveItem(item)}>
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  {t('kanban.item.removeFromPipeline')}
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-
-                          {/* Contact header */}
-                          <div className="flex items-start gap-3 mb-2.5 pr-14">
-                            <div
-                              className="w-[34px] h-[34px] shrink-0 rounded-full flex items-center justify-center text-white text-[13px] font-bold shadow-sm"
-                              style={{ backgroundColor: getContactColor(item.contact?.name) }}
-                            >
-                              {item.contact?.name?.[0]?.toUpperCase() || 'U'}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <h4 className="text-sm font-bold text-foreground truncate">
-                                  {item.contact?.name || t('kanban.conversation.unknownUser')}
-                                </h4>
-                                {item.conversation?.display_id && (
-                                  <span className="text-xs text-muted-foreground shrink-0">#{item.conversation.display_id}</span>
-                                )}
-                              </div>
-                              {item.contact?.phone_number && (
-                                <div className="flex items-center gap-1 text-[12.5px] text-muted-foreground mt-0.5">
-                                  <Phone className="w-3 h-3 shrink-0" />
-                                  <span className="truncate">{item.contact.phone_number}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Message preview */}
-                          {item.conversation?.last_non_activity_message?.content && (
-                            <div className="mb-2.5 p-2.5 bg-muted/50 rounded-lg">
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <span className="text-[12.5px] font-bold text-foreground truncate">
-                                  {item.conversation.last_non_activity_message.sender?.name || t('kanban.conversation.system')}
-                                </span>
-                                <span className="text-[11.5px] text-muted-foreground shrink-0">
-                                  {new Date(
-                                    typeof item.conversation.last_non_activity_message.created_at === 'number'
-                                      ? item.conversation.last_non_activity_message.created_at * 1000
-                                      : item.conversation.last_non_activity_message.created_at,
-                                  ).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                              </div>
-                              <p
-                                className="text-[12.5px] text-muted-foreground line-clamp-2 leading-relaxed break-words [&_p]:inline [&_br]:hidden"
-                                dangerouslySetInnerHTML={{
-                                  __html:
-                                    item.conversation.last_non_activity_message.processed_message_content ||
-                                    item.conversation.last_non_activity_message.content || '',
-                                }}
-                              />
-                            </div>
-                          )}
-
-                          {/* Services value */}
-                          {item.services_info?.has_services && item.services_info.total_value > 0 && (
-                            <div className="flex items-center justify-between mb-2.5">
-                              <span className="text-[11.5px] text-muted-foreground">{t('kanban.conversation.valueLabel')}</span>
-                              <span className="text-[12.5px] font-bold text-primary">{item.services_info.formatted_total}</span>
-                            </div>
-                          )}
-
-                          {/* Footer: tag + priority + status */}
-                          {(firstLabel || item.conversation?.status || pBucket) && (
-                            <div className="flex items-center gap-1.5 flex-wrap mb-2">
-                              {firstLabel && (
-                                <span className="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground max-w-[120px] truncate">
-                                  {firstLabel}
-                                </span>
-                              )}
-                              {pBucket && (
-                                <span
-                                  className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md ${PRIORITY_BADGE_CLASS[pBucket]}`}
-                                >
-                                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                                  {t(`kanban.search.priority.${pBucket}`)}
-                                </span>
-                              )}
-                              {item.conversation?.status && (
-                                <span
-                                  className={`inline-flex items-center gap-1 text-[11.5px] font-bold px-2 py-0.5 rounded-md ${statusBadgeClass(item.conversation.status)}`}
-                                >
-                                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                                  {t(`kanban.conversation.status.${item.conversation.status}`, item.conversation.status)}
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Date + assignee */}
-                          <div className="flex items-center justify-between text-[12px] text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {item.conversation?.last_activity_at
-                                ? new Date(item.conversation.last_activity_at * 1000).toLocaleDateString('pt-BR')
-                                : new Date((item.entered_at || 0) * 1000).toLocaleDateString('pt-BR')}
-                            </span>
-                            {item.conversation?.assignee && (
-                              <span className="flex items-center gap-1 min-w-0">
-                                <User className="w-3 h-3 shrink-0" />
-                                <span className="truncate max-w-24">{item.conversation.assignee.name}</span>
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        );
-                      })}
-
-                      {/* Empty note */}
-                      {stageItems.length === 0 && (
-                        <div className="text-center py-8 text-[13px] text-muted-foreground">
-                          {hasActiveFilters ? t('kanban.search.noResults') : t('kanban.stage.noConversations')}
-                        </div>
-                      )}
-
-                      {/* '+' ghost add row */}
-                      <button
-                        type="button"
-                        onClick={() => handleAddItem(stage)}
-                        className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg text-[13.5px] font-semibold text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-colors"
-                      >
-                        <Plus className="w-4 h-4" />
-                        {t('kanban.item.addItemShort')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  <KanbanColumn
+                    key={stage.id}
+                    stage={stage}
+                    visibleCount={stageItems.length}
+                    totalCount={stage.items?.length || stage.item_count || 0}
+                    totalValue={calculateStageTotal(stage.items)}
+                    hasActiveFilters={hasActiveFilters}
+                    isDragActive={draggedItem !== null}
+                    onDrop={handleDrop}
+                    onAddItem={handleAddItem}
+                    onEditStage={handleEditStage}
+                    onDeleteStage={handleDeleteStage}
+                    onCopyId={copyId}
+                  >
+                    {stageItems.map(item => (
+                      <KanbanCard
+                        key={item.id}
+                        item={item}
+                        moveTargets={moveTargets}
+                        isDragging={draggedItem?.id === item.id}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                        onOpen={openCard}
+                        onMove={moveItemToStage}
+                        onOpenConversation={it => navigate(`/conversations/${it.conversation!.uuid}`)}
+                        onCopyId={copyId}
+                        onSchedule={it => {
+                          setSelectedConversationForSchedule(it);
+                          setScheduleActionOpen(true);
+                        }}
+                        onRemove={handleRemoveItem}
+                      />
+                    ))}
+                  </KanbanColumn>
                 );
               })}
 
-              {/* Add Stage Column */}
-              <div className="w-80 flex-shrink-0">
-                <div
-                  className="bg-muted/50 rounded-xl p-6 h-full border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors cursor-pointer"
-                  onClick={() => setShowCreateStageModal(true)}
-                >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                    <Plus className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="text-sm font-medium mb-1">{t('kanban.stage.addStage')}</h3>
-                  <p className="text-xs text-center">{t('kanban.stage.addStageDescription')}</p>
-                </div>
-              </div>
-
-              {/* Empty state for no stages */}
-              {stages.length === 0 && (
-                <div className="flex items-center justify-center w-full h-full">
-                  <div className="text-center">
-                    <div className="text-muted-foreground text-sm">
-                      {t('kanban.stage.noStages')}
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Add stage column */}
+              <button
+                type="button"
+                onClick={() => setShowCreateStageModal(true)}
+                className="flex h-full w-72 shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed p-6 text-center text-muted-foreground outline-none transition-colors hover:border-primary/48 hover:bg-primary/4 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <span className="flex size-9 items-center justify-center rounded-lg border bg-card text-primary shadow-xs/5">
+                  <Plus className="size-4.5" />
+                </span>
+                <span className="font-medium text-foreground text-sm">{t('kanban.stage.addStage')}</span>
+                <span className="max-w-48 text-xs">{t('kanban.stage.addStageDescription')}</span>
+              </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

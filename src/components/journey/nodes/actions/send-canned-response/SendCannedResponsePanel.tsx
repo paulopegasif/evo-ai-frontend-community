@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, MessageSquareReply } from 'lucide-react';
 import { SendCannedResponseNodeData, SendCannedResponseOption } from './SendCannedResponseNode';
 import { cannedResponsesService } from '@/services/cannedResponses/cannedResponsesService';
@@ -102,18 +96,23 @@ export function SendCannedResponsePanel({
         {loadError && (
           <FlowFeedbackBanner variant="error">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="size-4" />
               <span>{t('panels.sendCannedResponse.loadErrorBanner')}</span>
             </div>
           </FlowFeedbackBanner>
         )}
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.sendCannedResponse.response')}
-          </Label>
-          <Select value={cannedResponseId} onValueChange={setCannedResponseId} disabled={loading}>
+          </FieldLabel>
+          <Select
+            items={cannedResponses.map(response => ({ value: response.id, label: response.label }))}
+            value={cannedResponseId || null}
+            onValueChange={value => setCannedResponseId(String(value ?? ''))}
+            disabled={loading}
+          >
             <SelectTrigger
-              className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground"
+              className="w-full"
               aria-label={t('panels.sendCannedResponse.response')}
             >
               <SelectValue
@@ -124,35 +123,34 @@ export function SendCannedResponsePanel({
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {cannedResponses.map(response => (
                 <SelectItem
                   key={response.id}
                   value={response.id}
-                  className="text-sidebar-foreground"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-md bg-blue-100 dark:bg-blue-950/30 text-blue-500 flex items-center justify-center">
-                      <MessageSquareReply className="w-4 h-4" />
+                    <div className="size-8 rounded-md bg-blue-100 dark:bg-blue-950/30 text-blue-500 flex items-center justify-center">
+                      <MessageSquareReply className="size-4" />
                     </div>
                     <div className="font-medium truncate">{response.label}</div>
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {!loading && cannedResponses.length === 0 && (
-            <p className="text-sm text-sidebar-foreground/60">
+            <FieldDescription className="text-sm">
               {t('panels.sendCannedResponse.noResponsesFound')}
-            </p>
+            </FieldDescription>
           )}
-        </div>
+        </Field>
 
         {cannedResponseId && (
           <FlowFeedbackBanner variant="info">
             <div className="flex items-center gap-2">
-              <MessageSquareReply className="w-4 h-4" />
+              <MessageSquareReply className="size-4" />
               <span>
                 {t('panels.sendCannedResponse.willSendResponse')}{' '}
                 <strong>

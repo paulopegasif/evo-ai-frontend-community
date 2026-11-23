@@ -54,7 +54,7 @@ export default function WidgetPreview({ config, websiteToken }: WidgetPreviewPro
               ref={iframeRef}
               title="Widget Preview"
               src={src}
-              className="h-[560px] w-full rounded-lg border border-slate-200 bg-white shadow-sm"
+              className="h-[560px] w-full rounded-lg border border-border bg-background shadow-sm"
               allow="camera; microphone; clipboard-write"
               onLoad={postConfigToIframe}
             />
@@ -81,7 +81,7 @@ export default function WidgetPreview({ config, websiteToken }: WidgetPreviewPro
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+            <div className="rounded-lg border border-border bg-background p-3 shadow-sm">
               <div className="mb-2 text-xs text-muted-foreground">
                 {t('settings.widget.preview.sentMessageExample') || 'Exemplo de mensagem enviada'}
               </div>
@@ -96,7 +96,7 @@ export default function WidgetPreview({ config, websiteToken }: WidgetPreviewPro
             </div>
           </div>
         ) : (
-          <div className="h-[560px] w-[360px] max-w-full rounded-lg border border-dashed border-slate-300 bg-white/70 p-4 text-center text-sm text-muted-foreground">
+          <div className="h-[560px] w-[360px] max-w-full rounded-lg border border-dashed border-border bg-white/70 p-4 text-center text-sm text-muted-foreground">
             {t('settings.widgetBuilder.widgetCode.noScriptError') || 'Website token not found for preview.'}
           </div>
         )}

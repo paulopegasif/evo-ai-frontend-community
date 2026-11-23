@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { toast } from 'sonner';
@@ -190,10 +191,8 @@ describe('InboundEmailConfig', () => {
     await act(async () => {
       fireEvent.click(selectTrigger);
     });
-    const mailgunOption = screen.getByRole('option', { name: 'inboundEmail.provider.mailgun' });
-    await act(async () => {
-      fireEvent.click(mailgunOption);
-    });
+    const mailgunOption = await screen.findByRole('option', { name: 'inboundEmail.provider.mailgun' });
+    await userEvent.click(mailgunOption);
 
     // Should now show mailgun signing key instead of password
     expect(screen.getByLabelText('inboundEmail.fields.mailgunSigningKey')).toBeInTheDocument();

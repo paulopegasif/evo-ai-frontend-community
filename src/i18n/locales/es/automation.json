@@ -193,6 +193,22 @@
       "update": "Guardar",
       "saving": "Guardando...",
       "cancel": "Cancelar"
+    },
+    "sections": {
+      "details": {
+        "title": "Detalles",
+        "description": "Nombre y contexto de la regla para el equipo."
+      },
+      "trigger": {
+        "title": "Disparador",
+        "description": "El evento que inicia esta automatización."
+      },
+      "conditions": {
+        "description": "La regla solo se ejecuta cuando se cumplen las condiciones."
+      },
+      "actions": {
+        "description": "Lo que ocurre cuando se dispara la regla, en el orden indicado."
+      }
     }
   },
   "dialog": {
@@ -232,7 +248,8 @@
     "detail": {
       "timeline": "Cronología",
       "payload": "Carga útil"
-    }
+    },
+    "statusFilter": "Filtrar por estado"
   },
   "messages": {
     "loadError": "Error al cargar las automatizaciones",

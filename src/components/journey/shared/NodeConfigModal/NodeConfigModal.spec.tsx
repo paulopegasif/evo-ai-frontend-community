@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NodeConfigModal, type NodeConfigModalTab } from './NodeConfigModal';
@@ -354,7 +354,7 @@ describe('NodeConfigModal — variant="tabs"', () => {
       </NodeConfigModal>,
     );
     await userEvent.click(screen.getByRole('tab', { name: 'Advanced' }));
-    expect(screen.queryByText('basic body')).toBeNull();
+    await waitFor(() => expect(screen.queryByText('basic body')).toBeNull());
     unmount();
 
     // forceMount keeps the inactive tab's content in the DOM.
@@ -378,7 +378,7 @@ describe('NodeConfigModal — variant="tabs"', () => {
   it('hides a force-mounted tab while inactive so its content does not leak (EVO-1276 review)', async () => {
     // A force-mounted panel stays in the DOM (F1), but Radix leaves it
     // hidden=false → without an inactive-hide rule its content visually leaks
-    // into the active tab. The modal must carry `data-[state=inactive]:hidden`
+    // into the active tab. The modal must carry `data-hidden:hidden`
     // so the force-mounted panel is hidden whenever it is not the active tab.
     render(
       <NodeConfigModal
@@ -394,12 +394,12 @@ describe('NodeConfigModal — variant="tabs"', () => {
     );
     const forcedPanel = screen.getByText('forced basic').closest('[role="tabpanel"]') as HTMLElement;
     // While Basic is the active tab it must be visible (no hidden state).
-    expect(forcedPanel.getAttribute('data-state')).toBe('active');
+    expect(forcedPanel.hasAttribute('data-hidden')).toBe(false);
 
     await userEvent.click(screen.getByRole('tab', { name: 'Advanced' }));
     // Still mounted, but now inactive AND carrying the Tailwind hide utility.
-    expect(forcedPanel.getAttribute('data-state')).toBe('inactive');
-    expect(forcedPanel.className).toContain('data-[state=inactive]:hidden');
+    await waitFor(() => expect(forcedPanel.hasAttribute('data-hidden')).toBe(true));
+    expect(forcedPanel.className).toContain('data-hidden:hidden');
   });
 
   it('AC8 backward-compat: SendWebhookPanel-style usage (uncontrolled, defaultTab, string-encoded labels, no new props) is unaffected (EVO-1276)', async () => {

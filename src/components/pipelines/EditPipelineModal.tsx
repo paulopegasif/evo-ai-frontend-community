@@ -1,32 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@evoapi/design-system';
-import { Loader2, X, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { Pipeline, UpdatePipelineData } from '@/types/analytics';
 import TeamsService from '@/services/teams/teamsService';
 import { Team } from '@/types/users/teams';
 import { LocalAttributeDefinition, LocalAttributeDefinitionPayload } from '@/types/pipelines/localAttributeDefinition';
 import PipelineCustomAttributes from './PipelineCustomAttributes';
+import PipelineTeamPicker from './PipelineTeamPicker';
+
+const PIPELINE_TYPES = ['custom', 'sales', 'support', 'marketing'] as const;
+const VISIBILITIES = ['private', 'public', 'team'] as const;
 
 interface EditPipelineModalProps {
   open: boolean;
@@ -152,8 +142,8 @@ export default function EditPipelineModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+      <DialogPopup className="max-w-2xl">
+        <form onSubmit={handleSubmit} className="contents">
           <DialogHeader>
             <DialogTitle>{t('editPipeline.title')}</DialogTitle>
             <DialogDescription>
@@ -161,13 +151,17 @@ export default function EditPipelineModal({
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="details">{t('editPipeline.details')}</TabsTrigger>
-              <TabsTrigger value="attributes">{t('editPipeline.customAttributes')}</TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="details" className="contents">
+            <div className="px-6">
+              <TabsList className="w-full">
+                <TabsTab value="details" className="flex-1">{t('editPipeline.details')}</TabsTab>
+                <TabsTab value="attributes" className="flex-1">{t('editPipeline.customAttributes')}</TabsTab>
+              </TabsList>
+            </div>
 
-            <TabsContent value="details" className="py-4 overflow-y-auto flex-1">
+            <DialogPanel>
+
+            <TabsPanel value="details">
               <div className="grid gap-4">
             {/* Name */}
             <div className="grid gap-2">
@@ -200,20 +194,22 @@ export default function EditPipelineModal({
               <Label htmlFor="edit-type">{t('editPipeline.pipelineType')}</Label>
               <Select
                 value={formData.pipeline_type}
-                onValueChange={(value: 'custom' | 'sales' | 'support' | 'marketing') =>
+                items={PIPELINE_TYPES.map(v => ({ value: v, label: t(`editPipeline.types.${v}`) }))}
+                onValueChange={(value: 'custom' | 'sales' | 'support' | 'marketing' | null) =>
+                  value != null &&
                   setFormData({ ...formData, pipeline_type: value })
                 }
                 disabled={loading}
               >
-                <SelectTrigger id="edit-type">
+                <SelectTrigger id="edit-type" className="w-full">
                   <SelectValue placeholder={t('editPipeline.selectType')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   <SelectItem value="custom">{t('editPipeline.types.custom')}</SelectItem>
                   <SelectItem value="sales">{t('editPipeline.types.sales')}</SelectItem>
                   <SelectItem value="support">{t('editPipeline.types.support')}</SelectItem>
                   <SelectItem value="marketing">{t('editPipeline.types.marketing')}</SelectItem>
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
 
@@ -222,98 +218,53 @@ export default function EditPipelineModal({
               <Label htmlFor="edit-visibility">{t('editPipeline.visibility')}</Label>
               <Select
                 value={formData.visibility}
-                onValueChange={(value: 'private' | 'public' | 'team') =>
+                items={VISIBILITIES.map(v => ({ value: v, label: t(`editPipeline.visibilityOptions.${v}`) }))}
+                onValueChange={(value: 'private' | 'public' | 'team' | null) =>
+                  value != null &&
                   setFormData({ ...formData, visibility: value })
                 }
                 disabled={loading}
               >
-                <SelectTrigger id="edit-visibility">
+                <SelectTrigger id="edit-visibility" className="w-full">
                   <SelectValue placeholder={t('editPipeline.selectVisibility')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   <SelectItem value="private">{t('editPipeline.visibilityOptions.private')}</SelectItem>
                   <SelectItem value="public">{t('editPipeline.visibilityOptions.public')}</SelectItem>
                   <SelectItem value="team">{t('editPipeline.visibilityOptions.team')}</SelectItem>
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
 
-            {/* Team Selection - conditional on visibility === 'team' */}
             {formData.visibility === 'team' && (
-              <div className="grid gap-2">
-                <Label>{t('editPipeline.teamSelection.label')}</Label>
-                {teamIds.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {teamIds.map(id => {
-                      const team = teams.find(t => t.id === id);
-                      return team ? (
-                        <span key={id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground text-xs">
-                          <Users className="h-3 w-3" />
-                          {team.name}
-                          <button type="button" onClick={() => setTeamIds(prev => prev.filter(tid => tid !== id))} className="hover:text-destructive">
-                            <X className="h-3 w-3" />
-                          </button>
-                        </span>
-                      ) : null;
-                    })}
-                  </div>
-                )}
-                <div className="border rounded-lg max-h-36 overflow-y-auto">
-                  {teamsLoading ? (
-                    <div className="flex items-center justify-center py-4">
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : teams.length === 0 ? (
-                    <div className="text-center text-sm text-muted-foreground py-4">
-                      {t('editPipeline.teamSelection.noTeams')}
-                    </div>
-                  ) : (
-                    <div className="p-1.5 space-y-0.5">
-                      {teams.map(team => (
-                        <label key={team.id} className="flex items-center gap-2 p-1.5 hover:bg-muted/50 rounded cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={teamIds.includes(team.id)}
-                            onChange={() => {
-                              setTeamIds(prev =>
-                                prev.includes(team.id) ? prev.filter(tid => tid !== team.id) : [...prev, team.id]
-                              );
-                            }}
-                            disabled={loading}
-                            className="rounded border-gray-300"
-                          />
-                          <span className="text-sm">{team.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {teamIds.length === 0 && (
-                  <p className="text-xs text-destructive">{t('editPipeline.teamSelection.required')}</p>
-                )}
-              </div>
+              <PipelineTeamPicker
+                prefix="editPipeline"
+                teams={teams}
+                teamIds={teamIds}
+                loading={teamsLoading}
+                disabled={loading}
+                onChange={setTeamIds}
+              />
             )}
 
             {/* Active Status */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="edit-is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                disabled={loading}
-                className="rounded border-gray-300"
-              />
+            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
               <Label htmlFor="edit-is_active" className="cursor-pointer">
                 {t('editPipeline.pipelineActive')}
               </Label>
+              <Switch
+                id="edit-is_active"
+                checked={formData.is_active}
+                onCheckedChange={checked => setFormData({ ...formData, is_active: checked })}
+                disabled={loading}
+              />
             </div>
               </div>
-            </TabsContent>
+            </TabsPanel>
 
-            <TabsContent value="attributes" className="py-4 overflow-y-auto flex-1">
+            <TabsPanel value="attributes">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold mb-2">{t('editPipeline.customAttributes')}</h3>
+                <h3 className="mb-1 font-semibold text-base">{t('editPipeline.customAttributes')}</h3>
                 <p className="text-sm text-muted-foreground">
                   {t('editPipeline.attributesDescription')}
                 </p>
@@ -324,24 +275,24 @@ export default function EditPipelineModal({
                 disabled={loading}
                 pipelineId={pipeline.id}
               />
-            </TabsContent>
+            </TabsPanel>
+            </DialogPanel>
           </Tabs>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={loading}
-            >
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
               {t('editPipeline.cancel')}
             </Button>
-            <Button type="submit" disabled={loading || !formData.name?.trim() || (formData.visibility === 'team' && teamIds.length === 0)}>
-              {loading ? t('editPipeline.saving') : t('editPipeline.save')}
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={!formData.name?.trim() || (formData.visibility === 'team' && teamIds.length === 0)}
+            >
+              {t('editPipeline.save')}
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

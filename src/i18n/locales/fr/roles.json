@@ -64,7 +64,8 @@
       "writeDescription": "Créer et modifier cette ressource, y compris toute action qui la change.",
       "delete": "Suppression",
       "deleteDescription": "Supprimer cette ressource."
-    }
+    },
+    "unsavedChanges": "{{count}} modification(s) non enregistrée(s)"
   },
   "createModal": {
     "title": "Créer un Profil",

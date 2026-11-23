@@ -66,7 +66,8 @@
     "emailTranscriptError": "Échec de l'envoi de l'historique par e-mail. Veuillez réessayer.",
     "conversationEnded": "Conversation terminée avec succès !",
     "newConversationStarted": "Nouvelle conversation démarrée !",
-    "uploadFailed": "Échec de l'envoi du fichier"
+    "uploadFailed": "Échec de l'envoi du fichier",
+    "close": "Fermer"
   },
   "buttons": {
     "sendEmailTranscript": "Envoyer l'historique par e-mail",

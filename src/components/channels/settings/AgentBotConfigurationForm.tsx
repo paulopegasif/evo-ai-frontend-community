@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
-  Card,
-  CardContent,
-  Button,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Skeleton,
-  Checkbox,
-  Label,
-  Badge,
-  Switch,
-} from '@evoapi/design-system';
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import {
   Bot,
   Trash2,
@@ -404,7 +403,7 @@ export default function AgentBotConfigurationForm({
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-border">
             <div className="flex items-center gap-3">
@@ -425,9 +424,9 @@ export default function AgentBotConfigurationForm({
             {!isLoading && (
               <div className="flex items-center gap-2">
                 {isConnected ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  <CheckCircle2 className="w-5 h-5 text-success-foreground" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-slate-500" />
+                  <AlertCircle className="w-5 h-5 text-muted-foreground" />
                 )}
                 <span className={`text-sm font-medium ${getBotStatusColor(isConnected)}`}>
                   {isConnected
@@ -465,7 +464,7 @@ export default function AgentBotConfigurationForm({
                           className="w-10 h-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                           <Bot className="w-5 h-5 text-primary" />
                         </div>
                       )}
@@ -488,8 +487,8 @@ export default function AgentBotConfigurationForm({
                     </div>
 
                     <div className="flex items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                      <span className="text-sm text-green-600 font-medium">
+                      <CheckCircle2 className="w-4 h-4 text-success-foreground" />
+                      <span className="text-sm text-success-foreground font-medium">
                         {t('settings.agentBotConfiguration.status.active')}
                       </span>
                     </div>
@@ -506,15 +505,16 @@ export default function AgentBotConfigurationForm({
 
                   {hasAvailableBots ? (
                     <Select
-                      value={selectedAgentBotId?.toString() || ''}
-                      onValueChange={value => setSelectedAgentBotId(value ? value : null)}
+                      items={agentBots.map(bot => ({ value: bot.id.toString(), label: bot.name }))}
+                      value={selectedAgentBotId?.toString() || null}
+                      onValueChange={value => setSelectedAgentBotId(value ? String(value) : null)}
                     >
                       <SelectTrigger>
                         <SelectValue
                           placeholder={t('settings.agentBotConfiguration.placeholders.selectBot')}
                         />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectPopup alignItemWithTrigger={false}>
                         {agentBots.map(bot => (
                           <SelectItem key={bot.id} value={bot.id.toString()}>
                             <div className="flex items-center gap-2">
@@ -536,7 +536,7 @@ export default function AgentBotConfigurationForm({
                             </div>
                           </SelectItem>
                         ))}
-                      </SelectContent>
+                      </SelectPopup>
                     </Select>
                   ) : (
                     <div className="text-center py-8">
@@ -548,7 +548,7 @@ export default function AgentBotConfigurationForm({
                         {t('settings.agentBotConfiguration.noBots.description')}
                       </p>
                       <Button variant="outline" size="sm">
-                        <Settings className="w-4 h-4 mr-2" />
+                        <Settings />
                         {t('settings.agentBotConfiguration.buttons.manageBots')}
                       </Button>
                     </div>
@@ -575,7 +575,7 @@ export default function AgentBotConfigurationForm({
                         disabled={isDisconnecting}
                         className="min-w-32"
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
+                        <Trash2 />
                         {isDisconnecting
                           ? t('settings.agentBotConfiguration.buttons.disconnecting')
                           : t('settings.agentBotConfiguration.buttons.disconnect')}
@@ -586,13 +586,13 @@ export default function AgentBotConfigurationForm({
               </div>
 
               {/* Information Box */}
-              <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <AlertCircle className="w-5 h-5 text-blue-700 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-4 bg-info/8 rounded-lg border border-info/24">
+                <AlertCircle className="w-5 h-5 text-info-foreground mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
-                  <h6 className="font-medium text-blue-700 dark:text-blue-300 mb-1">
+                  <h6 className="font-medium text-info-foreground mb-1">
                     {t('settings.agentBotConfiguration.info.title')}
                   </h6>
-                  <div className="text-blue-600 dark:text-blue-400 space-y-1">
+                  <div className="text-info-foreground space-y-1">
                     <p>• {t('settings.agentBotConfiguration.info.point1')}</p>
                     <p>• {t('settings.agentBotConfiguration.info.point2')}</p>
                     <p>• {t('settings.agentBotConfiguration.info.point3')}</p>
@@ -684,8 +684,9 @@ export default function AgentBotConfigurationForm({
                               {label.title}
                               <button
                                 onClick={() => handleLabelRemove(label.id)}
-                                className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                                className="ml-1 hover:bg-foreground/10 rounded-full p-0.5"
                                 type="button"
+                                aria-label={t('settings.a11y.remove')}
                               >
                                 <X className="h-3 w-3" />
                               </button>
@@ -694,7 +695,11 @@ export default function AgentBotConfigurationForm({
 
                           {/* Add Label */}
                           {availableLabels.length > 0 && (
-                            <Select value={labelSelectValue} onValueChange={handleLabelAdd}>
+                            <Select
+                              items={availableLabels.map(label => ({ value: label.id, label: label.title }))}
+                              value={labelSelectValue || null}
+                              onValueChange={value => handleLabelAdd(String(value ?? ''))}
+                            >
                               <SelectTrigger className="w-auto min-w-32">
                                 <SelectValue
                                   placeholder={t(
@@ -702,7 +707,7 @@ export default function AgentBotConfigurationForm({
                                   )}
                                 />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectPopup alignItemWithTrigger={false}>
                                 {availableLabels.map(label => (
                                   <SelectItem key={label.id} value={label.id}>
                                     <div className="flex items-center gap-2">
@@ -714,7 +719,7 @@ export default function AgentBotConfigurationForm({
                                     </div>
                                   </SelectItem>
                                 ))}
-                              </SelectContent>
+                              </SelectPopup>
                             </Select>
                           )}
                         </div>
@@ -756,8 +761,9 @@ export default function AgentBotConfigurationForm({
                               {label.title}
                               <button
                                 onClick={() => handleIgnoredLabelRemove(label.id)}
-                                className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                                className="ml-1 hover:bg-foreground/10 rounded-full p-0.5"
                                 type="button"
+                                aria-label={t('settings.a11y.remove')}
                               >
                                 <X className="h-3 w-3" />
                               </button>
@@ -767,8 +773,12 @@ export default function AgentBotConfigurationForm({
                           {/* Add Ignored Label */}
                           {availableIgnoredLabels.length > 0 && (
                             <Select
-                              value={ignoredLabelSelectValue}
-                              onValueChange={handleIgnoredLabelAdd}
+                              items={availableIgnoredLabels.map(label => ({
+                                value: label.id,
+                                label: label.title,
+                              }))}
+                              value={ignoredLabelSelectValue || null}
+                              onValueChange={value => handleIgnoredLabelAdd(String(value ?? ''))}
                             >
                               <SelectTrigger className="w-auto min-w-32">
                                 <SelectValue
@@ -777,7 +787,7 @@ export default function AgentBotConfigurationForm({
                                   )}
                                 />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectPopup alignItemWithTrigger={false}>
                                 {availableIgnoredLabels.map(label => (
                                   <SelectItem key={label.id} value={label.id}>
                                     <div className="flex items-center gap-2">
@@ -789,7 +799,7 @@ export default function AgentBotConfigurationForm({
                                     </div>
                                   </SelectItem>
                                 ))}
-                              </SelectContent>
+                              </SelectPopup>
                             </Select>
                           )}
                         </div>
@@ -825,10 +835,32 @@ export default function AgentBotConfigurationForm({
                               )}
                             </Label>
                             <Select
+                              items={[
+                                {
+                                  value: 'both',
+                                  label: t(
+                                    'settings.agentBotConfiguration.advanced.facebookMessenger.interactionTypes.both',
+                                  ),
+                                },
+                                {
+                                  value: 'comments_only',
+                                  label: t(
+                                    'settings.agentBotConfiguration.advanced.facebookMessenger.interactionTypes.commentsOnly',
+                                  ),
+                                },
+                                {
+                                  value: 'messages_only',
+                                  label: t(
+                                    'settings.agentBotConfiguration.advanced.facebookMessenger.interactionTypes.messagesOnly',
+                                  ),
+                                },
+                              ]}
                               value={facebookInteractionType}
-                              onValueChange={(
-                                value: 'comments_only' | 'messages_only' | 'both',
-                              ) => {
+                              onValueChange={next => {
+                                const value = String(next ?? '') as
+                                  | 'comments_only'
+                                  | 'messages_only'
+                                  | 'both';
                                 setFacebookInteractionType(value);
                                 // Auto-enable comment replies if comments are selected
                                 if (value === 'comments_only' || value === 'both') {
@@ -841,7 +873,7 @@ export default function AgentBotConfigurationForm({
                               <SelectTrigger className="w-full">
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectPopup alignItemWithTrigger={false}>
                                 <SelectItem value="both">
                                   {t(
                                     'settings.agentBotConfiguration.advanced.facebookMessenger.interactionTypes.both',
@@ -857,7 +889,7 @@ export default function AgentBotConfigurationForm({
                                     'settings.agentBotConfiguration.advanced.facebookMessenger.interactionTypes.messagesOnly',
                                   )}
                                 </SelectItem>
-                              </SelectContent>
+                              </SelectPopup>
                             </Select>
                           </div>
 
@@ -903,8 +935,20 @@ export default function AgentBotConfigurationForm({
                                     )}
                                   </p>
                                   <Select
+                                    items={[
+                                      {
+                                        value: 'same',
+                                        label: t(
+                                          'settings.agentBotConfiguration.advanced.facebookMessenger.useSameAgent',
+                                        ),
+                                      },
+                                      ...agentBots
+                                        .filter(bot => bot.id !== selectedAgentBotId)
+                                        .map(bot => ({ value: bot.id, label: bot.name })),
+                                    ]}
                                     value={facebookCommentAgentBotId || 'same'}
-                                    onValueChange={value => {
+                                    onValueChange={next => {
+                                      const value = String(next ?? '');
                                       setFacebookCommentAgentBotId(value === 'same' ? null : value);
                                     }}
                                   >
@@ -915,7 +959,7 @@ export default function AgentBotConfigurationForm({
                                         )}
                                       />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectPopup alignItemWithTrigger={false}>
                                       <SelectItem value="same">
                                         {t(
                                           'settings.agentBotConfiguration.advanced.facebookMessenger.useSameAgent',
@@ -944,7 +988,7 @@ export default function AgentBotConfigurationForm({
                                             </div>
                                           </SelectItem>
                                         ))}
-                                    </SelectContent>
+                                    </SelectPopup>
                                   </Select>
                                   {agentBots.filter(bot => bot.id !== selectedAgentBotId).length ===
                                     0 && (
@@ -1118,8 +1162,9 @@ export default function AgentBotConfigurationForm({
                                                 {postId}
                                                 <button
                                                   onClick={() => handlePostIdRemove(postId)}
-                                                  className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                                                  className="ml-1 hover:bg-foreground/10 rounded-full p-0.5"
                                                   type="button"
+                                                  aria-label={t('settings.a11y.remove')}
                                                 >
                                                   <X className="h-3 w-3" />
                                                 </button>
@@ -1220,8 +1265,9 @@ export default function AgentBotConfigurationForm({
                                           {word}
                                           <button
                                             onClick={() => handleExplicitWordRemove(index)}
-                                            className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                                            className="ml-1 hover:bg-foreground/10 rounded-full p-0.5"
                                             type="button"
+                                            aria-label={t('settings.a11y.remove')}
                                           >
                                             <X className="h-3 w-3" />
                                           </button>
@@ -1337,7 +1383,7 @@ export default function AgentBotConfigurationForm({
               )}
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

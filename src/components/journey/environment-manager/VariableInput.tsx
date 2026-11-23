@@ -1,12 +1,8 @@
 import React, { useState, useRef, forwardRef } from 'react';
-import {
-  Input,
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Badge,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { Variable } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getSystemVariables, VariableOption } from './EnvironmentManager';
@@ -194,36 +190,37 @@ const VariableInput = forwardRef<HTMLInputElement, VariableInputProps>(
             className={cn(className)}
           />
         ) : (
-          <Input 
-            ref={finalRef} 
-            className={cn('pr-10', className)} 
+          <Input
+            ref={finalRef}
+            className={cn(showVariableButton && 'pe-9', className)}
             type={isPhoneType ? 'tel' : props.type}
-            {...props} 
+            {...props}
           />
         )}
 
         {showVariableButton && (
-          <div className="absolute right-1 top-1/2 -translate-y-1/2 z-10">
+          <div className="absolute end-1 top-1/2 z-10 -translate-y-1/2">
             <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 hover:bg-muted"
-                  aria-label={
-                    variableButtonTooltip ||
-                    t('environmentManager.customVariables.actions.insertVariable')
-                  }
-                  title={
-                    variableButtonTooltip ||
-                    t('environmentManager.customVariables.actions.insertVariable')
-                  }
-                >
-                  <Variable className="h-3 w-3" />
-                </Button>
+              <PopoverTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    aria-label={
+                      variableButtonTooltip ||
+                      t('environmentManager.customVariables.actions.insertVariable')
+                    }
+                    title={
+                      variableButtonTooltip ||
+                      t('environmentManager.customVariables.actions.insertVariable')
+                    }
+                  />
+                }
+              >
+                <Variable />
               </PopoverTrigger>
-              <PopoverContent className="w-80 p-0" align="end">
+              <PopoverPopup className="w-80 p-0" align="end">
                 <div className="p-3 border-b">
                   <h4 className="font-medium text-sm">{t('environmentManager.title')}</h4>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -287,7 +284,7 @@ const VariableInput = forwardRef<HTMLInputElement, VariableInputProps>(
                     </div>
                   )}
                 </div>
-              </PopoverContent>
+              </PopoverPopup>
             </Popover>
           </div>
         )}

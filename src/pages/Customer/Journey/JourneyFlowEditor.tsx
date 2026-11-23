@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Route as RouteIcon } from 'lucide-react';
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
+  AlertDialogClose,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogPopup,
   AlertDialogTitle,
-  Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { journeyService } from '@/services';
 import type { Journey } from '@/types/automation';
@@ -264,7 +266,7 @@ function JourneyFlowEditor() {
         id: 'wait-node',
         name: t('flowEditor.nodes.wait.name'),
         icon: ClockIcon,
-        color: 'text-blue-400',
+        color: 'text-info',
         category: 'controlFlow',
         description: t('flowEditor.nodes.wait.description'),
         searchKeywords: ['delay', 'pause', 'sleep', 'timer', 'hold'],
@@ -282,7 +284,7 @@ function JourneyFlowEditor() {
         id: 'conditional-node',
         name: t('flowEditor.nodes.conditional.name'),
         icon: GitBranch,
-        color: 'text-yellow-400',
+        color: 'text-warning',
         category: 'controlFlow',
         description: t('flowEditor.nodes.conditional.description'),
         searchKeywords: ['branch', 'if', 'condition', 'route', 'switch', 'decision'],
@@ -300,7 +302,7 @@ function JourneyFlowEditor() {
         id: 'exit-journey-node',
         name: t('flowEditor.nodes.exitJourney.name'),
         icon: LogOut,
-        color: 'text-red-400',
+        color: 'text-destructive',
         category: 'controlFlow',
         description: t('flowEditor.nodes.exitJourney.description'),
         searchKeywords: ['exit', 'leave', 'terminate', 'end', 'stop', 'finish'],
@@ -329,7 +331,7 @@ function JourneyFlowEditor() {
         id: 'send-message-node',
         name: t('flowEditor.nodes.sendMessage.name'),
         icon: MessageSquare,
-        color: 'text-blue-400',
+        color: 'text-info',
         category: 'communication',
         description: t('flowEditor.nodes.sendMessage.description'),
         searchKeywords: ['chat', 'text', 'reply', 'whatsapp', 'sms', 'communicate', 'send'],
@@ -338,7 +340,7 @@ function JourneyFlowEditor() {
         id: 'send-canned-response-node',
         name: t('flowEditor.nodes.sendCannedResponse.name'),
         icon: MessageSquareReply,
-        color: 'text-blue-400',
+        color: 'text-info',
         category: 'communication',
         description: t('flowEditor.nodes.sendCannedResponse.description'),
         searchKeywords: ['canned', 'quick', 'reply', 'preset', 'template', 'response', 'faq'],
@@ -356,7 +358,7 @@ function JourneyFlowEditor() {
         id: 'send-email-team-node',
         name: t('flowEditor.nodes.sendEmailTeam.name'),
         icon: Mail,
-        color: 'text-emerald-400',
+        color: 'text-success',
         category: 'communication',
         description: t('flowEditor.nodes.sendEmailTeam.description'),
         searchKeywords: ['email', 'mail', 'team', 'notify', 'internal'],
@@ -394,7 +396,7 @@ function JourneyFlowEditor() {
         id: 'add-label-node',
         name: t('flowEditor.nodes.addLabel.name'),
         icon: Tag,
-        color: 'text-green-400',
+        color: 'text-success',
         category: 'contact',
         description: t('flowEditor.nodes.addLabel.description'),
         searchKeywords: ['tag', 'classify', 'mark', 'categorize', 'etiqueta'],
@@ -403,7 +405,7 @@ function JourneyFlowEditor() {
         id: 'remove-label-node',
         name: t('flowEditor.nodes.removeLabel.name'),
         icon: Trash2,
-        color: 'text-red-400',
+        color: 'text-destructive',
         category: 'contact',
         description: t('flowEditor.nodes.removeLabel.description'),
         searchKeywords: ['untag', 'unmark', 'delete', 'label', 'etiqueta'],
@@ -439,7 +441,7 @@ function JourneyFlowEditor() {
         id: 'assign-to-pipeline-node',
         name: t('flowEditor.nodes.assignToPipeline.name'),
         icon: Workflow,
-        color: 'text-amber-400',
+        color: 'text-warning',
         category: 'contact',
         description: t('flowEditor.nodes.assignToPipeline.description'),
         searchKeywords: ['pipeline', 'funnel', 'sales', 'stage', 'crm', 'deal'],
@@ -448,7 +450,7 @@ function JourneyFlowEditor() {
         id: 'move-to-pipeline-stage-node',
         name: t('flowEditor.nodes.moveToPipelineStage.name'),
         icon: Workflow,
-        color: 'text-amber-400',
+        color: 'text-warning',
         category: 'contact',
         description: t('flowEditor.nodes.moveToPipelineStage.description'),
         searchKeywords: ['pipeline', 'stage', 'move', 'funnel', 'sales', 'crm'],
@@ -457,7 +459,7 @@ function JourneyFlowEditor() {
         id: 'create-pipeline-task-node',
         name: t('flowEditor.nodes.createPipelineTask.name'),
         icon: ClipboardList,
-        color: 'text-amber-400',
+        color: 'text-warning',
         category: 'contact',
         description: t('flowEditor.nodes.createPipelineTask.description'),
         searchKeywords: ['task', 'todo', 'pipeline', 'follow up', 'crm', 'reminder'],
@@ -468,7 +470,7 @@ function JourneyFlowEditor() {
         id: 'mute-conversation-node',
         name: t('flowEditor.nodes.muteConversation.name'),
         icon: Volume2,
-        color: 'text-gray-400',
+        color: 'text-muted-foreground',
         category: 'conversation',
         description: t('flowEditor.nodes.muteConversation.description'),
         searchKeywords: ['mute', 'silence', 'quiet', 'hide', 'suppress'],
@@ -477,7 +479,7 @@ function JourneyFlowEditor() {
         id: 'defer-conversation-node',
         name: t('flowEditor.nodes.deferConversation.name'),
         icon: ClockIcon,
-        color: 'text-yellow-400',
+        color: 'text-warning',
         category: 'conversation',
         description: t('flowEditor.nodes.deferConversation.description'),
         searchKeywords: ['snooze', 'defer', 'postpone', 'delay', 'later'],
@@ -486,7 +488,7 @@ function JourneyFlowEditor() {
         id: 'resolve-conversation-node',
         name: t('flowEditor.nodes.resolveConversation.name'),
         icon: CheckCircle,
-        color: 'text-green-400',
+        color: 'text-success',
         category: 'conversation',
         description: t('flowEditor.nodes.resolveConversation.description'),
         searchKeywords: ['resolve', 'close', 'complete', 'finish', 'done'],
@@ -827,10 +829,23 @@ function JourneyFlowEditor() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-sidebar-foreground/60">{t('flowEditor.loading')}</p>
+      <div className="flex h-screen flex-col" aria-busy="true" aria-label={t('flowEditor.loading')}>
+        <div className="flex items-center gap-3 border-b px-4 py-3">
+          <Skeleton className="size-8 rounded-lg" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-4 w-56" />
+            <Skeleton className="h-3 w-36" />
+          </div>
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-20" />
+        </div>
+        <div className="flex min-h-0 flex-1">
+          <div className="hidden w-64 flex-col gap-3 border-r p-4 md:flex">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+          <div className="flex-1 bg-flow-canvas-bg" />
         </div>
       </div>
     );
@@ -838,13 +853,20 @@ function JourneyFlowEditor() {
 
   if (!journey) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-sidebar-foreground/60 mb-4">{t('flowEditor.notFound')}</p>
-          <Button onClick={handleBack} variant="outline">
-            {t('flowEditor.back')}
-          </Button>
-        </div>
+      <div className="flex h-full items-center justify-center p-4 md:p-6">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <RouteIcon />
+            </EmptyMedia>
+            <EmptyTitle>{t('flowEditor.notFound')}</EmptyTitle>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={handleBack} variant="outline">
+              {t('flowEditor.back')}
+            </Button>
+          </EmptyContent>
+        </Empty>
       </div>
     );
   }
@@ -924,7 +946,7 @@ function JourneyFlowEditor() {
           if (!open) useFlowEditorStore.getState().rejectRecovery();
         }}
       >
-        <AlertDialogContent>
+        <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('flowEditor.recoveryTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -939,18 +961,20 @@ function JourneyFlowEditor() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
+            <AlertDialogClose
+              render={<Button variant="ghost" />}
               onClick={() => useFlowEditorStore.getState().rejectRecovery()}
             >
               {t('flowEditor.discard')}
-            </AlertDialogCancel>
-            <AlertDialogAction
+            </AlertDialogClose>
+            <AlertDialogClose
+              render={<Button />}
               onClick={() => useFlowEditorStore.getState().acceptRecovery()}
             >
               {t('flowEditor.recover')}
-            </AlertDialogAction>
+            </AlertDialogClose>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>
 
       <AlertDialog
@@ -959,7 +983,7 @@ function JourneyFlowEditor() {
           if (!open) cancelLeave();
         }}
       >
-        <AlertDialogContent>
+        <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('flowEditor.unsavedChangesTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -967,14 +991,14 @@ function JourneyFlowEditor() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelLeave}>
+            <AlertDialogClose render={<Button variant="ghost" />} onClick={cancelLeave}>
               {t('flowEditor.stay')}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmLeave}>
+            </AlertDialogClose>
+            <AlertDialogClose render={<Button variant="destructive" />} onClick={confirmLeave}>
               {t('flowEditor.leaveAnyway')}
-            </AlertDialogAction>
+            </AlertDialogClose>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>
       <JourneyValidationProvider
         value={{ byNodeId: journeyValidation?.byNodeId ?? {} }}
@@ -1008,17 +1032,20 @@ function JourneyFlowEditor() {
       </JourneyValidationProvider>
 
       {/* Footer com informações */}
-      <div className="border-t border-flow-panel-divider bg-flow-canvas-bg p-3 flex-shrink-0">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="shrink-0 border-flow-panel-divider border-t bg-background px-4 py-2">
+        <div className="flex items-center justify-between text-muted-foreground text-xs">
           <div className="flex items-center gap-4">
-            <span>
-              Status:{' '}
+            <span className="inline-flex items-center gap-1.5">
+              <span
+                aria-hidden="true"
+                className={journey.isActive ? 'size-2 rounded-full bg-success' : 'size-2 rounded-full bg-muted-foreground/48'}
+              />
               {journey.isActive ? t('flowEditor.status.active') : t('flowEditor.status.inactive')}
             </span>
             <span>
               {journey.createdAt
                 ? t('flowEditor.createdAt', {
-                  date: new Date(journey.createdAt).toLocaleString('pt-BR'),
+                  date: new Date(journey.createdAt).toLocaleString(currentLanguage),
                 })
                 : t('flowEditor.invalidDate')}
             </span>

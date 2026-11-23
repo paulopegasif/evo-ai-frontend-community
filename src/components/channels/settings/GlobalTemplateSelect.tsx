@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import GlobalMessageTemplateService from '@/services/messageTemplates/globalMessageTemplatesService';
 import type { MessageTemplate } from '@/types';
 
@@ -61,24 +55,29 @@ export default function GlobalTemplateSelect({
   }, []);
 
   const isEmpty = !loading && templates.length === 0;
+  const items = templates.map(template => ({
+    value: String(template.id),
+    label: `${template.name}${template.language ? ` (${template.language})` : ''}`,
+  }));
 
   return (
     <Select
-      value={value ?? undefined}
-      onValueChange={onChange}
+      items={items}
+      value={value || null}
+      onValueChange={v => onChange(String(v ?? ''))}
       disabled={disabled || loading || isEmpty}
     >
       <SelectTrigger className="w-full">
         <SelectValue placeholder={isEmpty ? emptyText : placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectPopup alignItemWithTrigger={false}>
         {templates.map(template => (
           <SelectItem key={template.id} value={String(template.id)}>
             {template.name}
             {template.language ? ` (${template.language})` : ''}
           </SelectItem>
         ))}
-      </SelectContent>
+      </SelectPopup>
     </Select>
   );
 }

@@ -1,6 +1,8 @@
 import React from 'react';
+import { MessageSquareText, X } from 'lucide-react';
 
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
 import type { Message } from '@/types/chat/api';
 
 interface ConversationNoteBannerProps {
@@ -9,58 +11,36 @@ interface ConversationNoteBannerProps {
 }
 
 /**
- * Faixa fixa acima do composer com a nota mais recente do atendimento —
- * estilo/cores exatos do protótipo de referência (Melhorias CRM Chat §3.4):
- * fundo bege, borda superior grossa âmbar. A "nota" é a última mensagem
- * privada da conversa (ver spec-extraida.md) — sem entidade própria.
+ * Pinned strip with the conversation's latest private note (the last private
+ * message; notes have no entity of their own). Warning tokens keep it legible
+ * in both themes.
  */
 const ConversationNoteBanner: React.FC<ConversationNoteBannerProps> = ({ note, onHide }) => {
   const { t } = useLanguage('chat');
 
   return (
-    <div
-      style={{
-        alignSelf: 'stretch',
-        background: '#FDF9EF',
-        borderBottom: '1px solid #f0e4c8',
-        borderTop: '3px solid #f3c34a',
-        padding: '12px 26px',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
-        <svg
-          width="17"
-          height="17"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#c99a1e"
-          strokeWidth={1.9}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ marginTop: 1, flex: '0 0 17px' }}
-        >
-          <path d="M4 4h16v11H9l-5 5z" />
-        </svg>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#a97e10', textTransform: 'uppercase', letterSpacing: '.4px' }}>
+    <div className="self-stretch border-warning/24 border-b border-t-2 border-t-warning bg-warning/8 px-4 py-2.5 md:px-6">
+      <div className="flex items-start gap-2.5">
+        <MessageSquareText aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning-foreground" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2.5">
+            <span className="font-semibold text-warning-foreground text-xs uppercase tracking-wide">
               {t('chatArea.noteBanner.title', 'Nota do atendimento')}
             </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '0 0 auto' }}>
-              <span style={{ fontSize: 11.5, color: '#b39a55' }}>{note.sender?.name}</span>
-              <div
+            <div className="flex shrink-0 items-center gap-1.5">
+              <span className="text-muted-foreground text-xs">{note.sender?.name}</span>
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={onHide}
-                title={t('chatArea.noteBanner.hide', 'Ocultar')}
-                style={{ cursor: 'pointer', color: '#bda75c', display: 'flex' }}
+                aria-label={t('chatArea.noteBanner.hide', 'Ocultar')}
+                className="text-muted-foreground"
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                </svg>
-              </div>
+                <X />
+              </Button>
             </div>
           </div>
-          <div style={{ fontSize: 14, color: '#5c4f2e', lineHeight: 1.45, marginTop: 4 }}>{note.content}</div>
+          <p className="mt-0.5 line-clamp-3 text-foreground text-sm leading-relaxed">{note.content}</p>
         </div>
       </div>
     </div>
