@@ -9,7 +9,7 @@ import {
   CardPanel,
   CardTitle,
 } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/components/icons';
 import {
   type AutomationRuleFormData,
   getDefaultActionForName,

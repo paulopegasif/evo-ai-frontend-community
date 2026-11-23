@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { Settings, Cog } from 'lucide-react';
+import { Settings, Cog } from '@/components/icons';
 import Sidebar from './Sidebar';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 

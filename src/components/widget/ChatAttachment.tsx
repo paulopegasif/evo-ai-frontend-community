@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { useDropzone } from 'react-dropzone';
-import { PaperclipIcon, ImageIcon } from 'lucide-react';
+import { PaperclipIcon, ImageIcon } from '@/components/icons';
 import { validateFile } from '@/types/core';
 import { useLanguage } from '@/hooks/useLanguage';
 

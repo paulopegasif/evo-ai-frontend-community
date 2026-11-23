@@ -16,7 +16,7 @@ import {
   Edit,
   Trash2,
   RotateCcw,
-} from 'lucide-react';
+} from '@/components/icons';
 import { cn } from '@/lib/utils';
 import type { PipelineTask } from '@/types/analytics';
 

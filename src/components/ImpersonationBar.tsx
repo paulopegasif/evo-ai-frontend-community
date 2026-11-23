@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
-import { Eye, UserX } from 'lucide-react';
+import { Eye, UserX } from '@/components/icons';
 import { useAuthStore } from '@/store/authStore';
 
 export default function ImpersonationBar() {

@@ -1,4 +1,4 @@
-import { ClipboardList, Settings } from 'lucide-react';
+import { ClipboardList, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

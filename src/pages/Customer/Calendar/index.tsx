@@ -14,7 +14,7 @@ import {
   RefreshCw,
   Square,
   UserX,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';

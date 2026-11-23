@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { GripVertical, Plus, Trash2 } from 'lucide-react';
+import { GripVertical, Plus, Trash2 } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import PipelineTeamPicker from './PipelineTeamPicker';
 import { CreatePipelineData, PipelineStage } from '@/types/analytics';

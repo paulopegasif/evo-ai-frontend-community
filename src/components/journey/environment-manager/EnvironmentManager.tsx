@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
-import { Settings, Plus, Edit, Trash2, Copy, Search, Lock, SlidersHorizontal, User, Zap, Globe, Target, CircleAlert, X } from 'lucide-react';
+import { Settings, Plus, Edit, Trash2, Copy, Search, Lock, SlidersHorizontal, User, Zap, Globe, Target, CircleAlert, X } from '@/components/icons';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';

@@ -1,6 +1,6 @@
 import { NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Mail, HardDrive, MessageSquare, Sparkles, Puzzle, Cable } from 'lucide-react';
+import { Mail, HardDrive, MessageSquare, Sparkles, Puzzle, Cable } from '@/components/icons';
 
 const navItems = [
   { key: 'email', path: '/settings/admin/email', icon: Mail },

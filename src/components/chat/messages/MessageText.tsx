@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from '@/components/icons';
 import { formatWhatsAppText } from './whatsappFormat';
 
 const URL_REGEX = /https?:\/\/[^\s<>"')\]]+/gi;

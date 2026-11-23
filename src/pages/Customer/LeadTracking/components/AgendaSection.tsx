@@ -1,4 +1,4 @@
-import { Stethoscope, Users } from 'lucide-react';
+import { Stethoscope, Users } from '@/components/icons';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';

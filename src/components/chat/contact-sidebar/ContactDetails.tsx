@@ -21,7 +21,7 @@ import {
   Edit,
   Lock,
   Tag,
-} from 'lucide-react';
+} from '@/components/icons';
 
 import { toast } from 'sonner';
 

@@ -1,4 +1,4 @@
-import { ChevronRight, Layers } from 'lucide-react';
+import { ChevronRight, Layers } from '@/components/icons';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 import type { FunnelStage } from '@/types/leadTracking';

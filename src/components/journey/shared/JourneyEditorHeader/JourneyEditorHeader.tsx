@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Activity, ArrowLeft, Clock, Loader2, Save } from 'lucide-react';
+import { Activity, ArrowLeft, Clock, Loader2, Save } from '@/components/icons';
 
 export type JourneyEditorHeaderProps = {
   onBack: () => void;

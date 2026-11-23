@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BaseNodePanel, type NodeCategory, type NodeType } from './BaseNodePanel';
-import { MoveRight, Send, UserCog, MessageSquare, Bot, Clock, Tag } from 'lucide-react';
+import { MoveRight, Send, UserCog, MessageSquare, Bot, Clock, Tag } from '@/components/icons';
 
 vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({

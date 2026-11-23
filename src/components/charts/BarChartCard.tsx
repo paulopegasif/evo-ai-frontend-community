@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
 interface BarChartCardProps {

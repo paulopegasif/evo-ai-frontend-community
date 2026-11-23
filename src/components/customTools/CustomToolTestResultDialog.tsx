@@ -11,7 +11,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { CheckCircle2, XCircle, ChevronDown, Clock, Activity } from 'lucide-react';
+import { CheckCircle2, XCircle, ChevronDown, Clock, Activity } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { CustomTool, CustomToolTestResponse } from '@/types/ai';
 

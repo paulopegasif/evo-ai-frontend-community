@@ -1,7 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardPanel } from '@/components/ui/card';
-import { Server, Wrench } from 'lucide-react';
+import { Server, Wrench } from '@/components/icons';
 import { MCPServer } from '@/types/ai';
 
 interface MCPServerCardProps {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Megaphone } from 'lucide-react';
+import { Megaphone } from '@/components/icons';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';

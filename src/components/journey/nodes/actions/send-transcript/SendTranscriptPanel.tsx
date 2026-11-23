@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/components/icons';
 import { SendTranscriptNodeData } from './SendTranscriptNode';
 import { automationService } from '@/services/automation/automationService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

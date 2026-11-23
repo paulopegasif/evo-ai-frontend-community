@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Paperclip, X, Image, FileText, File } from 'lucide-react';
+import { Send, Paperclip, X, Image, FileText, File } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { formatFileSize, isImageFile, type FileData } from '@/utils/fileUtils';
 import { toast } from 'sonner';

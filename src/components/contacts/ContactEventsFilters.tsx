@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { useId, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { ContactEventsQuery, ContactEventType } from '@/types/contacts';

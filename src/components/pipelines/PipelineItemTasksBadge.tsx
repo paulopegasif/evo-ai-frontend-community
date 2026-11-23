@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Clock, AlertCircle, ListTodo } from 'lucide-react';
+import { CheckCircle2, Clock, AlertCircle, ListTodo } from '@/components/icons';
 import { isPast, isToday, addHours } from 'date-fns';
 import type { PipelineTask } from '@/types/analytics';
 

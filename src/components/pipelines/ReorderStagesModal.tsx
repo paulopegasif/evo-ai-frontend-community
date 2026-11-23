@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { GripVertical, ArrowUp, ArrowDown } from '@/components/icons';
 import { PipelineStage as BasePipelineStage } from '@/types/analytics';
 
 interface PipelineStage extends BasePipelineStage {

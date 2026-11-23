@@ -27,7 +27,7 @@ vi.mock('@/components/ui/card', () => ({
 vi.mock('@/components/ui/badge', () => ({ Badge: ({ children }: WithChildren) => <span>{children}</span> }));
 
 
-vi.mock('lucide-react', () => ({
+vi.mock('@/components/icons', () => ({
   X: () => null, User: () => null, FileText: () => null, MessageSquare: () => null,
   Clock: () => null, ChevronDown: () => null, Zap: () => null, GitBranch: () => null,
   Tag: () => null, Info: () => null,

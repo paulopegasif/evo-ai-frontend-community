@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { AlertCircle, CalendarSearch, CheckCircle2, ExternalLink, Search, User, XCircle } from 'lucide-react';
+import { AlertCircle, CalendarSearch, CheckCircle2, ExternalLink, Search, User, XCircle } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';

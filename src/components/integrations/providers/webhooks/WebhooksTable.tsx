@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, Globe, Edit, Trash2, Play } from 'lucide-react';
+import { CheckCircle, XCircle, Globe, Edit, Trash2, Play } from '@/components/icons';
 import { Webhook } from '@/types/integrations';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { Badge } from '@/components/ui/badge';

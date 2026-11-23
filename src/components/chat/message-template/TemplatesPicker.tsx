@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Badge } from '@/components/ui/badge';
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 import type { MessageTemplate } from '@/types/channels/inbox';
 
 import { useLanguage } from '@/hooks/useLanguage';

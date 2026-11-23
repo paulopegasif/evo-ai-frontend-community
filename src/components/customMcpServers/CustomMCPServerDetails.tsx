@@ -21,7 +21,7 @@ import {
   Tags,
   TestTube,
   Wrench,
-} from 'lucide-react';
+} from '@/components/icons';
 import { CustomMcpServer } from '@/types/ai';
 
 interface CustomMCPServerDetailsProps {

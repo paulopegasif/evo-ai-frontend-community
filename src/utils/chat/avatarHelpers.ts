@@ -85,33 +85,7 @@ export const isValidAvatarUrl = (url: string | null | undefined): boolean => {
 };
 
 /**
- * Gera uma cor de fundo baseada no nome do contato
- * Útil para criar avatars coloridos consistentes
+ * Avatar fallback colors. coss ui keeps avatars neutral (initials on a muted
+ * fill), so every contact gets the same treatment regardless of name.
  */
-export const getContactAvatarColor = (name: string | null | undefined): string => {
-  if (!name) return 'bg-primary/10';
-
-  // Cores baseadas no hash do nome
-  const colors = [
-    'bg-destructive/12 text-destructive-foreground',
-    'bg-info/12 text-info-foreground',
-    'bg-success/12 text-success-foreground',
-    'bg-warning/12 text-warning-foreground',
-    'bg-purple-100 text-purple-600',
-    'bg-pink-100 text-pink-600',
-    'bg-indigo-100 text-indigo-600',
-    'bg-teal-100 text-teal-600',
-  ];
-
-  // Gerar hash simples do nome
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    const char = name.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-
-  // Usar hash para selecionar cor
-  const colorIndex = Math.abs(hash) % colors.length;
-  return colors[colorIndex];
-};
+export const getContactAvatarColor = (_name?: string | null): string => 'bg-muted text-foreground/80';

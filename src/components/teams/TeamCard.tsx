@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Edit, Users, Trash2 } from 'lucide-react';
+import { Edit, Users, Trash2 } from '@/components/icons';
 import { Team } from '@/types/users';
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -22,7 +22,7 @@ import {
   MoreHorizontal,
   CornerDownRight,
   CornerUpLeft,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { PipelineTask } from '@/types/analytics';

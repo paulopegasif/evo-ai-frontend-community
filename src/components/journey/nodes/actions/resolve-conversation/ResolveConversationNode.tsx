@@ -1,4 +1,4 @@
-import { CheckCircle, Settings } from 'lucide-react';
+import { CheckCircle, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

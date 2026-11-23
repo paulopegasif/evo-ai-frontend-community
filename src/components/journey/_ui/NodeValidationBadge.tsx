@@ -1,4 +1,4 @@
-import { AlertCircle, AlertTriangle } from 'lucide-react';
+import { AlertCircle, AlertTriangle } from '@/components/icons';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNodeValidationIssues } from '@/contexts/JourneyValidationContext';

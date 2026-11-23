@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Bot, Key, MessageSquare, Settings } from 'lucide-react';
+import { Bot, Key, MessageSquare, Settings } from '@/components/icons';
 import { ApiKey } from '@/types/agents';
 import { ApiKeysModal } from '@/components/ApiKeysModal';
 import { useLanguage } from '@/hooks/useLanguage';

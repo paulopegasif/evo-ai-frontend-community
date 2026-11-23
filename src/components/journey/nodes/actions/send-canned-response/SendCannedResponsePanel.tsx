@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, MessageSquareReply } from 'lucide-react';
+import { AlertCircle, MessageSquareReply } from '@/components/icons';
 import { SendCannedResponseNodeData, SendCannedResponseOption } from './SendCannedResponseNode';
 import { cannedResponsesService } from '@/services/cannedResponses/cannedResponsesService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

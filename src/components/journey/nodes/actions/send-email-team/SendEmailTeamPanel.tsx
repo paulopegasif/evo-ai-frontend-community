@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail } from 'lucide-react';
+import { Mail } from '@/components/icons';
 import { SendEmailTeamNodeData } from './SendEmailTeamNode';
 import { automationService } from '@/services/automation/automationService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

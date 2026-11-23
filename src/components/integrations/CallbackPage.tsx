@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, CircleCheck, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, CircleCheck, TriangleAlert } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';

@@ -1,4 +1,4 @@
-import { Variable, Settings } from 'lucide-react';
+import { Variable, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

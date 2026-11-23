@@ -1,5 +1,5 @@
-import { ArrowRight, Bot, ExternalLink, GitBranch, ListChecks, Plug, RefreshCw, Workflow } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { ArrowRight, Bot, ExternalLink, GitBranch, ListChecks, Plug, RefreshCw, Workflow } from '@/components/icons';
+import type { LucideIcon } from '@/components/icons';
 import type { BadgeProps } from '@/components/ui/badge';
 
 export interface AgentTypeMeta {

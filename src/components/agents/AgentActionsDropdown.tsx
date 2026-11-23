@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Copy, Edit, Trash2 } from 'lucide-react';
+import { Copy, Edit, Trash2 } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';

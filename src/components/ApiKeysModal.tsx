@@ -22,7 +22,7 @@ import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/c
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
-import { Edit, Eye, EyeOff, Key, Plus, Trash2, X } from 'lucide-react';
+import { Edit, Eye, EyeOff, Key, Plus, Trash2, X } from '@/components/icons';
 import { toast } from 'sonner';
 import { ApiKey, ApiKeyCreate, ApiKeyUpdate } from '@/types/agents';
 import { createApiKey, listApiKeys, updateApiKey, deleteApiKey } from '@/services/agents';

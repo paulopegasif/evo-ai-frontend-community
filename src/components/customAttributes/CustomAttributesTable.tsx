@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from '@/components/icons';
 import BaseTable from '@/components/base/BaseTable';
 import { Badge } from '@/components/ui/badge';
 import { CustomAttributeDefinition, ATTRIBUTE_TYPE_OPTIONS, AttributeModel } from '@/types/settings';

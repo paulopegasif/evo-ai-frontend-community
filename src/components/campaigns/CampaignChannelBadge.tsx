@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { CampaignChannelType } from '@/types/campaigns';
-import { Mail, MessageCircle, Smartphone } from 'lucide-react';
+import { Mail, MessageCircle, Smartphone } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface CampaignChannelBadgeProps {

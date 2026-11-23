@@ -1,4 +1,4 @@
-import { Settings as SettingsIcon, Settings } from 'lucide-react';
+import { Settings as SettingsIcon, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -4,7 +4,7 @@ import { ChatAttachment } from './ChatAttachment';
 import { EmojiPickerComponent } from './EmojiPicker';
 import { ResizableTextarea, ResizableTextareaRef } from './ResizableTextarea';
 import { useLanguage } from '@/hooks/useLanguage';
-import { SendHorizontal } from 'lucide-react';
+import { SendHorizontal } from '@/components/icons';
 
 interface ComposerProps {
   onSend: (text: string) => void | Promise<void>;

@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
 interface AreaChartCardProps {

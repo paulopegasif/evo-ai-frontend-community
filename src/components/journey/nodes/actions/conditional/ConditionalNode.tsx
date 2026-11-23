@@ -1,4 +1,4 @@
-import { GitBranch, Settings } from 'lucide-react';
+import { GitBranch, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { Handle, Position, useEdges } from '@xyflow/react';
 import { cn } from '@/lib/utils';

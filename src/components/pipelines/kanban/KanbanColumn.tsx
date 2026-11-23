@@ -1,5 +1,5 @@
 import { useState, type DragEvent, type ReactNode } from 'react';
-import { Copy, Edit, Inbox, MoreHorizontal, Plus, SearchX, Trash2 } from 'lucide-react';
+import { Copy, Edit, Inbox, MoreHorizontal, Plus, SearchX, Trash2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
