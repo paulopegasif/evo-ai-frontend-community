@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -5,18 +6,26 @@ import { Settings, Cog } from 'lucide-react';
 import Sidebar from './Sidebar';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 
+type MockProps = { children?: React.ReactNode; render?: React.ReactElement };
+
 vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('@evoapi/design-system', () => ({
+vi.mock('@/components/ui/button', () => ({
   Button: ({ children, onClick, ...props }: any) => (
     <button type="button" onClick={onClick} {...props}>{children}</button>
   ),
-  TooltipProvider: ({ children }: any) => <>{children}</>,
-  Tooltip: ({ children }: any) => <>{children}</>,
-  TooltipTrigger: ({ children }: any) => <>{children}</>,
-  TooltipContent: ({ children }: any) => <>{children}</>,
+}));
+
+vi.mock('@/components/ui/tooltip', () => ({
+  TooltipProvider: ({ children }: MockProps) => <>{children}</>,
+  Tooltip: ({ children }: MockProps) => <>{children}</>,
+  // Base UI triggers render their `render` element; keep that so the real button shows up.
+  TooltipTrigger: ({ children, render }: MockProps) =>
+    render ? React.cloneElement(render, {}, children ?? render.props.children) : <>{children}</>,
+  TooltipContent: ({ children }: MockProps) => <>{children}</>,
+  TooltipPopup: ({ children }: MockProps) => <>{children}</>,
 }));
 
 vi.mock('./MenuItem', () => ({

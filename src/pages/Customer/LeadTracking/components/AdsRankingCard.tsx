@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Trophy } from 'lucide-react';
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { AdPerformance } from '@/types/leadTracking';
 import { currencyOrDash, formatCurrency, formatNumber, roasOrDash } from './format';
@@ -62,7 +63,7 @@ const AdsRankingCard = ({ ads }: { ads: AdPerformance[] }) => {
         </CardTitle>
         <CardDescription>Ordenado por receita gerada no CRM; clique no cabeçalho para mudar a ordem</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardPanel>
         <BaseTable
           data={rows}
           columns={columns}
@@ -72,7 +73,7 @@ const AdsRankingCard = ({ ads }: { ads: AdPerformance[] }) => {
           getRowKey={(ad) => ad.ad_id}
           emptyTitle="Nenhum anúncio no período"
         />
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

@@ -1,23 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@evoapi/design-system';
-import { MessageSquare, Settings, CheckCircle, XCircle, Trash2 } from 'lucide-react';
-import EmptyState from '@/components/base/EmptyState';
+import { Check, Power, Settings, MessageSquare } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { BMSHook } from '@/types/integrations';
 
-import IntegrationBackButton from '../../shared/IntegrationBackButton';
+import IntegrationPageHeader from '../../shared/IntegrationPageHeader';
 import BMSModal from './BMSModal';
 
 interface BMSSettingsProps {
@@ -124,209 +119,139 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="flex-none p-4 pb-0">
-        <div className="flex items-center gap-4 mb-6">
-          <IntegrationBackButton onBack={onBack} />
-          <div className="flex items-center gap-3">
-            <MessageSquare className="w-6 h-6 text-primary" />
-            <div>
-              <h1 className="text-2xl font-semibold">{t('bms.title')}</h1>
-              <p className="text-muted-foreground text-sm">{t('bms.subtitle')}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        <IntegrationPageHeader
+          icon={MessageSquare}
+          title={t('bms.title')}
+          description={t('bms.subtitle')}
+          loading={loading.get}
+          status={
+            hook
+              ? hook.status
+                ? { label: t('bms.status.active'), variant: 'success' }
+                : { label: t('bms.status.inactive'), variant: 'error' }
+              : null
+          }
+          onBack={onBack}
+          actions={
+            hook && (
+              <>
+                <Button variant="outline" size="sm" onClick={handleConfigure}>
+                  <Settings />
+                  {t('bms.configuration.edit')}
+                </Button>
+                <Button variant="destructive-outline" size="sm" onClick={handleDeleteIntegration}>
+                  <Power />
+                  {t('bms.configuration.remove')}
+                </Button>
+              </>
+            )
+          }
+        />
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
         {loading.get ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('genericSettings.loadingConfig')}</div>
-          </div>
+          <SettingsSkeleton />
         ) : !hook ? (
-          <EmptyState
-            icon={MessageSquare}
-            title={t('bms.notConfigured')}
-            description={t('bms.notConfiguredDescription')}
-            action={{
-              label: t('bms.configureBMS'),
-              onClick: handleConfigure,
-            }}
-            className="h-full"
-          />
+          <Card>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <MessageSquare />
+                </EmptyMedia>
+                <EmptyTitle>{t('bms.notConfigured')}</EmptyTitle>
+                <EmptyDescription>{t('bms.notConfiguredDescription')}</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={handleConfigure}>{t('bms.configureBMS')}</Button>
+              </EmptyContent>
+            </Empty>
+          </Card>
         ) : (
-          <div className="space-y-6 max-w-2xl">
-            {/* Status Card */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  {t('bms.status.title')}
-                </h3>
-                <div className="flex items-center gap-2 text-sm">
-                  {hook.status ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      <span className="text-green-600 font-medium">{t('bms.status.active')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-4 h-4 text-red-600" />
-                      <span className="text-red-600 font-medium">{t('bms.status.inactive')}</span>
-                    </>
-                  )}
-                </div>
-              </div>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="flex flex-col gap-6 lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">{t('bms.status.title')}</CardTitle>
+                </CardHeader>
+                <CardPanel>
+                  <dl className="grid gap-4 sm:grid-cols-2">
+                    <DetailItem label={t('bms.status.configuredAt')}>{formatDateTime(hook.created_at)}</DetailItem>
+                    <DetailItem label={t('bms.status.lastUpdate')}>{formatDateTime(hook.updated_at)}</DetailItem>
+                  </dl>
+                </CardPanel>
+              </Card>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-slate-500">{t('bms.status.configuredAt')}</label>
-                  <p className="text-sm font-medium">
-                    {new Date(hook.created_at).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-slate-500">{t('bms.status.lastUpdate')}</label>
-                  <p className="text-sm font-medium">
-                    {new Date(hook.updated_at).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-              </div>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">{t('bms.configuration.title')}</CardTitle>
+                </CardHeader>
+                <CardPanel className="flex flex-col gap-4">
+                  <DetailItem label={t('bms.configuration.apiKey')}>
+                    {hook.settings?.api_key ? (
+                      <code className="rounded-md bg-muted px-2 py-1 font-mono text-sm">••••••••••••••••</code>
+                    ) : (
+                      <span className="text-muted-foreground">{t('bms.configuration.notConfigured')}</span>
+                    )}
+                  </DetailItem>
+                  <dl className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+                    {(
+                      [
+                        ['enable_contact_sync', 'bms.configuration.contactSync'],
+                        ['enable_label_sync', 'bms.configuration.labelSync'],
+                        ['enable_custom_attributes_sync', 'bms.configuration.customAttributes'],
+                        ['enable_campaign_sync', 'bms.configuration.campaignSync'],
+                      ] as const
+                    ).map(([field, label]) => (
+                      <DetailItem key={field} label={t(label)}>
+                        {hook.settings?.[field] ? (
+                          <Badge variant="success">{t('bms.configuration.enabled')}</Badge>
+                        ) : (
+                          <Badge variant="outline">{t('bms.configuration.disabled')}</Badge>
+                        )}
+                      </DetailItem>
+                    ))}
+                  </dl>
+                </CardPanel>
+              </Card>
+            </div>
 
-            {/* Configuration Card */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">{t('bms.configuration.title')}</h3>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleConfigure}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    {t('bms.configuration.edit')}
-                  </Button>
-                  <Button variant="destructive" onClick={handleDeleteIntegration}>
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    {t('bms.configuration.remove')}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs text-slate-500">{t('bms.configuration.apiKey')}</label>
-                  <p className="text-sm font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
-                    {hook.settings?.api_key
-                      ? '••••••••••••••••'
-                      : t('bms.configuration.notConfigured')}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-500">
-                      {t('bms.configuration.contactSync')}
-                    </label>
-                    <p className="text-sm">
-                      {hook.settings?.enable_contact_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
-                      ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500">
-                      {t('bms.configuration.labelSync')}
-                    </label>
-                    <p className="text-sm">
-                      {hook.settings?.enable_label_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
-                      ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500">
-                      {t('bms.configuration.customAttributes')}
-                    </label>
-                    <p className="text-sm">
-                      {hook.settings?.enable_custom_attributes_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
-                      ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500">
-                      {t('bms.configuration.campaignSync')}
-                    </label>
-                    <p className="text-sm">
-                      {hook.settings?.enable_campaign_sync ? (
-                        <span className="text-green-600">{t('bms.configuration.enabled')}</span>
-                      ) : (
-                        <span className="text-red-600">{t('bms.configuration.disabled')}</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Features Card */}
-            <Card className="p-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-              <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-200">
-                {t('bms.featuresCard.title')}
-              </h3>
-              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
-                <li>• {t('bms.featuresCard.contactSync')}</li>
-                <li>• {t('bms.featuresCard.labelManagement')}</li>
-                <li>• {t('bms.featuresCard.customAttributes')}</li>
-                <li>• {t('bms.featuresCard.campaigns')}</li>
-                <li>• {t('bms.featuresCard.unifiedHistory')}</li>
-              </ul>
+            <Card className="self-start">
+              <CardHeader>
+                <CardTitle className="text-base">{t('bms.featuresCard.title')}</CardTitle>
+              </CardHeader>
+              <CardPanel>
+                <ul className="flex flex-col gap-2.5 text-sm">
+                  {[
+                  'bms.featuresCard.contactSync',
+                  'bms.featuresCard.labelManagement',
+                  'bms.featuresCard.customAttributes',
+                  'bms.featuresCard.campaigns',
+                  'bms.featuresCard.unifiedHistory',
+                  ].map(key => (
+                    <li key={key} className="flex items-start gap-2">
+                      <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                      <CardDescription className="text-foreground">{t(key)}</CardDescription>
+                    </li>
+                  ))}
+                </ul>
+              </CardPanel>
             </Card>
           </div>
         )}
       </div>
 
-      {/* Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('bms.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>{t('bms.deleteDialog.description')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={loading.delete}
-            >
-              {t('bms.deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={loading.delete}>
-              {loading.delete ? t('bms.deleteDialog.removing') : t('bms.deleteDialog.remove')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('bms.deleteDialog.title')}
+        description={t('bms.deleteDialog.description')}
+        cancelLabel={t('bms.deleteDialog.cancel')}
+        confirmLabel={t('bms.deleteDialog.remove')}
+        onConfirm={confirmDelete}
+        loading={loading.delete}
+      />
 
-      {/* Config Modal */}
       <BMSModal
         hook={hook || undefined}
         open={configModalOpen}
@@ -335,6 +260,55 @@ export default function BMSSettings({ onBack }: BMSSettingsProps = {}) {
         isNew={!hook}
         loading={loading.create || loading.update}
       />
+    </div>
+  );
+}
+
+const formatDateTime = (value: string) =>
+  new Date(value).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+function DetailItem({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <dt className="text-muted-foreground text-xs">{label}</dt>
+      <dd className="font-medium text-sm">{children}</dd>
+    </div>
+  );
+}
+
+function SettingsSkeleton() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-3" aria-busy="true">
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardPanel className="grid gap-4 sm:grid-cols-2">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="flex flex-col gap-1.5">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          ))}
+        </CardPanel>
+      </Card>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-32" />
+        </CardHeader>
+        <CardPanel className="flex flex-col gap-2.5">
+          {[0, 1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-4 w-full" />
+          ))}
+        </CardPanel>
+      </Card>
     </div>
   );
 }

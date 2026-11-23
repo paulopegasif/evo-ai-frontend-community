@@ -41,7 +41,7 @@ export default tseslint.config(
     },
   },
   // Flow Builder discipline (EVO-1253): all interactive buttons must come
-  // from @evoapi/design-system's <Button>, not raw <button>. Existing
+  // from the coss ui <Button> (@/components/ui/button), not raw <button>. Existing
   // violations carry an inline eslint-disable comment with a migration
   // pointer; the rule prevents NEW ones from creeping in.
   {
@@ -52,7 +52,7 @@ export default tseslint.config(
         {
           selector: "JSXOpeningElement[name.name='button']",
           message:
-            'Use <Button> from @evoapi/design-system instead of raw <button>. See src/components/journey/_ui/README.md "Button contract" for the canonical variants.',
+            'Use <Button> from @/components/ui/button (coss ui) instead of raw <button>. See src/components/journey/_ui/README.md "Button contract" for the canonical variants.',
         },
       ],
     },

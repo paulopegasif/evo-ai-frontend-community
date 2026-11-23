@@ -64,7 +64,8 @@
       "writeDescription": "Criar e alterar este recurso, incluindo toda ação que o modifica.",
       "delete": "Exclusão",
       "deleteDescription": "Excluir este recurso."
-    }
+    },
+    "unsavedChanges": "{{count}} alteração(ões) não salva(s)"
   },
   "createModal": {
     "title": "Criar Perfil",

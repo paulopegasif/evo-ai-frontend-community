@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button } from '@evoapi/design-system';
-import { Alert, AlertTitle, AlertDescription } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -110,9 +110,9 @@ export const OAuthAuthorize: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
         <div className="w-full max-w-md space-y-6">
-          <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg text-center">
+          <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8 text-center">
             <h1 className="text-2xl font-bold mb-4">{t('authorize.titles.loginRequired')}</h1>
             <p className="text-muted-foreground mb-6">{t('authorize.descriptions.needLogin')}</p>
             <Button onClick={() => window.location.href = '/auth'} className="w-full">
@@ -126,10 +126,10 @@ export const OAuthAuthorize: React.FC = () => {
 
   if (!oauthParams) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
         <div className="w-full max-w-md space-y-6">
-          <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg text-center">
-            <Alert variant="destructive">
+          <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8 text-center">
+            <Alert variant="error">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>{t('authorize.titles.invalidRequest')}</AlertTitle>
               <AlertDescription>
@@ -143,18 +143,18 @@ export const OAuthAuthorize: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
       <div className="w-full max-w-md space-y-6">
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold mb-2">{t('authorize.titles.authorizeApp')}</h1>
+            <h1 className="font-semibold text-xl mb-2">{t('authorize.titles.authorizeApp')}</h1>
             <p className="text-muted-foreground">
               {t('authorize.descriptions.requestingAccess')}
             </p>
           </div>
 
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="error" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>{t('common.error')}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>

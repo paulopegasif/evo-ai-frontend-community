@@ -124,7 +124,10 @@
       ]
     },
     "close": "Fermer",
-    "tokenCopied": "Jeton copié !"
+    "tokenCopied": "Jeton copié !",
+    "copyValue": "Copier {{label}}",
+    "showToken": "Afficher le jeton",
+    "hideToken": "Masquer le jeton"
   },
   "empty": {
     "title": "Aucun jeton trouvé",

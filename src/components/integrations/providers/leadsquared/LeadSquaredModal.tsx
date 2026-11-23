@@ -1,23 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Card,
-  Switch,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
-import { Building2, AlertCircle, ExternalLink } from 'lucide-react';
+import { Building2, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DialogClose } from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { LeadSquaredHook, LeadSquaredFormData, IntegrationHook } from '@/types/integrations';
+import { AgentIntegrationDialog, SettingRow } from '../../agentConfig/AgentIntegrationDialog';
+import IntegrationNotice from '../../shared/IntegrationNotice';
+import SecretInput from '../../shared/SecretInput';
 
 interface LeadSquaredModalProps {
   hook?: IntegrationHook;
@@ -44,6 +37,7 @@ export default function LeadSquaredModal({
   loading: submitting = false,
 }: LeadSquaredModalProps) {
   const { t } = useLanguage('integrations');
+  const formId = useId();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<LeadSquaredFormData>({
     access_key: '',
@@ -144,273 +138,193 @@ export default function LeadSquaredModal({
     window.open('https://apidocs.leadsquared.com/', '_blank');
   };
 
+  const saving = loading || submitting;
+
+  const setSecret = (field: 'access_key' | 'secret_key', value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
+
+  const activities = [
+    {
+      kind: 'conversation',
+      toggle: 'enable_conversation_activity',
+      score: 'conversation_activity_score',
+      code: 'conversation_activity_code',
+      i18n: 'conversationActivity',
+    },
+    {
+      kind: 'transcript',
+      toggle: 'enable_transcript_activity',
+      score: 'transcript_activity_score',
+      code: 'transcript_activity_code',
+      i18n: 'transcriptActivity',
+    },
+  ] as const;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Building2 className="w-5 h-5" />
-            {hook ? t('leadSquared.modal.updateTitle') : t('leadSquared.modal.title')}
-          </DialogTitle>
-        </DialogHeader>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<Building2 className="text-muted-foreground" />}
+      title={hook ? t('leadSquared.modal.updateTitle') : t('leadSquared.modal.title')}
+      description={t('leadSquared.modal.description')}
+      className="sm:max-w-2xl"
+      footerStart={
+        <Button type="button" variant="ghost" onClick={openLeadSquaredDoc}>
+          <ExternalLink />
+          {t('leadSquared.modal.actions.documentation')}
+        </Button>
+      }
+      footer={
+        <>
+          <DialogClose render={<Button type="button" variant="ghost" />} disabled={saving}>
+            {t('leadSquared.modal.actions.cancel')}
+          </DialogClose>
+          <Button type="submit" form={formId} loading={saving}>
+            {saving
+              ? t('leadSquared.modal.actions.saving')
+              : hook
+                ? t('leadSquared.modal.actions.update')
+                : t('leadSquared.modal.actions.configure')}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        {/* API configuration */}
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('leadSquared.modal.apiConfig')}</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Header Description */}
-          <div className="text-sm text-muted-foreground">
-            {t('leadSquared.modal.description')}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field invalid={Boolean(errors.access_key)}>
+              <FieldLabel htmlFor="leadsquared-access-key">
+                {t('leadSquared.modal.fields.accessKey.label')}{' '}
+                <span className="text-destructive-foreground">*</span>
+              </FieldLabel>
+              <SecretInput
+                id="leadsquared-access-key"
+                placeholder={t('leadSquared.modal.fields.accessKey.placeholder')}
+                value={formData.access_key}
+                onChange={e => setSecret('access_key', e.target.value)}
+                aria-invalid={errors.access_key ? true : undefined}
+              />
+              {errors.access_key && <FieldError match>{errors.access_key}</FieldError>}
+            </Field>
+
+            <Field invalid={Boolean(errors.secret_key)}>
+              <FieldLabel htmlFor="leadsquared-secret-key">
+                {t('leadSquared.modal.fields.secretKey.label')}{' '}
+                <span className="text-destructive-foreground">*</span>
+              </FieldLabel>
+              <SecretInput
+                id="leadsquared-secret-key"
+                placeholder={t('leadSquared.modal.fields.secretKey.placeholder')}
+                value={formData.secret_key}
+                onChange={e => setSecret('secret_key', e.target.value)}
+                aria-invalid={errors.secret_key ? true : undefined}
+              />
+              {errors.secret_key && <FieldError match>{errors.secret_key}</FieldError>}
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="leadsquared-endpoint-url">
+                {t('leadSquared.modal.fields.endpointUrl.label')}
+              </FieldLabel>
+              <Input
+                id="leadsquared-endpoint-url"
+                placeholder={t('leadSquared.modal.fields.endpointUrl.placeholder')}
+                value={formData.endpoint_url}
+                onChange={e => setFormData(prev => ({ ...prev, endpoint_url: e.target.value }))}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="leadsquared-app-url">{t('leadSquared.modal.fields.appUrl.label')}</FieldLabel>
+              <Input
+                id="leadsquared-app-url"
+                placeholder={t('leadSquared.modal.fields.appUrl.placeholder')}
+                value={formData.app_url}
+                onChange={e => setFormData(prev => ({ ...prev, app_url: e.target.value }))}
+              />
+            </Field>
           </div>
 
-          {/* API Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('leadSquared.modal.apiConfig')}</h4>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="access_key"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                  >
-                    {t('leadSquared.modal.fields.accessKey.label')} *
-                  </label>
-                  <Input
-                    id="access_key"
-                    type="password"
-                    placeholder={t('leadSquared.modal.fields.accessKey.placeholder')}
-                    value={formData.access_key}
-                    onChange={e => setFormData(prev => ({ ...prev, access_key: e.target.value }))}
-                    className={errors.access_key ? 'border-red-500' : ''}
-                  />
-                  {errors.access_key && (
-                    <p className="text-sm text-red-600 mt-1">{errors.access_key}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="secret_key"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                  >
-                    {t('leadSquared.modal.fields.secretKey.label')} *
-                  </label>
-                  <Input
-                    id="secret_key"
-                    type="password"
-                    placeholder={t('leadSquared.modal.fields.secretKey.placeholder')}
-                    value={formData.secret_key}
-                    onChange={e => setFormData(prev => ({ ...prev, secret_key: e.target.value }))}
-                    className={errors.secret_key ? 'border-red-500' : ''}
-                  />
-                  {errors.secret_key && (
-                    <p className="text-sm text-red-600 mt-1">{errors.secret_key}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="endpoint_url"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                  >
-                    {t('leadSquared.modal.fields.endpointUrl.label')}
-                  </label>
-                  <Input
-                    id="endpoint_url"
-                    placeholder={t('leadSquared.modal.fields.endpointUrl.placeholder')}
-                    value={formData.endpoint_url}
-                    onChange={e => setFormData(prev => ({ ...prev, endpoint_url: e.target.value }))}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="app_url"
-                    className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                  >
-                    {t('leadSquared.modal.fields.appUrl.label')}
-                  </label>
-                  <Input
-                    id="app_url"
-                    placeholder={t('leadSquared.modal.fields.appUrl.placeholder')}
-                    value={formData.app_url}
-                    onChange={e => setFormData(prev => ({ ...prev, app_url: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="timezone"
-                  className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
-                >
-                  {t('leadSquared.modal.fields.timezone.label')}
-                </label>
-                <Select
-                  value={formData.timezone}
-                  onValueChange={value => setFormData(prev => ({ ...prev, timezone: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('leadSquared.modal.fields.timezone.placeholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIMEZONE_OPTIONS.map(timezone => (
-                      <SelectItem key={timezone.value} value={timezone.value}>
-                        {timezone.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </Card>
-
-          {/* Activity Settings */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('leadSquared.modal.activitySettings')}</h4>
-
-            <div className="space-y-6">
-              {/* Conversation Activity */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="enable_conversation_activity">{t('leadSquared.modal.fields.conversationActivity.label')}</Label>
-                    <p className="text-xs text-muted-foreground">
-                      {t('leadSquared.modal.fields.conversationActivity.description')}
-                    </p>
-                  </div>
-                  <Switch
-                    id="enable_conversation_activity"
-                    checked={formData.enable_conversation_activity}
-                    onCheckedChange={checked =>
-                      setFormData(prev => ({ ...prev, enable_conversation_activity: checked }))
-                    }
-                  />
-                </div>
-
-                {formData.enable_conversation_activity && (
-                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-blue-200">
-                    <div>
-                      <Label htmlFor="conversation_activity_score">{t('leadSquared.modal.fields.conversationActivity.score')}</Label>
-                      <Input
-                        id="conversation_activity_score"
-                        placeholder={t('leadSquared.modal.fields.conversationActivity.scorePlaceholder')}
-                        value={formData.conversation_activity_score}
-                        onChange={e =>
-                          setFormData(prev => ({
-                            ...prev,
-                            conversation_activity_score: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="conversation_activity_code">{t('leadSquared.modal.fields.conversationActivity.code')}</Label>
-                      <Input
-                        id="conversation_activity_code"
-                        type="number"
-                        placeholder={t('leadSquared.modal.fields.conversationActivity.codePlaceholder')}
-                        value={formData.conversation_activity_code}
-                        onChange={e =>
-                          setFormData(prev => ({
-                            ...prev,
-                            conversation_activity_code: parseInt(e.target.value) || 0,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Transcript Activity */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="enable_transcript_activity">{t('leadSquared.modal.fields.transcriptActivity.label')}</Label>
-                    <p className="text-xs text-muted-foreground">
-                      {t('leadSquared.modal.fields.transcriptActivity.description')}
-                    </p>
-                  </div>
-                  <Switch
-                    id="enable_transcript_activity"
-                    checked={formData.enable_transcript_activity}
-                    onCheckedChange={checked =>
-                      setFormData(prev => ({ ...prev, enable_transcript_activity: checked }))
-                    }
-                  />
-                </div>
-
-                {formData.enable_transcript_activity && (
-                  <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-green-200">
-                    <div>
-                      <Label htmlFor="transcript_activity_score">{t('leadSquared.modal.fields.transcriptActivity.score')}</Label>
-                      <Input
-                        id="transcript_activity_score"
-                        placeholder={t('leadSquared.modal.fields.transcriptActivity.scorePlaceholder')}
-                        value={formData.transcript_activity_score}
-                        onChange={e =>
-                          setFormData(prev => ({
-                            ...prev,
-                            transcript_activity_score: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="transcript_activity_code">{t('leadSquared.modal.fields.transcriptActivity.code')}</Label>
-                      <Input
-                        id="transcript_activity_code"
-                        type="number"
-                        placeholder={t('leadSquared.modal.fields.transcriptActivity.codePlaceholder')}
-                        value={formData.transcript_activity_code}
-                        onChange={e =>
-                          setFormData(prev => ({
-                            ...prev,
-                            transcript_activity_code: parseInt(e.target.value) || 0,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Card>
-
-          {/* Security Warning */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
-                <strong>{t('leadSquared.modal.security.title')}</strong> {t('leadSquared.modal.security.description')}
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-between pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={openLeadSquaredDoc}
-              className="flex items-center gap-2"
+          <Field>
+            <FieldLabel htmlFor="leadsquared-timezone">{t('leadSquared.modal.fields.timezone.label')}</FieldLabel>
+            <Select
+              items={TIMEZONE_OPTIONS}
+              value={formData.timezone}
+              onValueChange={value => value && setFormData(prev => ({ ...prev, timezone: value as string }))}
             >
-              <ExternalLink className="w-4 h-4" />
-              {t('leadSquared.modal.actions.documentation')}
-            </Button>
+              <SelectTrigger id="leadsquared-timezone">
+                <SelectValue placeholder={t('leadSquared.modal.fields.timezone.placeholder')} />
+              </SelectTrigger>
+              <SelectPopup>
+                {TIMEZONE_OPTIONS.map(timezone => (
+                  <SelectItem key={timezone.value} value={timezone.value}>
+                    {timezone.label}
+                  </SelectItem>
+                ))}
+              </SelectPopup>
+            </Select>
+          </Field>
+        </section>
 
-            <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t('leadSquared.modal.actions.cancel')}
-              </Button>
-              <Button type="submit" disabled={loading || submitting}>
-                {loading || submitting ? t('leadSquared.modal.actions.saving') : (hook ? t('leadSquared.modal.actions.update') : t('leadSquared.modal.actions.configure'))}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        {/* Activity settings */}
+        <section className="flex flex-col gap-3">
+          <h3 className="font-medium text-sm">{t('leadSquared.modal.activitySettings')}</h3>
+          {activities.map(activity => {
+            const enabled = Boolean(formData[activity.toggle]);
+            const base = `leadSquared.modal.fields.${activity.i18n}`;
+            return (
+              <div key={activity.kind} className="flex flex-col gap-3">
+                <SettingRow
+                  htmlFor={activity.toggle}
+                  title={t(`${base}.label`)}
+                  description={t(`${base}.description`)}
+                  control={
+                    <Switch
+                      id={activity.toggle}
+                      checked={enabled}
+                      onCheckedChange={checked => setFormData(prev => ({ ...prev, [activity.toggle]: checked }))}
+                    />
+                  }
+                />
+                {enabled && (
+                  <div className="ms-4 grid gap-4 border-s-2 ps-4 sm:grid-cols-2">
+                    <Field>
+                      <FieldLabel htmlFor={activity.score}>{t(`${base}.score`)}</FieldLabel>
+                      <Input
+                        id={activity.score}
+                        placeholder={t(`${base}.scorePlaceholder`)}
+                        value={formData[activity.score]}
+                        onChange={e => setFormData(prev => ({ ...prev, [activity.score]: e.target.value }))}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor={activity.code}>{t(`${base}.code`)}</FieldLabel>
+                      <Input
+                        id={activity.code}
+                        type="number"
+                        placeholder={t(`${base}.codePlaceholder`)}
+                        value={formData[activity.code]}
+                        onChange={e =>
+                          setFormData(prev => ({ ...prev, [activity.code]: parseInt(e.target.value) || 0 }))
+                        }
+                      />
+                    </Field>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </section>
+
+        <IntegrationNotice variant="warning" title={t('leadSquared.modal.security.title')}>
+          {t('leadSquared.modal.security.description')}
+        </IntegrationNotice>
+      </form>
+    </AgentIntegrationDialog>
   );
 }

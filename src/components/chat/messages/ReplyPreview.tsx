@@ -65,38 +65,27 @@ const ReplyPreview: React.FC<ReplyPreviewProps> = ({ message, isOwn }) => {
 
   return (
     <div
-      className={`px-2 py-1.5 rounded-sm mb-2 transition-colors ${
-        isResolved ? 'cursor-pointer hover:opacity-80' : 'opacity-75'
-      } ${
-        isOwn
-          ? 'bg-primary/20 dark:bg-primary/15 text-white dark:text-white/90 border-l-2 border-primary/40 dark:border-primary/50'
-          : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 border-l-2 border-slate-300 dark:border-slate-600'
-      }`}
+      role={isResolved ? 'button' : undefined}
+      tabIndex={isResolved ? 0 : undefined}
+      className={`mb-1.5 rounded-md border-s-2 px-2 py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring ${
+        isResolved ? 'cursor-pointer hover:bg-foreground/6' : 'opacity-75'
+      } ${isOwn ? 'border-s-primary bg-foreground/4' : 'border-s-muted-foreground/40 bg-muted/72'}`}
       onClick={handleClick}
+      onKeyDown={e => {
+        if (isResolved && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          e.stopPropagation();
+          handleClick();
+        }
+      }}
     >
       <div className="flex items-start gap-1.5">
-        <Reply className={`h-3 w-3 flex-shrink-0 mt-0.5 ${
-          isOwn
-            ? 'text-white/80 dark:text-white/70'
-            : 'text-slate-500 dark:text-slate-400'
-        }`} />
-        <div className="flex-1 min-w-0">
+        <Reply className="mt-0.5 size-3 flex-shrink-0 text-muted-foreground" />
+        <div className="min-w-0 flex-1">
           {isResolved && (
-            <div className={`text-xs font-medium mb-0.5 ${
-              isOwn
-                ? 'text-white/90 dark:text-white/90'
-                : 'text-slate-700 dark:text-slate-200'
-            }`}>
-              {senderName}
-            </div>
+            <div className="mb-0.5 font-medium text-foreground text-xs">{senderName}</div>
           )}
-          <div className={`text-xs line-clamp-2 ${
-            isResolved ? '' : 'italic'
-          } ${
-            isOwn
-              ? 'text-white/80 dark:text-white/80'
-              : 'text-slate-600 dark:text-slate-300'
-          }`}>
+          <div className={`line-clamp-2 text-muted-foreground text-xs ${isResolved ? '' : 'italic'}`}>
             {previewContent}
           </div>
         </div>

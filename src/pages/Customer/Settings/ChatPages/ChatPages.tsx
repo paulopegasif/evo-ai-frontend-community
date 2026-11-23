@@ -1,20 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Copy, Loader2, MessageSquare } from 'lucide-react';
-import {
-  Button,
-  Badge,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@evoapi/design-system';
+import { Plus, Pencil, Trash2, Copy, MessageSquare } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
 import BaseHeader from '@/components/base/BaseHeader';
 import BasePagination from '@/components/base/BasePagination';
 import EmptyState from '@/components/base/EmptyState';
@@ -141,7 +134,7 @@ export default function ChatPages() {
   const isFiltered = !!search || published !== 'all';
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       <BaseHeader
         title={t('header.title')}
         subtitle={t('header.subtitle', { count: pagination.total })}
@@ -155,30 +148,26 @@ export default function ChatPages() {
         }
       />
 
-      <div className="flex items-center gap-2 mt-4">
-        <Select
+      <div className="mt-4 flex items-center gap-2">
+        <OptionSelect
           value={published}
           onValueChange={v => {
             setPublished(v as 'all' | 'true' | 'false');
             setPage(1);
           }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('filter.all')}</SelectItem>
-            <SelectItem value="true">{t('filter.published')}</SelectItem>
-            <SelectItem value="false">{t('filter.draft')}</SelectItem>
-          </SelectContent>
-        </Select>
+          className="w-[180px]"
+          aria-label={t('table.status')}
+          options={[
+            { value: 'all', label: t('filter.all') },
+            { value: 'true', label: t('filter.published') },
+            { value: 'false', label: t('filter.draft') },
+          ]}
+        />
       </div>
 
-      <div className="flex-1 overflow-auto mt-6">
+      <div className="mt-6 flex-1 overflow-auto">
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
+          <ListSkeleton />
         ) : pages.length === 0 ? (
           <EmptyState
             icon={MessageSquare}
@@ -188,71 +177,76 @@ export default function ChatPages() {
             className="h-full"
           />
         ) : (
-          <div className="rounded-md border border-sidebar-border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-sidebar-border bg-sidebar-accent/50">
-                  <th className="px-4 py-3 text-left font-medium text-sidebar-foreground">{t('table.name')}</th>
-                  <th className="px-4 py-3 text-left font-medium text-sidebar-foreground hidden md:table-cell">
-                    {t('table.publicLink')}
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-sidebar-foreground hidden md:table-cell">
-                    {t('table.widget')}
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-sidebar-foreground hidden sm:table-cell">
-                    {t('table.status')}
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-sidebar-foreground">{t('table.actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pages.map(chatPage => (
-                  <tr
-                    key={chatPage.id}
-                    className="border-b border-sidebar-border last:border-0 hover:bg-sidebar-accent/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 font-medium text-sidebar-foreground">
-                      {chatPage.title || chatPage.display_title || chatPage.slug}
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <button
-                        onClick={() => copyLink(chatPage)}
-                        className="inline-flex items-center gap-1 text-sidebar-foreground/60 hover:text-sidebar-foreground"
-                      >
-                        <Copy className="w-3.5 h-3.5" /> /chat/{chatPage.slug}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell text-sidebar-foreground/70">
-                      {chatPage.widget_inbox_name || '—'}
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <Badge variant={chatPage.published ? 'default' : 'secondary'} className="text-xs">
-                        {chatPage.published ? t('status.published') : t('status.draft')}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      {canUpdate && (
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(chatPage)} aria-label={t('actions.edit')}>
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                      )}
-                      {canDelete && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteTarget(chatPage)}
-                          aria-label={t('actions.delete')}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table variant="card">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('table.name')}</TableHead>
+                <TableHead className="hidden md:table-cell">{t('table.publicLink')}</TableHead>
+                <TableHead className="hidden md:table-cell">{t('table.widget')}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t('table.status')}</TableHead>
+                <TableHead className="text-end">
+                  <span className="sr-only">{t('table.actions')}</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pages.map(chatPage => (
+                <TableRow key={chatPage.id}>
+                  <TableCell className="font-medium">
+                    {chatPage.title || chatPage.display_title || chatPage.slug}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Button variant="ghost" size="xs" onClick={() => copyLink(chatPage)} className="font-mono text-muted-foreground">
+                        <Copy />
+                        /chat/{chatPage.slug}
+                      </Button>
+                  </TableCell>
+                  <TableCell className="hidden text-muted-foreground md:table-cell">
+                    {chatPage.widget_inbox_name || '—'}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <Badge variant={chatPage.published ? 'success' : 'secondary'}>
+                      {chatPage.published ? t('status.published') : t('status.draft')}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-end">
+                      <div className="flex justify-end gap-1">
+                        {canUpdate && (
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button variant="ghost" size="icon-sm" onClick={() => openEdit(chatPage)} aria-label={t('actions.edit')} />
+                              }
+                            >
+                              <Pencil />
+                            </TooltipTrigger>
+                            <TooltipPopup>{t('actions.edit')}</TooltipPopup>
+                          </Tooltip>
+                        )}
+                        {canDelete && (
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={() => setDeleteTarget(chatPage)}
+                                  aria-label={t('actions.delete')}
+                                  className="text-destructive-foreground hover:bg-destructive/8"
+                                />
+                              }
+                            >
+                              <Trash2 />
+                            </TooltipTrigger>
+                            <TooltipPopup>{t('actions.delete')}</TooltipPopup>
+                          </Tooltip>
+                        )}
+                      </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
 
@@ -275,24 +269,15 @@ export default function ChatPages() {
         widgets={widgets}
       />
 
-      <Dialog open={!!deleteTarget} onOpenChange={v => !v && setDeleteTarget(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('delete.title')}</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            {t('delete.description', { name: deleteTarget?.title || deleteTarget?.slug })}
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              {t('delete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              {t('delete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={v => !v && setDeleteTarget(null)}
+        title={t('delete.title')}
+        description={t('delete.description', { name: deleteTarget?.title || deleteTarget?.slug })}
+        cancelLabel={t('delete.cancel')}
+        confirmLabel={t('delete.confirm')}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

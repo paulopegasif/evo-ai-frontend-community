@@ -160,7 +160,11 @@
     },
     "pageTitle": "Création d'un nouveau Pipeline",
     "back": "Retour",
-    "newStageColor": "Couleur de l'étape"
+    "newStageColor": "Couleur de l'étape",
+    "teamSelection": {
+      "remove": "Retirer {{name}}"
+    },
+    "removeStage": "Supprimer l’étape {{name}}"
   },
   "createStage": {
     "title": "Créer une Nouvelle Étape",
@@ -290,7 +294,8 @@
     "saving": "Enregistrement...",
     "save": "Enregistrer les Modifications",
     "scheduleAction": "Planifier une action",
-    "stageLabel": "Étape :"
+    "stageLabel": "Étape :",
+    "removeService": "Retirer le service"
   },
   "editConversation": {
     "title": "Modifier la Conversation dans le Pipeline",
@@ -346,7 +351,10 @@
     "pipelineActive": "Pipeline actif",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Enregistrer les Modifications"
+    "save": "Enregistrer les Modifications",
+    "teamSelection": {
+      "remove": "Retirer {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Règles d'Automatisation",
@@ -378,7 +386,8 @@
       "move_to_pipeline": "Déplacer vers un autre pipeline",
       "assign_agent": "Assigner un agent",
       "apply_label": "Appliquer une étiquette"
-    }
+    },
+    "removeRule": "Supprimer la règle"
   },
   "editStage": {
     "title": "Modifier l'Étape",
@@ -416,7 +425,9 @@
     "stageName": "Nom de l'étape",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Enregistrer les Modifications"
+    "save": "Enregistrer les Modifications",
+    "countsAsQualified": "Compte comme lead qualifié",
+    "countsAsQualifiedHint": "Dans le suivi des leads, toute personne atteignant cette étape est comptée comme « qualifiée », même sans évaluation planifiée."
   },
   "pipelineCard": {
     "active": "Actif",
@@ -545,7 +556,9 @@
     "noStages": "Aucune étape trouvée à réorganiser.",
     "cancel": "Annuler",
     "saving": "Enregistrement...",
-    "save": "Enregistrer l'Ordre"
+    "save": "Enregistrer l'Ordre",
+    "moveUp": "Monter",
+    "moveDown": "Descendre"
   },
   "kanban": {
     "search": {
@@ -642,7 +655,9 @@
         "snoozed": "Reporté"
       },
       "valueLabel": "Valeur Totale :",
-      "system": "Système"
+      "system": "Système",
+      "incoming": "Entrant",
+      "outgoing": "Sortant"
     },
     "messages": {
       "conversationMoved": "Conversation déplacée avec succès",
@@ -667,7 +682,9 @@
       "conversationUpdated": "Élément mis à jour avec succès",
       "conversationUpdateError": "Erreur lors de la mise à jour de l'élément",
       "itemHiddenByFilter": "Carte déplacée — elle peut être masquée par les filtres actifs",
-      "newItemMayBeHidden": "Carte ajoutée — elle peut être masquée par les filtres actifs"
+      "newItemMayBeHidden": "Carte ajoutée — elle peut être masquée par les filtres actifs",
+      "notInPipeline": "Ce contact n'est dans aucun pipeline",
+      "conversationNotInPipeline": "Cette conversation n'est dans aucun pipeline"
     },
     "tasks": {
       "pending": "en attente",
@@ -781,7 +798,16 @@
       "moveSuccess": "Tâche déplacée avec succès",
       "moveError": "Erreur lors du déplacement de la tâche",
       "addSubtaskSuccess": "Sous-tâche ajoutée avec succès",
-      "addSubtaskError": "Erreur lors de l'ajout de la sous-tâche"
+      "addSubtaskError": "Erreur lors de l'ajout de la sous-tâche",
+      "deleteWithSubtasksConfirm": "Cette tâche a {{count}} sous-tâche(s). Tout supprimer ?"
+    },
+    "edit": "Modifier la tâche",
+    "delete": "Supprimer la tâche",
+    "confirm": {
+      "completeTitle": "Terminer la tâche",
+      "reopenTitle": "Rouvrir la tâche",
+      "complete": "Terminer",
+      "reopen": "Rouvrir"
     }
   },
   "dialog": {
@@ -812,5 +838,8 @@
     "loadError": "Échec du chargement des formulaires",
     "saveError": "Échec de l'enregistrement",
     "deleteError": "Échec de la suppression"
+  },
+  "attributes": {
+    "remove": "Retirer {{name}}"
   }
 }

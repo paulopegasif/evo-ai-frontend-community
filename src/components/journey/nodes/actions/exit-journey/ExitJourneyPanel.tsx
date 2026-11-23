@@ -1,14 +1,8 @@
 import { useMemo, useState } from 'react';
-import {
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-} from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { LogOut } from 'lucide-react';
 import { ExitJourneyNodeData } from './ExitJourneyNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
@@ -83,47 +77,57 @@ export function ExitJourneyPanel({ nodeId, data, onUpdate, onClose }: ExitJourne
           <p className="text-xs">{t('panels.exitJourney.intro')}</p>
         </FlowFeedbackBanner>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.exitJourney.reasonLabel')}</Label>
-          <Select value={selectedReason} onValueChange={setSelectedReason}>
+        <Field>
+          <FieldLabel>{t('panels.exitJourney.reasonLabel')}</FieldLabel>
+          <Select
+            items={[
+              ...PRESET_REASONS.map(reason => ({
+                value: reason as string,
+                label: t(`panels.exitJourney.reasons.${reason}`),
+              })),
+              { value: CUSTOM, label: t('panels.exitJourney.reasons.custom') },
+            ]}
+            value={selectedReason || null}
+            onValueChange={value => setSelectedReason(String(value ?? ''))}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t('panels.exitJourney.reasonPlaceholder')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup alignItemWithTrigger={false}>
               {PRESET_REASONS.map(reason => (
                 <SelectItem key={reason} value={reason}>
                   {t(`panels.exitJourney.reasons.${reason}`)}
                 </SelectItem>
               ))}
               <SelectItem value={CUSTOM}>{t('panels.exitJourney.reasons.custom')}</SelectItem>
-            </SelectContent>
+            </SelectPopup>
           </Select>
-          <p className="text-xs text-muted-foreground">{t('panels.exitJourney.reasonHint')}</p>
-        </div>
+          <FieldDescription>{t('panels.exitJourney.reasonHint')}</FieldDescription>
+        </Field>
 
         {selectedReason === CUSTOM && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
+          <Field>
+            <FieldLabel>
               {t('panels.exitJourney.customReasonLabel')}
-            </Label>
+            </FieldLabel>
             <Input
               value={customReason}
               onChange={e => setCustomReason(e.target.value)}
               placeholder={t('panels.exitJourney.customReasonPlaceholder')}
             />
-          </div>
+          </Field>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.exitJourney.messageLabel')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.exitJourney.messageLabel')}</FieldLabel>
           <Textarea
             value={exitMessage}
             onChange={e => setExitMessage(e.target.value)}
             placeholder={t('panels.exitJourney.messagePlaceholder')}
             rows={3}
           />
-          <p className="text-xs text-muted-foreground">{t('panels.exitJourney.messageHint')}</p>
-        </div>
+          <FieldDescription>{t('panels.exitJourney.messageHint')}</FieldDescription>
+        </Field>
 
         {!isValid && (
           <FlowFeedbackBanner variant="warn">

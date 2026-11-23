@@ -2,12 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Bell } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import NotificationPanel from './NotificationPanel';
 import { useNotifications } from '@/contexts/NotificationsContext';
 import { cn } from '@/lib/utils';
@@ -58,35 +54,34 @@ export default function NotificationBell() {
   };
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            'relative h-10 w-10 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground cursor-pointer',
-            isOpen && 'bg-primary/10 text-primary hover:bg-primary/10'
-          )}
-        >
-          <Bell className={cn('h-5 w-5', isOpen && 'text-primary')} />
-          {unreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-1 bg-yellow-400 text-black text-xs font-medium min-w-[1rem] h-4 rounded-full flex items-center justify-center px-1">
-              {getUnreadCountDisplay()}
-            </span>
-          )}
-          <span className="sr-only">{t('notifications.bell.ariaLabel')}</span>
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        className="w-[520px] p-0 bg-background border shadow-lg"
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t('notifications.bell.ariaLabel')}
+            className={cn(
+              'relative text-sidebar-foreground hover:bg-sidebar-accent',
+              isOpen && 'bg-sidebar-accent',
+            )}
+          />
+        }
+      >
+        <Bell className="size-5" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-warning px-1 font-medium text-[10px] text-black tabular-nums ring-2 ring-sidebar">
+            {getUnreadCountDisplay()}
+          </span>
+        )}
+      </PopoverTrigger>
+      <PopoverPopup
         align="end"
         sideOffset={8}
+        className="w-[min(30rem,calc(100vw-1rem))] [&_[data-slot=popover-viewport]]:p-0"
       >
-        <NotificationPanel
-          onClose={() => setIsOpen(false)}
-        />
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <NotificationPanel onClose={() => setIsOpen(false)} />
+      </PopoverPopup>
+    </Popover>
   );
 }

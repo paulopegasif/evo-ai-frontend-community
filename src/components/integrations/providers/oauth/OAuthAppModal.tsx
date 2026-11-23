@@ -1,17 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Textarea,
-  Card
-} from '@evoapi/design-system';
-import { Key, AlertCircle } from 'lucide-react';
+import { Key } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DialogClose } from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { OAuthApplication } from '@/types/integrations';
+import { AgentIntegrationDialog } from '../../agentConfig/AgentIntegrationDialog';
+import IntegrationNotice from '../../shared/IntegrationNotice';
 
 interface OAuthAppModalProps {
   app?: OAuthApplication;
@@ -39,6 +36,7 @@ export default function OAuthAppModal({
   loading: submitting = false
 }: OAuthAppModalProps) {
   const { t } = useLanguage('integrations');
+  const formId = useId();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -150,143 +148,126 @@ export default function OAuthAppModal({
       ...prev,
       scopes: presets[preset].join(' ')
     }));
+    if (errors.scopes) setErrors(prev => ({ ...prev, scopes: '' }));
   };
 
+  const saving = loading || submitting;
+  const updateField = (field: 'name' | 'redirect_uri' | 'scopes', value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
+  const presetButtons = [
+    { id: 'read', label: t('oauth.modal.presets.readOnly') },
+    { id: 'write', label: t('oauth.modal.presets.readWrite') },
+    { id: 'admin', label: t('oauth.modal.presets.admin') },
+  ] as const;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Key className="w-5 h-5" />
-            {app ? t('oauth.modal.updateTitle') : t('oauth.modal.title')}
-          </DialogTitle>
-        </DialogHeader>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<Key className="text-muted-foreground" />}
+      title={app ? t('oauth.modal.updateTitle') : t('oauth.modal.title')}
+      footer={
+        <>
+          <DialogClose render={<Button type="button" variant="ghost" />} disabled={saving}>
+            {t('oauth.modal.actions.cancel')}
+          </DialogClose>
+          <Button type="submit" form={formId} loading={saving}>
+            {saving
+              ? t('oauth.modal.actions.saving')
+              : app
+                ? t('oauth.modal.actions.update')
+                : t('oauth.modal.actions.create')}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('oauth.modal.basicInfo')}</h3>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('oauth.modal.basicInfo')}</h4>
+          <Field invalid={Boolean(errors.name)}>
+            <FieldLabel htmlFor="oauth-app-name">
+              {t('oauth.modal.fields.name.label')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Input
+              id="oauth-app-name"
+              placeholder={t('oauth.modal.fields.name.placeholder')}
+              value={formData.name}
+              onChange={e => updateField('name', e.target.value)}
+              aria-invalid={errors.name ? true : undefined}
+              autoFocus={!app}
+            />
+            {errors.name && <FieldError match>{errors.name}</FieldError>}
+          </Field>
 
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('oauth.modal.fields.name.label')} *
-                </label>
-                <Input
-                  id="name"
-                  placeholder={t('oauth.modal.fields.name.placeholder')}
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className={errors.name ? 'border-red-500' : ''}
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-600 mt-1">{errors.name}</p>
-                )}
-              </div>
+          <Field invalid={Boolean(errors.redirect_uri)}>
+            <FieldLabel htmlFor="oauth-app-redirect-uri">
+              {t('oauth.modal.fields.redirectUri.label')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Input
+              id="oauth-app-redirect-uri"
+              type="url"
+              inputMode="url"
+              placeholder={t('oauth.modal.fields.redirectUri.placeholder')}
+              value={formData.redirect_uri}
+              onChange={e => updateField('redirect_uri', e.target.value)}
+              aria-invalid={errors.redirect_uri ? true : undefined}
+            />
+            {errors.redirect_uri ? (
+              <FieldError match>{errors.redirect_uri}</FieldError>
+            ) : (
+              <FieldDescription>{t('oauth.modal.fields.redirectUri.hint')}</FieldDescription>
+            )}
+          </Field>
+        </section>
 
-              <div>
-                <label htmlFor="redirect_uri" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('oauth.modal.fields.redirectUri.label')} *
-                </label>
-                <Input
-                  id="redirect_uri"
-                  placeholder={t('oauth.modal.fields.redirectUri.placeholder')}
-                  value={formData.redirect_uri}
-                  onChange={(e) => setFormData(prev => ({ ...prev, redirect_uri: e.target.value }))}
-                  className={errors.redirect_uri ? 'border-red-500' : ''}
-                />
-                {errors.redirect_uri && (
-                  <p className="text-sm text-red-600 mt-1">{errors.redirect_uri}</p>
-                )}
-                <p className="text-xs text-slate-500 mt-1">
-                  {t('oauth.modal.fields.redirectUri.hint')}
-                </p>
-              </div>
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('oauth.modal.scopes')}</h3>
 
+          <Field invalid={Boolean(errors.scopes)}>
+            <FieldLabel htmlFor="oauth-app-scopes">
+              {t('oauth.modal.fields.scopes.label')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <Textarea
+              id="oauth-app-scopes"
+              placeholder={t('oauth.modal.fields.scopes.placeholder')}
+              value={formData.scopes}
+              onChange={e => updateField('scopes', e.target.value)}
+              rows={3}
+              className="font-mono"
+              aria-invalid={errors.scopes ? true : undefined}
+            />
+            {errors.scopes ? (
+              <FieldError match>{errors.scopes}</FieldError>
+            ) : (
+              <FieldDescription>{t('oauth.modal.fields.scopes.hint')}</FieldDescription>
+            )}
+          </Field>
+
+          <div className="flex flex-col gap-2">
+            <span className="font-medium text-sm">{t('oauth.modal.presets.title')}</span>
+            <div className="flex flex-wrap gap-2">
+              {presetButtons.map(preset => (
+                <Button
+                  key={preset.id}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleScopePreset(preset.id)}
+                >
+                  {preset.label}
+                </Button>
+              ))}
             </div>
-          </Card>
-
-          {/* Scopes Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('oauth.modal.scopes')}</h4>
-
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="scopes" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('oauth.modal.fields.scopes.label')} *
-                </label>
-                <Textarea
-                  id="scopes"
-                  placeholder={t('oauth.modal.fields.scopes.placeholder')}
-                  value={formData.scopes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, scopes: e.target.value }))}
-                  rows={3}
-                  className={errors.scopes ? 'border-red-500' : ''}
-                />
-                {errors.scopes && (
-                  <p className="text-sm text-red-600 mt-1">{errors.scopes}</p>
-                )}
-                <p className="text-xs text-slate-500 mt-1">
-                  {t('oauth.modal.fields.scopes.hint')}
-                </p>
-              </div>
-
-              {/* Scope Presets */}
-              <div>
-                <span className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  {t('oauth.modal.presets.title')}
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleScopePreset('read')}
-                  >
-                    {t('oauth.modal.presets.readOnly')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleScopePreset('write')}
-                  >
-                    {t('oauth.modal.presets.readWrite')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleScopePreset('admin')}
-                  >
-                    {t('oauth.modal.presets.admin')}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Security Info */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
-                <strong>{t('oauth.modal.security.title')}</strong> {t('oauth.modal.security.description')}
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t('oauth.modal.actions.cancel')}
-            </Button>
-            <Button type="submit" disabled={loading || submitting}>
-              {loading || submitting ? t('oauth.modal.actions.saving') : (app ? t('oauth.modal.actions.update') : t('oauth.modal.actions.create'))}
-            </Button>
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </section>
+
+        <IntegrationNotice variant="warning" title={t('oauth.modal.security.title')}>
+          {t('oauth.modal.security.description')}
+        </IntegrationNotice>
+      </form>
+    </AgentIntegrationDialog>
   );
 }

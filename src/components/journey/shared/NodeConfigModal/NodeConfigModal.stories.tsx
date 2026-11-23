@@ -13,7 +13,7 @@ const meta: Meta<typeof NodeConfigModal> = {
           'Shared modal chrome for any Flow Builder node configuration form. ' +
           'Discriminated-union API: `variant="simple"` (80% of nodes), `variant="tabs"` ' +
           '(basic/advanced split), or `variant="disclosure"` (body + collapsible advanced ' +
-          'settings). Focus trap + ESC + ARIA come from the underlying `@evoapi/design-system` ' +
+          'settings). Focus trap + ESC + ARIA come from the underlying coss ui (Base UI) ' +
           'Dialog primitive (Radix). Lifted state mandatory — every prop is controlled by the ' +
           'consumer; the component itself holds no useState.\n\n' +
           'The body / tab / advanced slots below are intentionally abstract placeholders — ' +

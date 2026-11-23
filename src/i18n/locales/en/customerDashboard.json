@@ -19,7 +19,8 @@
       "until": "To",
       "period": "Period",
       "apply": "Apply filters",
-      "clear": "Clear filters"
+      "clear": "Clear filters",
+      "days": "days"
     },
     "stats": {
       "totalPipeline": "Total Pipeline",
@@ -146,6 +147,7 @@
       "agents": "No agent data for the selected period.",
       "channels": "No channel data for the selected period.",
       "pipelineInactive": "Pipeline inactive in the selected period."
-    }
+    },
+    "retry": "Try again"
   }
 }

@@ -83,6 +83,7 @@ import ShopifyPage from '../pages/Customer/Settings/Integrations/ShopifyPage';
 import LinearPage from '../pages/Customer/Settings/Integrations/LinearPage';
 import GoogleCalendarPage from '../pages/Customer/Settings/Integrations/GoogleCalendarPage';
 import MetaAdsPage from '../pages/Customer/Settings/Integrations/MetaAdsPage';
+import MetaConversionsPage from '../pages/Customer/Settings/Integrations/MetaConversionsPage';
 import DashboardAppPage from '../pages/Customer/DashboardApp';
 import CalendarPage from '@/pages/Customer/Calendar';
 import LeadTrackingPage from '@/pages/Customer/LeadTracking';
@@ -1083,6 +1084,20 @@ const AppRouter = () => {
                   <MainLayout>
                     <PermissionRoute resource="integrations" action="read">
                       <MetaAdsPage />
+                    </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings/integrations/meta_conversions"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <PermissionRoute resource="integrations" action="read">
+                      <MetaConversionsPage />
                     </PermissionRoute>
                   </MainLayout>
                 </CustomerRoute>

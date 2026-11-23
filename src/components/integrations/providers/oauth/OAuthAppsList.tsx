@@ -1,18 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Card,
-} from '@evoapi/design-system';
-import { Key, Copy } from 'lucide-react';
+import { Key, Copy, EyeOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import EmptyState from '@/components/base/EmptyState';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { integrationsService } from '@/services/integrations';
 import { OAuthApplication } from '@/types/integrations';
@@ -343,7 +339,7 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-none p-4 pb-0">
+      <div className="flex-none p-4 pb-0 md:px-6 md:pt-6">
         <OAuthAppsHeader
           totalCount={state.meta.pagination.total}
           selectedCount={state.selectedAppIds.length}
@@ -357,11 +353,9 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto px-4 mt-6">
+      <div className="mt-5 flex-1 overflow-auto px-4 pb-4 md:px-6">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('oauth.messages.loading')}</div>
-          </div>
+          <ListSkeleton />
         ) : state.apps.length === 0 ? (
           <EmptyState
             icon={Key}
@@ -407,66 +401,43 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
             {/* Credentials Display */}
             {state.apps.length > 0 &&
               Object.keys(state.showSecrets).some(id => state.showSecrets[id]) && (
-                <Card className="p-6">
-                  <h4 className="font-semibold mb-4">{t('oauth.credentials.title')}</h4>
-                  <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">{t('oauth.credentials.title')}</CardTitle>
+                  </CardHeader>
+                  <CardPanel className="flex flex-col gap-3">
                     {state.apps
                       .filter(app => state.showSecrets[app.uid])
                       .map(app => (
-                        <Card key={app.uid} className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <h5 className="font-medium">{app.name}</h5>
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                        <div key={app.uid} className="flex flex-col gap-3 rounded-xl border bg-muted/24 p-4">
+                          <div className="flex items-center justify-between gap-2">
+                            <CardDescription className="font-medium text-foreground">{app.name}</CardDescription>
+                            <IconAction
+                              label={t('oauth.table.actions.hideSecret')}
                               onClick={() => handleToggleSecret(app.uid)}
                             >
-                              <Copy className="w-4 h-4" />
-                            </Button>
+                              <EyeOff />
+                            </IconAction>
                           </div>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-xs text-slate-500">
-                                {t('oauth.credentials.clientId')}
-                              </label>
-                              <div className="flex items-center gap-2">
-                                <code className="text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded flex-1 min-w-0 truncate">
-                                  {app.uid}
-                                </code>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="p-1 h-7 w-7"
-                                  onClick={() => handleCopyToClipboard(app.uid, false)}
-                                >
-                                  <Copy className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            </div>
+                          <div className="grid gap-3 md:grid-cols-2">
+                            <CredentialField
+                              label={t('oauth.credentials.clientId')}
+                              value={app.uid}
+                              copyLabel={t('oauth.table.actions.copyClientId')}
+                              onCopy={() => handleCopyToClipboard(app.uid, false)}
+                            />
                             {app.secret && (
-                              <div>
-                                <label className="text-xs text-slate-500">
-                                  {t('oauth.credentials.clientSecret')}
-                                </label>
-                                <div className="flex items-center gap-2">
-                                  <code className="text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded flex-1 min-w-0 truncate">
-                                    {app.secret}
-                                  </code>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="p-1 h-7 w-7"
-                                    onClick={() => handleCopyToClipboard(app.secret!, true)}
-                                  >
-                                    <Copy className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                              </div>
+                              <CredentialField
+                                label={t('oauth.credentials.clientSecret')}
+                                value={app.secret}
+                                copyLabel={t('oauth.table.actions.copySecret')}
+                                onCopy={() => handleCopyToClipboard(app.secret!, true)}
+                              />
                             )}
                           </div>
-                        </Card>
+                        </div>
                       ))}
-                  </div>
+                  </CardPanel>
                 </Card>
               )}
           </div>
@@ -475,7 +446,7 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
 
       {/* Fixed Pagination at Bottom */}
       {state.meta.pagination.total > 0 && (
-        <div className="flex-none border-t bg-background px-4 py-2">
+        <div className="flex-none border-t bg-background px-4 py-3 md:px-6">
           <OAuthAppsPagination
             currentPage={state.meta.pagination.page}
             totalPages={state.meta.pagination.total_pages}
@@ -489,60 +460,28 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
       )}
 
       {/* Delete App Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('oauth.deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('oauth.deleteDialog.description', { name: appToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('oauth.deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteApp}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('oauth.deleteDialog.deleting')
-                : t('oauth.deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('oauth.deleteDialog.title')}
+        description={t('oauth.deleteDialog.description', { name: appToDelete?.name })}
+        cancelLabel={t('oauth.deleteDialog.cancel')}
+        confirmLabel={t('oauth.deleteDialog.confirm')}
+        onConfirm={confirmDeleteApp}
+        loading={state.loading.delete}
+      />
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('oauth.bulkDeleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('oauth.bulkDeleteDialog.description', { count: state.selectedAppIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('oauth.bulkDeleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('oauth.bulkDeleteDialog.deleting')
-                : t('oauth.bulkDeleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('oauth.bulkDeleteDialog.title')}
+        description={t('oauth.bulkDeleteDialog.description', { count: state.selectedAppIds.length })}
+        cancelLabel={t('oauth.bulkDeleteDialog.cancel')}
+        confirmLabel={t('oauth.bulkDeleteDialog.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* OAuth App Modal */}
       <OAuthAppModal
@@ -553,6 +492,53 @@ export default function OAuthAppsList({ onBack }: OAuthAppsListProps = {}) {
         isNew={!editingApp}
         loading={state.loading.create || state.loading.update}
       />
+    </div>
+  );
+}
+
+function IconAction({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={<Button type="button" variant="ghost" size="icon-xs" aria-label={label} onClick={onClick} />}
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipPopup>{label}</TooltipPopup>
+    </Tooltip>
+  );
+}
+
+function CredentialField({
+  label,
+  value,
+  copyLabel,
+  onCopy,
+}: {
+  label: string;
+  value: string;
+  copyLabel: string;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="text-muted-foreground text-xs">{label}</span>
+      <InputGroup>
+        <InputGroupInput readOnly value={value} aria-label={label} className="font-mono" />
+        <InputGroupAddon align="inline-end">
+          <IconAction label={copyLabel} onClick={onCopy}>
+            <Copy />
+          </IconAction>
+        </InputGroupAddon>
+      </InputGroup>
     </div>
   );
 }

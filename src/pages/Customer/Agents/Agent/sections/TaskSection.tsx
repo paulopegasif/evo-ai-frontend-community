@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { ListChecks } from 'lucide-react';
+import SectionHeader from './SectionHeader';
 import TaskConfigForm, { TaskConfigData } from '@/components/ai_agents/Forms/TaskConfigForm';
 
 interface TaskSectionProps {
@@ -20,13 +22,12 @@ const TaskSection = ({ data, onChange, editingAgentId, folderId }: TaskSectionPr
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">{t('edit.task.title') || 'Configuração de Tarefa'}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t('edit.task.subtitle') || 'Configure a tarefa que este agente irá executar'}
-        </p>
-      </div>
+    <div className="flex flex-col gap-6">
+      <SectionHeader
+        icon={ListChecks}
+        title={t('edit.task.title') || 'Configuração de Tarefa'}
+        description={t('edit.task.subtitle') || 'Configure a tarefa que este agente irá executar'}
+      />
 
       <TaskConfigForm
         mode="edit"

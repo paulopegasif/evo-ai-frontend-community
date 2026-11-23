@@ -822,7 +822,9 @@
         "apiKeyHeader": "API Key in header: {{header}}",
         "apiKeyNotConfigured": "API Key not configured",
         "noAuth": "No authentication",
-        "sensitiveDataEncrypted": "Sensitive data will be encrypted when saving"
+        "sensitiveDataEncrypted": "Sensitive data will be encrypted when saving",
+        "showValue": "Afficher la valeur",
+        "hideValue": "Masquer la valeur"
       },
       "basic": {
         "endpointUrl": "Endpoint URL *",
@@ -931,7 +933,8 @@
         "suggestedHeaders": "Suggested Headers:",
         "summaryTitle": "Summary:",
         "headersConfigured": "{{count}} header{{plural}} configured{{plural}}",
-        "containsSensitive": "Contains sensitive headers - will be encrypted when saving"
+        "containsSensitive": "Contains sensitive headers - will be encrypted when saving",
+        "removeHeader": "Supprimer l'en-tête"
       }
     },
     "assignBot": {
@@ -1163,7 +1166,10 @@
       },
       "placeholders": {
         "selectVariable": "Sélectionner une variable..."
-      }
+      },
+      "removeCondition": "Supprimer la condition",
+      "duplicatePath": "Dupliquer le chemin",
+      "removePath": "Supprimer le chemin"
     },
     "deferConversation": {
       "title": "Configure Deferment of Conversation",
@@ -1477,7 +1483,8 @@
         "addVariant": "Add Variant",
         "distributeEqually": "Distribute Equally",
         "cancel": "Cancel",
-        "save": "Save"
+        "save": "Save",
+        "removeVariant": "Supprimer la variante"
       },
       "status": {
         "total": "Total",
@@ -1843,7 +1850,8 @@
         "ultima_atividade": "Dernière activité",
         "criado": "Créé",
         "atualizado": "Mis à jour"
-      }
+      },
+      "removeField": "Supprimer le champ"
     },
     "pipelineStageChanged": {
       "pipeline": "Pipeline",
@@ -1989,7 +1997,22 @@
       "method": "Méthode",
       "headersCount": "en-tête(s) personnalisé(s)",
       "captureWebhookData": "Capturer les données du webhook",
-      "urlCopied": "URL du webhook copiée dans le presse-papiers"
+      "urlCopied": "URL du webhook copiée dans le presse-papiers",
+      "copyUrl": "Copier l'URL",
+      "removeHeader": "Supprimer l'en-tête"
+    }
+  },
+  "sessions": {
+    "viewer": {
+      "actions": {
+        "close": "Fermer"
+      },
+      "confirm": {
+        "deleteTitle": "Supprimer la session ?",
+        "cancelTitle": "Annuler la session ?",
+        "cancelConfirm": "Annuler la session",
+        "back": "Retour"
+      }
     }
   }
 }

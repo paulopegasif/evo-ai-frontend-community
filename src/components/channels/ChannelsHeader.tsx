@@ -25,7 +25,7 @@ export default function ChannelsHeader({
 
   const primaryAction: HeaderAction | undefined = isReady && can('inboxes', 'create') ? {
     label: t('actions.newChannel'),
-    icon: <Plus className="h-4 w-4" />,
+    icon: <Plus />,
     onClick: onNewChannel,
     dataTour: 'channels-new-button',
   } : undefined;
@@ -42,7 +42,6 @@ export default function ChannelsHeader({
       primaryAction={primaryAction}
       onClearSelection={onClearSelection}
       showFilters={false}
-      className="mb-4"
     />
   );
 }

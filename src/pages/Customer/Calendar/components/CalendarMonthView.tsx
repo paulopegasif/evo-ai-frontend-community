@@ -2,6 +2,7 @@ import React from 'react';
 import type { Appointment } from '@/types/appointments';
 import { Plus } from 'lucide-react';
 import { appointmentDayKey, appointmentTimeLabel, cellDayKey, todayKey } from '@/utils/accountTime';
+import { cn } from '@/lib/utils';
 import { statusStyle } from './statusStyles';
 
 interface CalendarMonthViewProps {
@@ -71,17 +72,13 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
   }, {});
 
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs">
+    <div className="overflow-hidden rounded-xl border bg-card shadow-xs/5">
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 border-b border-border bg-muted/50 text-center py-2.5">
+      <div className="grid grid-cols-7 border-b bg-muted/40 py-2 text-center">
         {weekdays.map((w, idx) => (
           <div
             key={w}
-            className={`text-xs font-semibold ${
-              idx === 0 || idx === 6
-                ? 'text-primary'
-                : 'text-muted-foreground'
-            }`}
+            className={cn('font-medium text-xs', idx === 0 || idx === 6 ? 'text-muted-foreground/72' : 'text-muted-foreground')}
           >
             {w}
           </div>
@@ -89,7 +86,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
       </div>
 
       {/* Grid of days */}
-      <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-border border-b border-border">
+      <div className="grid auto-rows-fr grid-cols-7 divide-x divide-y divide-border">
         {days.map(({ date, isCurrentMonth }, index) => {
           const dateKey = cellDayKey(date);
           // Timed appointments first, by time; "a definir" at the end of the day.
@@ -102,21 +99,21 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
             <div
               key={index}
               onClick={() => onSelectDate(date)}
-              className={`min-h-[110px] p-2 transition-colors group relative cursor-pointer flex flex-col justify-between ${
-                isCurrentMonth
-                  ? 'bg-card hover:bg-primary/10'
-                  : 'bg-muted/30 text-muted-foreground/70'
-              }`}
+              className={cn(
+                'group relative flex min-h-28 cursor-pointer flex-col p-1.5 transition-colors',
+                isCurrentMonth ? 'bg-card hover:bg-accent/40' : 'bg-muted/32 text-muted-foreground/72',
+              )}
             >
               <div className="flex items-center justify-between">
                 <span
-                  className={`text-xs font-semibold flex items-center justify-center w-6 h-6 rounded-full transition-all ${
+                  className={cn(
+                    'flex size-6 items-center justify-center rounded-full font-medium text-xs tabular-nums',
                     isCurrentDay
-                      ? 'bg-primary text-white shadow-xs'
+                      ? 'bg-primary text-primary-foreground'
                       : isCurrentMonth
-                      ? 'text-foreground group-hover:text-primary'
-                      : 'text-muted-foreground/70'
-                  }`}
+                        ? 'text-foreground'
+                        : 'text-muted-foreground/72',
+                  )}
                 >
                   {date.getDate()}
                 </span>
@@ -127,37 +124,38 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                     e.stopPropagation();
                     onSelectDate(date);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+                  className="rounded-md p-1 text-muted-foreground opacity-0 outline-none transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
+                  aria-label={`Agendar em ${date.toLocaleDateString('pt-BR')}`}
                   title="Agendar neste dia"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="size-3.5" />
                 </button>
               </div>
 
-              {/* Appointments List for Day */}
-              <div className="mt-1 space-y-1 flex-1 overflow-y-auto max-h-[85px] no-scrollbar">
+              {/* Appointments of the day */}
+              <div className="mt-1 flex-1 space-y-1">
                 {dayApts.slice(0, 3).map((apt) => {
                   const startTime = appointmentTimeLabel(apt);
-                  const colorClass = statusStyle(apt.status).block;
-
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={apt.id}
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelectAppointment(apt);
                       }}
-                      className={`text-[11px] px-1.5 py-1 rounded-md border-l-3 transition-transform hover:scale-[1.02] shadow-2xs truncate ${colorClass}`}
+                      className={cn(
+                        'block w-full truncate rounded-md border-l-3 px-1.5 py-0.5 text-left text-[11px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                        statusStyle(apt.status).block,
+                      )}
                       title={`${startTime} - ${apt.title} (${apt.contact?.name || ''})`}
                     >
-                      <div className="font-semibold flex items-center justify-between">
-                        <span>{startTime}</span>
-                        <span className="text-[10px] font-normal truncate opacity-80 ml-1">
-                          {apt.contact?.name || apt.title}
-                        </span>
-                      </div>
-                      <div className="text-[10px] opacity-75 truncate">{apt.category}</div>
-                    </div>
+                      <span className="flex items-center gap-1">
+                        <span className="font-semibold tabular-nums">{startTime}</span>
+                        <span className="truncate">{apt.contact?.name || apt.title}</span>
+                      </span>
+                      <span className="block truncate text-[10px] opacity-72">{apt.category}</span>
+                    </button>
                   );
                 })}
                 {dayApts.length > 3 && (
@@ -167,7 +165,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                       e.stopPropagation();
                       (onOpenDay ?? onSelectDate)(date);
                     }}
-                    className="w-full text-[10px] text-center font-medium text-primary py-0.5 hover:underline"
+                    className="w-full rounded-md py-0.5 text-center font-medium text-[11px] text-primary hover:bg-primary/8"
                   >
                     +{dayApts.length - 3} mais
                   </button>

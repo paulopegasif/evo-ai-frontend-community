@@ -1,19 +1,18 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Label,
-  Input,
-} from '@evoapi/design-system';
-import {  Info, Trash2, Plus, CheckSquare, Calendar } from 'lucide-react';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Info, Trash2, Plus, CheckSquare, Calendar } from 'lucide-react';
 import { useState } from 'react';
 
 export interface PipelineTask {
@@ -44,7 +43,11 @@ export interface PipelineAutomationConfig {
 interface PipelineAutomationProps {
   rules: PipelineAutomationConfig[];
   onChange: (rules: PipelineAutomationConfig[]) => void;
-  availablePipelines?: Array<{ id: string; name: string; stages: Array<{ id: string; name: string }> }>;
+  availablePipelines?: Array<{
+    id: string;
+    name: string;
+    stages: Array<{ id: string; name: string }>;
+  }>;
 }
 
 const TASK_TYPES = [
@@ -57,13 +60,17 @@ const TASK_TYPES = [
 ];
 
 const PRIORITIES = [
-  { value: 'low', label: 'Baixa', color: 'text-gray-500' },
-  { value: 'medium', label: 'Média', color: 'text-yellow-500' },
-  { value: 'high', label: 'Alta', color: 'text-orange-500' },
-  { value: 'urgent', label: 'Urgente', color: 'text-red-500' },
+  { value: 'low', label: 'Baixa', color: 'text-muted-foreground' },
+  { value: 'medium', label: 'Média', color: 'text-warning' },
+  { value: 'high', label: 'Alta', color: 'text-warning-foreground' },
+  { value: 'urgent', label: 'Urgente', color: 'text-destructive' },
 ];
 
-const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: PipelineAutomationProps) => {
+const PipelineAutomation = ({
+  rules,
+  onChange,
+  availablePipelines = [],
+}: PipelineAutomationProps) => {
   const { t } = useLanguage('aiAgents');
   const [expandedRule, setExpandedRule] = useState<string | null>(null);
   const [expandedStage, setExpandedStage] = useState<string | null>(null);
@@ -90,7 +97,7 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
           return updatedRule;
         }
         return rule;
-      })
+      }),
     );
   };
 
@@ -119,14 +126,14 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
   const handleUpdateStageAutomation = (
     ruleId: string,
     stageId: string,
-    updates: Partial<StageAutomation>
+    updates: Partial<StageAutomation>,
   ) => {
     const rule = rules.find(r => r.id === ruleId);
     if (!rule) return;
 
     handleUpdateRule(ruleId, {
       stageAutomations: rule.stageAutomations.map(stage =>
-        stage.id === stageId ? { ...stage, ...updates } : stage
+        stage.id === stageId ? { ...stage, ...updates } : stage,
       ),
     });
   };
@@ -161,14 +168,16 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
     ruleId: string,
     stageId: string,
     taskId: string,
-    updates: Partial<PipelineTask>
+    updates: Partial<PipelineTask>,
   ) => {
     const rule = rules.find(r => r.id === ruleId);
     const stage = rule?.stageAutomations.find(s => s.id === stageId);
     if (!rule || !stage) return;
 
     handleUpdateStageAutomation(ruleId, stageId, {
-      createTasks: stage.createTasks.map(task => (task.id === taskId ? { ...task, ...updates } : task)),
+      createTasks: stage.createTasks.map(task =>
+        task.id === taskId ? { ...task, ...updates } : task,
+      ),
     });
   };
 
@@ -205,14 +214,19 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
 
           return (
             <Card key={rule.id} className="bg-card">
-              <CardContent className="p-4">
+              <CardPanel className="p-4">
                 <div className="space-y-4">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <Select
-                        value={rule.pipelineId}
+                        items={availablePipelines.map(pipeline => ({
+                          value: pipeline.id,
+                          label: pipeline.name,
+                        }))}
+                        value={rule.pipelineId || null}
                         onValueChange={value => {
+                          if (value === null) return;
                           const pipeline = availablePipelines.find(p => p.id === value);
                           handleUpdateRule(rule.id || '', {
                             pipelineId: value,
@@ -228,13 +242,13 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                             }
                           />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           {availablePipelines.map(pipeline => (
                             <SelectItem key={pipeline.id} value={pipeline.id}>
                               {pipeline.name}
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                     <div className="flex items-center gap-2">
@@ -273,7 +287,8 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                           disabled={!rule.id}
                         >
                           <Plus className="h-4 w-4 mr-2" />
-                          {t('edit.configuration.pipelineAutomation.addStage') || 'Adicionar Estágio'}
+                          {t('edit.configuration.pipelineAutomation.addStage') ||
+                            'Adicionar Estágio'}
                         </Button>
                       </div>
 
@@ -282,12 +297,17 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
 
                         return (
                           <Card key={stageAuto.id} className="bg-muted/30">
-                            <CardContent className="p-3 space-y-3">
+                            <CardPanel className="p-3 space-y-3">
                               {/* Stage Selection */}
                               <div className="flex items-center gap-3">
                                 <Select
-                                  value={stageAuto.stageId}
+                                  items={selectedPipeline.stages.map(stage => ({
+                                    value: stage.id,
+                                    label: stage.name,
+                                  }))}
+                                  value={stageAuto.stageId || null}
                                   onValueChange={value => {
+                                    if (value === null) return;
                                     const stage = selectedPipeline.stages.find(s => s.id === value);
                                     if (rule.id) {
                                       handleUpdateStageAutomation(rule.id, stageAuto.id, {
@@ -305,13 +325,13 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                       }
                                     />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectPopup>
                                     {selectedPipeline.stages.map(stage => (
                                       <SelectItem key={stage.id} value={stage.id}>
                                         {stage.name}
                                       </SelectItem>
                                     ))}
-                                  </SelectContent>
+                                  </SelectPopup>
                                 </Select>
                                 <Button
                                   type="button"
@@ -327,7 +347,9 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => rule.id && handleRemoveStageAutomation(rule.id, stageAuto.id)}
+                                  onClick={() =>
+                                    rule.id && handleRemoveStageAutomation(rule.id, stageAuto.id)
+                                  }
                                   disabled={!rule.id}
                                 >
                                   <Trash2 className="h-4 w-4 text-destructive" />
@@ -353,7 +375,7 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                       }
                                       placeholder={
                                         t(
-                                          'edit.configuration.pipelineAutomation.instructionsPlaceholder'
+                                          'edit.configuration.pipelineAutomation.instructionsPlaceholder',
                                         ) ||
                                         'Ex: Mover para este estágio quando o cliente demonstrar interesse em comprar...'
                                       }
@@ -395,7 +417,9 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => rule.id && handleAddTask(rule.id, stageAuto.id)}
+                                        onClick={() =>
+                                          rule.id && handleAddTask(rule.id, stageAuto.id)
+                                        }
                                         disabled={!rule.id}
                                       >
                                         <Plus className="h-3 w-3 mr-1" />
@@ -413,19 +437,24 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                       <div className="space-y-2">
                                         {stageAuto.createTasks.map(task => (
                                           <Card key={task.id} className="bg-background">
-                                            <CardContent className="p-3 space-y-2">
+                                            <CardPanel className="p-3 space-y-2">
                                               <div className="flex items-center gap-2">
                                                 <Input
                                                   value={task.title}
                                                   onChange={e =>
                                                     rule.id &&
-                                                    handleUpdateTask(rule.id, stageAuto.id, task.id, {
-                                                      title: e.target.value,
-                                                    })
+                                                    handleUpdateTask(
+                                                      rule.id,
+                                                      stageAuto.id,
+                                                      task.id,
+                                                      {
+                                                        title: e.target.value,
+                                                      },
+                                                    )
                                                   }
                                                   placeholder={
                                                     t(
-                                                      'edit.configuration.pipelineAutomation.taskTitle'
+                                                      'edit.configuration.pipelineAutomation.taskTitle',
                                                     ) || 'Título da tarefa'
                                                   }
                                                   className="flex-1"
@@ -435,7 +464,8 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                                   variant="ghost"
                                                   size="sm"
                                                   onClick={() =>
-                                                    rule.id && handleRemoveTask(rule.id, stageAuto.id, task.id)
+                                                    rule.id &&
+                                                    handleRemoveTask(rule.id, stageAuto.id, task.id)
                                                   }
                                                   disabled={!rule.id}
                                                 >
@@ -445,39 +475,56 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
 
                                               <div className="grid grid-cols-3 gap-2">
                                                 <Select
+                                                  items={TASK_TYPES}
                                                   value={task.taskType}
                                                   onValueChange={value =>
+                                                    value !== null &&
                                                     rule.id &&
-                                                    handleUpdateTask(rule.id, stageAuto.id, task.id, {
-                                                      taskType: value as PipelineTask['taskType'],
-                                                    })
+                                                    handleUpdateTask(
+                                                      rule.id,
+                                                      stageAuto.id,
+                                                      task.id,
+                                                      {
+                                                        taskType: value as PipelineTask['taskType'],
+                                                      },
+                                                    )
                                                   }
                                                 >
                                                   <SelectTrigger>
                                                     <SelectValue />
                                                   </SelectTrigger>
-                                                  <SelectContent>
+                                                  <SelectPopup>
                                                     {TASK_TYPES.map(type => (
-                                                      <SelectItem key={type.value} value={type.value}>
+                                                      <SelectItem
+                                                        key={type.value}
+                                                        value={type.value}
+                                                      >
                                                         {type.label}
                                                       </SelectItem>
                                                     ))}
-                                                  </SelectContent>
+                                                  </SelectPopup>
                                                 </Select>
 
                                                 <Select
+                                                  items={PRIORITIES}
                                                   value={task.priority}
                                                   onValueChange={value =>
+                                                    value !== null &&
                                                     rule.id &&
-                                                    handleUpdateTask(rule.id, stageAuto.id, task.id, {
-                                                      priority: value as PipelineTask['priority'],
-                                                    })
+                                                    handleUpdateTask(
+                                                      rule.id,
+                                                      stageAuto.id,
+                                                      task.id,
+                                                      {
+                                                        priority: value as PipelineTask['priority'],
+                                                      },
+                                                    )
                                                   }
                                                 >
                                                   <SelectTrigger>
                                                     <SelectValue />
                                                   </SelectTrigger>
-                                                  <SelectContent>
+                                                  <SelectPopup>
                                                     {PRIORITIES.map(priority => (
                                                       <SelectItem
                                                         key={priority.value}
@@ -488,7 +535,7 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                                         </span>
                                                       </SelectItem>
                                                     ))}
-                                                  </SelectContent>
+                                                  </SelectPopup>
                                                 </Select>
 
                                                 <div className="flex items-center gap-1">
@@ -498,17 +545,23 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                                     value={task.dueDays || ''}
                                                     onChange={e =>
                                                       rule.id &&
-                                                      handleUpdateTask(rule.id, stageAuto.id, task.id, {
-                                                        dueDays: parseInt(e.target.value) || undefined,
-                                                      })
+                                                      handleUpdateTask(
+                                                        rule.id,
+                                                        stageAuto.id,
+                                                        task.id,
+                                                        {
+                                                          dueDays:
+                                                            parseInt(e.target.value) || undefined,
+                                                        },
+                                                      )
                                                     }
                                                     placeholder="Dias"
-                                                    className="text-xs"
+
                                                     min="0"
                                                   />
                                                 </div>
                                               </div>
-                                            </CardContent>
+                                            </CardPanel>
                                           </Card>
                                         ))}
                                       </div>
@@ -516,7 +569,7 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                                   </div>
                                 </div>
                               )}
-                            </CardContent>
+                            </CardPanel>
                           </Card>
                         );
                       })}
@@ -530,19 +583,14 @@ const PipelineAutomation = ({ rules, onChange, availablePipelines = [] }: Pipeli
                     </div>
                   )}
                 </div>
-              </CardContent>
+              </CardPanel>
             </Card>
           );
         })}
       </div>
 
       {/* Add Rule Button */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleAddRule}
-        className="w-full"
-      >
+      <Button type="button" variant="outline" onClick={handleAddRule} className="w-full">
         <Plus className="h-4 w-4 mr-2" />
         {t('edit.configuration.pipelineAutomation.addPipeline') || '+ Adicionar pipeline'}
       </Button>

@@ -184,10 +184,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
   if (!audioUrl) {
     return (
       <div className={`rounded-lg p-3 max-w-xs ${
-        messageType === 'out' ? 'bg-white/10' : 'bg-slate-100'
+        messageType === 'out' ? 'bg-white/10' : 'bg-muted'
       }`}>
         <div className={`flex items-center gap-2 ${
-          messageType === 'out' ? 'text-white/70' : 'text-slate-500'
+          messageType === 'out' ? 'text-white/70' : 'text-muted-foreground'
         }`}>
           <Volume2 className="h-4 w-4" />
           <span className="text-sm">{t('attachments.audio.notAvailable')}</span>
@@ -198,7 +198,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
 
   return (
     <div className={`rounded-lg p-3 max-w-xs ${
-      messageType === 'out' ? 'bg-white/10' : 'bg-slate-50'
+      messageType === 'out' ? 'bg-white/10' : 'bg-muted/48'
     }`}>
       <div className="flex items-center gap-3">
         {/* Botão Play/Pause */}
@@ -213,7 +213,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
             }
             ${messageType === 'out'
               ? 'bg-white/20 text-white hover:bg-white/30'
-              : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+              : 'bg-muted text-foreground hover:bg-slate-300'
             }
           `}
         >
@@ -232,10 +232,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
           <div className="flex items-center justify-between gap-1 mb-2">
             <div className="flex items-center gap-1 min-w-0">
               <Volume2 className={`h-3 w-3 flex-shrink-0 ${
-                messageType === 'out' ? 'text-white/70' : 'text-slate-500'
+                messageType === 'out' ? 'text-white/70' : 'text-muted-foreground'
               }`} />
               <span className={`text-xs font-medium truncate ${
-                messageType === 'out' ? 'text-white/90' : 'text-slate-600'
+                messageType === 'out' ? 'text-white/90' : 'text-muted-foreground'
               }`}>
                 {filename}
               </span>
@@ -246,7 +246,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
                 flex-shrink-0 p-1 rounded transition-colors
                 ${messageType === 'out'
                   ? 'text-white/70 hover:text-white hover:bg-white/10'
-                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 }
               `}
               title={t('attachments.audio.download')}
@@ -258,7 +258,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
           {/* Barra de progresso */}
           <div className="flex items-center gap-2">
             <span className={`text-xs font-mono w-8 ${
-              messageType === 'out' ? 'text-white/70' : 'text-slate-500'
+              messageType === 'out' ? 'text-white/70' : 'text-muted-foreground'
             }`}>
               {formatTime(currentTime)}
             </span>
@@ -284,7 +284,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
                   absolute top-1/2 w-3 h-3 rounded-full border shadow-sm transition-all duration-150
                   ${messageType === 'out'
                     ? 'bg-white/90 border-white/50'
-                    : 'bg-slate-600 border-slate-300'
+                    : 'bg-slate-600 border-border'
                   }
                 `}
                 style={{
@@ -295,7 +295,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
             </div>
 
             <span className={`text-xs font-mono w-8 ${
-              messageType === 'out' ? 'text-white/70' : 'text-slate-500'
+              messageType === 'out' ? 'text-white/70' : 'text-muted-foreground'
             }`}>
               {formatTime(duration)}
             </span>
@@ -305,7 +305,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ attachment, messageType, onTo
           {attachment.file_size && (
             <div className="mt-1">
               <span className={`text-xs ${
-                messageType === 'out' ? 'text-white/60' : 'text-slate-400'
+                messageType === 'out' ? 'text-white/60' : 'text-muted-foreground'
               }`}>
                 {Math.round(attachment.file_size / 1024)} KB
               </span>

@@ -1,15 +1,15 @@
 import { useState, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Button,
-  Input,
-  Label,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-} from '@evoapi/design-system';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Save, Trash2, Edit3 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -47,7 +47,7 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
       type: currentType,
       description: currentDescription,
     });
-    
+
     // Desabilitar edição após salvar
     setIsEditing(false);
   }, [currentKey, currentType, currentDescription, onUpdate]);
@@ -56,18 +56,22 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
     <div className="p-4 bg-muted/30 rounded-lg border space-y-3">
       {/* Campo Nome */}
       <div className="flex items-center gap-2">
-        <Label className="text-sm font-medium min-w-0 flex-shrink-0">{t('outputSchema.fieldName')}:</Label>
+        <Label className="text-sm font-medium min-w-0 flex-shrink-0">
+          {t('outputSchema.fieldName')}:
+        </Label>
         {isEditing ? (
           <Input
             value={currentKey}
             onChange={e => setCurrentKey(e.target.value)}
             placeholder={t('outputSchema.fieldNamePlaceholder')}
-            className="text-sm font-mono"
+            className="font-mono"
             disabled={isReadOnly}
           />
         ) : (
           <div className="flex items-center gap-2 flex-1">
-            <span className="font-mono text-sm bg-primary/10 px-2 py-1 rounded flex-1">{currentKey}</span>
+            <span className="font-mono text-sm bg-primary/10 px-2 py-1 rounded flex-1">
+              {currentKey}
+            </span>
             {!isReadOnly && (
               <button
                 type="button"
@@ -83,22 +87,25 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
 
       {/* Campo Tipo */}
       <div className="flex items-center gap-2">
-        <Label className="text-sm font-medium min-w-[60px] flex-shrink-0">{t('outputSchema.fieldType')}:</Label>
+        <Label className="text-sm font-medium min-w-[60px] flex-shrink-0">
+          {t('outputSchema.fieldType')}:
+        </Label>
         <Select
+          items={fieldTypes}
           value={currentType}
-          onValueChange={setCurrentType}
+          onValueChange={value => value && setCurrentType(value)}
           disabled={isReadOnly || !isEditing}
         >
           <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             {fieldTypes.map(type => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -109,7 +116,7 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
           value={currentDescription}
           onChange={e => setCurrentDescription(e.target.value)}
           placeholder={t('outputSchema.descriptionPlaceholder')}
-          className="text-sm resize-none"
+          className="resize-none"
           rows={2}
           disabled={isReadOnly || !isEditing}
         />
@@ -123,7 +130,7 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
             variant="outline"
             size="sm"
             onClick={() => onRemove(fieldKey)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-destructive-foreground hover:text-destructive-foreground hover:bg-destructive/8"
           >
             <Trash2 className="h-3 w-3 mr-1" />
             {t('actions.remove')}
@@ -134,7 +141,7 @@ const SchemaField = ({ fieldKey, field, onUpdate, onRemove, isReadOnly }: Schema
               variant="outline"
               size="sm"
               onClick={handleSave}
-              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+              className="text-success-foreground hover:text-success-foreground hover:bg-success/8"
             >
               <Save className="h-3 w-3 mr-1" />
               {t('actions.save')}

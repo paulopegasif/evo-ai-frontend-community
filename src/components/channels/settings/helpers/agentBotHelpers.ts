@@ -227,7 +227,7 @@ export const parseAgentBotForForm = (bot: AgentBot): AgentBotFormData => ({
 
 // Status indicators
 export const getBotStatusColor = (isConnected: boolean): string => {
-  return isConnected ? 'text-green-600' : 'text-slate-500';
+  return isConnected ? 'text-success-foreground' : 'text-slate-500';
 };
 
 export const getBotStatusText = (isConnected: boolean): string => {

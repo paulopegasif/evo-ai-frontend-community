@@ -1,15 +1,16 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogFooter,
-  Button,
-  Label,
-  Textarea,
-} from '@evoapi/design-system';
-import { Sparkles, Loader2, Wand2 } from 'lucide-react';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Sparkles, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { openaiService } from '@/services/integrations/openaiService';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -231,15 +232,15 @@ const PromptGeneratorModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogPopup className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Sparkles className="size-5 text-primary" />
             {t('wizard.promptGenerator.title')}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pr-2 space-y-4 py-4">
+        <DialogPanel className="flex flex-col gap-4">
           {questions.map(question => (
             <div key={question.key} className="space-y-2">
               <Label className="text-sm font-medium">{question.label}</Label>
@@ -252,14 +253,13 @@ const PromptGeneratorModal = ({
                   }))
                 }
                 placeholder={question.placeholder}
-                className="min-h-[80px] text-sm"
                 disabled={isGenerating}
               />
             </div>
           ))}
-        </div>
+        </DialogPanel>
 
-        <DialogFooter className="flex-shrink-0 border-t pt-4 gap-2">
+        <DialogFooter>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
@@ -271,37 +271,23 @@ const PromptGeneratorModal = ({
             <Button
               variant="outline"
               onClick={() => handleReview(initialPrompt)}
-              disabled={isGenerating || isReviewing}
-              className="gap-2"
+              disabled={isGenerating}
+              loading={isReviewing}
             >
-              {isReviewing ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t('wizard.promptGenerator.buttons.reviewing')}
-                </>
-              ) : (
-                <>
-                  <Wand2 className="h-4 w-4 text-blue-500" />
-                  {t('wizard.promptGenerator.buttons.review')}
-                </>
-              )}
+              {!isReviewing && <Wand2 />}
+              {isReviewing
+                ? t('wizard.promptGenerator.buttons.reviewing')
+                : t('wizard.promptGenerator.buttons.review')}
             </Button>
           )}
-          <Button onClick={handleGenerate} disabled={isGenerating || isReviewing} className="gap-2">
-            {isGenerating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {t('wizard.promptGenerator.buttons.generating')}
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4" />
-                {t('wizard.promptGenerator.buttons.generate')}
-              </>
-            )}
+          <Button onClick={handleGenerate} disabled={isReviewing} loading={isGenerating}>
+            {!isGenerating && <Sparkles />}
+            {isGenerating
+              ? t('wizard.promptGenerator.buttons.generating')
+              : t('wizard.promptGenerator.buttons.generate')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 };

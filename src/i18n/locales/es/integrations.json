@@ -92,7 +92,9 @@
     "visitOfficialSite": "Visitar sitio oficial",
     "delete": "Eliminar",
     "reconnect": "Reconectar",
-    "backToIntegrations": "Volver a Integraciones"
+    "backToIntegrations": "Volver a Integraciones",
+    "showSecret": "Mostrar",
+    "hideSecret": "Ocultar"
   },
   "status": {
     "active": "Activo",
@@ -1295,5 +1297,10 @@
   "email": {
     "name": "Email",
     "description": "Soporte vía email integrado"
+  },
+  "confirmDisconnect": {
+    "title": "¿Desconectar {{name}}?",
+    "description": "La integración deja de funcionar hasta que se vuelva a conectar. Los datos guardados se conservan.",
+    "cancel": "Cancelar"
   }
 }

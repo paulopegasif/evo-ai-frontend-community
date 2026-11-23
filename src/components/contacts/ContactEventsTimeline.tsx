@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -77,7 +77,7 @@ export function ContactEventsTimeline({
       {softCapped && (
         <div
           role="status"
-          className="sticky top-0 z-10 border-b border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200"
+          className="sticky top-0 z-10 border-b border-warning/24 bg-warning/8 px-4 py-2 text-xs text-warning-foreground"
         >
           {t('events.timeline.softCapped', { cap: 2000 })}
         </div>

@@ -1,6 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Button, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { ArrowRight, ArrowLeft, Users, Plus, X, Tag as TagIcon, Target } from 'lucide-react';
+import WizardStepLayout from './WizardStepLayout';
 import { useLanguage } from '@/hooks/useLanguage';
 import { contactsService } from '@/services/contacts';
 import { segmentsService } from '@/services/segments/segmentsService';
@@ -31,7 +43,7 @@ interface Step2Props {
 }
 
 const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
-  const { t } = useLanguage('campaigns');
+  const { t, currentLanguage } = useLanguage('campaigns');
   const [totalContacts, setTotalContacts] = useState<number | null>(null);
   const [segments, setSegments] = useState<Segment[]>([]);
   const [labels, setLabels] = useState<LabelType[]>([]);
@@ -93,7 +105,7 @@ const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
             value,
           } as FilterCondition;
         })
-        .filter((filter) => !!filter.value);
+        .filter(filter => !!filter.value);
 
     const hydratedSegmentFilters = mapIdsToFilters(data.segment_ids, 'segment', 0);
     const hydratedTagFilters = mapIdsToFilters(data.tag_ids, 'tag', hydratedSegmentFilters.length);
@@ -162,11 +174,16 @@ const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
       // Subtract excluded (simplified)
       excludedSegments.forEach(segId => {
         const seg = segments.find(s => s.id === segId);
-        if (seg) estimatedContacts = Math.max(0, estimatedContacts - (seg.contactsCount || 0) * 0.1);
+        if (seg)
+          estimatedContacts = Math.max(0, estimatedContacts - (seg.contactsCount || 0) * 0.1);
       });
       excludedTags.forEach(tagId => {
         const label = labels.find(l => l.id === tagId);
-        if (label) estimatedContacts = Math.max(0, estimatedContacts - Math.floor((totalContacts || 0) * 0.05));
+        if (label)
+          estimatedContacts = Math.max(
+            0,
+            estimatedContacts - Math.floor((totalContacts || 0) * 0.05),
+          );
       });
     }
 
@@ -224,7 +241,11 @@ const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
   };
 
   const getFilterIcon = (filter: FilterCondition) => {
-    return filter.type === 'segment' ? <Target className="h-3 w-3" /> : <TagIcon className="h-3 w-3" />;
+    return filter.type === 'segment' ? (
+      <Target className="h-3 w-3" />
+    ) : (
+      <TagIcon className="h-3 w-3" />
+    );
   };
 
   const handleNext = () => {
@@ -235,161 +256,209 @@ const Step2_Audience = ({ data, onChange, onNext, onBack }: Step2Props) => {
 
   const isValid = useAllContacts || filters.length > 0;
 
-  return (
-    <div className="flex flex-col max-w-4xl mx-auto py-6 px-6 h-full">
-      <div className="flex-1 overflow-y-auto min-h-0 px-1">
-        <div className="w-full space-y-6 max-w-2xl mx-auto pb-4">
-          {/* Header */}
-          <div>
-            <h3 className="text-lg font-semibold mb-2">{t('wizard.step2.selectAudience')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('wizard.step2.audienceDescription')}
-            </p>
-          </div>
+  const operatorItems = [
+    { value: 'include', label: t('wizard.step2.include') },
+    { value: 'exclude', label: t('wizard.step2.exclude') },
+  ];
+  const typeItems = [
+    { value: 'segment', label: t('wizard.step2.segment') },
+    { value: 'tag', label: t('wizard.step2.tag') },
+  ];
+  const valueItems =
+    newFilterType === 'segment'
+      ? segments.map(seg => ({
+          value: seg.id,
+          label: `${seg.name} (${(seg.contactsCount || 0).toLocaleString(currentLanguage)})`,
+        }))
+      : labels.map(label => ({ value: label.id.toString(), label: label.title }));
 
-          {/* All Contacts Toggle */}
-          <div className="flex items-start space-x-3 p-4 border rounded-lg">
-            <input
-              type="checkbox"
+  return (
+    <WizardStepLayout
+      footer={
+        <>
+          <Button variant="ghost" className="me-auto" onClick={onBack}>
+            <ArrowLeft />
+            {t('wizard.actions.back')}
+          </Button>
+          <Button onClick={handleNext} disabled={!isValid}>
+            {t('wizard.actions.continue')}
+            <ArrowRight />
+          </Button>
+        </>
+      }
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('wizard.step2.selectAudience')}</CardTitle>
+          <CardDescription>{t('wizard.step2.audienceDescription')}</CardDescription>
+        </CardHeader>
+        <CardPanel className="flex flex-col gap-4">
+          <label
+            htmlFor="all-contacts"
+            className="flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors has-data-checked:border-primary has-data-checked:bg-primary/4"
+          >
+            <Checkbox
               id="all-contacts"
               checked={useAllContacts}
-              onChange={(e) => handleToggleAllContacts(e.target.checked)}
-              className="mt-1"
+              onCheckedChange={checked => handleToggleAllContacts(checked)}
+              className="mt-0.5"
             />
-            <div className="flex-1">
-              <Label htmlFor="all-contacts" className="text-base font-semibold cursor-pointer flex items-center gap-2">
-                <Users className="h-4 w-4" />
+            <span className="flex flex-1 flex-col gap-0.5">
+              <span className="flex items-center gap-2 font-medium text-sm">
+                <Users className="size-4 text-muted-foreground" />
                 {t('wizard.step2.allContacts')}
-              </Label>
-              <p className="text-sm text-muted-foreground mt-1">
+              </span>
+              <span className="text-muted-foreground text-xs">
                 {t('wizard.step2.allContactsDescription')}
-              </p>
-            </div>
-          </div>
+              </span>
+            </span>
+          </label>
 
-          {/* Filter Builder */}
           {!useAllContacts && (
-            <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
-              <Label className="text-base font-semibold">{t('wizard.step2.audienceFilters')}</Label>
-              <p className="text-xs text-muted-foreground">
-                {t('wizard.step2.audienceFiltersDescription')}
-              </p>
+            <div className="flex flex-col gap-4 rounded-xl border bg-muted/24 p-4">
+              <div>
+                <p className="font-medium text-sm">{t('wizard.step2.audienceFilters')}</p>
+                <p className="text-muted-foreground text-xs">
+                  {t('wizard.step2.audienceFiltersDescription')}
+                </p>
+              </div>
 
-              {/* Add Filter Form */}
-              <div className="grid grid-cols-12 gap-2">
-                {/* Operator */}
-                <div className="col-span-3">
-                  <Select value={newFilterOperator} onValueChange={(v) => setNewFilterOperator(v as FilterOperator)}>
-                    <SelectTrigger className="h-10">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="include">{t('wizard.step2.include')}</SelectItem>
-                      <SelectItem value="exclude">{t('wizard.step2.exclude')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Select
+                  items={operatorItems}
+                  value={newFilterOperator}
+                  onValueChange={v => v && setNewFilterOperator(v as FilterOperator)}
+                >
+                  <SelectTrigger className="sm:w-40" aria-label={t('wizard.step2.operatorLabel')}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {operatorItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
 
-                {/* Type */}
-                <div className="col-span-3">
-                  <Select value={newFilterType} onValueChange={(v) => { setNewFilterType(v as FilterType); setNewFilterValue(''); }}>
-                    <SelectTrigger className="h-10">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="segment">{t('wizard.step2.segment')}</SelectItem>
-                      <SelectItem value="tag">{t('wizard.step2.tag')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select
+                  items={typeItems}
+                  value={newFilterType}
+                  onValueChange={v => {
+                    if (!v) return;
+                    setNewFilterType(v as FilterType);
+                    setNewFilterValue('');
+                  }}
+                >
+                  <SelectTrigger className="sm:w-40" aria-label={t('wizard.step2.typeLabel')}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {typeItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
 
-                {/* Value */}
-                <div className="col-span-5">
-                  <Select value={newFilterValue} onValueChange={setNewFilterValue}>
-                    <SelectTrigger className="h-10">
-                      <SelectValue placeholder={newFilterType === 'segment' ? t('wizard.step2.selectSegment') : t('wizard.step2.selectTag')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {newFilterType === 'segment' && segments.map(seg => (
-                        <SelectItem key={seg.id} value={seg.id}>
-                          {seg.name} ({(seg.contactsCount || 0).toLocaleString('pt-BR')})
+                <Select
+                  items={valueItems}
+                  value={newFilterValue || null}
+                  onValueChange={v => setNewFilterValue(v == null ? '' : String(v))}
+                >
+                  <SelectTrigger className="min-w-0 flex-1">
+                    <SelectValue
+                      placeholder={
+                        newFilterType === 'segment'
+                          ? t('wizard.step2.selectSegment')
+                          : t('wizard.step2.selectTag')
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {newFilterType === 'segment' &&
+                      valueItems.map(item => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
                         </SelectItem>
                       ))}
-                      {newFilterType === 'tag' && labels.map(label => (
+                    {newFilterType === 'tag' &&
+                      labels.map(label => (
                         <SelectItem key={label.id} value={label.id.toString()}>
                           <span className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: label.color }} />
+                            <span
+                              className="size-2 rounded-full"
+                              style={{ backgroundColor: label.color }}
+                            />
                             {label.title}
                           </span>
                         </SelectItem>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  </SelectPopup>
+                </Select>
 
-                {/* Add Button */}
-                <div className="col-span-1">
-                  <Button
-                    type="button"
-                    size="icon"
-                    onClick={addFilter}
-                    disabled={!newFilterValue}
-                    className="h-10 w-10"
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        size="icon"
+                        onClick={addFilter}
+                        disabled={!newFilterValue}
+                        aria-label={t('wizard.step2.addFilter')}
+                      />
+                    }
                   >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
+                    <Plus />
+                  </TooltipTrigger>
+                  <TooltipPopup>{t('wizard.step2.addFilter')}</TooltipPopup>
+                </Tooltip>
               </div>
 
-              {/* Active Filters */}
-              {filters.length > 0 && (
-                <div className="space-y-2 pt-2">
-                  <Label className="text-sm font-medium">{t('wizard.step2.activeFilters')} ({filters.length})</Label>
+              {filters.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <p className="font-medium text-sm">
+                    {t('wizard.step2.activeFilters')} ({filters.length})
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {filters.map(filter => (
                       <Badge
                         key={filter.id}
-                        variant={filter.operator === 'include' ? 'default' : 'secondary'}
-                        className="px-3 py-1.5 text-sm gap-2"
+                        variant={filter.operator === 'include' ? 'info' : 'secondary'}
+                        className="gap-1.5 py-1 ps-2 pe-1 text-sm"
                       >
                         {getFilterIcon(filter)}
                         <span className="font-medium">
-                          {filter.operator === 'include' ? t('wizard.step2.include') : t('wizard.step2.exclude')}:
+                          {filter.operator === 'include'
+                            ? t('wizard.step2.include')
+                            : t('wizard.step2.exclude')}
+                          :
                         </span>
                         <span>{getFilterLabel(filter)}</span>
                         <button
+                          type="button"
                           onClick={() => removeFilter(filter.id)}
-                          className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                          aria-label={t('wizard.step2.removeFilter', {
+                            label: getFilterLabel(filter),
+                          })}
+                          className="rounded-full p-0.5 hover:bg-foreground/8"
                         >
-                          <X className="h-3 w-3" />
+                          <X className="size-3" />
                         </button>
                       </Badge>
                     ))}
                   </div>
                 </div>
-              )}
-
-              {filters.length === 0 && (
-                <div className="text-center py-6 text-sm text-muted-foreground">
+              ) : (
+                <p className="py-4 text-center text-muted-foreground text-sm">
                   {t('wizard.step2.noFiltersAdded')}
-                </div>
+                </p>
               )}
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="flex justify-between flex-shrink-0 pt-4 border-t mt-6">
-        <Button variant="outline" className="px-6 gap-2" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
-          {t('wizard.actions.back')}
-        </Button>
-        <Button className="px-6 gap-2" onClick={handleNext} disabled={!isValid}>
-          {t('wizard.actions.continue')}
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+        </CardPanel>
+      </Card>
+    </WizardStepLayout>
   );
 };
 

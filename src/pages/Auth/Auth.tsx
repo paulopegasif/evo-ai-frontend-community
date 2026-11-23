@@ -1,22 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Button,
-  Input,
-  Label,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Alert,
-  AlertTitle,
-  AlertDescription,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { login, register, forgotPassword } from '@/services/auth';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,7 +19,7 @@ import { twoFactorService } from '@/services/profile/twoFactorService';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Globe } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Eye, EyeOff, Globe } from 'lucide-react';
 
 import { ApiError } from '@/types/auth';
 import { getApiErrorMessage } from '@/utils/apiHelpers';
@@ -54,6 +44,7 @@ export const Auth: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>('login');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [registerError, setRegisterError] = useState('');
   const [forgotPasswordError, setForgotPasswordError] = useState('');
@@ -398,261 +389,219 @@ export const Auth: React.FC = () => {
     );
   }
 
+  const languages = [
+    { value: 'pt-BR', label: t('language.selector.portuguese') },
+    { value: 'en', label: t('language.selector.english') },
+    { value: 'es', label: t('language.selector.spanish') },
+    { value: 'fr', label: t('language.selector.french') },
+    { value: 'it', label: t('language.selector.italian') },
+  ];
+
+  const errorAlert = (message: string) =>
+    message ? (
+      <Alert variant="error">
+        <AlertCircle />
+        <AlertTitle>{t('auth.errors.title')}</AlertTitle>
+        <AlertDescription>{message}</AlertDescription>
+      </Alert>
+    ) : null;
+
+  const heading = (title: string, subtitle: string) => (
+    <div className="space-y-1.5 text-center">
+      <h1 className="font-semibold text-xl">{title}</h1>
+      <p className="text-muted-foreground text-sm">{subtitle}</p>
+    </div>
+  );
+
+  const recaptchaNote = (text: string) => (
+    <p className="text-center text-muted-foreground text-xs leading-relaxed">{text}</p>
+  );
+
+  const backToLogin = (
+    <Button variant="ghost" size="sm" className="-ms-2 w-fit text-muted-foreground" onClick={() => setActiveTab('login')}>
+      <ArrowLeft />
+      {t('auth.login.backToLogin')}
+    </Button>
+  );
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-t from-primary/20 via-background/95 to-background relative">
-      <div className="flex-1 flex items-center justify-center p-4">
-        {/* Seletor de idiomas no canto superior direito */}
-        <div className="absolute top-4 right-4 z-10">
-          <Select value={currentLanguage} onValueChange={handleLanguageChange}>
-            <SelectTrigger>
-              <Globe className="h-4 w-4 text-primary" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pt-BR">{t('language.selector.portuguese')}</SelectItem>
-              <SelectItem value="en">{t('language.selector.english')}</SelectItem>
-              <SelectItem value="es">{t('language.selector.spanish')}</SelectItem>
-              <SelectItem value="fr">{t('language.selector.french')}</SelectItem>
-              <SelectItem value="it">{t('language.selector.italian')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="relative flex min-h-screen flex-col bg-muted/40">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-primary)_16%,transparent),transparent_70%)]"
+      />
+      <header className="relative flex justify-end p-4">
+        <Select items={languages} value={currentLanguage} onValueChange={value => value && handleLanguageChange(value as string)}>
+          <SelectTrigger size="sm" className="w-auto min-w-36 bg-background" aria-label={t('language.selector.label')}>
+            <Globe className="text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectPopup>
+            {languages.map(lang => (
+              <SelectItem key={lang.value} value={lang.value}>
+                {lang.label}
+              </SelectItem>
+            ))}
+          </SelectPopup>
+        </Select>
+      </header>
 
-        <div className="w-full max-w-md space-y-6">
-          {/* Logo */}
-          <div className="text-center">
-            <AppLogo className="h-10 mx-auto" />
-          </div>
+      <main className="relative flex flex-1 items-start justify-center px-4 pt-[6vh] pb-12 sm:items-center sm:pt-0">
+        <div className="w-full max-w-sm space-y-6">
+          <AppLogo className="mx-auto h-9" />
 
-          {/* Formulário */}
-          <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-              <TabsList className={`grid w-full ${enableAccountSignup ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                <TabsTrigger value="login">{t('auth.tabs.login')}</TabsTrigger>
-                {enableAccountSignup && (
-                  <TabsTrigger value="register">{t('auth.tabs.register')}</TabsTrigger>
-                )}
-                <TabsTrigger value="forgot">{t('auth.tabs.forgot')}</TabsTrigger>
-              </TabsList>
-
-              {/* Aba de Login */}
-              <TabsContent value="login" className="mt-6">
-                <div className="space-y-2 mb-6">
-                  <h2 className="text-2xl font-bold">{t('auth.login.title')}</h2>
-                  <p className="text-muted-foreground">{t('auth.login.subtitle')}</p>
-                </div>
-
-                {/* Mostrar mensagem de erro da aba login */}
-                {loginError && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>{t('auth.errors.title')}</AlertTitle>
-                    <AlertDescription>{loginError}</AlertDescription>
-                  </Alert>
-                )}
-
-                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">{t('auth.login.email')}</Label>
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder={t('auth.login.email')}
-                      disabled={isLoading}
-                      {...loginForm.register('email')}
-                    />
-                    {loginForm.formState.errors.email && (
-                      <p className="text-destructive text-sm">
-                        {loginForm.formState.errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">{t('auth.login.password')}</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder={t('auth.login.password')}
-                      disabled={isLoading}
-                      {...loginForm.register('password')}
-                    />
-                    {loginForm.formState.errors.password && (
-                      <p className="text-destructive text-sm">
-                        {loginForm.formState.errors.password.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="text-xs text-muted-foreground">
-                    <p>{t('auth.login.protectedByRecaptcha')}</p>
-                  </div>
-
-                  <Button type="submit" disabled={isLoading} className="w-full">
-                    {isLoading ? t('auth.login.signingIn') : t('auth.login.signIn')}
-                  </Button>
-                </form>
-
-                <div className="text-center mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('forgot')}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    {t('auth.login.forgotPasswordLink')}
-                  </button>
-                </div>
-              </TabsContent>
-
-              {/* Aba de Cadastro - apenas se signup estiver habilitado */}
-              {enableAccountSignup && (
-                <TabsContent value="register" className="mt-6">
-                  <div className="space-y-2 mb-6">
-                    <h2 className="text-2xl font-bold">{t('auth.register.title')}</h2>
-                    <p className="text-muted-foreground">{t('auth.register.subtitle')}</p>
-                  </div>
-
-                  {/* Mostrar mensagem de erro da aba cadastro */}
-                  {registerError && (
-                    <Alert variant="destructive" className="mb-4">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>{t('auth.errors.title')}</AlertTitle>
-                      <AlertDescription>{registerError}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-fullName">{t('auth.register.fullName')}</Label>
+          <Card>
+            <CardPanel className="space-y-5 p-6 sm:p-8">
+              {activeTab === 'login' && (
+                <>
+                  {heading(t('auth.login.title'), t('auth.login.subtitle'))}
+                  {errorAlert(loginError)}
+                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4" noValidate>
+                    <Field invalid={!!loginForm.formState.errors.email}>
+                      <FieldLabel htmlFor="login-email">{t('auth.login.email')}</FieldLabel>
                       <Input
-                        id="register-fullName"
-                        type="text"
-                        placeholder={t('auth.register.fullName')}
-                        disabled={isLoading}
-                        {...registerForm.register('fullName')}
-                      />
-                      {registerForm.formState.errors.fullName && (
-                        <p className="text-destructive text-sm">
-                          {registerForm.formState.errors.fullName.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">{t('auth.register.email')}</Label>
-                      <Input
-                        id="register-email"
+                        id="login-email"
                         type="email"
-                        placeholder={t('auth.register.email')}
+                        autoComplete="email"
+                        autoFocus
                         disabled={isLoading}
-                        {...registerForm.register('email')}
+                        {...loginForm.register('email')}
                       />
-                      {registerForm.formState.errors.email && (
-                        <p className="text-destructive text-sm">
-                          {registerForm.formState.errors.email.message}
-                        </p>
-                      )}
-                    </div>
+                      <FieldError match={!!loginForm.formState.errors.email}>
+                        {loginForm.formState.errors.email?.message}
+                      </FieldError>
+                    </Field>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">{t('auth.register.password')}</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        placeholder={t('auth.register.password')}
-                        disabled={isLoading}
-                        {...registerForm.register('password')}
-                      />
-                      {registerForm.formState.errors.password && (
-                        <p className="text-destructive text-xs">
-                          {registerForm.formState.errors.password.message}
-                        </p>
-                      )}
-                    </div>
+                    <Field invalid={!!loginForm.formState.errors.password}>
+                      <div className="flex w-full items-center justify-between">
+                        <FieldLabel htmlFor="login-password">{t('auth.login.password')}</FieldLabel>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('forgot')}
+                          className="rounded-sm font-medium text-primary text-xs outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          {t('auth.login.forgotPasswordLink')}
+                        </button>
+                      </div>
+                      <InputGroup>
+                        <InputGroupInput
+                          id="login-password"
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="current-password"
+                          disabled={isLoading}
+                          {...loginForm.register('password')}
+                        />
+                        <InputGroupAddon align="inline-end">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => setShowPassword(v => !v)}
+                            aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
+                            aria-pressed={showPassword}
+                          >
+                            {showPassword ? <EyeOff /> : <Eye />}
+                          </Button>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      <FieldError match={!!loginForm.formState.errors.password}>
+                        {loginForm.formState.errors.password?.message}
+                      </FieldError>
+                    </Field>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="register-confirmPassword">
-                        {t('auth.register.confirmPassword')}
-                      </Label>
-                      <Input
-                        id="register-confirmPassword"
-                        type="password"
-                        placeholder={t('auth.register.confirmPassword')}
-                        disabled={isLoading}
-                        {...registerForm.register('confirmPassword')}
-                      />
-                      {registerForm.formState.errors.confirmPassword && (
-                        <p className="text-destructive text-sm">
-                          {registerForm.formState.errors.confirmPassword.message}
-                        </p>
-                      )}
-                    </div>
+                    <Button type="submit" size="lg" loading={isLoading} className="w-full">
+                      {isLoading ? t('auth.login.signingIn') : t('auth.login.signIn')}
+                    </Button>
+                  </form>
+                  {recaptchaNote(t('auth.login.protectedByRecaptcha'))}
+                </>
+              )}
 
-                    <div className="text-xs text-muted-foreground">
-                      <p>{t('auth.register.protectedByRecaptcha')}</p>
-                    </div>
-
-                    <Button type="submit" disabled={isLoading} className="w-full">
+              {activeTab === 'register' && enableAccountSignup && (
+                <>
+                  {backToLogin}
+                  {heading(t('auth.register.title'), t('auth.register.subtitle'))}
+                  {errorAlert(registerError)}
+                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4" noValidate>
+                    {(
+                      [
+                        ['fullName', 'text', 'name', t('auth.register.fullName')],
+                        ['email', 'email', 'email', t('auth.register.email')],
+                        ['password', 'password', 'new-password', t('auth.register.password')],
+                        ['confirmPassword', 'password', 'new-password', t('auth.register.confirmPassword')],
+                      ] as const
+                    ).map(([name, type, autoComplete, label]) => {
+                      const error = registerForm.formState.errors[name];
+                      return (
+                        <Field key={name} invalid={!!error}>
+                          <FieldLabel htmlFor={`register-${name}`}>{label}</FieldLabel>
+                          <Input
+                            id={`register-${name}`}
+                            type={type}
+                            autoComplete={autoComplete}
+                            disabled={isLoading}
+                            {...registerForm.register(name)}
+                          />
+                          <FieldError match={!!error}>{error?.message}</FieldError>
+                        </Field>
+                      );
+                    })}
+                    <Button type="submit" size="lg" loading={isLoading} className="w-full">
                       {isLoading ? t('auth.register.registering') : t('auth.register.createAccount')}
                     </Button>
                   </form>
-                </TabsContent>
+                  {recaptchaNote(t('auth.register.protectedByRecaptcha'))}
+                </>
               )}
 
-              {/* Aba de Esqueci Minha Senha */}
-              <TabsContent value="forgot" className="mt-6">
-                <div className="space-y-2 mb-6">
-                  <h2 className="text-2xl font-bold">{t('auth.forgotPassword.title')}</h2>
-                  <p className="text-muted-foreground">{t('auth.forgotPassword.subtitle')}</p>
-                </div>
-
-                {/* Mostrar mensagem de erro da aba recuperação */}
-                {forgotPasswordError && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>{t('auth.errors.title')}</AlertTitle>
-                    <AlertDescription>{forgotPasswordError}</AlertDescription>
-                  </Alert>
-                )}
-
-                <div className="space-y-4">
+              {activeTab === 'forgot' && (
+                <>
+                  {backToLogin}
+                  {heading(t('auth.forgotPassword.title'), t('auth.forgotPassword.subtitle'))}
+                  {errorAlert(forgotPasswordError)}
                   <form
                     onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)}
                     className="space-y-4"
+                    noValidate
                   >
-                    <div className="space-y-2">
-                      <Label htmlFor="forgot-email">{t('auth.forgotPassword.email')}</Label>
+                    <Field invalid={!!forgotPasswordForm.formState.errors.email}>
+                      <FieldLabel htmlFor="forgot-email">{t('auth.forgotPassword.email')}</FieldLabel>
                       <Input
                         id="forgot-email"
                         type="email"
-                        placeholder={t('auth.forgotPassword.email')}
+                        autoComplete="email"
+                        autoFocus
                         disabled={isLoading}
                         {...forgotPasswordForm.register('email')}
                       />
-                      {forgotPasswordForm.formState.errors.email && (
-                        <p className="text-destructive text-sm">
-                          {forgotPasswordForm.formState.errors.email.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="text-xs text-muted-foreground">
-                      <p>{t('auth.forgotPassword.protectedByRecaptcha')}</p>
-                    </div>
-
-                    <Button type="submit" disabled={isLoading} className="w-full">
-                      {isLoading
-                        ? t('auth.forgotPassword.sending')
-                        : t('auth.forgotPassword.sendInstructions')}
+                      <FieldError match={!!forgotPasswordForm.formState.errors.email}>
+                        {forgotPasswordForm.formState.errors.email?.message}
+                      </FieldError>
+                    </Field>
+                    <Button type="submit" size="lg" loading={isLoading} className="w-full">
+                      {isLoading ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.sendInstructions')}
                     </Button>
                   </form>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+                  {recaptchaNote(t('auth.forgotPassword.protectedByRecaptcha'))}
+                </>
+              )}
+            </CardPanel>
+          </Card>
 
+          {activeTab === 'login' && enableAccountSignup && (
+            <p className="text-center text-muted-foreground text-sm">
+              {t('auth.login.noAccount')}{' '}
+              <button
+                type="button"
+                onClick={() => handleTabChange('register')}
+                className="rounded-sm font-medium text-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {t('auth.tabs.register')}
+              </button>
+            </p>
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 };

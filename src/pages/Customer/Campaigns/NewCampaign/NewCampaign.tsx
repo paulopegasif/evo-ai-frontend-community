@@ -4,6 +4,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CampaignType, CampaignChannelType, CampaignStatus } from '@/types/campaigns';
 import { campaignsService } from '@/services/campaigns';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Wizard components - 5 PASSOS
 import WizardProgress from './wizard/WizardProgress';
@@ -525,29 +528,44 @@ export default function NewCampaign() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      {loadingCampaign && (
-        <div className="flex items-center justify-center py-10 text-sm text-muted-foreground">
-          {t('loading.campaigns')}
-        </div>
-      )}
+    <div className="flex h-full flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur p-6 flex-shrink-0">
-        <div>
-          <h2 className="text-2xl font-semibold">
-            {isEditMode ? t('wizard.editTitle') : t('wizard.title')}
-          </h2>
-          <p className="text-sm text-muted-foreground">{t('wizard.subtitle')}</p>
+      <div className="shrink-0 border-b px-4 py-4 md:px-6">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
+          <div className="flex items-start gap-2">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="mt-0.5"
+              onClick={() => navigate('/campaigns')}
+              aria-label={t('wizard.actions.back')}
+            >
+              <ArrowLeft />
+            </Button>
+            <div className="min-w-0">
+              <h1 className="font-semibold text-xl md:text-2xl">
+                {isEditMode ? t('wizard.editTitle') : t('wizard.title')}
+              </h1>
+              <p className="mt-1 text-muted-foreground text-sm">{t('wizard.subtitle')}</p>
+            </div>
+          </div>
+          <WizardProgress currentStep={currentStep} totalSteps={totalSteps} steps={steps} />
         </div>
-      </div>
-
-      {/* Progress */}
-      <div className="py-6 px-6 flex-shrink-0">
-        <WizardProgress currentStep={currentStep} totalSteps={totalSteps} steps={steps} />
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">{renderCurrentStep()}</div>
+      <div className="flex-1 overflow-y-auto">
+        {loadingCampaign ? (
+          <div className="mx-auto flex max-w-4xl flex-col gap-6 p-4 md:p-6" aria-busy="true">
+            <Skeleton className="h-8 w-56" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ) : (
+          renderCurrentStep()
+        )}
+      </div>
     </div>
   );
 }
