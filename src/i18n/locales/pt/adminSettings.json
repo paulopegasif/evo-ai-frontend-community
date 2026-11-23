@@ -607,5 +607,11 @@
     "clearing": "A limpar...",
     "success": "Configuração limpa com sucesso",
     "error": "Falha ao limpar configuração"
+  },
+  "common": {
+    "unsavedChanges": "Alterações não guardadas",
+    "noChanges": "Sem alterações pendentes",
+    "configured": "Configurado",
+    "notConfigured": "Não configurado"
   }
 }

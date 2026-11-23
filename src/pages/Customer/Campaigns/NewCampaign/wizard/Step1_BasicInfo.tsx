@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Input, Label, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CampaignType } from '@/types/campaigns';
 import { CampaignTriggerConfig } from '../components/CampaignTriggerConfig';
+import WizardStepLayout from './WizardStepLayout';
 
 interface Step1Props {
   data: {
@@ -24,19 +30,19 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
     const newErrors: Record<string, string> = {};
 
     if (data.name && data.name.trim().length < 3) {
-      newErrors.name = 'Nome deve ter no mínimo 3 caracteres';
+      newErrors.name = t('wizard.validation.nameMinLength');
     }
 
     setErrors(newErrors);
-  }, [data.name]);
+  }, [data.name, t]);
 
   const handleNext = () => {
     const newErrors: Record<string, string> = {};
 
     if (!data.name || !data.name.trim()) {
-      newErrors.name = 'Nome é obrigatório';
+      newErrors.name = t('wizard.validation.nameRequired');
     } else if (data.name.trim().length < 3) {
-      newErrors.name = 'Nome deve ter no mínimo 3 caracteres';
+      newErrors.name = t('wizard.validation.nameMinLength');
     }
 
     if (!data.type) {
@@ -45,17 +51,17 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
 
     if (data.type === CampaignType.TRIGGER) {
       if (!data.triggerConfig || !data.triggerConfig.triggerType) {
-        newErrors.triggerConfig = 'Configuração de trigger é obrigatória para campanhas com gatilho';
+        newErrors.triggerConfig = t('wizard.validation.triggerRequired');
       } else if (data.triggerConfig.triggerType === 'event' && (!data.triggerConfig.eventName || !data.triggerConfig.eventName.trim())) {
-        newErrors.triggerConfig = 'Nome do evento é obrigatório para triggers do tipo evento';
+        newErrors.triggerConfig = t('wizard.validation.triggerEventRequired');
       } else if (data.triggerConfig.triggerType === 'segment' && !data.triggerConfig.segmentId) {
-        newErrors.triggerConfig = 'Segmento é obrigatório para triggers do tipo segmento';
+        newErrors.triggerConfig = t('wizard.validation.triggerSegmentRequired');
       } else if (data.triggerConfig.triggerType === 'label' && !data.triggerConfig.labelId) {
-        newErrors.triggerConfig = 'Etiqueta é obrigatória para triggers do tipo etiqueta';
+        newErrors.triggerConfig = t('wizard.validation.triggerLabelRequired');
       } else if (data.triggerConfig.triggerType === 'customAttribute' && !data.triggerConfig.customAttributeName) {
-        newErrors.triggerConfig = 'Atributo personalizado é obrigatório para triggers do tipo atributo';
+        newErrors.triggerConfig = t('wizard.validation.triggerAttributeRequired');
       } else if (data.triggerConfig.triggerType === 'webhook' && (!data.triggerConfig.webhookUrl || !data.triggerConfig.webhookUrl.trim())) {
-        newErrors.triggerConfig = 'URL do webhook é obrigatória para triggers do tipo webhook';
+        newErrors.triggerConfig = t('wizard.validation.triggerWebhookRequired');
       }
     }
 
@@ -72,83 +78,92 @@ const Step1_BasicInfo = ({ data, onChange, onNext }: Step1Props) => {
     (data.type !== CampaignType.TRIGGER || (data.triggerConfig && data.triggerConfig.triggerType)) &&
     Object.keys(errors).length === 0;
 
+  const typeItems = [
+    { label: t('type.simple'), value: CampaignType.SIMPLE },
+    { label: t('type.recurring'), value: CampaignType.RECURRING },
+    { label: t('type.trigger'), value: CampaignType.TRIGGER },
+  ];
+
   return (
-    <div className="flex flex-col max-w-4xl mx-auto py-6 px-6 h-full">
-      <div className="flex-1 overflow-y-auto min-h-0 px-1">
-        <div className="w-full space-y-6 max-w-2xl mx-auto pb-4">
-          {/* Name */}
-          <div>
-            <Label className="text-base mb-2 block font-semibold">
-              Nome <span className="text-red-500">*</span>
-            </Label>
+    <WizardStepLayout
+      footer={
+        <Button onClick={handleNext} disabled={!isValid}>
+          {t('wizard.actions.continue')}
+          <ArrowRight />
+        </Button>
+      }
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('wizard.step1.title')}</CardTitle>
+          <CardDescription>{t('wizard.step1.subtitle')}</CardDescription>
+        </CardHeader>
+        <CardPanel className="flex flex-col gap-5">
+          <Field invalid={!!errors.name}>
+            <FieldLabel>
+              {t('wizard.step1.nameLabel')}
+              <span className="text-destructive-foreground" aria-hidden="true">*</span>
+            </FieldLabel>
             <Input
-              placeholder="Ex: Campanha Black Friday 2025"
+              placeholder={t('wizard.step1.namePlaceholder')}
               value={data.name}
-              onChange={(e) => onChange({ name: e.target.value })}
-              className={`h-12 text-base ${errors.name ? 'border-red-500 focus:border-red-500' : ''}`}
+              onChange={e => onChange({ name: e.target.value })}
+              aria-invalid={!!errors.name || undefined}
               autoFocus
             />
-            {errors.name && <p className="text-sm text-red-600 mt-2">{errors.name}</p>}
-          </div>
+            {errors.name && <FieldError match>{errors.name}</FieldError>}
+          </Field>
 
-          {/* Description */}
-          <div>
-            <Label className="text-base mb-2 block font-semibold">
-              Descrição
-            </Label>
+          <Field>
+            <FieldLabel>{t('wizard.step1.descriptionLabel')}</FieldLabel>
             <Textarea
-              placeholder="Descreva brevemente o objetivo desta campanha..."
+              placeholder={t('wizard.step1.descriptionPlaceholder')}
               value={data.description}
-              onChange={(e) => onChange({ description: e.target.value })}
-              className="min-h-[100px] text-base resize-none"
+              onChange={e => onChange({ description: e.target.value })}
+              className="min-h-24 resize-none"
               rows={4}
             />
-            <p className="text-xs text-muted-foreground mt-1">Opcional</p>
-          </div>
+            <FieldDescription>{t('wizard.step1.optional')}</FieldDescription>
+          </Field>
 
-          {/* Type */}
-          <div>
-            <Label className="text-base mb-2 block font-semibold">
-              {t('wizard.step1.typeLabel')} <span className="text-red-500">*</span>
-            </Label>
+          <Field invalid={!!errors.type}>
+            <FieldLabel>
+              {t('wizard.step1.typeLabel')}
+              <span className="text-destructive-foreground" aria-hidden="true">*</span>
+            </FieldLabel>
             <Select
-              value={data.type || ''}
-              onValueChange={(value) => onChange({ type: value as CampaignType })}
+              items={typeItems}
+              value={data.type || null}
+              onValueChange={value => onChange({ type: value as CampaignType })}
             >
-              <SelectTrigger className={`h-12 text-base ${errors.type ? 'border-red-500' : ''}`}>
+              <SelectTrigger aria-invalid={!!errors.type || undefined}>
                 <SelectValue placeholder={t('wizard.step1.typePlaceholder')} />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={CampaignType.SIMPLE}>{t('type.simple')}</SelectItem>
-                <SelectItem value={CampaignType.RECURRING}>{t('type.recurring')}</SelectItem>
-                <SelectItem value={CampaignType.TRIGGER}>{t('type.trigger')}</SelectItem>
-              </SelectContent>
+              <SelectPopup>
+                {typeItems.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectPopup>
             </Select>
-            {errors.type && <p className="text-sm text-red-600 mt-2">{errors.type}</p>}
-          </div>
+            {errors.type && <FieldError match>{errors.type}</FieldError>}
+          </Field>
+        </CardPanel>
+      </Card>
 
-          {/* Trigger Configuration */}
-          {data.type === CampaignType.TRIGGER && (
-            <>
-              <CampaignTriggerConfig
-                config={data.triggerConfig || { triggerType: 'event' }}
-                onChange={(config) => onChange({ triggerConfig: config })}
-              />
-              {errors.triggerConfig && (
-                <p className="text-sm text-red-600 mt-2">{errors.triggerConfig}</p>
-              )}
-            </>
+      {data.type === CampaignType.TRIGGER && (
+        <div className="flex flex-col gap-2">
+          <CampaignTriggerConfig
+            config={data.triggerConfig || { triggerType: 'event' }}
+            onChange={config => onChange({ triggerConfig: config })}
+          />
+          {errors.triggerConfig && (
+            <p className="text-destructive-foreground text-xs">{errors.triggerConfig}</p>
           )}
         </div>
-      </div>
-
-      <div className="flex justify-end flex-shrink-0 pt-4 border-t mt-6">
-        <Button className="px-6 gap-2" onClick={handleNext} disabled={!isValid}>
-          {t('wizard.actions.continue')}
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+      )}
+    </WizardStepLayout>
   );
 };
 

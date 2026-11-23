@@ -1,44 +1,44 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  Switch,
-} from '@evoapi/design-system';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@evoapi/design-system/alert-dialog';
-import {
   AlertTriangle,
+  ArrowLeft,
   CheckCircle2,
   ChevronDown,
-  Clock,
   ExternalLink,
   FlaskConical,
-  KeyRound,
   ListChecks,
   PlugZap,
+  Power,
   Send,
   XCircle,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
-import IntegrationBackButton from '@/components/integrations/shared/IntegrationBackButton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { SecretInput } from '@/components/integrations/shared';
+import { Label } from '@/components/ui/label';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import BrandIcon from '@/components/BrandIcon';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { metaConversionsService } from '@/services/integrations/metaConversionsService';
@@ -55,27 +55,19 @@ const ID_PATTERN = /^\d{5,25}$/;
 const EVENTS_MANAGER_URL = 'https://business.facebook.com/events_manager2';
 const BUSINESS_SETTINGS_URL = 'https://business.facebook.com/settings';
 
-const controlClassName = 'bg-sidebar border-sidebar-border text-sidebar-foreground';
-
-const STATUS_BADGES: Record<MetaConversionsConnectionStatus, { label: string; className: string }> = {
-  connected: {
-    label: 'Conectado',
-    className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
-  },
-  error: {
-    label: 'Erro',
-    className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30',
-  },
-  not_configured: {
-    label: 'Não configurado',
-    className: 'bg-muted text-muted-foreground border-border',
-  },
+const STATUS_BADGES: Record<
+  MetaConversionsConnectionStatus,
+  { label: string; variant: 'success' | 'warning' | 'outline' }
+> = {
+  connected: { label: 'Conectado', variant: 'success' },
+  error: { label: 'Erro', variant: 'warning' },
+  not_configured: { label: 'Não configurado', variant: 'outline' },
 };
 
-const EVENTS: { id: MetaConversionsEvent; label: string; when: string }[] = [
-  { id: 'lead', label: 'Lead', when: 'quando um lead chega de um anúncio' },
-  { id: 'qualified', label: 'Lead qualificado', when: 'quando o lead agenda ou entra numa etapa qualificada do funil' },
-  { id: 'purchase', label: 'Venda', when: 'quando o atendimento é marcado como realizado, com o valor' },
+const EVENTS: { id: MetaConversionsEvent; label: string; short: string; when: string }[] = [
+  { id: 'lead', label: 'Lead', short: 'Lead', when: 'Quando um lead chega de um anúncio.' },
+  { id: 'qualified', label: 'Lead qualificado', short: 'Qualificado', when: 'Quando o lead agenda ou entra numa etapa qualificada do funil.' },
+  { id: 'purchase', label: 'Venda', short: 'Venda', when: 'Quando o atendimento é marcado como realizado, com o valor.' },
 ];
 
 const EMPTY_EVENT_NAMES: Record<MetaConversionsEvent, string> = { lead: '', qualified: '', purchase: '' };
@@ -147,6 +139,8 @@ export default function MetaConversionsPage() {
   const metaAdsTokenAvailable = Boolean(integration?.meta_ads_token_available);
   const needsToken = tokenSource === 'own' && (!configured || integration?.token_source !== 'own');
   const stats = integration?.stats;
+  const savedTestCode = integration?.test_event_code;
+  const disabled = !canEdit || loading;
 
   const handleSave = async () => {
     if (!wabaValid) {
@@ -225,439 +219,421 @@ export default function MetaConversionsPage() {
     }
   };
 
-  const savedTestCode = integration?.test_event_code;
-
   return (
-    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
-      <div className="flex items-center justify-between gap-3">
-        <IntegrationBackButton onBack={() => navigate('/settings/integrations')} />
-        <Button variant="outline" size="sm" asChild className="gap-2">
-          <a href={EVENTS_MANAGER_URL} target="_blank" rel="noreferrer">
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        {/* Top bar */}
+        <div className="flex items-center justify-between gap-3">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/settings/integrations')}>
+            <ArrowLeft />
+            Integrações
+          </Button>
+          <Button variant="outline" size="sm" render={<a href={EVENTS_MANAGER_URL} target="_blank" rel="noreferrer" />}>
             Gerenciador de Eventos
-            <ExternalLink className="h-4 w-4 text-muted-foreground" />
-          </a>
-        </Button>
-      </div>
+            <ExternalLink />
+          </Button>
+        </div>
 
-      {/* Header */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <div className="h-14 w-14 rounded-lg border border-border bg-card flex items-center justify-center shrink-0">
-                <BrandIcon id="meta_conversions" className="h-8 w-8" />
-              </div>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Conversões da Meta</h1>
-                  {!loading && (
-                    <Badge variant="outline" className={badge.className}>
-                      {badge.label}
-                    </Badge>
-                  )}
-                  {!loading && configured && (
-                    <Badge
-                      variant="outline"
-                      className={
-                        integration?.enabled
-                          ? 'bg-primary/10 text-primary border-primary/30'
-                          : 'bg-muted text-muted-foreground border-border'
-                      }
-                    >
-                      {integration?.enabled ? 'Envio ativo' : 'Envio desligado'}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                  Informa à Meta quais leads dos anúncios de clique para o WhatsApp viraram leads qualificados e vendas. Com
-                  isso, as campanhas aprendem a buscar pessoas parecidas com quem realmente vira cliente.
-                </p>
-                {configured && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-3">
-                    <Clock className="h-4 w-4" />
-                    Último envio:{' '}
-                    <span className="font-medium text-foreground">
-                      {formatDateTime(stats?.last_sent_at) || 'Nenhum evento enviado ainda'}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {configured && (
-              <div className="flex items-center gap-2 shrink-0">
-                <Button variant="outline" size="sm" onClick={handleTest} disabled={!canEdit || isTesting}>
-                  <PlugZap className="h-4 w-4 mr-2" />
-                  {isTesting ? 'Testando…' : 'Testar conexão'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setConfirmDisconnect(true)}
-                  disabled={!canDelete}
-                  className="text-destructive hover:text-destructive"
-                >
-                  Desconectar
-                </Button>
-              </div>
-            )}
-          </div>
-
-          {integration?.last_error && (
-            <div className="mt-5 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm">
-              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium text-foreground">{integration.last_error.message}</p>
-                <p className="text-muted-foreground mt-0.5">{formatDateTime(integration.last_error.at)}</p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Setup guide */}
-      <Card>
-        <button
-          type="button"
-          onClick={() => setShowGuide(open => !open)}
-          className="w-full flex items-center justify-between gap-3 px-6 py-4 text-left"
-        >
-          <span className="flex items-center gap-2 font-semibold text-base">
-            <ListChecks className="h-4 w-4 text-primary" />
-            Como conseguir os dados na Meta
-          </span>
-          <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showGuide ? 'rotate-180' : ''}`} />
-        </button>
-        {showGuide && (
-          <CardContent className="pt-0 text-sm text-muted-foreground">
-            <ol className="list-decimal pl-5 space-y-2">
-              <li>
-                Abra as{' '}
-                <a href={BUSINESS_SETTINGS_URL} target="_blank" rel="noreferrer" className="text-primary underline">
-                  configurações do Business Manager
-                </a>{' '}
-                da empresa, com um administrador.
-              </li>
-              <li>
-                Em <strong>Contas → Contas do WhatsApp</strong>, escolha a conta do número dos anúncios e copie o{' '}
-                <strong>ID da conta do WhatsApp Business</strong>.
-              </li>
-              <li>
-                Em <strong>Usuários → Usuários do sistema</strong>, crie (ou escolha) um usuário Admin. Em{' '}
-                <strong>Atribuir ativos</strong>, dê a ele a conta do WhatsApp com controle total.
-              </li>
-              <li>
-                Clique em <strong>Gerar token</strong>, escolha o app, validade <strong>Nunca</strong> e marque{' '}
-                <code>whatsapp_business_management</code>, <code>whatsapp_business_manage_events</code> e{' '}
-                <code>business_management</code>. Se marcar também <code>ads_read</code>, o mesmo token serve para a
-                integração Meta Ads.
-              </li>
-              <li>
-                Opcional: em <strong>Contas → Páginas</strong>, copie o <strong>ID da Página</strong> do Facebook. Ele
-                permite enviar conversões de leads que chegaram sem o identificador do clique no anúncio.
-              </li>
-              <li>
-                Cole os dados abaixo e salve. O CRM valida o token e cria o conjunto de dados (dataset) da conta
-                automaticamente.
-              </li>
-            </ol>
-          </CardContent>
-        )}
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Configuration form */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <KeyRound className="h-4 w-4 text-primary" />
-              Configuração
-            </CardTitle>
-            <CardDescription>
-              O token precisa das permissões <code>whatsapp_business_management</code> e{' '}
-              <code>whatsapp_business_manage_events</code> na conta do WhatsApp Business.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="capi-waba">ID da conta do WhatsApp Business</Label>
-                <Input
-                  id="capi-waba"
-                  value={wabaId}
-                  onChange={e => setWabaId(e.target.value)}
-                  placeholder="102290129340398"
-                  inputMode="numeric"
-                  disabled={!canEdit || loading}
-                  className={controlClassName}
-                />
-                {wabaId && !wabaValid && <p className="text-xs text-destructive">Use apenas os números do ID.</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="capi-page">
-                  ID da Página <span className="text-muted-foreground font-normal">(opcional)</span>
-                </Label>
-                <Input
-                  id="capi-page"
-                  value={pageId}
-                  onChange={e => setPageId(e.target.value)}
-                  placeholder="123456789012345"
-                  inputMode="numeric"
-                  disabled={!canEdit || loading}
-                  className={controlClassName}
-                />
-                {pageValid ? (
-                  <p className="text-xs text-muted-foreground">Para leads sem o identificador do clique no anúncio.</p>
+        {/* Header */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-start gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-card shadow-xs/5">
+              <BrandIcon id="meta_conversions" className="size-7" />
+            </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-semibold text-xl tracking-tight">Conversões da Meta</h1>
+                {loading ? (
+                  <Skeleton className="h-5 w-24" />
                 ) : (
-                  <p className="text-xs text-destructive">Use apenas os números do ID.</p>
+                  <>
+                    <Badge variant={badge.variant}>{badge.label}</Badge>
+                    {configured && (
+                      <Badge variant={integration?.enabled ? 'info' : 'outline'}>
+                        {integration?.enabled ? 'Envio ativo' : 'Envio desligado'}
+                      </Badge>
+                    )}
+                  </>
                 )}
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Token de acesso</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <TokenOption
-                  selected={tokenSource === 'meta_ads'}
-                  disabled={!canEdit || loading || !metaAdsTokenAvailable}
-                  onSelect={() => setTokenSource('meta_ads')}
-                  title="Usar o token da integração Meta Ads"
-                  description={
-                    metaAdsTokenAvailable
-                      ? 'O token precisa ter também as permissões do WhatsApp.'
-                      : 'Conecte a integração Meta Ads para usar esta opção.'
-                  }
-                />
-                <TokenOption
-                  selected={tokenSource === 'own'}
-                  disabled={!canEdit || loading}
-                  onSelect={() => setTokenSource('own')}
-                  title="Usar outro token"
-                  description="Um token só para as conversões."
-                />
-              </div>
-              {tokenSource === 'own' && (
-                <>
-                  <Input
-                    id="capi-token"
-                    type="password"
-                    autoComplete="off"
-                    value={accessToken}
-                    onChange={e => setAccessToken(e.target.value)}
-                    placeholder={
-                      configured && integration?.token_source === 'own'
-                        ? `Manter o token atual (${integration?.token_hint || '••••'})`
-                        : 'EAAB…'
-                    }
-                    disabled={!canEdit || loading}
-                    className={controlClassName}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    O token é validado na Meta antes de salvar e fica criptografado. Ele nunca é exibido novamente.
-                  </p>
-                </>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="capi-test-code">
-                Código de teste <span className="text-muted-foreground font-normal">(opcional)</span>
-              </Label>
-              <Input
-                id="capi-test-code"
-                value={testEventCode}
-                onChange={e => setTestEventCode(e.target.value)}
-                placeholder="TEST12345"
-                disabled={!canEdit || loading}
-                className={controlClassName}
-              />
-              <p className="text-xs text-muted-foreground">
-                Pegue em Gerenciador de Eventos → seu conjunto de dados → Eventos de teste. Enquanto estiver preenchido,
-                todos os eventos vão só para a aba de teste e não contam nos anúncios. Apague quando terminar de testar.
+              <p className="mt-1 max-w-2xl text-muted-foreground text-sm">
+                Informa à Meta quais leads dos anúncios de clique para o WhatsApp viraram leads qualificados e vendas.
+                Assim as campanhas aprendem a buscar pessoas parecidas com quem realmente vira cliente.
               </p>
             </div>
-
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowEventNames(open => !open)}
-                className="flex items-center gap-1.5 text-sm font-medium text-foreground"
+          </div>
+          {configured && (
+            <div className="flex shrink-0 items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleTest} disabled={!canEdit} loading={isTesting}>
+                <PlugZap />
+                Testar conexão
+              </Button>
+              <Button
+                variant="destructive-outline"
+                size="sm"
+                onClick={() => setConfirmDisconnect(true)}
+                disabled={!canDelete}
               >
-                <ChevronDown className={`h-4 w-4 transition-transform ${showEventNames ? 'rotate-180' : ''}`} />
-                Nomes dos eventos
-              </button>
-              {showEventNames && (
-                <div className="mt-3 space-y-3">
-                  {EVENTS.map(event => (
-                    <div key={event.id} className="grid grid-cols-1 sm:grid-cols-[180px_1fr] items-center gap-2">
-                      <div>
-                        <Label htmlFor={`capi-event-${event.id}`}>{event.label}</Label>
-                        <p className="text-xs text-muted-foreground">{event.when}</p>
-                      </div>
-                      <Input
-                        id={`capi-event-${event.id}`}
-                        value={eventNames[event.id]}
-                        onChange={e => setEventNames(names => ({ ...names, [event.id]: e.target.value }))}
-                        placeholder={integration?.default_event_names?.[event.id] || ''}
-                        disabled={!canEdit || loading}
-                        className={controlClassName}
-                      />
-                    </div>
-                  ))}
-                  <p className="text-xs text-muted-foreground">
-                    Deixe em branco para usar o nome padrão. Confira com um evento de teste se a Meta aceita o nome.
+                <Power />
+                Desconectar
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {integration?.last_error && (
+          <Alert variant="error">
+            <AlertTriangle />
+            <AlertTitle>{integration.last_error.message}</AlertTitle>
+            <AlertDescription>{formatDateTime(integration.last_error.at)}</AlertDescription>
+          </Alert>
+        )}
+
+        {integration?.enabled && savedTestCode && (
+          <Alert variant="warning">
+            <FlaskConical />
+            <AlertTitle>Modo de teste ativo</AlertTitle>
+            <AlertDescription>
+              Com o código de teste salvo, os eventos vão só para a aba Eventos de teste e não contam nos anúncios. Apague
+              o código quando terminar de testar.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Setup guide */}
+        <Collapsible open={showGuide} onOpenChange={setShowGuide}>
+          <Card className="gap-0">
+            <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-6 py-4 text-start outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-[inherit]">
+              <span className="flex items-center gap-2 font-medium text-sm">
+                <ListChecks className="size-4 text-muted-foreground" />
+                Como conseguir os dados na Meta
+              </span>
+              <ChevronDown
+                className={`size-4 text-muted-foreground transition-transform ${showGuide ? 'rotate-180' : ''}`}
+              />
+            </CollapsibleTrigger>
+            <CollapsiblePanel>
+              <ol className="list-decimal space-y-2 px-6 pb-5 ps-11 text-muted-foreground text-sm">
+                <li>
+                  Abra as{' '}
+                  <a
+                    href={BUSINESS_SETTINGS_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-foreground underline underline-offset-4"
+                  >
+                    configurações do Business Manager
+                  </a>{' '}
+                  da empresa, com um administrador.
+                </li>
+                <li>
+                  Em <strong className="text-foreground">Contas → Contas do WhatsApp</strong>, escolha a conta do número
+                  dos anúncios e copie o <strong className="text-foreground">ID da conta do WhatsApp Business</strong>.
+                </li>
+                <li>
+                  Em <strong className="text-foreground">Usuários → Usuários do sistema</strong>, crie (ou escolha) um
+                  usuário Admin. Em <strong className="text-foreground">Atribuir ativos</strong>, dê a ele a conta do
+                  WhatsApp com controle total. O usuário também precisa ter função no app que vai gerar o token.
+                </li>
+                <li>
+                  Clique em <strong className="text-foreground">Gerar token</strong>, escolha o app, validade{' '}
+                  <strong className="text-foreground">Nunca</strong> e marque <code>whatsapp_business_management</code> e{' '}
+                  <code>whatsapp_business_manage_events</code>. O app precisa ter o caso de uso do WhatsApp para essas
+                  permissões aparecerem.
+                </li>
+                <li>
+                  Opcional: em <strong className="text-foreground">Contas → Páginas</strong>, copie o{' '}
+                  <strong className="text-foreground">ID da Página</strong> do Facebook. Ele permite enviar conversões
+                  de leads que chegaram sem o identificador do clique no anúncio.
+                </li>
+                <li>
+                  Cole os dados abaixo e salve. O CRM valida o token e cria o conjunto de dados da conta. Para vê-lo no
+                  Gerenciador de Eventos, atribua uma pessoa a ele em Fontes de dados → Conjuntos de dados.
+                </li>
+              </ol>
+            </CollapsiblePanel>
+          </Card>
+        </Collapsible>
+
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          {/* Configuration form */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Configuração</CardTitle>
+              <CardDescription>Conta do WhatsApp Business que recebe os leads dos anúncios.</CardDescription>
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field invalid={Boolean(wabaId) && !wabaValid}>
+                  <FieldLabel>ID da conta do WhatsApp Business</FieldLabel>
+                  <Input
+                    value={wabaId}
+                    onChange={e => setWabaId(e.target.value)}
+                    placeholder="102290129340398"
+                    inputMode="numeric"
+                    disabled={disabled}
+                  />
+                  {wabaId && !wabaValid && <FieldError match>Use apenas os números do ID.</FieldError>}
+                </Field>
+                <Field invalid={!pageValid}>
+                  <FieldLabel>
+                    ID da Página <span className="font-normal text-muted-foreground">(opcional)</span>
+                  </FieldLabel>
+                  <Input
+                    value={pageId}
+                    onChange={e => setPageId(e.target.value)}
+                    placeholder="123456789012345"
+                    inputMode="numeric"
+                    disabled={disabled}
+                  />
+                  {pageValid ? (
+                    <FieldDescription>Para leads sem o identificador do clique no anúncio.</FieldDescription>
+                  ) : (
+                    <FieldError match>Use apenas os números do ID.</FieldError>
+                  )}
+                </Field>
+              </div>
+
+              <Separator />
+
+              <div className="flex flex-col gap-3">
+                <div>
+                  <p className="font-medium text-sm">Token de acesso</p>
+                  <p className="text-muted-foreground text-xs">
+                    Precisa das permissões <code>whatsapp_business_management</code> e{' '}
+                    <code>whatsapp_business_manage_events</code>.
                   </p>
                 </div>
-              )}
-            </div>
-
-            <div className="flex items-start justify-between gap-4 rounded-md border border-sidebar-border bg-sidebar p-4">
-              <div>
-                <Label htmlFor="capi-enabled" className="text-sm font-medium">
-                  Enviar conversões para a Meta
-                </Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Cada lead, lead qualificado e venda dos últimos 7 dias é enviado uma única vez, alguns segundos depois
-                  de acontecer no CRM.
-                </p>
-              </div>
-              <Switch id="capi-enabled" checked={enabled} onCheckedChange={setEnabled} disabled={!canEdit || loading} />
-            </div>
-
-            <Button onClick={handleSave} disabled={!canEdit || isSaving || loading || !wabaId}>
-              {isSaving ? 'Validando…' : configured ? 'Salvar alterações' : 'Conectar'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Conta conectada</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              {configured ? (
-                <>
-                  <InfoRow label="WhatsApp" value={integration?.waba_name} />
-                  <InfoRow label="ID da conta" value={integration?.waba_id} />
-                  <InfoRow label="Conjunto de dados" value={integration?.dataset_id} />
-                  <InfoRow label="Página" value={integration?.page_id} />
-                  <InfoRow
-                    label="Token"
-                    value={
-                      integration?.token_source === 'meta_ads'
-                        ? `Meta Ads (${integration?.token_hint || '••••'})`
-                        : integration?.token_hint
+                <RadioGroup
+                  value={tokenSource}
+                  onValueChange={value => setTokenSource(value as MetaConversionsTokenSource)}
+                  className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+                  disabled={disabled}
+                >
+                  <TokenOption
+                    value="meta_ads"
+                    disabled={!metaAdsTokenAvailable}
+                    title="Token da integração Meta Ads"
+                    description={
+                      metaAdsTokenAvailable
+                        ? 'O token precisa ter também as permissões do WhatsApp.'
+                        : 'Conecte a integração Meta Ads para usar esta opção.'
                     }
                   />
-                </>
-              ) : (
-                <p className="text-muted-foreground">Nenhuma conta conectada.</p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Envios</CardTitle>
-              <CardDescription>Últimos {stats?.window_days ?? 30} dias</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                <CountTile label="Enviados" value={stats?.sent ?? 0} />
-                <CountTile label="Recusados" value={stats?.failed ?? 0} tone={stats?.failed ? 'danger' : undefined} />
+                  <TokenOption value="own" title="Outro token" description="Um token só para as conversões." />
+                </RadioGroup>
+                {tokenSource === 'own' && (
+                  <Field>
+                    <SecretInput
+                      aria-label="Token de acesso"
+                      value={accessToken}
+                      onChange={e => setAccessToken(e.target.value)}
+                      placeholder={
+                        configured && integration?.token_source === 'own'
+                          ? `Manter o token atual (${integration?.token_hint || '••••'})`
+                          : 'EAAB…'
+                      }
+                      disabled={disabled}
+                    />
+                    <FieldDescription>
+                      Validado na Meta antes de salvar e guardado criptografado. Ele nunca é exibido de novo.
+                    </FieldDescription>
+                  </Field>
+                )}
               </div>
-              {stats && Object.keys(stats.by_event).length > 0 && (
-                <div className="space-y-1 text-sm">
-                  {Object.entries(stats.by_event).map(([name, counts]) => (
-                    <div key={name} className="flex items-center justify-between gap-3">
-                      <span className="text-muted-foreground truncate">{name}</span>
-                      <span className="font-medium">
-                        {counts.sent}
-                        {counts.failed > 0 && <span className="text-destructive"> · {counts.failed} recusado(s)</span>}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {stats?.last_failure && (
-                <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2.5 text-xs">
-                  <p className="font-medium text-foreground">
-                    Última recusa{stats.last_failure.event ? ` (${stats.last_failure.event})` : ''}
-                  </p>
-                  <p className="text-muted-foreground mt-0.5 break-words">{stats.last_failure.error}</p>
-                  <p className="text-muted-foreground mt-0.5">{formatDateTime(stats.last_failure.at)}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <FlaskConical className="h-4 w-4 text-primary" />
-                Evento de teste
-              </CardTitle>
-              <CardDescription>
-                Envia um evento fictício que aparece só em Eventos de teste, no Gerenciador de Eventos.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-3 gap-1.5">
-                {EVENTS.map(event => (
-                  <Button
-                    key={event.id}
-                    type="button"
-                    size="sm"
-                    variant={testEvent === event.id ? 'default' : 'outline'}
-                    onClick={() => setTestEvent(event.id)}
-                    className="text-xs px-2"
-                  >
-                    {event.label}
-                  </Button>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                className="w-full gap-2"
-                onClick={handleSendTestEvent}
-                disabled={!canEdit || !configured || !savedTestCode || isSendingTest}
-              >
-                <Send className="h-4 w-4" />
-                {isSendingTest ? 'Enviando…' : 'Enviar evento de teste'}
+              <Separator />
+
+              <Field>
+                <FieldLabel>
+                  Código de teste <span className="font-normal text-muted-foreground">(opcional)</span>
+                </FieldLabel>
+                <Input
+                  value={testEventCode}
+                  onChange={e => setTestEventCode(e.target.value)}
+                  placeholder="TEST12345"
+                  disabled={disabled}
+                />
+                <FieldDescription>
+                  Em Gerenciador de Eventos → seu conjunto de dados → Eventos de teste → Mensagem → WhatsApp. Enquanto
+                  estiver preenchido, os eventos não contam nos anúncios.
+                </FieldDescription>
+              </Field>
+
+              <Collapsible open={showEventNames} onOpenChange={setShowEventNames}>
+                <CollapsibleTrigger className="flex items-center gap-1.5 font-medium text-sm outline-none focus-visible:underline">
+                  <ChevronDown className={`size-4 transition-transform ${showEventNames ? 'rotate-180' : ''}`} />
+                  Nomes dos eventos
+                </CollapsibleTrigger>
+                <CollapsiblePanel>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {EVENTS.map(event => (
+                      <Field key={event.id} className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[200px_1fr]">
+                        <div>
+                          <FieldLabel>{event.label}</FieldLabel>
+                          <FieldDescription>{event.when}</FieldDescription>
+                        </div>
+                        <Input
+                          value={eventNames[event.id]}
+                          onChange={e => setEventNames(names => ({ ...names, [event.id]: e.target.value }))}
+                          placeholder={integration?.default_event_names?.[event.id] || ''}
+                          disabled={disabled}
+                        />
+                      </Field>
+                    ))}
+                    <p className="text-muted-foreground text-xs">
+                      Deixe em branco para usar o nome padrão. Confira com um evento de teste se a Meta aceita o nome.
+                    </p>
+                  </div>
+                </CollapsiblePanel>
+              </Collapsible>
+
+              <Label className="flex items-start justify-between gap-4 rounded-lg border p-4 has-data-checked:border-primary/48 has-data-checked:bg-primary/4">
+                <span className="flex flex-col gap-1">
+                  <span className="font-medium text-sm">Enviar conversões para a Meta</span>
+                  <span className="font-normal text-muted-foreground text-xs">
+                    Cada lead, lead qualificado e venda dos últimos 7 dias é enviado uma única vez, alguns segundos
+                    depois de acontecer no CRM.
+                  </span>
+                </span>
+                <Switch checked={enabled} onCheckedChange={setEnabled} disabled={disabled} />
+              </Label>
+            </CardPanel>
+            <CardFooter className="justify-between gap-3 border-t">
+              <p className="text-muted-foreground text-xs">
+                {configured && stats?.last_sent_at
+                  ? `Último envio em ${formatDateTime(stats.last_sent_at)}`
+                  : configured
+                    ? 'Nenhum evento enviado ainda.'
+                    : 'O CRM valida o token antes de salvar.'}
+              </p>
+              <Button onClick={handleSave} disabled={!canEdit || loading || !wabaId} loading={isSaving}>
+                {configured ? 'Salvar alterações' : 'Conectar'}
               </Button>
-              {configured && !savedTestCode && (
-                <p className="text-xs text-muted-foreground">Salve um código de teste para habilitar.</p>
-              )}
-              {testResult && (
-                <div
-                  className={`rounded-md border p-2.5 text-xs ${
-                    testResult.success ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-destructive/30 bg-destructive/5'
-                  }`}
-                >
-                  <p className="flex items-center gap-1.5 font-medium text-foreground">
-                    {testResult.success ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                    ) : (
-                      <XCircle className="h-3.5 w-3.5 text-destructive" />
-                    )}
-                    {testResult.success
-                      ? `${testResult.event_name} recebido pela Meta`
-                      : `${testResult.event_name} recusado`}
-                  </p>
-                  {testResult.message && <p className="text-muted-foreground mt-1 break-words">{testResult.message}</p>}
-                  {testResult.success && (
-                    <p className="text-muted-foreground mt-1">Confira em Gerenciador de Eventos → Eventos de teste.</p>
-                  )}
-                </div>
-              )}
-            </CardContent>
+            </CardFooter>
           </Card>
+
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Conta conectada</CardTitle>
+              </CardHeader>
+              <CardPanel>
+                {configured ? (
+                  <dl className="flex flex-col gap-2.5 text-sm">
+                    <InfoRow label="WhatsApp" value={integration?.waba_name} />
+                    <InfoRow label="ID da conta" value={integration?.waba_id} mono />
+                    <InfoRow label="Conjunto de dados" value={integration?.dataset_id} mono />
+                    <InfoRow label="Página" value={integration?.page_id} mono />
+                    <InfoRow
+                      label="Token"
+                      mono
+                      value={
+                        integration?.token_source === 'meta_ads'
+                          ? `Meta Ads (${integration?.token_hint || '••••'})`
+                          : integration?.token_hint
+                      }
+                    />
+                  </dl>
+                ) : (
+                  <p className="text-muted-foreground text-sm">Nenhuma conta conectada.</p>
+                )}
+              </CardPanel>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Envios</CardTitle>
+                <CardDescription>Últimos {stats?.window_days ?? 30} dias</CardDescription>
+              </CardHeader>
+              <CardPanel className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <CountTile label="Enviados" value={stats?.sent ?? 0} />
+                  <CountTile label="Recusados" value={stats?.failed ?? 0} danger={Boolean(stats?.failed)} />
+                </div>
+                {stats && Object.keys(stats.by_event).length > 0 && (
+                  <dl className="flex flex-col gap-1.5 text-sm">
+                    {Object.entries(stats.by_event).map(([name, counts]) => (
+                      <div key={name} className="flex items-center justify-between gap-3">
+                        <dt className="truncate text-muted-foreground">{name}</dt>
+                        <dd className="font-medium tabular-nums">
+                          {counts.sent}
+                          {counts.failed > 0 && (
+                            <span className="text-destructive-foreground"> · {counts.failed} recusado(s)</span>
+                          )}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+                {stats?.last_failure && (
+                  <Alert variant="error">
+                    <XCircle />
+                    <AlertTitle>
+                      Última recusa{stats.last_failure.event ? ` (${stats.last_failure.event})` : ''}
+                    </AlertTitle>
+                    <AlertDescription>
+                      <p className="break-words">{stats.last_failure.error}</p>
+                      <p>{formatDateTime(stats.last_failure.at)}</p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardPanel>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Evento de teste</CardTitle>
+                <CardDescription>Aparece só em Eventos de teste, no Gerenciador de Eventos.</CardDescription>
+              </CardHeader>
+              <CardPanel className="flex flex-col gap-3">
+                <ToggleGroup
+                  variant="outline"
+                  className="w-full"
+                  value={[testEvent]}
+                  onValueChange={value => value[0] && setTestEvent(value[0] as MetaConversionsEvent)}
+                >
+                  {EVENTS.map(event => (
+                    <ToggleGroupItem key={event.id} value={event.id} className="flex-1 text-xs" aria-label={event.label}>
+                      {event.short}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleSendTestEvent}
+                  disabled={!canEdit || !configured || !savedTestCode}
+                  loading={isSendingTest}
+                >
+                  <Send />
+                  Enviar evento de teste
+                </Button>
+                {configured && !savedTestCode && (
+                  <p className="text-muted-foreground text-xs">Salve um código de teste para habilitar.</p>
+                )}
+                {testResult && (
+                  <Alert variant={testResult.success ? 'success' : 'error'}>
+                    {testResult.success ? <CheckCircle2 /> : <XCircle />}
+                    <AlertTitle>
+                      {testResult.success
+                        ? `${testResult.event_name} recebido pela Meta`
+                        : `${testResult.event_name} recusado`}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {testResult.message ||
+                        (testResult.success ? 'Confira em Gerenciador de Eventos → Eventos de teste.' : null)}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardPanel>
+            </Card>
+          </div>
         </div>
       </div>
 
       <AlertDialog open={confirmDisconnect} onOpenChange={setConfirmDisconnect}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogPopup>
           <AlertDialogHeader>
             <AlertDialogTitle>Desconectar as conversões da Meta?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -666,60 +642,53 @@ export default function MetaConversionsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDisconnect} className="bg-destructive text-white hover:bg-destructive/90">
+            <AlertDialogClose render={<Button variant="ghost" />}>Cancelar</AlertDialogClose>
+            <Button variant="destructive" onClick={handleDisconnect}>
               Desconectar
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogPopup>
       </AlertDialog>
     </div>
   );
 }
 
 function TokenOption({
-  selected,
-  disabled,
-  onSelect,
+  value,
   title,
   description,
+  disabled,
 }: {
-  selected: boolean;
-  disabled: boolean;
-  onSelect: () => void;
+  value: MetaConversionsTokenSource;
   title: string;
   description: string;
+  disabled?: boolean;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      disabled={disabled}
-      aria-pressed={selected}
-      className={`rounded-md border p-3 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-        selected ? 'border-primary bg-primary/5' : 'border-sidebar-border bg-sidebar hover:border-primary/40'
-      }`}
-    >
-      <span className="block text-sm font-medium text-foreground">{title}</span>
-      <span className="block text-xs text-muted-foreground mt-0.5">{description}</span>
-    </button>
+    <Label className="flex items-start gap-3 rounded-lg border p-3 has-disabled:opacity-64 has-data-checked:border-primary/48 has-data-checked:bg-primary/4">
+      <Radio value={value} disabled={disabled} className="mt-0.5" />
+      <span className="flex flex-col gap-0.5">
+        <span className="font-medium text-sm">{title}</span>
+        <span className="font-normal text-muted-foreground text-xs">{description}</span>
+      </span>
+    </Label>
   );
 }
 
-function InfoRow({ label, value }: { label: string; value?: string | null }) {
+function InfoRow({ label, value, mono }: { label: string; value?: string | null; mono?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right truncate">{value || '—'}</span>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className={`truncate text-end font-medium ${mono ? 'font-mono text-xs' : ''}`}>{value || '—'}</dd>
     </div>
   );
 }
 
-function CountTile({ label, value, tone }: { label: string; value: number; tone?: 'danger' }) {
+function CountTile({ label, value, danger }: { label: string; value: number; danger?: boolean }) {
   return (
-    <div className="rounded-md border border-sidebar-border bg-sidebar p-3 text-center">
-      <div className={`text-xl font-semibold ${tone === 'danger' ? 'text-destructive' : ''}`}>{value}</div>
-      <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+    <div className="rounded-lg border bg-muted/32 p-3 text-center">
+      <div className={`font-semibold text-xl tabular-nums ${danger ? 'text-destructive-foreground' : ''}`}>{value}</div>
+      <div className="mt-0.5 text-muted-foreground text-xs">{label}</div>
     </div>
   );
 }

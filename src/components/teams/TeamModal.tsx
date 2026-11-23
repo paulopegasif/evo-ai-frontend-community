@@ -1,10 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  ScrollArea,
-} from '@evoapi/design-system';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Team, TeamFormData } from '@/types/users';
 import TeamForm from './TeamForm';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -38,14 +32,13 @@ export default function TeamModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">
+      <DialogPopup className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
             {isNew ? t('modal.create') : t('modal.edit', { name: team?.name || 'Equipe' })}
           </DialogTitle>
         </DialogHeader>
-
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6 py-4">
+        <DialogPanel>
           <TeamForm
             team={team}
             isNew={isNew}
@@ -53,8 +46,8 @@ export default function TeamModal({
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />
-        </ScrollArea>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }

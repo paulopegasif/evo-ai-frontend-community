@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import TaskConfigForm, { TaskConfigData } from '@/components/ai_agents/Forms/TaskConfigForm';
@@ -48,18 +48,14 @@ const WizardStep3_TaskConfig = ({
           <ArrowLeft className="h-4 w-4" />
           {t('actions.back')}
         </Button>
-        <Button
-          onClick={onNext}
-          disabled={!isValid}
-          className="gap-2 px-6"
-        >
+        <Button onClick={onNext} disabled={!isValid} className="gap-2 px-6">
           {t('actions.continue')}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
 
       {errors.length > 0 && !isValid && (
-        <div className="mt-2 text-sm text-red-600">
+        <div className="mt-2 text-sm text-destructive-foreground">
           {errors.map((error, index) => (
             <p key={index}>{error}</p>
           ))}

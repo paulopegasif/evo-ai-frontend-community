@@ -1,3 +1,4 @@
+import { Spinner } from '@/components/ui/spinner';
 import MessageList, { MessageItem } from '@/components/widget/MessageList';
 import FooterReplyTo from '@/components/widget/FooterReplyTo';
 import TypingIndicator from '@/components/widget/TypingIndicator';
@@ -98,17 +99,17 @@ export function WidgetChatScreen({
       </div>
 
       {/* Fixed Footer Area */}
-      <div className="flex-shrink-0 bg-white">
+      <div className="shrink-0 bg-background">
         {/* Show pending uploads */}
         {pendingUploads.length > 0 && (
-          <div className="border-t border-gray-200 p-3 bg-white">
-            <div className="text-sm text-gray-600 mb-2">{t('chat.uploadingFiles')}</div>
+          <div className="flex flex-col gap-1.5 border-t bg-background px-3 py-2">
+            <div className="text-muted-foreground text-xs">{t('chat.uploadingFiles')}</div>
             {pendingUploads.map(upload => (
-              <div key={upload.id} className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-gray-500 flex-1 truncate">
+              <div key={upload.id} className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground flex-1 truncate">
                   {upload.file.name}
                 </span>
-                <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                <Spinner className="size-3.5 text-muted-foreground" />
               </div>
             ))}
           </div>
@@ -116,7 +117,7 @@ export function WidgetChatScreen({
 
         {/* Email Transcript Button - show only if user has email */}
         {enhancedConfig.showEmailTranscriptButton && messages.length > 0 && (
-          <div className="px-3 py-2 border-t border-slate-200 bg-slate-50">
+          <div className="border-t bg-background px-3 py-2">
             <div className="flex justify-end">
               <EmailTranscriptButton
                 websiteToken={websiteToken}
@@ -149,7 +150,7 @@ export function WidgetChatScreen({
 
       {/* Toast Notifications */}
       {toastMessage && (
-        <Toast message={toastMessage} type={toastType} onClose={onToastClose} />
+        <Toast message={toastMessage} type={toastType} onClose={onToastClose} closeLabel={t('toast.close')} />
       )}
     </>
   );

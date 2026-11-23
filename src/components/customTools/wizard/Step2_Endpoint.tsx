@@ -1,14 +1,14 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Input,
-  Label,
-  Button,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-} from '@evoapi/design-system';
+} from '@/components/ui/select';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
@@ -54,36 +54,37 @@ export default function Step2_Endpoint({ data, onChange, onNext, onBack }: Step2
           <div className="grid grid-cols-[140px_1fr] gap-3">
             <div>
               <Label className="text-sm mb-1.5 block font-semibold">
-                {t('form.fields.method.label')} <span className="text-red-500">*</span>
+                {t('form.fields.method.label')} <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={data.method}
-                onValueChange={value => onChange({ ...data, method: value })}
+                onValueChange={value => value && onChange({ ...data, method: value })}
               >
-                <SelectTrigger className="h-10">
+                <SelectTrigger size="lg">
                   <SelectValue placeholder={t('form.fields.method.placeholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectPopup>
                   {HTTP_METHODS.map(method => (
                     <SelectItem key={method} value={method}>
                       {method}
                     </SelectItem>
                   ))}
-                </SelectContent>
+                </SelectPopup>
               </Select>
             </div>
 
             <div>
               <Label className="text-sm mb-1.5 block font-semibold">
-                {t('form.fields.endpoint.label')} <span className="text-red-500">*</span>
+                {t('form.fields.endpoint.label')} <span className="text-destructive">*</span>
               </Label>
               <Input
+                size="lg"
                 placeholder={t('form.fields.endpoint.placeholder')}
                 value={data.endpoint}
                 onChange={e => onChange({ ...data, endpoint: e.target.value })}
-                className={`h-10 text-sm ${error ? 'border-red-500' : ''}`}
+                aria-invalid={!!error || undefined}
               />
-              {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+              {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
             </div>
           </div>
 

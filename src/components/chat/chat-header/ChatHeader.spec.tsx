@@ -113,19 +113,19 @@ const openPipelineAndSelectStage = async (
   stageName: string,
 ) => {
   // Open main dropdown
-  const menuTrigger = document.querySelector<HTMLElement>('[data-slot="dropdown-menu-trigger"]')!;
+  const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
   await user.click(menuTrigger);
 
   // Find and focus the pipeline.addTo sub-trigger, then open it with ArrowRight
   const addToTrigger = await screen.findByText('pipeline.addTo');
-  const addToSubTrigger = (addToTrigger.closest('[data-slot="dropdown-menu-sub-trigger"]') ?? addToTrigger) as HTMLElement;
+  const addToSubTrigger = (addToTrigger.closest('[data-slot="menu-sub-trigger"]') ?? addToTrigger) as HTMLElement;
   addToSubTrigger.focus();
   await user.keyboard('{ArrowRight}');
 
   // Find and focus the specific pipeline sub-trigger, then open with ArrowRight
   await waitFor(() => screen.getByText(pipelineName), { timeout: 2000 });
   const pipelineEl = screen.getByText(pipelineName);
-  const pipelineSubTrigger = (pipelineEl.closest('[data-slot="dropdown-menu-sub-trigger"]') ?? pipelineEl) as HTMLElement;
+  const pipelineSubTrigger = (pipelineEl.closest('[data-slot="menu-sub-trigger"]') ?? pipelineEl) as HTMLElement;
   pipelineSubTrigger.focus();
   await user.keyboard('{ArrowRight}');
 
@@ -156,7 +156,7 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalledWith({ is_active: true }));
 
     const user = userEvent.setup();
-    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="dropdown-menu-trigger"]')!;
+    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
     await user.click(menuTrigger);
 
     await waitFor(() =>
@@ -360,12 +360,12 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalled());
 
     const user = userEvent.setup();
-    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="dropdown-menu-trigger"]')!;
+    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
     await user.click(menuTrigger);
 
     const addToTrigger = await screen.findByText('pipeline.addTo');
     const addToSubTrigger = (
-      addToTrigger.closest('[data-slot="dropdown-menu-sub-trigger"]') ?? addToTrigger
+      addToTrigger.closest('[data-slot="menu-sub-trigger"]') ?? addToTrigger
     ) as HTMLElement;
     addToSubTrigger.focus();
     await user.keyboard('{ArrowRight}');
@@ -373,7 +373,7 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => screen.getByText('Pipeline p1'), { timeout: 2000 });
     const pipelineEl = screen.getByText('Pipeline p1');
     const pipelineSubTrigger = (
-      pipelineEl.closest('[data-slot="dropdown-menu-sub-trigger"]') ?? pipelineEl
+      pipelineEl.closest('[data-slot="menu-sub-trigger"]') ?? pipelineEl
     ) as HTMLElement;
     pipelineSubTrigger.focus();
     await user.keyboard('{ArrowRight}');
@@ -424,17 +424,17 @@ describe('ChatHeader pipeline', () => {
     await waitFor(() => expect(pipelinesService.getPipelines).toHaveBeenCalled());
 
     const user = userEvent.setup();
-    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="dropdown-menu-trigger"]')!;
+    const menuTrigger = document.querySelector<HTMLElement>('[data-slot="menu-trigger"][aria-label="a11y.moreActions"]')!;
     await user.click(menuTrigger);
 
     const addToTrigger = await screen.findByText('pipeline.addTo');
-    const addToSubTrigger = (addToTrigger.closest('[data-slot="dropdown-menu-sub-trigger"]') ?? addToTrigger) as HTMLElement;
+    const addToSubTrigger = (addToTrigger.closest('[data-slot="menu-sub-trigger"]') ?? addToTrigger) as HTMLElement;
     addToSubTrigger.focus();
     await user.keyboard('{ArrowRight}');
 
     await waitFor(() => screen.getByText('Pipeline p1'), { timeout: 2000 });
     const pipelineEl = screen.getByText('Pipeline p1');
-    const pipelineSubTrigger = (pipelineEl.closest('[data-slot="dropdown-menu-sub-trigger"]') ?? pipelineEl) as HTMLElement;
+    const pipelineSubTrigger = (pipelineEl.closest('[data-slot="menu-sub-trigger"]') ?? pipelineEl) as HTMLElement;
     pipelineSubTrigger.focus();
     await user.keyboard('{ArrowRight}');
 

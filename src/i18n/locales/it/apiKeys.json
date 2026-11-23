@@ -27,7 +27,9 @@
       "provider": "Seleziona un provider",
       "keyNew": "Incolla qui la tua chiave API",
       "keyEdit": "Inserisci nuova chiave (lascia vuoto per mantenere quella attuale)"
-    }
+    },
+    "showKey": "Mostra chiave",
+    "hideKey": "Nascondi chiave"
   },
   "actions": {
     "add": "Nuova Chiave",

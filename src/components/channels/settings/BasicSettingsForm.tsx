@@ -1,4 +1,6 @@
-import { Input, Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Upload, Trash2, Globe, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -95,13 +97,13 @@ export default function BasicSettingsForm({
                     }}
                   />
                   <Button variant="outline" size="sm" className="pointer-events-none">
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload />
                     {t('settings.basicSettings.avatar.upload')}
                   </Button>
                 </label>
                 {formData.avatar_url && (
                   <Button variant="destructive" size="sm" onClick={onAvatarDelete}>
-                    <Trash2 className="h-4 w-4 mr-2" />
+                    <Trash2 />
                     {t('settings.basicSettings.avatar.remove')}
                   </Button>
                 )}
@@ -147,19 +149,24 @@ export default function BasicSettingsForm({
         {inboxHook.isAPIInbox && (
           <div className="space-y-2 mb-6">
             <label className="text-sm font-medium text-foreground">{t('settings.basicSettings.webhook.label')}</label>
-            <div className="relative">
-              <Input
+            <InputGroup>
+              <InputGroupInput
                 value={formData.webhook_url}
                 onChange={e => onFormChange({ webhook_url: e.target.value })}
                 placeholder={t('settings.basicSettings.webhook.placeholder')}
               />
-              <button
-                onClick={handleCopyWebhook}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                <Copy className="h-4 w-4" />
-              </button>
-            </div>
+              <InputGroupAddon align="inline-end">
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={handleCopyWebhook}
+                  aria-label={t('settings.a11y.copy')}
+                  title={t('settings.a11y.copy')}
+                >
+                  <Copy />
+                </Button>
+              </InputGroupAddon>
+            </InputGroup>
           </div>
         )}
 

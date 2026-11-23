@@ -595,5 +595,11 @@
     "clearing": "Effacement...",
     "success": "Configuration effacée avec succès",
     "error": "Échec de l'effacement de la configuration"
+  },
+  "common": {
+    "unsavedChanges": "Modifications non enregistrées",
+    "noChanges": "Aucune modification en attente",
+    "configured": "Configuré",
+    "notConfigured": "Non configuré"
   }
 }

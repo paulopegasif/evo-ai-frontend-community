@@ -1,16 +1,8 @@
 import { Stethoscope, Users } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BaseTable, type TableColumn } from '@/components/base';
 import type { CategoryPerformance, ProfessionalPerformance } from '@/types/leadTracking';
 import { AXIS_PROPS, SERIES } from './chartConfig';
@@ -35,7 +27,7 @@ const professionalColumns: TableColumn<ProfessionalPerformance>[] = [
     align: 'right',
     render: (p) =>
       p.no_outcome > 0 ? (
-        <span className="text-amber-600 font-medium" title="Data já passou e o status não foi atualizado">
+        <span className="text-warning-foreground font-medium" title="Data já passou e o status não foi atualizado">
           {p.no_outcome}
         </span>
       ) : (
@@ -52,7 +44,7 @@ const professionalColumns: TableColumn<ProfessionalPerformance>[] = [
           {DASH}
         </span>
       ) : (
-        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+        <Badge variant="secondary" className="tabular-nums">
           {percentOrDash(p.show_rate)}
         </Badge>
       ),
@@ -75,7 +67,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
           </CardTitle>
           <CardDescription>Faturamento das consultas realizadas e volume agendado no período</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        <CardPanel className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
           {categories.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma consulta no período.</p>
           ) : (
@@ -123,7 +115,7 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
               </table>
             </>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
 
       <Card>
@@ -136,14 +128,14 @@ const AgendaSection = ({ categories, professionals }: AgendaSectionProps) => {
             Comparecimento = realizadas ÷ (realizadas + faltas). “Sem desfecho”: data passou e o status não foi atualizado
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardPanel className="overflow-x-auto">
           <BaseTable<ProfessionalPerformance>
             data={professionals}
             columns={professionalColumns}
             getRowKey={(p) => p.user_id}
             emptyMessage="Nenhum atendimento registrado no período."
           />
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

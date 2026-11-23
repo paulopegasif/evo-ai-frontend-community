@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@evoapi/design-system/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface PostData {
   id?: string;
@@ -99,7 +99,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ postData }) => {
         <div className="p-3 border-b border-border">
           <div className="flex items-center gap-2">
             <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-blue-100 text-blue-700 text-xs">
+              <AvatarFallback className="bg-info/12 text-info-foreground text-xs">
                 {postAuthor[0]?.toUpperCase() || 'F'}
               </AvatarFallback>
             </Avatar>

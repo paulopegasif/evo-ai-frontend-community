@@ -72,7 +72,9 @@
         "required": true,
         "errors": {
           "required": "La lista debe tener al menos un valor"
-        }
+        },
+        "add": "Añadir valor",
+        "remove": "Quitar {{value}}"
       },
       "regexEnabled": {
         "label": "Validación con Regex",

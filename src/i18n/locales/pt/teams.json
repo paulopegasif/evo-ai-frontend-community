@@ -144,7 +144,7 @@
     "alreadyMemberBadge": "Membro",
     "table": {
       "select": "Selecionar",
-      "user": "Usuário", 
+      "user": "Usuário",
       "email": "E-mail",
       "status": {
         "online": "Online",
@@ -160,7 +160,9 @@
       "title": "Equipe não encontrada",
       "description": "A equipe que você está procurando não foi encontrada.",
       "action": "Voltar para equipes"
-    }
+    },
+    "pendingChanges": "{{added}} a adicionar · {{removed}} a remover",
+    "noPendingChanges": "Sem alterações pendentes"
   },
   "dialog": {
     "delete": {
@@ -173,7 +175,7 @@
     "bulkDelete": {
       "title": "Deletar Equipes",
       "description": "Tem certeza que deseja deletar {{count}} equipes selecionadas? Esta ação não pode ser desfeita.",
-      "cancel": "Cancelar", 
+      "cancel": "Cancelar",
       "confirm": "Deletar Todas",
       "deleting": "Deletando..."
     }
@@ -185,5 +187,9 @@
     "saving": "Salvando...",
     "save": "Guardar",
     "addUsers": "Adicionar Usuários"
+  },
+  "viewMode": {
+    "cards": "Ver em cartões",
+    "table": "Ver em tabela"
   }
 }

@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Clock } from 'lucide-react';
+import EmptyState from '@/components/base/EmptyState';
+import { Skeleton } from '@/components/ui/skeleton';
+import SectionHeader from './sections/SectionHeader';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   getAgent,
@@ -57,6 +60,37 @@ interface AgentFormData {
   config?: {
     knowledge_base_config_id?: string;
   };
+}
+
+function AgentEditSkeleton() {
+  return (
+    <div className="flex h-full flex-col md:flex-row" aria-busy="true">
+      <div className="hidden w-60 flex-col gap-2 border-e bg-sidebar p-4 md:flex">
+        <div className="mb-3 flex items-center gap-3">
+          <Skeleton className="size-10 rounded-lg" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        </div>
+        {Array.from({ length: 6 }, (_, i) => (
+          <Skeleton key={i} className="h-8 w-full rounded-lg" />
+        ))}
+      </div>
+      <div className="flex flex-1 flex-col">
+        <div className="flex items-center justify-between border-b px-6 py-3">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-8 w-24 rounded-lg" />
+        </div>
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-6">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-4 w-80" />
+          <Skeleton className="h-40 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const AgentEditPage = () => {
@@ -979,18 +1013,16 @@ const AgentEditPage = () => {
       case 'channels':
       case 'settings':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">
-                {t(`edit.${activeMenu}.title`) || activeMenu}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t(`edit.${activeMenu}.subtitle`) || 'Em breve...'}
-              </p>
-            </div>
-            <div className="text-center py-12 text-muted-foreground">
-              {t(`edit.${activeMenu}.comingSoon`) || 'Em breve...'}
-            </div>
+          <div className="flex flex-col gap-6">
+            <SectionHeader
+              title={t(`edit.${activeMenu}.title`) || activeMenu}
+              description={t(`edit.${activeMenu}.subtitle`) || 'Em breve...'}
+            />
+            <EmptyState
+              icon={Clock}
+              title={t(`edit.${activeMenu}.comingSoon`) || 'Em breve...'}
+              description=""
+            />
           </div>
         );
 
@@ -1000,11 +1032,7 @@ const AgentEditPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    return <AgentEditSkeleton />;
   }
 
   if (!agent) {
@@ -1012,7 +1040,7 @@ const AgentEditPage = () => {
   }
 
   return (
-    <div className="flex h-full bg-background">
+    <div className="flex h-full flex-col bg-background md:flex-row">
       {/* Sidebar */}
       <AgentEditSidebar
         agent={agent}
@@ -1022,9 +1050,10 @@ const AgentEditPage = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {/* Header */}
         <AgentEditHeader
+          agentName={formData.name || agent.name}
           onBack={() => navigate('/agents/list')}
           onSave={handleSave}
           onTestAgent={() => setIsTestChatOpen(true)}
@@ -1033,7 +1062,9 @@ const AgentEditPage = () => {
         />
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">{renderContent()}</div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-5xl p-4 md:p-6">{renderContent()}</div>
+        </div>
       </div>
 
       {/* Chat de Teste */}

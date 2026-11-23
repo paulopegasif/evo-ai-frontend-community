@@ -81,7 +81,8 @@
       "downloadFallbackReason": {
         "serverError": "Server returned {{status}} — could not download directly.",
         "network": "Network error or CORS block — could not download directly."
-      }
+      },
+      "download": "Download"
     },
     "messageImage": {
       "downloadStarted": "Download started",
@@ -261,7 +262,8 @@
     "paused": "(paused)",
     "send": "Send",
     "preparingConverter": "Preparing audio converter...",
-    "maxDurationReached": "Maximum recording duration reached (5 min). Audio stopped automatically."
+    "maxDurationReached": "Maximum recording duration reached (5 min). Audio stopped automatically.",
+    "cancel": "Cancel"
   },
   "cannedResponses": {
     "loading": "Loading canned responses...",
@@ -284,7 +286,9 @@
       "whatsappMessage": "You can only reply to this conversation using a message template due to",
       "cannotReply": "You cannot reply because",
       "linkText": "24-hour messaging window restrictions",
-      "zapiDisconnected": "WhatsApp disconnected. Connect the number to send messages."
+      "zapiDisconnected": "WhatsApp disconnected. Connect the number to send messages.",
+      "readOnlyMirror": "Read-only copy of the Bitrix24 conversations. Reply from Bitrix24 until WhatsApp is connected here.",
+      "whatsappDisconnected": "WhatsApp disconnected. Connect the number to send messages."
     },
     "noteBanner": {
       "title": "Attendance note",
@@ -319,7 +323,8 @@
       "bulkStatusSuccess": "{{count}} conversation(s) updated",
       "bulkStatusPartialSuccess": "{{success}} updated, {{failed}} failed",
       "bulkStatusError": "Error updating conversations",
-      "bulkStatusNoPermission": "You do not have permission to update conversations"
+      "bulkStatusNoPermission": "You do not have permission to update conversations",
+      "priorityLabel": "Priority"
     },
     "contactNoName": "Contact without name",
     "status": "Status:",
@@ -327,7 +332,9 @@
       "open": "Open",
       "complete": "Complete",
       "reopen": "Reopen",
-      "more": "More status options"
+      "more": "More status options",
+      "openFull": "Open conversation",
+      "pause": "Pause conversation"
     },
     "statusPill": {
       "open": "Open Conversation",
@@ -339,7 +346,8 @@
     "closeConversation": "Close conversation",
     "phoneNumber": "Phone number",
     "openContactPanel": "Open contact details",
-    "closeContactPanel": "Close contact details"
+    "closeContactPanel": "Close contact details",
+    "openContact": "View contact details"
   },
   "chatSidebar": {
     "segments": {
@@ -399,7 +407,8 @@
       "all": "All",
       "chipCleared": "Unread/Groups can’t be combined with this tab and were removed"
     },
-    "draftPrefix": "Draft:"
+    "draftPrefix": "Draft:",
+    "loadMore": "Load more"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -733,7 +742,8 @@
       "helper": "Save important notes on the conversation so other users can see them later.",
       "placeholder": "Add a note to this conversation...",
       "save": "Save",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "cancel": "Cancel"
     },
     "emojiPicker": {
       "searchPlaceholder": "Search emojis..."
@@ -1069,6 +1079,11 @@
       "conversationsEmpty": "No conversations found",
       "contactsEmpty": "No contacts found",
       "messagesEmpty": "No messages found"
+    },
+    "hints": {
+      "navigate": "navigate",
+      "open": "open",
+      "close": "close"
     }
   },
   "pipeline": {
@@ -1100,6 +1115,7 @@
     "send": "Send",
     "recordAudio": "Record audio",
     "moreActions": "More actions",
-    "back": "Back"
+    "back": "Back",
+    "remove": "Remove"
   }
 }

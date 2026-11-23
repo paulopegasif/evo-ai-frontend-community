@@ -19,7 +19,8 @@
       "until": "Até",
       "period": "Período",
       "apply": "Aplicar filtros",
-      "clear": "Limpar filtros"
+      "clear": "Limpar filtros",
+      "days": "dias"
     },
     "stats": {
       "totalPipeline": "Total no Funil",
@@ -152,6 +153,7 @@
       "agents": "Sem dados de atendentes para o período selecionado.",
       "channels": "Sem dados de canal no período selecionado.",
       "pipelineInactive": "Funil inativo no período selecionado."
-    }
+    },
+    "retry": "Tentar novamente"
   }
 }

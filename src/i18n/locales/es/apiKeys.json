@@ -27,7 +27,9 @@
       "provider": "Seleccione un proveedor",
       "keyNew": "Pegue su clave API aquí",
       "keyEdit": "Digite nueva clave (deje vacío para mantener actual)"
-    }
+    },
+    "showKey": "Mostrar clave",
+    "hideKey": "Ocultar clave"
   },
   "actions": {
     "add": "Nueva Clave",

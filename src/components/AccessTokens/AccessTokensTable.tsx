@@ -1,5 +1,5 @@
 import { Edit, Trash2, Eye, Key, Copy } from 'lucide-react';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import BaseTable from '@/components/base/BaseTable';
 import type { AccessToken } from '@/types/auth';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -103,27 +103,27 @@ export default function AccessTokensTable({
   const actions = [
     {
       label: 'View Token',
-      icon: <Eye className="h-4 w-4" />,
+      icon: <Eye className="size-4" />,
       onClick: onViewToken,
     },
     {
       label: 'Copy Token',
-      icon: <Copy className="h-4 w-4" />,
+      icon: <Copy className="size-4" />,
       onClick: (token: AccessToken) => onCopy(token.token, 'Token'),
     },
     ...(can('access_tokens', 'update') ? [{
       label: 'Edit',
-      icon: <Edit className="h-4 w-4" />,
+      icon: <Edit className="size-4" />,
       onClick: onEditToken,
     }] : []),
     ...(can('access_tokens', 'update_token') ? [{
       label: 'Regenerate Token',
-      icon: <Key className="h-4 w-4" />,
+      icon: <Key className="size-4" />,
       onClick: onRegenerateToken,
     }] : []),
     ...(can('access_tokens', 'delete') ? [{
       label: 'Delete',
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 className="size-4" />,
       onClick: onDeleteToken,
       variant: 'destructive' as const,
     }] : []),

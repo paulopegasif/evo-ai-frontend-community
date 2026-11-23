@@ -1,5 +1,7 @@
-import { Button } from '@evoapi/design-system';
 import { useNavigate } from 'react-router-dom';
+import { Home, MapPinOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const NotFound = () => {
@@ -7,13 +9,24 @@ const NotFound = () => {
   const { t } = useLanguage('notFound');
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-2">
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
-      <p className="text-sm text-gray-500">{t('description')}</p>
-      <Button color="primary" onClick={() => navigate('/')}>
-        {t('button.backToHome')}
-      </Button>
-    </div>
+    <main className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <MapPinOff />
+          </EmptyMedia>
+          <p className="font-semibold text-5xl text-muted-foreground/48 tabular-nums">404</p>
+          <EmptyTitle className="text-xl">{t('title')}</EmptyTitle>
+          <EmptyDescription>{t('description')}</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button onClick={() => navigate('/')}>
+            <Home />
+            {t('button.backToHome')}
+          </Button>
+        </EmptyContent>
+      </Empty>
+    </main>
   );
 };
 

@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@evoapi/design-system/tooltip';
-import {
-  Send,
+  SendHorizontal,
   Mic,
-  Loader2,
   Smile,
+  Lock,
   X,
   Reply,
   PenLine,
@@ -624,29 +619,17 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   // Componente de preview da resposta
   const ReplyPreview = ({ message, onCancel }: { message: Message; onCancel: () => void }) => (
-    <div className="w-full border-t-0 border-x-0 border-b border-border bg-muted/50 px-4 py-3">
-      <div className="flex items-start gap-3">
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
-          <Reply className="h-4 w-4" />
-          <span className="font-medium">
-            {t('messageInput.replyPreview.replyingTo', {
-              name: message.sender?.name || t('messageInput.replyPreview.userFallback'),
-            })}
-          </span>
-        </div>
-        <Button aria-label={t('a11y.cancelReply', 'Cancelar resposta')} title={t('a11y.cancelReply', 'Cancelar resposta')}
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 ml-auto hover:bg-destructive/20 hover:text-destructive"
-          onClick={onCancel}
-        >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-      <div className="mt-2 pl-6">
-        <div className="text-sm text-muted-foreground bg-background border-l-2 border-primary/30 pl-3 py-1 rounded-r max-w-md">
+    <div className="flex w-full items-start gap-2.5 border-t bg-muted/40 px-3 py-2 md:px-4">
+      <Reply aria-hidden="true" className="mt-1 size-4 flex-shrink-0 text-primary" />
+      <div className="min-w-0 flex-1 border-s-2 border-s-primary ps-2.5">
+        <p className="font-medium text-foreground text-xs">
+          {t('messageInput.replyPreview.replyingTo', {
+            name: message.sender?.name || t('messageInput.replyPreview.userFallback'),
+          })}
+        </p>
+        <div className="text-muted-foreground text-sm">
           {message.content ? (
-            <span className="line-clamp-2">{message.content}</span>
+            <span className="line-clamp-1">{message.content}</span>
           ) : message.attachments && message.attachments.length > 0 ? (
             <span className="italic">
               {t('messageInput.replyPreview.fileAttachment', {
@@ -659,6 +642,15 @@ const MessageInput: React.FC<MessageInputProps> = ({
           )}
         </div>
       </div>
+      <Button
+        aria-label={t('a11y.cancelReply', 'Cancelar resposta')}
+        variant="ghost"
+        size="icon-xs"
+        className="text-muted-foreground"
+        onClick={onCancel}
+      >
+        <X />
+      </Button>
     </div>
   );
 
@@ -669,10 +661,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <ReplyPreview message={replyToMessage} onCancel={() => onCancelReply?.()} />
       )}
 
-      <div ref={composerRootRef} className="w-full border-t border-border bg-background relative">
+      <div ref={composerRootRef} className="relative w-full border-t bg-background">
         {/* File Preview – só quando NÃO tiver mídia da canned */}
         {selectedFiles.length > 0 && !hasCannedMedia && (
-          <div className="border-b border-border bg-muted/30">
+          <div className="border-b bg-muted/40">
             <FilePreview
               files={selectedFiles}
               onRemove={handleRemoveFile}
@@ -685,7 +677,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
         {/* Banner da mídia da resposta rápida selecionada */}
         {hasCannedMedia && (
-          <div className="border-b border-border bg-muted/20 px-4 py-2 flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 border-b bg-muted/40 px-4 py-1.5">
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">
                 {t('messageInput.cannedResponse.mediaBanner', {
@@ -694,10 +686,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
               </span>
             </div>
             <Button
-              type="button"
               variant="ghost"
-              size="icon"
-              className="h-6 w-6 flex-shrink-0"
+              size="icon-xs"
+              className="flex-shrink-0"
               aria-label={t('messageInput.cannedResponse.removeMediaAriaLabel')}
               onClick={() => {
                 setSelectedCannedResponse(null);
@@ -705,14 +696,14 @@ const MessageInput: React.FC<MessageInputProps> = ({
               }}
               disabled={isSending}
             >
-              <X className="h-3 w-3" />
+              <X />
             </Button>
           </div>
         )}
 
         {/* 🎯 CANNED RESPONSES: Dropdown de sugestões */}
         {showCannedResponses && (
-          <div className="px-4 pt-2">
+          <div className="px-3 pt-2 md:px-4">
             <CannedResponsesList
               cannedResponses={filteredCannedResponses}
               selectedIndex={selectedCannedIndex}
@@ -734,21 +725,22 @@ const MessageInput: React.FC<MessageInputProps> = ({
             preferWhatsAppCloudFormat={isWhatsApp}
           />
         ) : (
-          <div className="flex items-center gap-2 px-4 py-3 relative">
-            {/* Overlay de bloqueio (status ≠ aberto) — cobre a barra inteira; SÓ
-                cadeado + texto, sem duplicar o botão "Abrir" (fica no header). */}
+          <div className="relative px-3 py-2.5 md:px-4">
+            {/* Lock overlay (status ≠ open): covers the whole bar; only lock + text,
+                the "Abrir" action already lives in the header. */}
             {isPendingConversation && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-muted/95 backdrop-blur-[1px] px-4 text-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                </svg>
-                <p className="text-sm text-muted-foreground font-medium">
+              <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-muted/95 px-4 text-center backdrop-blur-[1px]">
+                <Lock aria-hidden="true" className="size-4 flex-shrink-0 text-muted-foreground" />
+                <p className="font-medium text-muted-foreground text-sm">
                   {t('messageInput.placeholders.pendingNote')}
                 </p>
               </div>
             )}
 
+            <div
+              data-slot="composer"
+              className="flex items-end gap-0.5 rounded-2xl border border-input bg-background p-1 shadow-xs/5 transition-shadow has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/24 has-[.ProseMirror-focused]:border-ring has-[.ProseMirror-focused]:ring-[3px] has-[.ProseMirror-focused]:ring-ring/24 dark:bg-input/32"
+            >
             {/* + menu */}
             <ComposerPlusMenu
               disabled={isDisabled || isSending || isPendingConversation}
@@ -764,15 +756,23 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
             {/* Emoji */}
             <div className="relative flex-shrink-0">
-              <Button aria-label={t('a11y.emoji', 'Inserir emoji')} title={t('a11y.emoji', 'Inserir emoji')}
-                variant="ghost"
-                size="icon"
-                disabled={isDisabled || isSending || isPendingConversation}
-                className="h-9 w-9 flex-shrink-0 hover:bg-accent disabled:opacity-50"
-                onClick={handleEmojiClick}
-              >
-                <Smile className="h-[22px] w-[22px] text-primary" strokeWidth={2.2} />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      aria-label={t('a11y.emoji', 'Inserir emoji')}
+                      variant="ghost"
+                      size="icon"
+                      disabled={isDisabled || isSending || isPendingConversation}
+                      className="text-muted-foreground hover:text-foreground"
+                      onClick={handleEmojiClick}
+                    />
+                  }
+                >
+                  <Smile />
+                </TooltipTrigger>
+                <TooltipPopup>{t('a11y.emoji', 'Inserir emoji')}</TooltipPopup>
+              </Tooltip>
               <EmojiPicker
                 isOpen={showEmojiPicker}
                 onEmojiSelect={handleEmojiSelect}
@@ -788,26 +788,32 @@ const MessageInput: React.FC<MessageInputProps> = ({
               />
             )}
 
-            {/* Message Signature (extra do CRM, sem equivalente no protótipo — mantido) */}
+            {/* Message signature toggle */}
             {hasSignature && !isPendingConversation && (
-              <div className="relative group flex-shrink-0">
-                <Button aria-label={t('a11y.signature', 'Assinatura')} title={t('a11y.signature', 'Assinatura')}
-                  variant="ghost"
-                  size="icon"
-                  disabled={isDisabled || isSending}
-                  className={`h-9 w-9 flex-shrink-0 hover:bg-accent disabled:opacity-50 transition-colors ${
-                    isSignatureEnabled ? 'text-green-600 dark:text-green-400' : ''
-                  }`}
-                  onClick={toggleSignature}
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      aria-label={t('a11y.signature', 'Assinatura')}
+                      aria-pressed={isSignatureEnabled}
+                      variant="ghost"
+                      size="icon"
+                      disabled={isDisabled || isSending}
+                      className={`flex-shrink-0 ${
+                        isSignatureEnabled ? 'bg-success/8 text-success-foreground' : 'text-muted-foreground'
+                      }`}
+                      onClick={toggleSignature}
+                    />
+                  }
                 >
-                  <PenLine className="h-4 w-4" />
-                </Button>
-                <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                  <PenLine />
+                </TooltipTrigger>
+                <TooltipPopup>
                   {isSignatureEnabled
                     ? t('messageInput.signature.disable')
                     : t('messageInput.signature.enable')}
-                </div>
-              </div>
+                </TooltipPopup>
+              </Tooltip>
             )}
 
             {/* Pill input — 1 linha, sem card ao redor, igual ao protótipo */}
@@ -850,7 +856,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 }}
                 disabled={isDisabled || isSending || isPendingConversation}
                 singleLine
-                className="flex items-center min-h-[46px] w-full rounded-[23px] border border-border bg-background px-[22px] py-[10px]"
+                className="flex min-h-8 w-full items-center px-2 py-1.5"
               />
             </div>
 
@@ -902,43 +908,44 @@ const MessageInput: React.FC<MessageInputProps> = ({
               conversationId={conversationId?.toString()}
             />
 
-            {/* Mic / Send — troca conforme conteúdo digitado */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  {showSendIcon ? (
-                    <Button aria-label={t('a11y.send', 'Enviar')} title={t('a11y.send', 'Enviar')}
-                      variant="ghost"
+            {/* Mic / Send — swaps with the typed content */}
+            <Tooltip>
+              {showSendIcon ? (
+                <TooltipTrigger
+                  render={
+                    <Button
+                      aria-label={t('a11y.send', 'Enviar')}
                       size="icon"
                       onClick={handleSend}
-                      disabled={!canSend}
-                      className="h-9 w-9 flex-shrink-0 hover:bg-accent disabled:opacity-50 text-primary"
-                    >
-                      {isSending ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <Send className="h-5 w-5" />
-                      )}
-                    </Button>
-                  ) : (
-                    <Button aria-label={t('a11y.recordAudio', 'Gravar áudio')} title={t('a11y.recordAudio', 'Gravar áudio')}
+                      disabled={!canSend && !isSending}
+                      loading={isSending}
+                      className="flex-shrink-0 rounded-xl"
+                    />
+                  }
+                >
+                  <SendHorizontal />
+                </TooltipTrigger>
+              ) : (
+                <TooltipTrigger
+                  render={
+                    <Button
+                      aria-label={t('a11y.recordAudio', 'Gravar áudio')}
                       variant="ghost"
                       size="icon"
                       disabled={isDisabled || isSending}
-                      className={`h-9 w-9 flex-shrink-0 hover:bg-accent transition-all duration-200 ${
-                        isRecordingAudio ? 'text-destructive' : 'text-primary'
-                      }`}
+                      className={`flex-shrink-0 ${isRecordingAudio ? 'text-destructive-foreground' : 'text-primary'}`}
                       onClick={startAudioRecording}
-                    >
-                      <Mic className="h-5 w-5" />
-                    </Button>
-                  )}
+                    />
+                  }
+                >
+                  <Mic />
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>{showSendIcon ? sendButtonTooltip : t('messageInput.audio.recordTooltip')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+              )}
+              <TooltipPopup>
+                {showSendIcon ? sendButtonTooltip : t('messageInput.audio.recordTooltip')}
+              </TooltipPopup>
+            </Tooltip>
+            </div>
           </div>
         )}
       </div>

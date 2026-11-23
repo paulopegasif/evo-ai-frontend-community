@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
-import { Button, Textarea } from '@evoapi/design-system';
-import { Send, Paperclip, X, Image, FileText, File, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Send, Paperclip, X, Image, FileText, File } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { formatFileSize, isImageFile, type FileData } from '@/utils/fileUtils';
 import { toast } from 'sonner';
@@ -55,7 +56,9 @@ export function AgentMessageInput({
 
     for (const file of newFiles) {
       if (file.size > maxFileSize) {
-        toast.error(`Arquivo ${file.name} excede o tamanho máximo de ${formatFileSize(maxFileSize)}`);
+        toast.error(
+          `Arquivo ${file.name} excede o tamanho máximo de ${formatFileSize(maxFileSize)}`,
+        );
         continue;
       }
 
@@ -103,7 +106,7 @@ export function AgentMessageInput({
           {selectedFiles.map((file, index) => (
             <div
               key={index}
-              className="flex items-center gap-1.5 bg-muted rounded-lg p-2 text-xs border"
+              className="flex items-center gap-1.5 rounded-lg border bg-muted px-2 py-1 text-xs"
             >
               {isImageFile(file.content_type) ? (
                 <Image className="h-4 w-4 text-primary" />
@@ -114,15 +117,19 @@ export function AgentMessageInput({
               )}
               <span className="max-w-[120px] truncate">{file.filename}</span>
               <span className="text-muted-foreground">({formatFileSize(file.size)})</span>
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                className="-me-1"
+                aria-label={t('chat.removeFile', { name: file.filename })}
                 onClick={() => {
                   const updatedFiles = selectedFiles.filter((_, i) => i !== index);
                   setSelectedFiles(updatedFiles);
                 }}
-                className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
               >
-                <X className="h-3 w-3" />
-              </button>
+                <X />
+              </Button>
             </div>
           ))}
         </div>
@@ -130,13 +137,16 @@ export function AgentMessageInput({
 
       <form onSubmit={handleSendMessage} className="flex w-full items-center gap-2">
         {selectedFiles.length < 5 && (
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            aria-label={t('chat.attachFile')}
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted transition-colors border"
           >
-            <Paperclip className="h-4 w-4" />
-          </button>
+            <Paperclip />
+          </Button>
         )}
 
         <Textarea
@@ -144,7 +154,7 @@ export function AgentMessageInput({
           onChange={e => setMessageInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder || t('chat.typeMessage') || 'Digite sua mensagem...'}
-          className="flex-1 min-h-[40px] max-h-[240px] resize-none"
+          className="flex-1 [&_textarea]:max-h-60 [&_textarea]:min-h-9 [&_textarea]:resize-none"
           disabled={isDisabled}
           rows={1}
         />
@@ -153,12 +163,10 @@ export function AgentMessageInput({
           type="submit"
           disabled={isDisabled || (!messageInput.trim() && selectedFiles.length === 0)}
           size="icon"
+          loading={isDisabled}
+          aria-label={t('chat.send')}
         >
-          {isDisabled ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
+          <Send />
         </Button>
 
         <input
@@ -172,4 +180,3 @@ export function AgentMessageInput({
     </div>
   );
 }
-

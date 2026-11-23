@@ -9,6 +9,7 @@ import { ScheduleActionModal } from '@/components/scheduledActions/ScheduleActio
 import ScheduledActionsHeader from '@/components/scheduledActions/ScheduledActionsHeader';
 import ScheduledActionsTable from '@/components/scheduledActions/ScheduledActionsTable';
 import EmptyState from '@/components/base/EmptyState';
+import { ConfirmDialog } from '@/components/base';
 import { CalendarClock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -158,7 +159,25 @@ export default function ScheduledActions() {
     setModalOpen(true);
   };
 
-  const handleCancel = async (actionId: string) => {
+  // Cancelling is irreversible: both single and bulk cancel go through a confirmation.
+  const [cancelTarget, setCancelTarget] = useState<string | 'bulk' | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+
+  const confirmCancel = async () => {
+    if (!cancelTarget) return;
+    setCancelling(true);
+    try {
+      if (cancelTarget === 'bulk') await performBulkCancel();
+      else await performCancel(cancelTarget);
+    } finally {
+      setCancelling(false);
+      setCancelTarget(null);
+    }
+  };
+
+  const handleCancel = (actionId: string) => setCancelTarget(actionId);
+
+  const performCancel = async (actionId: string) => {
     try {
       await scheduledActionsService.cancel(actionId);
       toast.success(t('scheduledActions.messages.cancelled'));
@@ -193,7 +212,12 @@ export default function ScheduledActions() {
     }));
   };
 
-  const handleBulkCancel = async () => {
+  const handleBulkCancel = () => {
+    if (state.selectedActionIds.length === 0) return;
+    setCancelTarget('bulk');
+  };
+
+  const performBulkCancel = async () => {
     if (state.selectedActionIds.length === 0) return;
 
     try {
@@ -220,68 +244,76 @@ export default function ScheduledActions() {
   const filteredActions = getFilteredActions();
 
   return (
-    <div className="h-full flex flex-col p-6" data-tour="scheduled-actions-page">
+    <div className="flex h-full flex-col gap-4 p-4 md:gap-6 md:p-6" data-tour="scheduled-actions-page">
       <ScheduledActionsTour />
       <div data-tour="scheduled-actions-header">
-      <ScheduledActionsHeader
-        totalCount={state.meta.total_count}
-        selectedCount={state.selectedActionIds.length}
-        searchValue={state.searchQuery}
-        onSearchChange={handleSearchChange}
-        onNewAction={handleCreate}
-        onBulkCancel={handleBulkCancel}
-        onClearSelection={handleClearSelection}
-      />
+        <ScheduledActionsHeader
+          totalCount={state.meta.total_count}
+          selectedCount={state.selectedActionIds.length}
+          searchValue={state.searchQuery}
+          onSearchChange={handleSearchChange}
+          onNewAction={handleCreate}
+          onBulkCancel={handleBulkCancel}
+          onClearSelection={handleClearSelection}
+        />
       </div>
 
-      <div data-tour="scheduled-actions-content">
-      {state.loading.list && state.actions.length === 0 ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">{t('scheduledActions.loading')}</p>
-          </div>
-        </div>
-      ) : filteredActions.length === 0 ? (
-        <EmptyState
-          icon={CalendarClock}
-          title={t('scheduledActions.empty')}
-          description={t('scheduledActions.emptyDescription')}
-          action={
-            can('contacts', 'create') ? {
-              label: t('scheduledActions.newAction'),
-              onClick: handleCreate,
-            } : undefined
-          }
-        />
-      ) : (
-        <>
-          <ScheduledActionsTable
-            actions={filteredActions}
-            selectedActions={state.actions.filter(a => state.selectedActionIds.includes(a.id))}
-            loading={state.loading.list}
-            onSelectionChange={handleSelectionChange}
-            onEdit={handleEdit}
-            onCancel={handleCancel}
-            onContactClick={handleContactClick}
+      <div data-tour="scheduled-actions-content" className="min-h-0 flex-1">
+        {!state.loading.list && filteredActions.length === 0 ? (
+          <EmptyState
+            icon={CalendarClock}
+            title={t('scheduledActions.empty')}
+            description={t('scheduledActions.emptyDescription')}
+            action={
+              can('contacts', 'create')
+                ? {
+                    label: t('scheduledActions.newAction'),
+                    onClick: handleCreate,
+                  }
+                : undefined
+            }
           />
+        ) : (
+          <>
+            {/* BaseTable renders skeleton rows while the first page loads. */}
+            <ScheduledActionsTable
+              actions={filteredActions}
+              selectedActions={state.actions.filter(a => state.selectedActionIds.includes(a.id))}
+              loading={state.loading.list}
+              onSelectionChange={handleSelectionChange}
+              onEdit={handleEdit}
+              onCancel={handleCancel}
+              onContactClick={handleContactClick}
+            />
 
-          {state.meta.total_pages > 1 && (
-            <div className="mt-4 flex justify-center">
-              {/* Pagination component would go here */}
-              <div className="text-sm text-muted-foreground">
+            {state.meta.total_pages > 1 && (
+              <p className="mt-4 text-center text-muted-foreground text-sm tabular-nums">
                 {t('scheduledActions.pagination', {
                   page: state.meta.current_page,
                   totalPages: state.meta.total_pages,
                   total: state.meta.total_count,
                 })}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
+              </p>
+            )}
+          </>
+        )}
       </div>
+
+      <ConfirmDialog
+        open={cancelTarget !== null}
+        onOpenChange={open => !open && !cancelling && setCancelTarget(null)}
+        title={
+          cancelTarget === 'bulk'
+            ? t('scheduledActions.cancelConfirm.titleBulk', { count: state.selectedActionIds.length })
+            : t('scheduledActions.cancelConfirm.title')
+        }
+        description={t('scheduledActions.cancelConfirm.description')}
+        cancelLabel={t('scheduledActions.cancelConfirm.keep')}
+        confirmLabel={t('scheduledActions.cancelConfirm.confirm')}
+        onConfirm={confirmCancel}
+        loading={cancelling}
+        variant="destructive"
+      />
 
       {modalOpen && (
         <ScheduleActionModal

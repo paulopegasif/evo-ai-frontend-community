@@ -1,15 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Textarea,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import type {
   StageAutomationRule,
@@ -28,6 +22,23 @@ interface Agent {
 
 // Minimal shapes the picker needs — the parent modal passes these in (agent
 // bots come from agentBotsService.getAll, NOT the human-assignee list).
+const TRIGGER_OPTIONS: StageAutomationTrigger[] = [
+  'label_added',
+  'conversation_status_changed',
+  'custom_attribute_updated',
+  'inactivity',
+];
+const ACTION_OPTIONS: StageAutomationAction[] = [
+  'move_to_stage',
+  'move_to_pipeline',
+  'assign_agent',
+  'apply_label',
+  'send_ai_message',
+  'send_direct_message',
+  'send_template',
+  'finalize',
+];
+
 export interface AgentBotOption {
   id: string;
   name: string;
@@ -154,41 +165,43 @@ export default function StageAutomationRules({
       return (
         <div className="flex-1 grid grid-cols-2 gap-2">
           <Select
+            items={Object.fromEntries(INACTIVITY_MINUTES.map(m => [String(m), formatInactivityLabel(m)]))}
             value={String(iv.minutes)}
             onValueChange={v =>
-              updateRule(index, { trigger_value: { ...iv, minutes: parseInt(v, 10) } })
+              v != null && updateRule(index, { trigger_value: { ...iv, minutes: parseInt(v, 10) } })
             }
             disabled={disabled}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {INACTIVITY_MINUTES.map(m => (
                 <SelectItem key={m} value={String(m)}>
                   {formatInactivityLabel(m)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           <Select
+            items={Object.fromEntries(INACTIVITY_BASES.map(b => [b, t(`stageAutomation.inactivity.base.${b}`)]))}
             value={iv.base}
             onValueChange={v =>
-              updateRule(index, { trigger_value: { ...iv, base: v as InactivityBase } })
+              v != null && updateRule(index, { trigger_value: { ...iv, base: v as InactivityBase } })
             }
             disabled={disabled}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {INACTIVITY_BASES.map(b => (
                 <SelectItem key={b} value={b}>
                   {t(`stageAutomation.inactivity.base.${b}`)}
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         </div>
       );
@@ -197,16 +210,17 @@ export default function StageAutomationRules({
     if (rule.trigger === 'label_added') {
       return (
         <Select
+          items={{ [ANY_VALUE_SENTINEL]: t('stageAutomation.anyLabel'), ...Object.fromEntries(labels.map(l => [l.title, l.title])) }}
           value={asStringValue(rule.trigger_value) || ANY_VALUE_SENTINEL}
           onValueChange={v =>
-            updateRule(index, { trigger_value: v === ANY_VALUE_SENTINEL ? '' : v })
+            v != null && updateRule(index, { trigger_value: v === ANY_VALUE_SENTINEL ? '' : v })
           }
           disabled={disabled}
         >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={t('stageAutomation.anyLabel')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             <SelectItem value={ANY_VALUE_SENTINEL}>{t('stageAutomation.anyLabel')}</SelectItem>
             {labels.length === 0 ? (
               <SelectItem value={PLACEHOLDER_SENTINEL} disabled>
@@ -217,7 +231,7 @@ export default function StageAutomationRules({
                 <SelectItem key={l.id} value={l.title}>
                   <span className="flex items-center gap-2">
                     <span
-                      className="w-3 h-3 rounded-full inline-block shrink-0"
+                      className="inline-block size-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: l.color }}
                     />
                     {l.title}
@@ -225,7 +239,7 @@ export default function StageAutomationRules({
                 </SelectItem>
               ))
             )}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       );
     }
@@ -233,23 +247,24 @@ export default function StageAutomationRules({
     if (rule.trigger === 'conversation_status_changed') {
       return (
         <Select
+          items={{ [ANY_VALUE_SENTINEL]: t('stageAutomation.anyValue'), ...Object.fromEntries(CONVERSATION_STATUSES.map(st => [st, t(`kanban.search.status.${st}`) || st])) }}
           value={asStringValue(rule.trigger_value) || ANY_VALUE_SENTINEL}
           onValueChange={v =>
-            updateRule(index, { trigger_value: v === ANY_VALUE_SENTINEL ? '' : v })
+            v != null && updateRule(index, { trigger_value: v === ANY_VALUE_SENTINEL ? '' : v })
           }
           disabled={disabled}
         >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={t('stageAutomation.anyValue')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             <SelectItem value={ANY_VALUE_SENTINEL}>{t('stageAutomation.anyValue')}</SelectItem>
             {CONVERSATION_STATUSES.map(s => (
               <SelectItem key={s} value={s}>
                 {t(`kanban.search.status.${s}`) || s}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       );
     }
@@ -269,14 +284,15 @@ export default function StageAutomationRules({
     if (rule.action === 'move_to_stage') {
       return (
         <Select
-          value={rule.action_value || ''}
-          onValueChange={v => updateRule(index, { action_value: v })}
+          items={Object.fromEntries(otherStages.map(st => [st.id, st.name]))}
+          value={rule.action_value || null}
+          onValueChange={v => v != null && updateRule(index, { action_value: v })}
           disabled={disabled}
         >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={t('stageAutomation.selectStage')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             {otherStages.length === 0 ? (
               <SelectItem value={PLACEHOLDER_SENTINEL} disabled>{t('stageAutomation.noOtherStages')}</SelectItem>
             ) : (
@@ -284,7 +300,7 @@ export default function StageAutomationRules({
                 <SelectItem key={s.id} value={s.id}>
                   <span className="flex items-center gap-2">
                     <span
-                      className="w-3 h-3 rounded-full inline-block shrink-0"
+                      className="inline-block size-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: s.color }}
                     />
                     {s.name}
@@ -292,7 +308,7 @@ export default function StageAutomationRules({
                 </SelectItem>
               ))
             )}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       );
     }
@@ -305,14 +321,15 @@ export default function StageAutomationRules({
       return (
         <div className="flex-1 grid grid-cols-2 gap-2">
           <Select
-            value={selectedPipelineId || ''}
-            onValueChange={v => updateRule(index, { action_value: v })}
+            items={Object.fromEntries(otherPipelines.map(p => [p.id, p.name]))}
+            value={selectedPipelineId || null}
+            onValueChange={v => v != null && updateRule(index, { action_value: v })}
             disabled={disabled}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('stageAutomation.selectPipeline')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {otherPipelines.length === 0 ? (
                 <SelectItem value={PLACEHOLDER_SENTINEL} disabled>
                   {t('stageAutomation.noOtherPipelines')}
@@ -324,22 +341,23 @@ export default function StageAutomationRules({
                   </SelectItem>
                 ))
               )}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           <Select
-            value={selectedStageId || ''}
+            items={Object.fromEntries((selectedPipeline?.stages ?? []).map(st => [st.id, st.name]))}
+            value={selectedStageId || null}
             onValueChange={v =>
-              updateRule(index, {
+              v != null && updateRule(index, {
                 action_value: selectedPipelineId ? `${selectedPipelineId}:${v}` : '',
               })
             }
             disabled={disabled || !selectedPipeline}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('stageAutomation.selectStage')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {!selectedPipeline || selectedPipeline.stages.length === 0 ? (
                 <SelectItem value={PLACEHOLDER_SENTINEL} disabled>
                   {t('stageAutomation.noStagesInPipeline')}
@@ -351,7 +369,7 @@ export default function StageAutomationRules({
                   </SelectItem>
                 ))
               )}
-            </SelectContent>
+            </SelectPopup>
           </Select>
         </div>
       );
@@ -360,14 +378,15 @@ export default function StageAutomationRules({
     if (rule.action === 'assign_agent') {
       return (
         <Select
-          value={rule.action_value || ''}
-          onValueChange={v => updateRule(index, { action_value: v })}
+          items={Object.fromEntries(agents.map(a => [a.id, a.name]))}
+          value={rule.action_value || null}
+          onValueChange={v => v != null && updateRule(index, { action_value: v })}
           disabled={disabled}
         >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={t('stageAutomation.selectAgent')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             {agents.length === 0 ? (
               <SelectItem value={PLACEHOLDER_SENTINEL} disabled>{t('stageAutomation.noAgents')}</SelectItem>
             ) : (
@@ -377,7 +396,7 @@ export default function StageAutomationRules({
                 </SelectItem>
               ))
             )}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       );
     }
@@ -385,14 +404,15 @@ export default function StageAutomationRules({
     if (rule.action === 'apply_label') {
       return (
         <Select
-          value={rule.action_value || ''}
-          onValueChange={v => updateRule(index, { action_value: v })}
+          items={Object.fromEntries(labels.map(l => [l.title, l.title]))}
+          value={rule.action_value || null}
+          onValueChange={v => v != null && updateRule(index, { action_value: v })}
           disabled={disabled}
         >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={t('stageAutomation.selectLabel')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             {labels.length === 0 ? (
               <SelectItem value={PLACEHOLDER_SENTINEL} disabled>
                 {t('stageAutomation.noLabels')}
@@ -402,7 +422,7 @@ export default function StageAutomationRules({
                 <SelectItem key={l.id} value={l.title}>
                   <span className="flex items-center gap-2">
                     <span
-                      className="w-3 h-3 rounded-full inline-block shrink-0"
+                      className="inline-block size-2.5 shrink-0 rounded-full"
                       style={{ backgroundColor: l.color }}
                     />
                     {l.title}
@@ -410,7 +430,7 @@ export default function StageAutomationRules({
                 </SelectItem>
               ))
             )}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       );
     }
@@ -419,14 +439,15 @@ export default function StageAutomationRules({
       return (
         <div className="flex-1 space-y-2">
           <Select
-            value={rule.action_value || ''}
-            onValueChange={v => updateRule(index, { action_value: v })}
+            items={Object.fromEntries(agentBots.map(b => [b.id, b.name]))}
+            value={rule.action_value || null}
+            onValueChange={v => v != null && updateRule(index, { action_value: v })}
             disabled={disabled}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t('stageAutomation.selectAgentBot')} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               {agentBots.length === 0 ? (
                 <SelectItem value={PLACEHOLDER_SENTINEL} disabled>
                   {t('stageAutomation.noAgentBots')}
@@ -438,7 +459,7 @@ export default function StageAutomationRules({
                   </SelectItem>
                 ))
               )}
-            </SelectContent>
+            </SelectPopup>
           </Select>
           <Textarea
             rows={2}
@@ -473,14 +494,15 @@ export default function StageAutomationRules({
     if (rule.action === 'send_template') {
       return (
         <Select
-          value={rule.action_value || ''}
-          onValueChange={v => updateRule(index, { action_value: v })}
+          items={Object.fromEntries(messageTemplates.map(tpl => [tpl.id, `${tpl.name}${tpl.language ? ` (${tpl.language})` : ''}`]))}
+          value={rule.action_value || null}
+          onValueChange={v => v != null && updateRule(index, { action_value: v })}
           disabled={disabled}
         >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={t('stageAutomation.selectTemplate')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup>
             {messageTemplates.length === 0 ? (
               <SelectItem value={PLACEHOLDER_SENTINEL} disabled>
                 {t('stageAutomation.noTemplates')}
@@ -493,7 +515,7 @@ export default function StageAutomationRules({
                 </SelectItem>
               ))
             )}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       );
     }
@@ -517,35 +539,38 @@ export default function StageAutomationRules({
       </div>
 
       {rules.length === 0 && (
-        <p className="text-sm text-muted-foreground py-4 text-center border border-dashed rounded-lg">
+        <p className="rounded-lg border border-dashed py-6 text-center text-muted-foreground text-sm">
           {t('stageAutomation.noRules')}
         </p>
       )}
 
       <div className="space-y-3">
         {rules.map((rule, index) => (
-          <div key={keys[index] ?? index} className="border rounded-lg p-3 space-y-3 bg-muted/30">
+          <div key={keys[index] ?? index} className="space-y-3 rounded-xl border bg-muted/48 p-3 dark:bg-muted/24">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 {t('stageAutomation.rule')} {index + 1}
               </span>
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon-xs"
                 onClick={() => removeRule(index)}
                 disabled={disabled}
-                className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                className="text-muted-foreground hover:text-destructive-foreground"
+                aria-label={t('stageAutomation.removeRule')}
               >
-                <TrashIcon className="w-3.5 h-3.5" />
+                <TrashIcon />
               </Button>
             </div>
 
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground font-medium">{t('stageAutomation.when')}</p>
-              <div className="flex gap-2">
+              <div className="flex items-start gap-2">
                 <Select
+                  items={Object.fromEntries(TRIGGER_OPTIONS.map(o => [o, t(`stageAutomation.triggers.${o}`)]))}
                   value={rule.trigger}
                   onValueChange={v => {
+                    if (v == null) return;
                     const trigger = v as StageAutomationTrigger;
                     updateRule(index, {
                       trigger,
@@ -557,15 +582,16 @@ export default function StageAutomationRules({
                   }}
                   disabled={disabled}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-52 shrink-0">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="label_added">{t('stageAutomation.triggers.label_added')}</SelectItem>
-                    <SelectItem value="conversation_status_changed">{t('stageAutomation.triggers.conversation_status_changed')}</SelectItem>
-                    <SelectItem value="custom_attribute_updated">{t('stageAutomation.triggers.custom_attribute_updated')}</SelectItem>
-                    <SelectItem value="inactivity">{t('stageAutomation.triggers.inactivity')}</SelectItem>
-                  </SelectContent>
+                  <SelectPopup>
+                    {TRIGGER_OPTIONS.map(o => (
+                      <SelectItem key={o} value={o}>
+                        {t(`stageAutomation.triggers.${o}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
                 </Select>
                 {renderTriggerValue(rule, index)}
               </div>
@@ -573,25 +599,23 @@ export default function StageAutomationRules({
 
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground font-medium">{t('stageAutomation.then')}</p>
-              <div className="flex gap-2">
+              <div className="flex items-start gap-2">
                 <Select
+                  items={Object.fromEntries(ACTION_OPTIONS.map(o => [o, t(`stageAutomation.actions.${o}`)]))}
                   value={rule.action}
-                  onValueChange={v => updateRule(index, { action: v as StageAutomationAction, action_value: '' })}
+                  onValueChange={v => v != null && updateRule(index, { action: v as StageAutomationAction, action_value: '' })}
                   disabled={disabled}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-52 shrink-0">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="move_to_stage">{t('stageAutomation.actions.move_to_stage')}</SelectItem>
-                    <SelectItem value="move_to_pipeline">{t('stageAutomation.actions.move_to_pipeline')}</SelectItem>
-                    <SelectItem value="assign_agent">{t('stageAutomation.actions.assign_agent')}</SelectItem>
-                    <SelectItem value="apply_label">{t('stageAutomation.actions.apply_label')}</SelectItem>
-                    <SelectItem value="send_ai_message">{t('stageAutomation.actions.send_ai_message')}</SelectItem>
-                    <SelectItem value="send_direct_message">{t('stageAutomation.actions.send_direct_message')}</SelectItem>
-                    <SelectItem value="send_template">{t('stageAutomation.actions.send_template')}</SelectItem>
-                    <SelectItem value="finalize">{t('stageAutomation.actions.finalize')}</SelectItem>
-                  </SelectContent>
+                  <SelectPopup>
+                    {ACTION_OPTIONS.map(o => (
+                      <SelectItem key={o} value={o}>
+                        {t(`stageAutomation.actions.${o}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
                 </Select>
                 {renderActionValue(rule, index)}
               </div>
@@ -607,7 +631,7 @@ export default function StageAutomationRules({
         disabled={disabled}
         className="w-full"
       >
-        <PlusIcon className="w-4 h-4 mr-2" />
+        <PlusIcon />
         {t('stageAutomation.addRule')}
       </Button>
     </div>

@@ -138,7 +138,7 @@ describe('ConditionRow', () => {
     expect(triggers.length).toBeGreaterThanOrEqual(2);
     await user.click(triggers[1]);
 
-    const options = screen.getAllByRole('option').map((el) => el.textContent ?? '');
+    const options = (await screen.findAllByRole('option')).map((el) => el.textContent ?? '');
     expect(options.some((label) => /equal_to/.test(label))).toBe(true);
     expect(options.some((label) => /attribute_changed/.test(label))).toBe(false);
   });
@@ -166,7 +166,7 @@ describe('ConditionRow', () => {
     const triggers = screen.getAllByRole('combobox');
     await user.click(triggers[1]);
 
-    const options = screen.getAllByRole('option').map((el) => el.textContent ?? '');
+    const options = (await screen.findAllByRole('option')).map((el) => el.textContent ?? '');
     expect(options.some((label) => /attribute_changed/.test(label))).toBe(true);
   });
 

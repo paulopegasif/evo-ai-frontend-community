@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  DialogClose,
   DialogFooter,
-} from '@evoapi/design-system/dialog';
-import { Button } from '@evoapi/design-system/button';
-import { Input } from '@evoapi/design-system/input';
-import { Label } from '@evoapi/design-system/label';
-import { Textarea } from '@evoapi/design-system/textarea';
-import { Loader2 } from 'lucide-react';
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { toast } from 'sonner';
 
 import { scheduledActionsService } from '@/services/scheduledActions/scheduledActionsService';
@@ -113,59 +114,62 @@ const ScheduleMessageModal: React.FC<ScheduleMessageModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={openState => !openState && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t('messageInput.schedule.title')}</DialogTitle>
-        </DialogHeader>
+      <DialogPopup className="max-w-lg">
+        <form onSubmit={handleSubmit} className="contents">
+          <DialogHeader>
+            <DialogTitle>{t('messageInput.schedule.title')}</DialogTitle>
+          </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>{t('messageInput.schedule.messagePreview')}</Label>
-            <div className="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm text-foreground whitespace-pre-wrap max-h-32 overflow-y-auto">
-              {messageContent.trim() || t('messageInput.schedule.emptyMessage')}
-            </div>
-            {errors.message && <p className="text-sm text-red-500">{errors.message}</p>}
-          </div>
+          <DialogPanel className="space-y-4">
+            <Field invalid={!!errors.message}>
+              <FieldLabel render={<span />}>{t('messageInput.schedule.messagePreview')}</FieldLabel>
+              <div className="max-h-32 w-full overflow-y-auto whitespace-pre-wrap rounded-lg border bg-muted/40 px-3 py-2 text-foreground text-sm">
+                {messageContent.trim() || (
+                  <span className="text-muted-foreground italic">{t('messageInput.schedule.emptyMessage')}</span>
+                )}
+              </div>
+              {errors.message && <FieldError match>{errors.message}</FieldError>}
+            </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="schedule-datetime">{t('messageInput.schedule.dateTime')}</Label>
-            <Input
-              id="schedule-datetime"
-              type="datetime-local"
-              value={scheduledFor}
-              min={getMinDateTime()}
-              onChange={e => {
-                setScheduledFor(e.target.value);
-                if (errors.scheduledFor) setErrors({ ...errors, scheduledFor: '' });
-              }}
-              className={errors.scheduledFor ? 'border-red-500' : ''}
-              required
-            />
-            {errors.scheduledFor && <p className="text-sm text-red-500">{errors.scheduledFor}</p>}
-          </div>
+            <Field invalid={!!errors.scheduledFor}>
+              <FieldLabel htmlFor="schedule-datetime">{t('messageInput.schedule.dateTime')}</FieldLabel>
+              <Input
+                id="schedule-datetime"
+                type="datetime-local"
+                value={scheduledFor}
+                min={getMinDateTime()}
+                onChange={e => {
+                  setScheduledFor(e.target.value);
+                  if (errors.scheduledFor) setErrors({ ...errors, scheduledFor: '' });
+                }}
+                aria-invalid={!!errors.scheduledFor || undefined}
+                required
+              />
+              {errors.scheduledFor && <FieldError match>{errors.scheduledFor}</FieldError>}
+            </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="schedule-note">{t('messageInput.schedule.note')}</Label>
-            <Textarea
-              id="schedule-note"
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              rows={2}
-              placeholder={t('messageInput.schedule.notePlaceholder')}
-            />
-          </div>
+            <Field>
+              <FieldLabel htmlFor="schedule-note">{t('messageInput.schedule.note')}</FieldLabel>
+              <Textarea
+                id="schedule-note"
+                value={note}
+                onChange={e => setNote(e.target.value)}
+                rows={2}
+                placeholder={t('messageInput.schedule.notePlaceholder')}
+              />
+            </Field>
+          </DialogPanel>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>
+            <DialogClose render={<Button type="button" variant="ghost" disabled={isSaving} />}>
               {t('messageInput.schedule.cancel')}
-            </Button>
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            </DialogClose>
+            <Button type="submit" loading={isSaving}>
               {t('messageInput.schedule.save')}
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 };

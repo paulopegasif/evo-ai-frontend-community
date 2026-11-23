@@ -1,25 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  Input,
-  Button,
-  Switch,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Badge,
-  Skeleton,
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogFooter,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-} from '@evoapi/design-system';
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import {
   Key,
   Settings,
@@ -74,14 +77,14 @@ const APIChannelConfig: React.FC<{
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-start gap-4">
             <Shield className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.api.hmac.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.api.hmac.description')}
               </p>
 
@@ -99,21 +102,21 @@ const APIChannelConfig: React.FC<{
               </div>
 
               {hmacMandatory && (
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                <div className="mt-4 p-3 bg-info/8 rounded-lg">
+                  <div className="flex items-center gap-2 text-info-foreground">
                     <CheckCircle className="w-4 h-4" />
                     <span className="text-sm font-medium">
                       {t('settings.configuration.api.hmac.active')}
                     </span>
                   </div>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  <p className="text-xs text-info-foreground mt-1">
                     {t('settings.configuration.api.hmac.activeDescription')}
                   </p>
                 </div>
               )}
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );
@@ -167,19 +170,19 @@ const WhatsAppChannelConfig: React.FC<{
       {/* Current API Key */}
       {inbox.provider_config?.api_key && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-start gap-4">
               <Key className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.api.keys.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.api.keys.description')}
                 </p>
 
                 <div className="flex items-center gap-2 mt-4">
-                  <div className="flex-1 p-3 bg-slate-100 dark:bg-slate-800 rounded-lg font-mono text-sm">
+                  <div className="flex-1 p-3 bg-muted rounded-lg font-mono text-sm">
                     {showApiKey
                       ? inbox.provider_config.api_key
                       : '••••••••••••••••••••••••••••••••'}
@@ -189,26 +192,31 @@ const WhatsAppChannelConfig: React.FC<{
                       ? t('settings.configuration.api.keys.hide')
                       : t('settings.configuration.api.keys.show')}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={copyApiKey}>
-                    <Copy className="w-4 h-4" />
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={copyApiKey}
+                    aria-label={t('settings.a11y.copy')}
+                  >
+                    <Copy />
                   </Button>
                 </div>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Mark as Read */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-start gap-4">
             <CheckCircle className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.api.markAsRead.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.api.markAsRead.description')}
               </p>
 
@@ -226,7 +234,7 @@ const WhatsAppChannelConfig: React.FC<{
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );
@@ -355,20 +363,21 @@ const EvolutionPrivacySettings: React.FC<{
           {t('settings.configuration.whatsapp.instance.privacy.readReceipts')}
         </label>
         <Select
-          value={privacySettings.readreceipts}
-          onValueChange={value => handlePrivacyUpdate('readreceipts', value)}
+          items={privacyFieldOptions.readreceipts}
+          value={privacySettings.readreceipts || null}
+          onValueChange={value => handlePrivacyUpdate('readreceipts', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyFieldOptions.readreceipts.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -378,20 +387,21 @@ const EvolutionPrivacySettings: React.FC<{
           {t('settings.configuration.whatsapp.instance.privacy.profilePicture')}
         </label>
         <Select
-          value={privacySettings.profile}
-          onValueChange={value => handlePrivacyUpdate('profile', value)}
+          items={privacyFieldOptions.profile}
+          value={privacySettings.profile || null}
+          onValueChange={value => handlePrivacyUpdate('profile', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyFieldOptions.profile.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -401,20 +411,21 @@ const EvolutionPrivacySettings: React.FC<{
           {t('settings.configuration.whatsapp.instance.privacy.status')}
         </label>
         <Select
-          value={privacySettings.status}
-          onValueChange={value => handlePrivacyUpdate('status', value)}
+          items={privacyFieldOptions.status}
+          value={privacySettings.status || null}
+          onValueChange={value => handlePrivacyUpdate('status', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyFieldOptions.status.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -424,20 +435,21 @@ const EvolutionPrivacySettings: React.FC<{
           {t('settings.configuration.whatsapp.instance.privacy.online')}
         </label>
         <Select
-          value={privacySettings.online}
-          onValueChange={value => handlePrivacyUpdate('online', value)}
+          items={privacyFieldOptions.online}
+          value={privacySettings.online || null}
+          onValueChange={value => handlePrivacyUpdate('online', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyFieldOptions.online.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -447,20 +459,21 @@ const EvolutionPrivacySettings: React.FC<{
           {t('settings.configuration.whatsapp.instance.privacy.lastSeen')}
         </label>
         <Select
-          value={privacySettings.last}
-          onValueChange={value => handlePrivacyUpdate('last', value)}
+          items={privacyFieldOptions.last}
+          value={privacySettings.last || null}
+          onValueChange={value => handlePrivacyUpdate('last', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyFieldOptions.last.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -470,20 +483,21 @@ const EvolutionPrivacySettings: React.FC<{
           {t('settings.configuration.whatsapp.instance.privacy.groupAdd')}
         </label>
         <Select
-          value={privacySettings.groupadd}
-          onValueChange={value => handlePrivacyUpdate('groupadd', value)}
+          items={privacyFieldOptions.groupadd}
+          value={privacySettings.groupadd || null}
+          onValueChange={value => handlePrivacyUpdate('groupadd', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyFieldOptions.groupadd.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
     </div>
@@ -502,9 +516,7 @@ const EvolutionWhatsAppConfig: React.FC<{
     ? globalConfig.hasEvolutionGoConfig === true
     : globalConfig.hasEvolutionConfig === true;
   const usingGlobalFallback =
-    hasGlobalConfig &&
-    !inbox?.provider_config?.api_url &&
-    !inbox?.provider_config?.admin_token;
+    hasGlobalConfig && !inbox?.provider_config?.api_url && !inbox?.provider_config?.admin_token;
 
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -593,7 +605,12 @@ const EvolutionWhatsAppConfig: React.FC<{
 
       if (!identifier) {
         if (!cancelled) {
-          setLoadError(t('settings.configuration.whatsapp.instance.errors.nameNotFound', 'Could not resolve instance identifier from channel config.'));
+          setLoadError(
+            t(
+              'settings.configuration.whatsapp.instance.errors.nameNotFound',
+              'Could not resolve instance identifier from channel config.',
+            ),
+          );
           setIsLoadingSettings(false);
         }
         return;
@@ -658,8 +675,10 @@ const EvolutionWhatsAppConfig: React.FC<{
 
     loadAll();
 
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inbox.provider, inbox.name]);
 
   // Load instance status on mount and poll
@@ -673,7 +692,12 @@ const EvolutionWhatsAppConfig: React.FC<{
 
         if (!identifier) {
           if (!cancelled) {
-            setLoadError(t('settings.configuration.whatsapp.instance.errors.nameNotFound', 'Could not resolve instance identifier from channel config.'));
+            setLoadError(
+              t(
+                'settings.configuration.whatsapp.instance.errors.nameNotFound',
+                'Could not resolve instance identifier from channel config.',
+              ),
+            );
             setIsLoadingSettings(false);
           }
           return;
@@ -697,7 +721,12 @@ const EvolutionWhatsAppConfig: React.FC<{
       } catch (error) {
         if (!cancelled) {
           console.error('Error loading instance status:', error);
-          setLoadError(t('settings.configuration.whatsapp.instance.errors.loadFailed', 'Failed to load instance status. Check your connection settings.'));
+          setLoadError(
+            t(
+              'settings.configuration.whatsapp.instance.errors.loadFailed',
+              'Failed to load instance status. Check your connection settings.',
+            ),
+          );
         }
       } finally {
         if (!cancelled) {
@@ -731,7 +760,7 @@ const EvolutionWhatsAppConfig: React.FC<{
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inbox.provider, inbox.name, showQrModal]);
 
   const handleGenerateQR = async () => {
@@ -977,7 +1006,7 @@ const EvolutionWhatsAppConfig: React.FC<{
     return (
       <div className="space-y-6" aria-busy="true">
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-center gap-3">
               <Skeleton className="h-5 w-5 rounded" />
               <div className="flex-1 space-y-2">
@@ -990,8 +1019,13 @@ const EvolutionWhatsAppConfig: React.FC<{
               <Skeleton className="h-8 w-3/4" />
               <Skeleton className="h-8 w-1/2" />
             </div>
-            <span className="sr-only">{t('settings.configuration.whatsapp.instance.loading', 'Loading instance settings...')}</span>
-          </CardContent>
+            <span className="sr-only">
+              {t(
+                'settings.configuration.whatsapp.instance.loading',
+                'Loading instance settings...',
+              )}
+            </span>
+          </CardPanel>
         </Card>
       </div>
     );
@@ -1001,15 +1035,20 @@ const EvolutionWhatsAppConfig: React.FC<{
     return (
       <div className="space-y-6">
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-start gap-3">
               <Info className="w-5 h-5 text-destructive mt-0.5 shrink-0" />
               <div>
-                <h3 className="font-semibold text-destructive">{t('settings.configuration.whatsapp.instance.errors.title', 'Configuration Error')}</h3>
+                <h3 className="font-semibold text-destructive">
+                  {t(
+                    'settings.configuration.whatsapp.instance.errors.title',
+                    'Configuration Error',
+                  )}
+                </h3>
                 <p className="text-sm text-muted-foreground mt-1">{loadError}</p>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     );
@@ -1019,14 +1058,14 @@ const EvolutionWhatsAppConfig: React.FC<{
     <div className="space-y-6">
       {/* Instance Status */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-start gap-4">
             <Smartphone className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.whatsapp.instance.statusTitle')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {inbox.name} - {inbox.phone_number || getIdentifier() || '-'}
               </p>
 
@@ -1036,74 +1075,74 @@ const EvolutionWhatsAppConfig: React.FC<{
                     instanceStatus === 'open'
                       ? 'default'
                       : instanceStatus === 'connecting'
-                      ? 'outline'
-                      : 'secondary'
+                        ? 'outline'
+                        : 'secondary'
                   }
                 >
                   {instanceStatus === 'open'
                     ? t('settings.configuration.whatsapp.instance.statusConnected')
                     : instanceStatus === 'connecting'
-                    ? t('settings.configuration.whatsapp.instance.statusConnecting')
-                    : t('settings.configuration.whatsapp.instance.statusDisconnected')}
+                      ? t('settings.configuration.whatsapp.instance.statusConnecting')
+                      : t('settings.configuration.whatsapp.instance.statusDisconnected')}
                 </Badge>
                 {instanceStatus !== 'open' && (
                   <Button onClick={handleGenerateQR} disabled={isLoading} size="sm">
-                    <QrCode className="w-4 h-4 mr-2" />
+                    <QrCode />
                     {t('settings.configuration.whatsapp.instance.connectDevice')}
                   </Button>
                 )}
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* QR Code Modal */}
       <Dialog open={showQrModal} onOpenChange={setShowQrModal}>
-        <DialogContent className="sm:max-w-md">
+        <DialogPopup className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('settings.configuration.whatsapp.instance.qrCodeTitle')}</DialogTitle>
             <DialogDescription className="sr-only">
               {t('settings.configuration.whatsapp.instance.qrCodeInstructions')}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center p-6">
+          <DialogPanel className="flex flex-col items-center justify-center">
             {qrCode ? (
               <>
                 <div className="bg-white p-4 rounded-lg border">
                   <img src={qrCode} alt="QR Code" className="w-64 h-64" />
                 </div>
-                <p className="text-center text-sm text-slate-600 dark:text-slate-400 mt-4">
+                <p className="text-center text-sm text-muted-foreground mt-4">
                   {t('settings.configuration.whatsapp.instance.qrCodeInstructions')}
                 </p>
-                <div className="flex items-center gap-2 mt-4 text-sm text-slate-500">
-                  <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
+                  <div className="animate-pulse w-2 h-2 bg-info rounded-full"></div>
                   <span>{t('settings.configuration.whatsapp.instance.waitingConnection')}</span>
                 </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <span className="text-sm text-slate-600">
+                <div className="animate-spin h-5 w-5 border-2 border-info border-t-transparent rounded-full"></div>
+                <span className="text-sm text-muted-foreground">
                   {t('settings.configuration.whatsapp.instance.generatingQrCode')}
                 </span>
               </div>
             )}
-          </div>
-        </DialogContent>
+          </DialogPanel>
+        </DialogPopup>
       </Dialog>
 
       {/* Profile Settings - Only show when connected */}
       {instanceStatus === 'open' && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-start gap-4">
               <Settings className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.profile.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.profile.description')}
                 </p>
 
@@ -1189,55 +1228,53 @@ const EvolutionWhatsAppConfig: React.FC<{
                         {t('settings.configuration.whatsapp.instance.profile.remove')}
                       </Button>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {t('settings.configuration.whatsapp.instance.profile.pictureHelp')}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Privacy Settings - Only show when connected */}
       {instanceStatus === 'open' && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-start gap-4">
               <Shield className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.privacy.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.privacy.description')}
                 </p>
                 <div className="mt-6">
-                    <EvolutionPrivacySettings
-                      instanceName={
-                        getIdentifier()
-                      }
-                      provider={inbox.provider}
-                    />
+                  <EvolutionPrivacySettings
+                    instanceName={getIdentifier()}
+                    provider={inbox.provider}
+                  />
                 </div>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Instance Settings - Only show when connected */}
       {instanceStatus === 'open' && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-start gap-4">
               <Settings className="w-5 h-5 text-primary mt-1" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.settingsTitle')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.settingsDescription')}
                 </p>
 
@@ -1351,35 +1388,41 @@ const EvolutionWhatsAppConfig: React.FC<{
                 </Button>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Connection Settings */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-start gap-4">
             <Key className="w-5 h-5 text-primary mt-1 shrink-0" />
             <div className="flex-1 space-y-4">
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.whatsapp.instance.connection.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('settings.configuration.whatsapp.instance.connection.description')}
                 </p>
               </div>
 
               {usingGlobalFallback && (
-                <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 p-3">
+                <div className="rounded-lg border border-info/24 bg-info/8 p-3">
                   <div className="flex items-start gap-2">
-                    <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                    <Info className="w-4 h-4 text-info-foreground mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                        {t('settings.configuration.whatsapp.instance.connection.usingGlobalConfig', 'Using Admin Settings defaults')}
+                      <p className="text-sm font-medium text-info-foreground">
+                        {t(
+                          'settings.configuration.whatsapp.instance.connection.usingGlobalConfig',
+                          'Using Admin Settings defaults',
+                        )}
                       </p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
-                        {t('settings.configuration.whatsapp.instance.connection.usingGlobalConfigHint', 'The API URL and Token are configured globally in Admin Settings. Fill the fields below only to override the global values for this channel.')}
+                      <p className="text-xs text-info-foreground mt-0.5">
+                        {t(
+                          'settings.configuration.whatsapp.instance.connection.usingGlobalConfigHint',
+                          'The API URL and Token are configured globally in Admin Settings. Fill the fields below only to override the global values for this channel.',
+                        )}
                       </p>
                     </div>
                   </div>
@@ -1395,9 +1438,14 @@ const EvolutionWhatsAppConfig: React.FC<{
                   onChange={e =>
                     setConnectionSettings(prev => ({ ...prev, apiUrl: e.target.value }))
                   }
-                  placeholder={usingGlobalFallback
-                    ? t('settings.configuration.whatsapp.instance.connection.apiUrlGlobalPlaceholder', 'Using global config — fill to override')
-                    : t('settings.configuration.whatsapp.instance.connection.apiUrlPlaceholder')}
+                  placeholder={
+                    usingGlobalFallback
+                      ? t(
+                          'settings.configuration.whatsapp.instance.connection.apiUrlGlobalPlaceholder',
+                          'Using global config — fill to override',
+                        )
+                      : t('settings.configuration.whatsapp.instance.connection.apiUrlPlaceholder')
+                  }
                 />
               </div>
 
@@ -1411,32 +1459,39 @@ const EvolutionWhatsAppConfig: React.FC<{
                   onChange={e =>
                     setConnectionSettings(prev => ({ ...prev, adminToken: e.target.value }))
                   }
-                  placeholder={usingGlobalFallback
-                    ? t('settings.configuration.whatsapp.instance.connection.adminTokenGlobalPlaceholder', 'Using global config — fill to override')
-                    : t('settings.configuration.whatsapp.instance.connection.adminTokenPlaceholder')}
+                  placeholder={
+                    usingGlobalFallback
+                      ? t(
+                          'settings.configuration.whatsapp.instance.connection.adminTokenGlobalPlaceholder',
+                          'Using global config — fill to override',
+                        )
+                      : t(
+                          'settings.configuration.whatsapp.instance.connection.adminTokenPlaceholder',
+                        )
+                  }
                 />
                 {inbox?.provider_config?.admin_token && (
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {t('settings.configuration.whatsapp.instance.connection.adminTokenSet', 'A key is already configured. Leave blank to keep it.')}
+                    {t(
+                      'settings.configuration.whatsapp.instance.connection.adminTokenSet',
+                      'A key is already configured. Leave blank to keep it.',
+                    )}
                   </p>
                 )}
               </div>
 
-              <Button
-                onClick={handleUpdateConnectionSettings}
-                loading={isUpdatingConnection}
-              >
+              <Button onClick={handleUpdateConnectionSettings} loading={isUpdatingConnection}>
                 {t('settings.configuration.whatsapp.instance.connection.saveButton')}
               </Button>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Instance Actions */}
       <Card>
-        <CardContent className="p-6">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
+        <CardPanel className="p-6">
+          <h3 className="font-semibold text-foreground mb-4">
             {t('settings.configuration.whatsapp.instance.actions.title')}
           </h3>
           <div className="flex gap-2">
@@ -1444,7 +1499,7 @@ const EvolutionWhatsAppConfig: React.FC<{
               {t('settings.configuration.whatsapp.instance.actions.disconnect')}
             </Button>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );
@@ -1538,20 +1593,21 @@ const PrivacySettings: React.FC<{
       <div>
         <label className="block text-sm font-medium mb-2">Visto por último</label>
         <Select
-          value={privacySettings.lastSeen}
-          onValueChange={value => handlePrivacyUpdate('lastSeen', value)}
+          items={privacyOptions}
+          value={privacySettings.lastSeen || null}
+          onValueChange={value => handlePrivacyUpdate('lastSeen', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -1559,20 +1615,21 @@ const PrivacySettings: React.FC<{
       <div>
         <label className="block text-sm font-medium mb-2">Visualização da foto do perfil</label>
         <Select
-          value={privacySettings.photoVisualization}
-          onValueChange={value => handlePrivacyUpdate('photoVisualization', value)}
+          items={privacyOptions}
+          value={privacySettings.photoVisualization || null}
+          onValueChange={value => handlePrivacyUpdate('photoVisualization', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -1580,20 +1637,21 @@ const PrivacySettings: React.FC<{
       <div>
         <label className="block text-sm font-medium mb-2">Visualização do recado</label>
         <Select
-          value={privacySettings.description}
-          onValueChange={value => handlePrivacyUpdate('description', value)}
+          items={privacyOptions}
+          value={privacySettings.description || null}
+          onValueChange={value => handlePrivacyUpdate('description', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -1601,20 +1659,21 @@ const PrivacySettings: React.FC<{
       <div>
         <label className="block text-sm font-medium mb-2">Permissão para adicionar em grupos</label>
         <Select
-          value={privacySettings.groupAdd}
-          onValueChange={value => handlePrivacyUpdate('groupAdd', value)}
+          items={privacyOptions}
+          value={privacySettings.groupAdd || null}
+          onValueChange={value => handlePrivacyUpdate('groupAdd', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -1622,20 +1681,21 @@ const PrivacySettings: React.FC<{
       <div>
         <label className="block text-sm font-medium mb-2">Visualização de online</label>
         <Select
-          value={privacySettings.online}
-          onValueChange={value => handlePrivacyUpdate('online', value)}
+          items={privacyOptions}
+          value={privacySettings.online || null}
+          onValueChange={value => handlePrivacyUpdate('online', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -1643,20 +1703,21 @@ const PrivacySettings: React.FC<{
       <div>
         <label className="block text-sm font-medium mb-2">Confirmações de leitura</label>
         <Select
-          value={privacySettings.readReceipts}
-          onValueChange={value => handlePrivacyUpdate('readReceipts', value)}
+          items={privacyOptions}
+          value={privacySettings.readReceipts || null}
+          onValueChange={value => handlePrivacyUpdate('readReceipts', String(value ?? ''))}
           disabled={isLoading}
         >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {privacyOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 
@@ -1681,7 +1742,7 @@ const PrivacySettings: React.FC<{
             Atualizar
           </Button>
         </div>
-        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Configure quanto tempo as mensagens ficam visíveis (0 = desabilitado)
         </p>
       </div>
@@ -1769,8 +1830,8 @@ const ZapiWhatsAppConfig: React.FC<{
               data.instance?.callRejectAuto !== undefined
                 ? data.instance.callRejectAuto
                 : data.instance?.rejectCalls !== undefined
-                ? data.instance.rejectCalls
-                : false,
+                  ? data.instance.rejectCalls
+                  : false,
             callRejectMessage:
               data.instance?.callRejectMessage ||
               data.instance?.rejectCallMessage ||
@@ -1797,8 +1858,8 @@ const ZapiWhatsAppConfig: React.FC<{
               data.instance.callRejectAuto !== undefined
                 ? data.instance.callRejectAuto
                 : data.instance.rejectCalls !== undefined
-                ? data.instance.rejectCalls
-                : false,
+                  ? data.instance.rejectCalls
+                  : false,
             callRejectMessage:
               data.instance.callRejectMessage ||
               data.instance.rejectCallMessage ||
@@ -1848,8 +1909,8 @@ const ZapiWhatsAppConfig: React.FC<{
                 data.instance?.callRejectAuto !== undefined
                   ? data.instance.callRejectAuto
                   : data.instance?.rejectCalls !== undefined
-                  ? data.instance.rejectCalls
-                  : prev.callReject,
+                    ? data.instance.rejectCalls
+                    : prev.callReject,
               callRejectMessage:
                 data.instance?.callRejectMessage ||
                 data.instance?.rejectCallMessage ||
@@ -1867,8 +1928,8 @@ const ZapiWhatsAppConfig: React.FC<{
                 data.instance.callRejectAuto !== undefined
                   ? data.instance.callRejectAuto
                   : data.instance.rejectCalls !== undefined
-                  ? data.instance.rejectCalls
-                  : prev.callReject,
+                    ? data.instance.rejectCalls
+                    : prev.callReject,
               callRejectMessage:
                 data.instance.callRejectMessage ||
                 data.instance.rejectCallMessage ||
@@ -1939,8 +2000,8 @@ const ZapiWhatsAppConfig: React.FC<{
                 data.instance?.callRejectAuto !== undefined
                   ? data.instance.callRejectAuto
                   : data.instance?.rejectCalls !== undefined
-                  ? data.instance.rejectCalls
-                  : prev.callReject,
+                    ? data.instance.rejectCalls
+                    : prev.callReject,
               callRejectMessage:
                 data.instance?.callRejectMessage ||
                 data.instance?.rejectCallMessage ||
@@ -1958,8 +2019,8 @@ const ZapiWhatsAppConfig: React.FC<{
                 data.instance.callRejectAuto !== undefined
                   ? data.instance.callRejectAuto
                   : data.instance.rejectCalls !== undefined
-                  ? data.instance.rejectCalls
-                  : prev.callReject,
+                    ? data.instance.rejectCalls
+                    : prev.callReject,
               callRejectMessage:
                 data.instance.callRejectMessage ||
                 data.instance.rejectCallMessage ||
@@ -2155,11 +2216,11 @@ const ZapiWhatsAppConfig: React.FC<{
 
     const statusLower = status.toLowerCase();
     if (statusLower === 'connected' || statusLower === 'open') {
-      return <Badge className="bg-green-600 dark:bg-green-500 text-white">Connected</Badge>;
+      return <Badge variant="success">Connected</Badge>;
     } else if (statusLower === 'disconnected' || statusLower === 'close') {
-      return <Badge className="bg-red-600 dark:bg-red-500 text-white">Disconnected</Badge>;
+      return <Badge variant="error">Disconnected</Badge>;
     } else if (statusLower === 'connecting') {
-      return <Badge className="bg-yellow-600 dark:bg-yellow-500 text-white">Connecting</Badge>;
+      return <Badge variant="warning">Connecting</Badge>;
     }
     return <Badge variant="secondary">{status}</Badge>;
   };
@@ -2168,9 +2229,9 @@ const ZapiWhatsAppConfig: React.FC<{
     return (
       <div className="space-y-6">
         <Card>
-          <CardContent className="p-6">
-            <p className="text-slate-600 dark:text-slate-400">Instance ID não encontrado</p>
-          </CardContent>
+          <CardPanel className="p-6">
+            <p className="text-muted-foreground">Instance ID não encontrado</p>
+          </CardPanel>
         </Card>
       </div>
     );
@@ -2180,14 +2241,12 @@ const ZapiWhatsAppConfig: React.FC<{
     <div className="space-y-6">
       {/* QR Code Section */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-center gap-4 mb-4">
             <QrCode className="w-8 h-8 text-primary" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                QR Code para Conexão
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <h3 className="font-semibold text-foreground">QR Code para Conexão</h3>
+              <p className="text-sm text-muted-foreground">
                 Escaneie o QR code com seu WhatsApp para conectar a instância
               </p>
             </div>
@@ -2195,23 +2254,21 @@ const ZapiWhatsAppConfig: React.FC<{
           </div>
           <div className="flex gap-2">
             <Button onClick={handleGetQRCode} disabled={isLoading} variant="outline">
-              <QrCode className="w-4 h-4 mr-2" />
+              <QrCode />
               Obter QR Code
             </Button>
             <Button onClick={handleRefreshQRCode} disabled={isLoading} variant="outline">
               Atualizar QR Code
             </Button>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* Profile Settings - Only show when connected */}
       {instanceStatus === 'connected' && (
         <Card>
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
-              Configurações de Perfil
-            </h3>
+          <CardPanel className="p-6">
+            <h3 className="font-semibold text-foreground mb-4">Configurações de Perfil</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Nome do Perfil</label>
@@ -2249,24 +2306,22 @@ const ZapiWhatsAppConfig: React.FC<{
                 </div>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Call Settings - Only show when connected */}
       {instanceStatus === 'connected' && (
         <Card>
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
-              Configurações de Chamadas
-            </h3>
+          <CardPanel className="p-6">
+            <h3 className="font-semibold text-foreground mb-4">Configurações de Chamadas</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <label className="block text-sm font-medium">
                     Rejeitar Chamadas Automaticamente
                   </label>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Rejeita automaticamente todas as chamadas recebidas
                   </p>
                 </div>
@@ -2301,36 +2356,32 @@ const ZapiWhatsAppConfig: React.FC<{
                 </div>
               )}
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Privacy Settings - Only show when connected */}
       {instanceStatus === 'connected' && (
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-center gap-4 mb-4">
               <Shield className="w-8 h-8 text-primary" />
               <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                  Configurações de Privacidade
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <h3 className="font-semibold text-foreground">Configurações de Privacidade</h3>
+                <p className="text-sm text-muted-foreground">
                   Configure as configurações de privacidade do WhatsApp
                 </p>
               </div>
             </div>
             <PrivacySettings instanceId={instanceId} />
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
 
       {/* Instance Actions */}
       <Card>
-        <CardContent className="p-6">
-          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">
-            Ações da Instância
-          </h3>
+        <CardPanel className="p-6">
+          <h3 className="font-semibold text-foreground mb-4">Ações da Instância</h3>
           <div className="flex gap-2">
             <Button onClick={handleRestart} disabled={isLoading} variant="outline">
               Reiniciar Instância
@@ -2339,55 +2390,53 @@ const ZapiWhatsAppConfig: React.FC<{
               Desconectar Instância
             </Button>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* QR Code Modal */}
       <Dialog open={showQrModal} onOpenChange={setShowQrModal}>
-        <DialogContent className="max-w-md">
+        <DialogPopup className="max-w-md">
           <DialogHeader>
             <DialogTitle>QR Code para Conexão</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center gap-4 p-4">
+          <DialogPanel className="flex flex-col items-center gap-4">
             {isLoading ? (
               <div className="flex flex-col items-center gap-2">
-                <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  Gerando QR Code...
-                </span>
+                <div className="animate-spin h-8 w-8 border-2 border-info border-t-transparent rounded-full"></div>
+                <span className="text-sm text-muted-foreground">Gerando QR Code...</span>
               </div>
             ) : qrCode ? (
               <>
                 <img
                   src={qrCode.startsWith('data:') ? qrCode : `data:image/png;base64,${qrCode}`}
                   alt="QR Code"
-                  className="w-64 h-64 border border-slate-200 dark:border-slate-700 rounded-lg bg-white p-2"
+                  className="w-64 h-64 border border-border rounded-lg bg-background p-2"
                   onError={e => {
                     console.error('Erro ao carregar QR code:', e);
                     toast.error('Erro ao exibir QR code');
                   }}
                 />
-                <p className="text-sm text-center text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-center text-muted-foreground">
                   Escaneie este QR code com seu WhatsApp para conectar a instância
                 </p>
               </>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-center text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-center text-muted-foreground">
                   QR Code não disponível. Clique em "Atualizar QR Code" para gerar um novo.
                 </p>
               </div>
             )}
-            <div className="flex gap-2">
-              <Button onClick={() => setShowQrModal(false)} variant="outline">
-                Fechar
-              </Button>
-              <Button onClick={handleRefreshQRCode} disabled={isLoading}>
-                Atualizar QR Code
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
+          </DialogPanel>
+          <DialogFooter>
+            <Button onClick={() => setShowQrModal(false)} variant="outline">
+              Fechar
+            </Button>
+            <Button onClick={handleRefreshQRCode} disabled={isLoading}>
+              Atualizar QR Code
+            </Button>
+          </DialogFooter>
+        </DialogPopup>
       </Dialog>
     </div>
   );
@@ -2453,14 +2502,14 @@ const EmailChannelConfig: React.FC<{
     <div className="space-y-6">
       {/* IMAP Settings */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-start gap-4">
             <Mail className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.email.imap.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.email.imap.description')}
               </p>
 
@@ -2527,19 +2576,19 @@ const EmailChannelConfig: React.FC<{
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       {/* SMTP Settings */}
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-start gap-4">
             <Mail className="w-5 h-5 text-primary mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.email.smtp.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {t('settings.configuration.email.smtp.description')}
               </p>
 
@@ -2597,15 +2646,29 @@ const EmailChannelConfig: React.FC<{
                     {t('settings.configuration.email.smtp.authentication')}
                   </label>
                   <Select
+                    items={[
+                      {
+                        value: 'login',
+                        label: t('settings.configuration.email.smtp.authOptions.login'),
+                      },
+                      {
+                        value: 'plain',
+                        label: t('settings.configuration.email.smtp.authOptions.plain'),
+                      },
+                      {
+                        value: 'cram_md5',
+                        label: t('settings.configuration.email.smtp.authOptions.cramMd5'),
+                      },
+                    ]}
                     value={smtpSettings.authentication}
                     onValueChange={value =>
-                      setSmtpSettings(prev => ({ ...prev, authentication: value }))
+                      setSmtpSettings(prev => ({ ...prev, authentication: String(value ?? '') }))
                     }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectPopup alignItemWithTrigger={false}>
                       <SelectItem value="login">
                         {t('settings.configuration.email.smtp.authOptions.login')}
                       </SelectItem>
@@ -2615,7 +2678,7 @@ const EmailChannelConfig: React.FC<{
                       <SelectItem value="cram_md5">
                         {t('settings.configuration.email.smtp.authOptions.cramMd5')}
                       </SelectItem>
-                    </SelectContent>
+                    </SelectPopup>
                   </Select>
                 </div>
 
@@ -2633,7 +2696,7 @@ const EmailChannelConfig: React.FC<{
               </div>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
 
       <Button onClick={handleUpdateEmailSettings} loading={isUpdating} className="w-full">
@@ -2709,19 +2772,19 @@ const ConfigurationForm: React.FC<ConfigurationFormProps> = ({ inbox, onUpdate }
     return (
       <div className="space-y-6">
         <Card>
-          <CardContent className="p-6">
+          <CardPanel className="p-6">
             <div className="flex items-center gap-4">
               <Phone className="w-8 h-8 text-primary" />
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="font-semibold text-foreground">
                   {t('settings.configuration.twilio.title')}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {t('settings.configuration.twilio.description')}
                 </p>
               </div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     );
@@ -2731,19 +2794,19 @@ const ConfigurationForm: React.FC<ConfigurationFormProps> = ({ inbox, onUpdate }
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="p-6">
+        <CardPanel className="p-6">
           <div className="flex items-center gap-4">
-            <Settings className="w-8 h-8 text-slate-400" />
+            <Settings className="w-8 h-8 text-muted-foreground" />
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="font-semibold text-foreground">
                 {t('settings.configuration.fallback.title')}
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 {t('settings.configuration.fallback.description', { channelType })}
               </p>
             </div>
           </div>
-        </CardContent>
+        </CardPanel>
       </Card>
     </div>
   );

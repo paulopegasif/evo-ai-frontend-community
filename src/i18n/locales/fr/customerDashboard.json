@@ -19,7 +19,8 @@
       "until": "À",
       "period": "Période",
       "apply": "Appliquer les filtres",
-      "clear": "Réinitialiser les filtres"
+      "clear": "Réinitialiser les filtres",
+      "days": "jours"
     },
     "stats": {
       "totalPipeline": "Total dans l'Entonnoir",
@@ -146,6 +147,7 @@
       "agents": "Aucune donnée agent pour la période sélectionnée.",
       "channels": "Aucune donnée canal pour la période sélectionnée.",
       "pipelineInactive": "Entonnoir inactif sur la période sélectionnée."
-    }
+    },
+    "retry": "Réessayer"
   }
 }

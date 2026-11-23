@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { Avatar, AvatarImage, AvatarFallback } from '@evoapi/design-system/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system/tooltip';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { MessageCircle } from 'lucide-react';
 import { Contact } from '@/types/chat/api';
@@ -165,29 +165,22 @@ const ContactAvatar: React.FC<ContactAvatarProps> = ({
       {/* Channel icon badge - positioned at bottom right */}
       {channelType && (
         <div className="absolute -bottom-1 -right-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="cursor-help">
-                  <ChannelIcon
-                    channelType={channelType}
-                    provider={channelProvider}
-                    size="sm"
-                    className="w-5 h-5 border-2 border-background hover:scale-110 transition-transform duration-200"
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="top"
-                className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
-              >
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-foreground">{channelDisplayName}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{t('contactAvatar.communicationChannel')}</div>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger render={<div className="cursor-help" />}>
+              <ChannelIcon
+                channelType={channelType}
+                provider={channelProvider}
+                size="sm"
+                className="w-5 h-5 border-2 border-background"
+              />
+            </TooltipTrigger>
+            <TooltipPopup side="top" className="px-1 py-1">
+              <div className="text-center">
+                <div className="text-sm font-semibold text-foreground">{channelDisplayName}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{t('contactAvatar.communicationChannel')}</div>
+              </div>
+            </TooltipPopup>
+          </Tooltip>
         </div>
       )}
     </div>

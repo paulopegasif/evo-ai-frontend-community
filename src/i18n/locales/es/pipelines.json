@@ -160,7 +160,11 @@
     },
     "pageTitle": "Creando un nuevo Pipeline",
     "back": "Volver",
-    "newStageColor": "Color de la etapa"
+    "newStageColor": "Color de la etapa",
+    "teamSelection": {
+      "remove": "Quitar {{name}}"
+    },
+    "removeStage": "Quitar etapa {{name}}"
   },
   "createStage": {
     "title": "Crear Nueva Etapa",
@@ -290,7 +294,8 @@
     "saving": "Guardando...",
     "save": "Guardar Cambios",
     "scheduleAction": "Programar acción",
-    "stageLabel": "Etapa:"
+    "stageLabel": "Etapa:",
+    "removeService": "Quitar servicio"
   },
   "editConversation": {
     "title": "Editar Conversación en el Pipeline",
@@ -345,7 +350,10 @@
     "pipelineActive": "Pipeline activo",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "save": "Guardar Cambios"
+    "save": "Guardar Cambios",
+    "teamSelection": {
+      "remove": "Quitar {{name}}"
+    }
   },
   "stageAutomation": {
     "title": "Reglas de Automatización",
@@ -398,7 +406,8 @@
       "send_direct_message": "Mensaje directo",
       "send_template": "Enviar plantilla",
       "finalize": "Finalizar atención"
-    }
+    },
+    "removeRule": "Quitar regla"
   },
   "editStage": {
     "title": "Editar Etapa",
@@ -436,7 +445,9 @@
     "stageName": "Nombre de la etapa",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "save": "Guardar Cambios"
+    "save": "Guardar Cambios",
+    "countsAsQualified": "Cuenta como lead calificado",
+    "countsAsQualifiedHint": "En el Tracking de Leads, quien llega a esta etapa cuenta como “calificado”, aunque no tenga evaluación agendada."
   },
   "pipelineCard": {
     "active": "Activo",
@@ -565,7 +576,9 @@
     "noStages": "Ninguna etapa encontrada para reordenar.",
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "save": "Guardar Orden"
+    "save": "Guardar Orden",
+    "moveUp": "Mover hacia arriba",
+    "moveDown": "Mover hacia abajo"
   },
   "kanban": {
     "search": {
@@ -662,7 +675,9 @@
         "snoozed": "Pospuesto"
       },
       "valueLabel": "Valor Total:",
-      "system": "Sistema"
+      "system": "Sistema",
+      "incoming": "Entrante",
+      "outgoing": "Saliente"
     },
     "messages": {
       "conversationMoved": "Conversación movida con éxito",
@@ -687,7 +702,9 @@
       "conversationUpdated": "Ítem actualizado con éxito",
       "conversationUpdateError": "Error al actualizar ítem",
       "itemHiddenByFilter": "Tarjeta movida — puede estar oculta por los filtros activos",
-      "newItemMayBeHidden": "Tarjeta añadida — puede estar oculta por los filtros activos"
+      "newItemMayBeHidden": "Tarjeta añadida — puede estar oculta por los filtros activos",
+      "notInPipeline": "Este contacto no está en ningún pipeline",
+      "conversationNotInPipeline": "Esta conversación no está en ningún pipeline"
     },
     "tasks": {
       "pending": "pendientes",
@@ -801,7 +818,16 @@
       "moveSuccess": "Tarea movida exitosamente",
       "moveError": "Error al mover tarea",
       "addSubtaskSuccess": "Subtarea añadida exitosamente",
-      "addSubtaskError": "Error al añadir subtarea"
+      "addSubtaskError": "Error al añadir subtarea",
+      "deleteWithSubtasksConfirm": "Esta tarea tiene {{count}} subtarea(s). ¿Eliminarlas todas?"
+    },
+    "edit": "Editar tarea",
+    "delete": "Eliminar tarea",
+    "confirm": {
+      "completeTitle": "Completar tarea",
+      "reopenTitle": "Reabrir tarea",
+      "complete": "Completar",
+      "reopen": "Reabrir"
     }
   },
   "dialog": {
@@ -832,5 +858,8 @@
     "loadError": "Error al cargar formularios",
     "saveError": "Error al guardar formulario",
     "deleteError": "Error al eliminar formulario"
+  },
+  "attributes": {
+    "remove": "Quitar {{name}}"
   }
 }

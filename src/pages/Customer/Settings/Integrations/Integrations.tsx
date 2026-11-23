@@ -2,18 +2,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import { SettingsIntegrationsTour } from '@/tours';
-import {
-  Card,
-  Badge,
-  Input,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Skeleton,
-} from '@evoapi/design-system';
-import { Search, Puzzle, Grid3X3 } from 'lucide-react';
-import EmptyState from '@/components/base/EmptyState';
+import { Search, Puzzle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTab } from '@/components/ui/tabs';
 import BaseHeader from '@/components/base/BaseHeader';
 import { integrationsService } from '@/services/integrations';
 import { metaAdsService } from '@/services/integrations/metaAdsService';
@@ -26,7 +21,7 @@ import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 
 // Integration categories for organization - will be translated
 const getIntegrationCategories = (t: (key: string) => string): IntegrationCategory[] => [
-  { id: 'all', name: t('categories.all'), icon: Grid3X3 },
+  { id: 'all', name: t('categories.all'), icon: null },
   { id: 'crm', name: t('categories.crm'), icon: null },
   { id: 'communication', name: t('categories.communication'), icon: null },
   { id: 'productivity', name: t('categories.productivity'), icon: null },
@@ -224,106 +219,99 @@ export default function Integrations() {
     return ['webhook', 'dashboard_apps', 'oauth_applications'].includes(integrationId);
   };
 
-  if (loading) {
-    return (
-      <div className="h-full flex flex-col p-4">
-        <BaseHeader title={t('header.title')} subtitle={t('header.subtitle')} />
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
-          {[1, 2, 3, 4, 5, 6].map(i => (
-            <Card key={i} className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <Skeleton className="w-12 h-12 rounded-lg" />
-                <Skeleton className="w-16 h-6 rounded-full" />
-              </div>
-              <Skeleton className="h-6 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-full mb-1" />
-              <Skeleton className="h-4 w-2/3" />
-              <div className="flex gap-2 mt-4 pt-4 border-t">
-                <Skeleton className="h-9 flex-1" />
-                <Skeleton className="h-9 w-24" />
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const categories = getIntegrationCategories(t).filter(
+    category => category.id === 'all' || getCategoryCount(category.id) > 0,
+  );
 
   return (
-    <div className="h-full flex flex-col p-4" data-tour="settings-integrations-page">
+    <div className="flex h-full flex-col gap-6 overflow-y-auto p-4 md:p-6" data-tour="settings-integrations-page">
       <SettingsIntegrationsTour />
       <div data-tour="settings-integrations-header">
         <BaseHeader title={t('title')} subtitle={t('subtitle')} />
       </div>
 
-      {/* Search */}
-      <div className="flex flex-col sm:flex-row gap-4 mt-6" data-tour="settings-integrations-search">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-          <Input
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div data-tour="settings-integrations-categories" className="-mx-1 overflow-x-auto px-1">
+          <Tabs value={selectedCategory} onValueChange={value => setSelectedCategory(String(value))}>
+            <TabsList>
+              {categories.map(category => (
+                <TabsTab key={category.id} value={category.id}>
+                  {category.name}
+                  <Badge variant="outline" size="sm" className="tabular-nums">
+                    {getCategoryCount(category.id)}
+                  </Badge>
+                </TabsTab>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+        <InputGroup className="lg:max-w-xs" data-tour="settings-integrations-search">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
+            type="search"
+            aria-label={t('search.placeholder')}
             placeholder={t('search.placeholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="pl-10"
           />
-        </div>
+        </InputGroup>
       </div>
 
-      {/* Category Tabs */}
-      <div data-tour="settings-integrations-categories">
-      <Tabs
-        value={selectedCategory}
-        onValueChange={setSelectedCategory}
-        className="flex-1 flex flex-col"
-      >
-        <TabsList className="w-full justify-start mb-4">
-          {getIntegrationCategories(t).map(category => (
-            <TabsTrigger key={category.id} value={category.id} className="flex items-center gap-2">
-              {category.icon && <category.icon className="w-4 h-4" />}
-              {category.name}
-              <Badge variant="secondary" className="ml-1">
-                {getCategoryCount(category.id)}
-              </Badge>
-            </TabsTrigger>
+      {loading ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <Card key={i} className="gap-0">
+              <div className="flex items-start gap-3 p-5">
+                <Skeleton className="size-10 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+              <div className="flex justify-end border-t px-5 py-3">
+                <Skeleton className="h-7 w-24" />
+              </div>
+            </Card>
           ))}
-        </TabsList>
-
-        <TabsContent value={selectedCategory} className="flex-1 mt-0">
-          {filteredIntegrations.length === 0 ? (
-            <EmptyState
-              icon={Puzzle}
-              title={t('empty.title')}
-              description={
-                searchQuery ? t('empty.descriptionWithSearch') : t('empty.descriptionWithoutSearch')
+        </div>
+      ) : filteredIntegrations.length === 0 ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Puzzle />
+            </EmptyMedia>
+            <EmptyTitle>{t('empty.title')}</EmptyTitle>
+            <EmptyDescription>
+              {searchQuery ? t('empty.descriptionWithSearch') : t('empty.descriptionWithoutSearch')}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filteredIntegrations.map(integration => (
+            <IntegrationCard
+              key={integration.id}
+              integration={{
+                ...integration,
+                enabled: isConfigOnlyIntegration(integration.id)
+                  ? true
+                  : integration.enabled && processingId !== integration.id,
+              }}
+              onConfigure={() => handleConfigureIntegration(integration)}
+              onToggle={
+                isConfigOnlyIntegration(integration.id) || !can('integrations', 'update')
+                  ? undefined
+                  : () => handleToggleIntegration(integration)
               }
-              className="h-full"
+              isProcessing={processingId === integration.id}
+              configOnly={isConfigOnlyIntegration(integration.id)}
             />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredIntegrations.map(integration => (
-                <IntegrationCard
-                  key={integration.id}
-                  integration={{
-                    ...integration,
-                    enabled: isConfigOnlyIntegration(integration.id)
-                      ? true
-                      : integration.enabled && processingId !== integration.id,
-                  }}
-                  onConfigure={() => handleConfigureIntegration(integration)}
-                  onToggle={
-                    isConfigOnlyIntegration(integration.id) || !can('integrations', 'update')
-                      ? undefined
-                      : () => handleToggleIntegration(integration)
-                  }
-                  isProcessing={processingId === integration.id}
-                  configOnly={isConfigOnlyIntegration(integration.id)}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

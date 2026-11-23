@@ -2,15 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@evoapi/design-system';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { pipelinesService } from '@/services/pipelines';
 import {
@@ -20,6 +11,7 @@ import {
   UpdatePipelineData,
 } from '@/types/analytics';
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import {
   PipelinesHeader,
@@ -273,7 +265,7 @@ export default function Pipelines() {
     : state.pipelines;
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col gap-4 p-4 md:gap-6 md:p-6">
       <PipelinesTour />
       <div data-tour="pipelines-header">
         <PipelinesHeader
@@ -287,7 +279,7 @@ export default function Pipelines() {
 
       {/* Content — list only (the mockup has no card/grid mode). BaseTable renders
           its own loading + empty states, matching the Contacts screen. */}
-      <div className="flex-1 overflow-auto mt-4" data-tour="pipelines-list">
+      <div className="min-h-0 flex-1 overflow-auto" data-tour="pipelines-list">
         <PipelinesTable
           pipelines={filteredPipelines}
           loading={state.loading.list}
@@ -313,32 +305,16 @@ export default function Pipelines() {
       </div>
 
       {/* Delete Pipeline Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.deletePipeline.title')}</DialogTitle>
-            <DialogDescription>{t('dialog.deletePipeline.description')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.deletePipeline.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeletePipeline}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete
-                ? t('dialog.deletePipeline.deleting')
-                : t('dialog.deletePipeline.delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('dialog.deletePipeline.title')}
+        description={t('dialog.deletePipeline.description')}
+        cancelLabel={t('dialog.deletePipeline.cancel')}
+        confirmLabel={t('dialog.deletePipeline.delete')}
+        onConfirm={confirmDeletePipeline}
+        loading={state.loading.delete}
+      />
 
       {/* Edit Pipeline Modal */}
       {editingPipeline && (

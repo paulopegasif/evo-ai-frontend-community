@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Label,
-  Checkbox,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { BaseFilter as ContactFilter } from '@/types/core';
 
@@ -108,112 +102,102 @@ export default function ContactExportModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogPopup className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('export.title')}</DialogTitle>
           <DialogDescription>
             {getExportDescription()}
           </DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          {/* Format Selection */}
-          <div className="space-y-2">
-            <Label>{t('export.format.title')}</Label>
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant={format === 'csv' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFormat('csv')}
-                className="flex-1"
-              >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                {t('export.format.csv')}
-              </Button>
-              <Button
-                type="button"
-                variant={format === 'xlsx' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFormat('xlsx')}
-                className="flex-1"
-              >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                {t('export.format.excel')}
-              </Button>
+        <DialogPanel>
+          <div className="space-y-4">
+            {/* Format Selection */}
+            <div className="space-y-2">
+              <Label>{t('export.format.title')}</Label>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant={format === 'csv' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFormat('csv')}
+                  className="flex-1"
+                >
+                  <FileSpreadsheet />
+                  {t('export.format.csv')}
+                </Button>
+                <Button
+                  type="button"
+                  variant={format === 'xlsx' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setFormat('xlsx')}
+                  className="flex-1"
+                >
+                  <FileSpreadsheet />
+                  {t('export.format.excel')}
+                </Button>
+              </div>
             </div>
-          </div>
 
-          {/* Filter Option */}
-          {activeFilters.length > 0 && (
-            <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-              <Checkbox
-                id="include-filters"
-                checked={includeFilters}
-                onCheckedChange={(checked) => setIncludeFilters(checked as boolean)}
-              />
-              <Label
-                htmlFor="include-filters"
-                className="text-sm font-normal cursor-pointer"
-              >
-                {t('export.filters.title', { count: activeFilters.length })}
-              </Label>
+            {/* Filter Option */}
+            {activeFilters.length > 0 && (
+              <div className="flex items-center gap-2 rounded-lg border bg-muted/48 p-3 dark:bg-muted/24">
+                <Checkbox
+                  id="include-filters"
+                  checked={includeFilters}
+                  onCheckedChange={(checked) => setIncludeFilters(checked as boolean)}
+                />
+                <Label
+                  htmlFor="include-filters"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  {t('export.filters.title', { count: activeFilters.length })}
+                </Label>
+              </div>
+            )}
+
+            {/* Field Selection */}
+            <div className="space-y-2">
+              <Label>{t('export.fields.title')}</Label>
+              <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
+                {EXPORT_FIELDS.map(field => (
+                  <div key={field.id} className="flex items-center gap-2">
+                    <Checkbox
+                      id={field.id}
+                      checked={selectedFields.includes(field.id)}
+                      onCheckedChange={(checked) => handleFieldToggle(field.id, checked as boolean)}
+                      disabled={field.required}
+                    />
+                    <Label
+                      htmlFor={field.id}
+                      className={`text-sm font-normal cursor-pointer ${
+                        field.required ? 'text-muted-foreground' : ''
+                      }`}
+                    >
+                      {field.label}
+                      {field.required && ` ${t('export.fields.required')}`}
+                    </Label>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
 
-          {/* Field Selection */}
-          <div className="space-y-2">
-            <Label>{t('export.fields.title')}</Label>
-            <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-3">
-              {EXPORT_FIELDS.map(field => (
-                <div key={field.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={field.id}
-                    checked={selectedFields.includes(field.id)}
-                    onCheckedChange={(checked) => handleFieldToggle(field.id, checked as boolean)}
-                    disabled={field.required}
-                  />
-                  <Label
-                    htmlFor={field.id}
-                    className={`text-sm font-normal cursor-pointer ${
-                      field.required ? 'text-gray-500' : ''
-                    }`}
-                  >
-                    {field.label}
-                    {field.required && ` ${t('export.fields.required')}`}
-                  </Label>
-                </div>
-              ))}
-            </div>
+            <Alert variant="info">
+              <Download />
+              <AlertTitle>{t('export.download.title')}</AlertTitle>
+              <AlertDescription>{t('export.download.description')}</AlertDescription>
+            </Alert>
           </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="text-sm font-medium text-blue-900 mb-1 flex items-center gap-2">
-              <Download className="h-4 w-4" />
-              {t('export.download.title')}
-            </h4>
-            <p className="text-xs text-blue-700">
-              {t('export.download.description')}
-            </p>
-          </div>
-        </div>
+        </DialogPanel>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading || exporting}
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading || exporting}>
             {t('export.actions.cancel')}
           </Button>
-          <Button
-            onClick={handleExport}
-            disabled={selectedFields.length === 0 || loading || exporting}
-          >
-            {exporting ? t('export.actions.exporting') : t('export.actions.export')}
+          <Button onClick={handleExport} disabled={selectedFields.length === 0 || loading} loading={exporting}>
+            {t('export.actions.export')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

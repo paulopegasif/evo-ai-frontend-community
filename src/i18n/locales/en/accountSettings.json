@@ -68,7 +68,8 @@
     "saving": "Saving...",
     "updateAutoResolve": "Update Auto-Resolution",
     "deleteAccount": "Delete Account",
-    "cancelDeletion": "Cancel Deletion"
+    "cancelDeletion": "Cancel Deletion",
+    "copyAccountId": "Copy account ID"
   },
   "messages": {
     "permissionDenied": {

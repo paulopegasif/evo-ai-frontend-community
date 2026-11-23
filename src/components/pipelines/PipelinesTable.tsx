@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { Pipeline } from '@/types/analytics';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { usePermissions } from '@/contexts/PermissionsContext';
 
 interface PipelinesTableProps {
@@ -84,35 +85,32 @@ export default function PipelinesTable({
       label: t('pipelinesTable.columns.name'),
       sortable: true,
       render: pipeline => (
-        <div
-          className="flex items-center gap-3.5 cursor-pointer py-1 min-w-0"
+        <button
+          type="button"
+          className="-mx-1 flex min-w-0 items-center gap-3 rounded-lg px-1 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={() => onView(pipeline)}
         >
-          <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
-            <GitBranch className="w-[18px] h-[18px]" />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+            <GitBranch className="size-4" />
+          </span>
+          <span className="min-w-0">
+            <span className="flex flex-wrap items-center gap-1.5">
               {pipeline.visibility === 'private' && (
-                <Lock className="h-3.5 w-3.5 shrink-0 text-sidebar-foreground/50" />
+                <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
               )}
-              <span className="font-semibold text-[15px] text-sidebar-foreground truncate">
-                {pipeline.name}
-              </span>
+              <span className="truncate font-medium text-foreground hover:underline">{pipeline.name}</span>
               {pipeline.is_default && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-                  <Star className="h-3 w-3 fill-current" />
+                <Badge variant="warning">
+                  <Star className="fill-current" />
                   {t('pipelinesTable.default')}
-                </span>
+                </Badge>
               )}
-            </div>
+            </span>
             {pipeline.description && (
-              <div className="text-xs text-sidebar-foreground/55 truncate mt-0.5">
-                {pipeline.description}
-              </div>
+              <span className="mt-0.5 block max-w-md truncate text-muted-foreground text-xs">{pipeline.description}</span>
             )}
-          </div>
-        </div>
+          </span>
+        </button>
       ),
     },
     {
@@ -123,14 +121,12 @@ export default function PipelinesTable({
         const won = wonSummary(pipeline);
         return (
           <div className="flex flex-col items-center leading-tight">
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-sidebar-foreground">
-              <CheckCircle2 className="h-4 w-4 text-primary" />
+            <span className="flex items-center gap-1.5 font-medium text-foreground tabular-nums">
+              <CheckCircle2 className="size-3.5 text-success-foreground" />
               {won.count}
             </span>
             {won.value > 0 && (
-              <span className="text-[11px] font-semibold text-primary">
-                R$ {formatCurrency(won.value)}
-              </span>
+              <span className="text-muted-foreground text-xs tabular-nums">R$ {formatCurrency(won.value)}</span>
             )}
           </div>
         );
@@ -140,21 +136,14 @@ export default function PipelinesTable({
       key: 'items',
       label: t('pipelinesTable.columns.items'),
       align: 'center',
-      render: pipeline => (
-        <span className="text-sm font-semibold text-sidebar-foreground">
-          {pipeline.item_count || 0}
-        </span>
-      ),
+      render: pipeline => <span className="font-medium tabular-nums">{pipeline.item_count || 0}</span>,
     },
     {
       key: 'stages',
       label: t('pipelinesTable.columns.stages'),
       align: 'center',
-      render: pipeline => (
-        <span className="text-sm font-semibold text-sidebar-foreground">
-          {pipeline.stages?.length ?? 0}
-        </span>
-      ),
+      className: 'hidden md:table-cell',
+      render: pipeline => <span className="tabular-nums">{pipeline.stages?.length ?? 0}</span>,
     },
     {
       key: 'value',
@@ -162,36 +151,26 @@ export default function PipelinesTable({
       align: 'right',
       render: pipeline => {
         const total = pipeline.services_info?.total_value || 0;
-        return total > 0 ? (
-          <span className="text-sm font-semibold text-primary">R$ {formatCurrency(total)}</span>
-        ) : (
-          <span className="text-sm font-semibold text-sidebar-foreground/60">R$ 0,00</span>
+        return (
+          <span className={cn('whitespace-nowrap font-medium tabular-nums', total > 0 ? 'text-foreground' : 'text-muted-foreground')}>
+            R$ {formatCurrency(total)}
+          </span>
         );
       },
     },
     {
       key: 'type',
       label: t('pipelinesTable.columns.type'),
-      render: pipeline => (
-        <span className="text-sm text-sidebar-foreground/80">
-          {t(TYPE_LABEL_KEY[pipeline.pipeline_type])}
-        </span>
-      ),
+      className: 'hidden lg:table-cell',
+      render: pipeline => <Badge variant="outline">{t(TYPE_LABEL_KEY[pipeline.pipeline_type])}</Badge>,
     },
     {
       key: 'status',
       label: t('pipelinesTable.columns.status'),
       render: pipeline => (
-        <span
-          className={cn(
-            'inline-flex items-center text-[11.5px] font-bold px-2.5 py-0.5 rounded-md',
-            pipeline.is_active ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
-          )}
-        >
-          {pipeline.is_active
-            ? t('pipelinesTable.status.active')
-            : t('pipelinesTable.status.inactive')}
-        </span>
+        <Badge variant={pipeline.is_active ? 'success' : 'secondary'}>
+          {pipeline.is_active ? t('pipelinesTable.status.active') : t('pipelinesTable.status.inactive')}
+        </Badge>
       ),
     },
   ];
@@ -203,22 +182,22 @@ export default function PipelinesTable({
   const canDelete = isReady && can('pipelines', 'delete');
 
   const actions: TableAction<Pipeline>[] = [
-    { label: t('pipelinesTable.actions.view'), icon: <Eye className="h-4 w-4" />, onClick: onView },
+    { label: t('pipelinesTable.actions.view'), icon: <Eye />, onClick: onView },
     {
       label: t('pipelinesTable.actions.edit'),
-      icon: <Edit className="h-4 w-4" />,
+      icon: <Edit />,
       onClick: onEdit,
       show: () => canUpdate,
     },
     {
       label: t('pipelinesTable.actions.duplicate'),
-      icon: <CopyPlus className="h-4 w-4" />,
+      icon: <CopyPlus />,
       onClick: onDuplicate,
       show: () => canCreate,
     },
     {
       label: t('pipelinesTable.actions.copyId'),
-      icon: <Copy className="h-4 w-4" />,
+      icon: <Copy />,
       onClick: async pipeline => {
         await navigator.clipboard.writeText(String(pipeline.id));
         toast.success(t('pipelinesTable.actions.idCopied'));
@@ -226,25 +205,25 @@ export default function PipelinesTable({
     },
     {
       label: t('pipelinesTable.actions.setAsDefault'),
-      icon: <Star className="h-4 w-4" />,
+      icon: <Star />,
       onClick: onSetAsDefault,
       show: pipeline => canUpdate && !pipeline.is_default,
     },
     {
       label: t('pipelinesTable.actions.deactivate'),
-      icon: <Power className="h-4 w-4" />,
+      icon: <Power />,
       onClick: onToggleStatus,
       show: pipeline => canUpdate && pipeline.is_active,
     },
     {
       label: t('pipelinesTable.actions.activate'),
-      icon: <Power className="h-4 w-4" />,
+      icon: <Power />,
       onClick: onToggleStatus,
       show: pipeline => canUpdate && !pipeline.is_active,
     },
     {
       label: t('pipelinesTable.actions.delete'),
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 />,
       onClick: onDelete,
       variant: 'destructive',
       show: () => canDelete,

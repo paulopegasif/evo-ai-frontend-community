@@ -11,7 +11,9 @@ import { UISettingsApplier } from './components/UISettingsApplier';
 import { unlockAudioContext } from '@/utils/audioNotificationUtils';
 import { PluginHostProvider, PluginSlot } from '@/plugin-host';
 
-import { Toaster } from '@evoapi/design-system';
+// coss ships its own toast (toastManager), but the app calls sonner's toast() everywhere,
+// so the sonner Toaster themed with coss tokens stays.
+import { Toaster } from '@/components/ui/sonner';
 
 import { useIsDarkClass } from '@/hooks/chat/useIsDarkClass';
 

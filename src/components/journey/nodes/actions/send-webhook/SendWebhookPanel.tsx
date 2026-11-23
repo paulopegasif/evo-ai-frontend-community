@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Label } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Send, Play, ArrowRight } from 'lucide-react';
 import { SendWebhookNodeData, WebhookResponseMapping } from './SendWebhookNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { VariableSelect } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  getEffectiveBodyMode,
-  isValidJsonBody,
-  validateFields,
-} from './components/webhookBody';
+import { getEffectiveBodyMode, isValidJsonBody, validateFields } from './components/webhookBody';
 import {
   WebhookBasicConfig,
   WebhookHeadersConfig,
@@ -121,10 +126,10 @@ export function SendWebhookPanel({
           formData.bodyType === 'json'
             ? 'application/json'
             : formData.bodyType === 'form'
-            ? 'application/x-www-form-urlencoded'
-            : formData.bodyType === 'xml'
-            ? 'application/xml'
-            : 'text/plain',
+              ? 'application/x-www-form-urlencoded'
+              : formData.bodyType === 'xml'
+                ? 'application/xml'
+                : 'text/plain',
       };
 
       if (formData.headers) {
@@ -306,37 +311,28 @@ export function SendWebhookPanel({
     [formData, originalData, hasMappingChanges],
   );
 
-  const validationBanner =
-    !isValid && (
-      <FlowFeedbackBanner variant="warn">
-        <p className="font-medium">{t('panels.sendWebhook.incompleteConfig')}:</p>
-        <ul className="text-xs mt-1 list-disc list-inside">
-          {validationIssues.map((issue, index) => (
-            <li key={index}>{issue}</li>
-          ))}
-        </ul>
-      </FlowFeedbackBanner>
-    );
+  const validationBanner = !isValid && (
+    <FlowFeedbackBanner variant="warn">
+      <p className="font-medium">{t('panels.sendWebhook.incompleteConfig')}:</p>
+      <ul className="text-xs mt-1 list-disc list-inside">
+        {validationIssues.map((issue, index) => (
+          <li key={index}>{issue}</li>
+        ))}
+      </ul>
+    </FlowFeedbackBanner>
+  );
 
   const basicTab = (
     <div className="space-y-4">
       {validationBanner}
-      <WebhookBasicConfig
-        data={formData}
-        onChange={handleFormDataChange}
-        journeyId={journeyId}
-      />
+      <WebhookBasicConfig data={formData} onChange={handleFormDataChange} journeyId={journeyId} />
     </div>
   );
 
   const headersTab = (
     <div className="space-y-4">
       {validationBanner}
-      <WebhookHeadersConfig
-        data={formData}
-        onChange={handleFormDataChange}
-        journeyId={journeyId}
-      />
+      <WebhookHeadersConfig data={formData} onChange={handleFormDataChange} journeyId={journeyId} />
     </div>
   );
 
@@ -366,13 +362,9 @@ export function SendWebhookPanel({
         <Button
           onClick={handleTestWebhook}
           disabled={!formData.webhookUrl || isLoading}
-          className="flex items-center gap-2"
+          loading={isLoading}
         >
-          {isLoading ? (
-            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Play className="w-4 h-4" />
-          )}
+          {!isLoading && <Play />}
           {isLoading
             ? t('panels.sendWebhook.test.executing')
             : t('panels.sendWebhook.test.executeTest')}
@@ -400,7 +392,7 @@ export function SendWebhookPanel({
                 <span className="font-mono">
                   {mapping.jsonPath || t('panels.sendWebhook.test.notConfigured')}
                 </span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="size-3" />
                 <span className="font-medium">
                   {mapping.variableName || t('panels.sendWebhook.test.notConfigured')}
                 </span>
@@ -413,7 +405,9 @@ export function SendWebhookPanel({
 
       {testError && (
         <FlowFeedbackBanner variant="error">
-          <h4 className="text-sm font-medium mb-1">{t('panels.sendWebhook.test.executionError')}</h4>
+          <h4 className="text-sm font-medium mb-1">
+            {t('panels.sendWebhook.test.executionError')}
+          </h4>
           <p className="text-sm">{testError}</p>
         </FlowFeedbackBanner>
       )}
@@ -428,8 +422,8 @@ export function SendWebhookPanel({
                   testResponse.status >= 200 && testResponse.status < 300
                     ? 'bg-flow-feedback-success-bg text-flow-feedback-success-fg'
                     : testResponse.status >= 400
-                    ? 'bg-flow-feedback-error-bg text-flow-feedback-error-fg'
-                    : 'bg-flow-feedback-warn-bg text-flow-feedback-warn-fg'
+                      ? 'bg-flow-feedback-error-bg text-flow-feedback-error-fg'
+                      : 'bg-flow-feedback-warn-bg text-flow-feedback-warn-fg'
                 }`}
               >
                 {testResponse.status} {testResponse.statusText}
@@ -438,8 +432,8 @@ export function SendWebhookPanel({
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-muted">
-            <h5 className="text-sm font-medium mb-2">
+          <div className="rounded-xl border bg-muted/24 p-3">
+            <h5 className="mb-2 font-medium text-sm">
               {t('panels.sendWebhook.test.responseHeaders')}
             </h5>
             <pre className="text-xs overflow-x-auto">
@@ -447,8 +441,8 @@ export function SendWebhookPanel({
             </pre>
           </div>
 
-          <div className="p-3 rounded-lg bg-muted">
-            <h5 className="text-sm font-medium mb-2">
+          <div className="rounded-xl border bg-muted/24 p-3">
+            <h5 className="mb-2 font-medium text-sm">
               {t('panels.sendWebhook.test.responseBody')}
             </h5>
             <pre className="text-xs overflow-x-auto max-h-60">
@@ -459,7 +453,7 @@ export function SendWebhookPanel({
           </div>
 
           {typeof testResponse.data === 'object' && testResponse.data && (
-            <div className="space-y-4 border-t border-border pt-4">
+            <div className="space-y-4 border-t pt-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-lg font-medium">
@@ -482,31 +476,31 @@ export function SendWebhookPanel({
                     : null;
 
                   return (
-                    <div key={mapping.id} className="p-3 border border-border rounded-lg space-y-3">
+                    <div key={mapping.id} className="space-y-3 rounded-xl border bg-muted/24 p-4">
                       <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            {t('panels.sendWebhook.test.responseField')}
-                          </label>
-                          <select
-                            value={mapping.jsonPath}
-                            onChange={e =>
-                              updateResponseMapping(mapping.id, { jsonPath: e.target.value })
+                        <Field>
+                          <FieldLabel>{t('panels.sendWebhook.test.responseField')}</FieldLabel>
+                          <Select
+                            items={availablePaths.map(path => ({ value: path, label: path }))}
+                            value={mapping.jsonPath || null}
+                            onValueChange={v =>
+                              updateResponseMapping(mapping.id, { jsonPath: String(v ?? '') })
                             }
-                            className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm"
                           >
-                            <option value="">{t('panels.sendWebhook.test.selectField')}</option>
-                            {availablePaths.map(path => (
-                              <option key={path} value={path}>
-                                {path}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium">
-                            {t('panels.sendWebhook.test.variableName')}
-                          </Label>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={t('panels.sendWebhook.test.selectField')} />
+                            </SelectTrigger>
+                            <SelectPopup alignItemWithTrigger={false}>
+                              {availablePaths.map(path => (
+                                <SelectItem key={path} value={path}>
+                                  {path}
+                                </SelectItem>
+                              ))}
+                            </SelectPopup>
+                          </Select>
+                        </Field>
+                        <Field className="items-stretch">
+                          <FieldLabel>{t('panels.sendWebhook.test.variableName')}</FieldLabel>
                           <VariableSelect
                             value={mapping.variableName || ''}
                             onValueChange={variableName => {
@@ -516,23 +510,20 @@ export function SendWebhookPanel({
                             journeyId={journeyId}
                             className="w-full"
                           />
-                        </div>
+                        </Field>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          {t('panels.sendWebhook.test.description')}
-                        </label>
-                        <input
+                      <Field>
+                        <FieldLabel>{t('panels.sendWebhook.test.description')}</FieldLabel>
+                        <Input
                           type="text"
                           value={mapping.description}
                           onChange={e =>
                             updateResponseMapping(mapping.id, { description: e.target.value })
                           }
                           placeholder={t('panels.sendWebhook.test.variableDescription')}
-                          className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm"
                         />
-                      </div>
+                      </Field>
 
                       {currentValue !== null && currentValue !== undefined && (
                         <FlowFeedbackBanner variant="info">

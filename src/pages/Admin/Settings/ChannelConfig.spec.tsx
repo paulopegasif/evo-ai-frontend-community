@@ -259,7 +259,7 @@ describe('ChannelConfig', () => {
     await renderAndWait({ fbData: CONFIGURED_FACEBOOK, wpData: CONFIGURED_WHATSAPP, igData: CONFIGURED_INSTAGRAM, evoData: CONFIGURED_EVOLUTION, evoGoData: CONFIGURED_EVOLUTION_GO, twData: CONFIGURED_TWITTER });
     mockSaveConfig.mockResolvedValue(CONFIGURED_FACEBOOK);
 
-    const saveButton = screen.getByText('channels.save');
+    const saveButton = (await screen.findByRole('button', { name: 'channels.save' }));
 
     await act(async () => {
       fireEvent.click(saveButton);
@@ -283,7 +283,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.whatsapp.fields.appId')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(mockSaveConfig).toHaveBeenCalledWith('whatsapp', expect.objectContaining({
@@ -303,7 +303,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.instagram.fields.appId')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(mockSaveConfig).toHaveBeenCalledWith('instagram', expect.objectContaining({
@@ -316,7 +316,7 @@ describe('ChannelConfig', () => {
     await renderAndWait({ fbData: CONFIGURED_FACEBOOK, wpData: CONFIGURED_WHATSAPP, igData: CONFIGURED_INSTAGRAM, evoData: CONFIGURED_EVOLUTION, evoGoData: CONFIGURED_EVOLUTION_GO, twData: CONFIGURED_TWITTER });
     mockSaveConfig.mockResolvedValue(CONFIGURED_FACEBOOK);
 
-    const saveButton = screen.getByText('channels.save');
+    const saveButton = (await screen.findByRole('button', { name: 'channels.save' }));
 
     await act(async () => {
       fireEvent.click(saveButton);
@@ -333,7 +333,7 @@ describe('ChannelConfig', () => {
     await renderAndWait({ fbData: CONFIGURED_FACEBOOK, wpData: CONFIGURED_WHATSAPP, igData: CONFIGURED_INSTAGRAM, evoData: CONFIGURED_EVOLUTION, evoGoData: CONFIGURED_EVOLUTION_GO, twData: CONFIGURED_TWITTER });
     mockSaveConfig.mockRejectedValue(new Error('Network error'));
 
-    const saveButton = screen.getByText('channels.save');
+    const saveButton = (await screen.findByRole('button', { name: 'channels.save' }));
 
     await act(async () => {
       fireEvent.click(saveButton);
@@ -366,7 +366,7 @@ describe('ChannelConfig', () => {
       fireEvent.change(secretInput, { target: { value: 'new-secret-value' } });
     });
 
-    const saveButton = screen.getByText('channels.save');
+    const saveButton = (await screen.findByRole('button', { name: 'channels.save' }));
 
     await act(async () => {
       fireEvent.click(saveButton);
@@ -411,7 +411,7 @@ describe('ChannelConfig', () => {
     await renderAndWait({ fbData: CONFIGURED_FACEBOOK, wpData: CONFIGURED_WHATSAPP, igData: CONFIGURED_INSTAGRAM, evoData: CONFIGURED_EVOLUTION, evoGoData: CONFIGURED_EVOLUTION_GO, twData: CONFIGURED_TWITTER });
     mockSaveConfig.mockResolvedValue(CONFIGURED_FACEBOOK);
 
-    const saveButton = screen.getByText('channels.save');
+    const saveButton = (await screen.findByRole('button', { name: 'channels.save' }));
 
     await act(async () => {
       fireEvent.click(saveButton);
@@ -450,7 +450,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.evolution.fields.apiUrl')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(mockSaveConfig).toHaveBeenCalledWith('evolution', expect.objectContaining({
@@ -484,7 +484,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.evolutionGo.fields.apiUrl')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(mockSaveConfig).toHaveBeenCalledWith('evolution_go', expect.objectContaining({
@@ -520,7 +520,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.evolutionGo.fields.apiUrl')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(mockSaveConfig).toHaveBeenCalledWith('evolution_go', expect.objectContaining({
@@ -541,7 +541,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.evolution.fields.apiUrl')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Test error');
@@ -558,7 +558,7 @@ describe('ChannelConfig', () => {
       expect(screen.getByLabelText('channels.evolutionGo.fields.apiUrl')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('channels.save'));
+    await user.click((await screen.findByRole('button', { name: 'channels.save' })));
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Test error');

@@ -45,74 +45,74 @@ export type NodeBorderColor =
 // resolve EVO-1270 AC#2 sem redesenhar visualmente o node.
 const colorStyles = {
   blue: {
-    border: "border-blue-300 hover:border-blue-500 dark:border-blue-700/70 dark:hover:border-blue-500",
+    border: "border-info/24 hover:border-info",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-blue-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(59,130,246,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(59,130,246,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400" // Mantém o padrão atual de handles amarelos
+    handle: "bg-warning border-warning" // Mantém o padrão atual de handles amarelos
   },
   orange: {
     border: "border-orange-300 hover:border-orange-500 dark:border-orange-700/70 dark:hover:border-orange-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-orange-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(249,115,22,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(249,115,22,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   green: {
-    border: "border-green-300 hover:border-green-500 dark:border-green-700/70 dark:hover:border-green-500",
+    border: "border-success/24 hover:border-success",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-green-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(34,197,94,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(34,197,94,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   red: {
-    border: "border-red-300 hover:border-red-500 dark:border-red-700/70 dark:hover:border-red-500",
+    border: "border-destructive/24 hover:border-destructive",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-red-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(239,68,68,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(239,68,68,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   yellow: {
-    border: "border-yellow-300 hover:border-yellow-500 dark:border-yellow-700/70 dark:hover:border-yellow-500",
+    border: "border-warning/24 hover:border-warning",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-yellow-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(234,179,8,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(234,179,8,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   purple: {
     border: "border-purple-300 hover:border-purple-500 dark:border-purple-700/70 dark:hover:border-purple-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-purple-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(168,85,247,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(168,85,247,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   indigo: {
     border: "border-indigo-300 hover:border-indigo-500 dark:border-indigo-700/70 dark:hover:border-indigo-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-indigo-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(99,102,241,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(99,102,241,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   pink: {
     border: "border-pink-300 hover:border-pink-500 dark:border-pink-700/70 dark:hover:border-pink-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-pink-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(236,72,153,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(236,72,153,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   emerald: {
-    border: "border-emerald-300 hover:border-emerald-500 dark:border-emerald-700/70 dark:hover:border-emerald-500",
+    border: "border-success/24 hover:border-success",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-emerald-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(16,185,129,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(16,185,129,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   slate: {
-    border: "border-slate-300 hover:border-slate-500 dark:border-slate-700/70 dark:hover:border-slate-500",
+    border: "border-border hover:border-slate-500 dark:hover:border-slate-500",
     gradient: "bg-gradient-to-br from-slate-50 to-card dark:from-slate-800/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(100,116,139,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(100,116,139,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   // Cores extras mantendo compatibilidade
   cyan: {
@@ -120,42 +120,42 @@ const colorStyles = {
     gradient: "bg-card dark:bg-gradient-to-br dark:from-cyan-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(6,182,212,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(6,182,212,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   teal: {
     border: "border-teal-300 hover:border-teal-500 dark:border-teal-700/70 dark:hover:border-teal-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-teal-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(20,184,166,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(20,184,166,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   lime: {
     border: "border-lime-300 hover:border-lime-500 dark:border-lime-700/70 dark:hover:border-lime-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-lime-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(132,204,22,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(132,204,22,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   amber: {
-    border: "border-amber-300 hover:border-amber-500 dark:border-amber-700/70 dark:hover:border-amber-500",
+    border: "border-warning/24 hover:border-warning",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-amber-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(245,158,11,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(245,158,11,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   rose: {
-    border: "border-rose-300 hover:border-rose-500 dark:border-rose-700/70 dark:hover:border-rose-500",
+    border: "border-destructive/24 hover:border-destructive",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-rose-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(244,63,94,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(244,63,94,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   },
   violet: {
     border: "border-violet-300 hover:border-violet-500 dark:border-violet-700/70 dark:hover:border-violet-500",
     gradient: "bg-card dark:bg-gradient-to-br dark:from-violet-950/40 dark:to-neutral-900/90",
     glow: "shadow-[0_0_15px_rgba(139,92,246,0.15)]",
     selectedGlow: "shadow-[0_0_25px_rgba(139,92,246,0.3)]",
-    handle: "bg-yellow-500 border-yellow-400"
+    handle: "bg-warning border-warning"
   }
 };
 
@@ -200,7 +200,7 @@ export function BaseFlowNode({
   };
 
   const executingStyle = {
-    border: "border-emerald-500",
+    border: "border-success",
     glow: "shadow-[0_0_25px_rgba(5,212,114,0.5)]"
   };
 
@@ -297,7 +297,7 @@ export function NodeHeader({
   title,
   subtitle,
   iconColor = "text-white",
-  iconBg = "bg-blue-500",
+  iconBg = "bg-info",
   className
 }: NodeHeaderProps) {
   return (
@@ -335,9 +335,9 @@ export interface NodeContentProps {
 
 export function NodeContent({
   children,
-  bgColor = "bg-blue-50 dark:bg-blue-950/20",
-  borderColor = "border-blue-200 dark:border-blue-800/30",
-  textColor = "text-blue-800 dark:text-blue-200",
+  bgColor = "bg-info/8",
+  borderColor = "border-info/24",
+  textColor = "text-info-foreground",
   className
 }: NodeContentProps) {
   return (

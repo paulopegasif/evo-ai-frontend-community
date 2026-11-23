@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { CalendarClock, Edit2, Info, Megaphone, MessageCircle, MessageSquare, Phone, Route, Stethoscope, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Badge, Button, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetDescription, SheetFooter, SheetHeader, SheetPanel, SheetPopup, SheetTitle } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { appointmentsService } from '@/services/appointments/appointmentsService';
 import type { Appointment, AppointmentStatus } from '@/types/appointments';
@@ -19,8 +23,8 @@ interface Props {
 const QUICK_STATUSES: AppointmentStatus[] = ['confirmed', 'attended', 'no_show', 'cancelled'];
 
 const Row = ({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 text-sm">
-    <Icon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+  <div className="flex items-start gap-2.5 text-sm">
+    <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
     <div className="min-w-0">{children}</div>
   </div>
 );
@@ -77,25 +81,25 @@ const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, o
 
   return (
     <Sheet open={Boolean(appointment)} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+      <SheetPopup side="right" className="sm:max-w-md">
         {apt && (
           <>
             <SheetHeader>
-              <SheetTitle className="flex items-center gap-2">
-                <span className={`h-2.5 w-2.5 rounded-full ${statusStyle(apt.status).dot}`} />
-                {apt.contact?.name ?? apt.title}
+              <SheetTitle className="flex items-center gap-2 pe-8 font-semibold text-lg leading-tight">
+                <span className={cn('size-2.5 shrink-0 rounded-full', statusStyle(apt.status).dot)} />
+                <span className="truncate">{apt.contact?.name ?? apt.title}</span>
               </SheetTitle>
-              <SheetDescription>
-                {statusStyle(apt.status).label}
-                {isWithoutOutcome(apt) && ' · sem desfecho registrado'}
+              <SheetDescription render={<div />} className="flex flex-wrap items-center gap-1.5">
+                <Badge variant={statusStyle(apt.status).badge}>{statusStyle(apt.status).label}</Badge>
+                {isWithoutOutcome(apt) && <Badge variant="warning">sem desfecho registrado</Badge>}
               </SheetDescription>
             </SheetHeader>
 
-            <div className="space-y-5 mt-2 px-4 pb-6">
-              <div className="space-y-2.5">
+            <SheetPanel className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2.5">
                 <Row icon={CalendarClock}>
                   {formatZoned(apt.start_time, { weekday: 'long', day: '2-digit', month: 'long' })} ·{' '}
-                  {apt.all_day ? <span className="text-amber-600">horário a definir</span> : appointmentTimeLabel(apt)}
+                  {apt.all_day ? <span className="text-warning-foreground">horário a definir</span> : appointmentTimeLabel(apt)}
                   {!apt.all_day && <span className="text-muted-foreground"> ({apt.duration_minutes} min)</span>}
                 </Row>
                 <Row icon={Stethoscope}>
@@ -111,44 +115,46 @@ const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, o
                 )}
               </div>
 
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Status</p>
+              <section className="flex flex-col gap-2">
+                <h3 className="font-medium text-muted-foreground text-xs">Status</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {QUICK_STATUSES.map((status) => (
                     <Button
                       key={status}
                       size="sm"
-                      variant={apt.status === status ? 'default' : 'outline'}
+                      variant={apt.status === status ? 'secondary' : 'outline'}
+                      aria-pressed={apt.status === status}
                       disabled={saving !== null}
+                      loading={saving === status}
                       onClick={() => changeStatus(status)}
-                      className="justify-start gap-2"
+                      className={cn('justify-start', apt.status === status && 'ring-1 ring-ring/40')}
                     >
-                      <span className={`h-2 w-2 rounded-full ${STATUS_STYLES[status].dot}`} />
-                      {saving === status ? 'Salvando…' : STATUS_STYLES[status].label}
+                      <span className={cn('size-2 rounded-full', STATUS_STYLES[status].dot)} />
+                      {STATUS_STYLES[status].label}
                     </Button>
                   ))}
                 </div>
                 {external && (
-                  <p className="text-xs text-muted-foreground flex gap-1.5">
-                    <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                  <p className="flex gap-1.5 text-muted-foreground text-xs">
+                    <Info className="mt-0.5 size-3.5 shrink-0" />
                     Veio do {external}. O status que você marcar aqui é mantido mesmo que o {external} envie um status
                     anterior; mudanças de data no {external} continuam sendo aplicadas.
                   </p>
                 )}
-              </div>
+              </section>
 
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                  <Megaphone className="h-3.5 w-3.5" /> Origem do lead
-                </p>
+              <section className="flex flex-col gap-2">
+                <h3 className="flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
+                  <Megaphone className="size-3.5" /> Origem do lead
+                </h3>
                 {loadingDetail ? (
-                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-20 w-full rounded-lg" />
                 ) : origin ? (
-                  <div className="rounded-lg border border-border p-3 space-y-1 text-sm">
+                  <div className="flex flex-col gap-1 rounded-lg border bg-muted/32 p-3 text-sm">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">{origin.source}</Badge>
                       {origin.estimated_cost != null && (
-                        <span className="text-xs text-muted-foreground">custo estimado {formatCurrency(origin.estimated_cost)}</span>
+                        <span className="text-muted-foreground text-xs">custo estimado {formatCurrency(origin.estimated_cost)}</span>
                       )}
                     </div>
                     {origin.campaign_name && <p>Campanha: {origin.campaign_name}</p>}
@@ -158,46 +164,48 @@ const AppointmentSidePanel: React.FC<Props> = ({ appointment, onClose, onEdit, o
                       </p>
                     )}
                     {origin.entered_at && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         Entrou em {formatZoned(origin.entered_at, { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </p>
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Origem não informada.</p>
+                  <p className="text-muted-foreground text-sm">Origem não informada.</p>
                 )}
-              </div>
+              </section>
+            </SheetPanel>
 
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-                <Button size="sm" variant="outline" onClick={() => onEdit(apt)}>
-                  <Edit2 className="h-4 w-4 mr-1.5" /> Editar
+            <SheetFooter className="flex-row flex-wrap sm:justify-start">
+              <Button size="sm" variant="outline" onClick={() => onEdit(apt)}>
+                <Edit2 /> Editar
+              </Button>
+              {apt.conversation_id && (
+                <Button size="sm" variant="outline" onClick={() => navigate(`/conversations/${apt.conversation_id}`)}>
+                  <MessageSquare /> Conversa
                 </Button>
-                {apt.conversation_id && (
-                  <Button size="sm" variant="outline" onClick={() => navigate(`/conversations/${apt.conversation_id}`)}>
-                    <MessageSquare className="h-4 w-4 mr-1.5" /> Conversa
-                  </Button>
-                )}
-                {apt.contact?.phone_number && whatsappUrl(apt.contact.phone_number) && (
-                  <Button size="sm" variant="outline" asChild>
-                    <a href={whatsappUrl(apt.contact.phone_number) ?? undefined} target="_blank" rel="noopener noreferrer">
-                      <MessageCircle className="h-4 w-4 mr-1.5" /> WhatsApp
-                    </a>
-                  </Button>
-                )}
-                {(apt.contact_id ?? apt.contact?.id) && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => navigate(`/tracking?tab=leads&lead=${apt.contact_id ?? apt.contact?.id}`)}
-                  >
-                    <Route className="h-4 w-4 mr-1.5" /> Jornada do lead
-                  </Button>
-                )}
-              </div>
-            </div>
+              )}
+              {apt.contact?.phone_number && whatsappUrl(apt.contact.phone_number) && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  render={<a href={whatsappUrl(apt.contact.phone_number) ?? undefined} target="_blank" rel="noopener noreferrer" />}
+                >
+                  <MessageCircle /> WhatsApp
+                </Button>
+              )}
+              {(apt.contact_id ?? apt.contact?.id) && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => navigate(`/tracking?tab=leads&lead=${apt.contact_id ?? apt.contact?.id}`)}
+                >
+                  <Route /> Jornada do lead
+                </Button>
+              )}
+            </SheetFooter>
           </>
         )}
-      </SheetContent>
+      </SheetPopup>
     </Sheet>
   );
 };

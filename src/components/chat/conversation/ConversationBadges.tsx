@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, ArrowUp, Minus, ArrowDown } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system/tooltip';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Conversation } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import ConversationStatusIcon from './ConversationStatusIcon';
@@ -14,10 +14,10 @@ interface ConversationBadgesProps {
 }
 
 const PRIORITY_CONFIG: Record<string, { Icon: typeof AlertTriangle; bg: string; fg: string }> = {
-  urgent: { Icon: AlertTriangle, bg: 'bg-red-100', fg: 'text-red-600' },
+  urgent: { Icon: AlertTriangle, bg: 'bg-destructive/12', fg: 'text-destructive-foreground' },
   high: { Icon: ArrowUp, bg: 'bg-orange-100', fg: 'text-orange-600' },
-  medium: { Icon: Minus, bg: 'bg-blue-100', fg: 'text-blue-600' },
-  low: { Icon: ArrowDown, bg: 'bg-gray-100', fg: 'text-gray-600' },
+  medium: { Icon: Minus, bg: 'bg-info/12', fg: 'text-info-foreground' },
+  low: { Icon: ArrowDown, bg: 'bg-muted', fg: 'text-muted-foreground' },
 };
 
 // Chip de contorno compacto — tokens semânticos (funciona em tema claro e escuro).
@@ -39,19 +39,18 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
     const { Icon } = config;
 
     return (
-      <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              className={`inline-flex items-center justify-center w-4 h-4 flex-shrink-0 rounded-full cursor-help ${config.bg}`}
-            >
-              <Icon className={`w-2.5 h-2.5 ${config.fg}`} />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="px-3 py-2 bg-popover border border-border shadow-lg rounded-lg"
+          <TooltipTrigger
+            render={
+              <span
+                aria-label={t(`conversationBadges.priority.${priority}.label`)}
+                className={`inline-flex items-center justify-center w-4 h-4 flex-shrink-0 rounded-full cursor-help ${config.bg}`}
+              />
+            }
           >
+            <Icon aria-hidden="true" className={`w-2.5 h-2.5 ${config.fg}`} />
+          </TooltipTrigger>
+          <TooltipPopup side="top" className="px-1 py-1">
             <div className="text-center">
               <div className="text-sm font-semibold text-foreground">
                 {t(`conversationBadges.priority.${priority}.label`)}
@@ -60,9 +59,8 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
                 {t(`conversationBadges.priority.${priority}.description`)}
               </div>
             </div>
-          </TooltipContent>
+          </TooltipPopup>
         </Tooltip>
-      </TooltipProvider>
     );
   };
 
@@ -198,15 +196,11 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
 
       {/* Indicador de mais labels com tooltip */}
       {hiddenLabels.length > 0 && (
-        <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <span className={`${CHIP_CLASS} flex-shrink-0 cursor-help`}>+{hiddenLabels.length}</span>
+            <TooltipTrigger render={<span className={`${CHIP_CLASS} flex-shrink-0 cursor-help`} />}>
+              +{hiddenLabels.length}
             </TooltipTrigger>
-            <TooltipContent
-              side="top"
-              className="max-w-xs p-3 bg-popover border border-border shadow-lg rounded-lg"
-            >
+            <TooltipPopup side="top" className="max-w-xs p-1.5">
               <div className="space-y-2">
                 <div className="text-xs font-semibold text-foreground">
                   {t('conversationBadges.otherLabels')}
@@ -223,9 +217,8 @@ const ConversationBadges: React.FC<ConversationBadgesProps> = ({
                   ))}
                 </div>
               </div>
-            </TooltipContent>
+            </TooltipPopup>
           </Tooltip>
-        </TooltipProvider>
       )}
     </div>
   );

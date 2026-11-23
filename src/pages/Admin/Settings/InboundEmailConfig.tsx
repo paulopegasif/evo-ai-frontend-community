@@ -1,23 +1,17 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { type ChangeEvent, useState, useEffect, useCallback, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@evoapi/design-system';
 import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X } from 'lucide-react';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import {
+  SecretField,
+  SelectField,
+  SettingsHeader,
+  SettingsSaveBar,
+  SettingsSkeleton,
+  TextField,
+} from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -128,7 +122,7 @@ export default function InboundEmailConfig() {
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<InboundEmailFormData>({
     resolver: zodResolver(inboundEmailSchema),
     defaultValues: RELAY_DEFAULTS,
@@ -209,136 +203,90 @@ export default function InboundEmailConfig() {
     setSecretModified((prev) => ({ ...prev, [fieldName]: true }));
   };
 
-  const renderSecretField = (fieldName: string, label: string, placeholder: string) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={fieldName}>{label}</Label>
-        {!secretModified[fieldName] && (
-          secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
-              <Lock className="h-3 w-3" />
-              {t('inboundEmail.secretConfigured')}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t('inboundEmail.secretNotConfigured')}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={fieldName}
-          type="password"
-          placeholder={placeholder}
-          {...register(fieldName as InboundEmailFieldKey, {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleSecretChange(fieldName, e.target.value),
-          })}
-        />
-        {secretConfigured[fieldName] && !secretModified[fieldName] && (
-          <button
-            type="button"
-            onClick={() => handleClearSecret(fieldName)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t('inboundEmail.clearSecret')}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-    </div>
+  const secretField = (fieldName: string, label: string, placeholder: string) => (
+    <SecretField
+      id={fieldName}
+      label={label}
+      placeholder={placeholder}
+      registration={register(fieldName as InboundEmailFieldKey, {
+        onChange: (e: ChangeEvent<HTMLInputElement>) => handleSecretChange(fieldName, e.target.value),
+      })}
+      configured={Boolean(secretConfigured[fieldName])}
+      modified={Boolean(secretModified[fieldName])}
+      onClear={() => handleClearSecret(fieldName)}
+      configuredLabel={t('inboundEmail.secretConfigured')}
+      notConfiguredLabel={t('inboundEmail.secretNotConfigured')}
+      clearLabel={t('inboundEmail.clearSecret')}
+    />
   );
 
+  const serviceItems = (['relay', 'mailgun', 'mandrill', 'sendgrid'] as const).map(value => ({
+    value,
+    label: t(`inboundEmail.provider.${value}`),
+  }));
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <SettingsSkeleton cards={1} fields={3} />;
   }
 
+  const domainError =
+    'MAILER_INBOUND_EMAIL_DOMAIN' in errors ? errors.MAILER_INBOUND_EMAIL_DOMAIN?.message : undefined;
+
   return (
-    <section>
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-sidebar-foreground">{t('inboundEmail.title')}</h3>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('inboundEmail.description')}</p>
-      </div>
+    <section className="flex flex-col gap-4">
+      <SettingsHeader
+        as="h3"
+        title={t('inboundEmail.title')}
+        description={t('inboundEmail.description')}
+        status={{ label: serviceItems.find(i => i.value === service)?.label ?? '', variant: 'info' }}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t('inboundEmail.provider.label')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Service selector */}
-            <div className="space-y-2">
-              <Label>{t('inboundEmail.provider.label')}</Label>
-              <Controller
-                name="RAILS_INBOUND_EMAIL_SERVICE"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => handleServiceChange(v as InboundService)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="relay">{t('inboundEmail.provider.relay')}</SelectItem>
-                      <SelectItem value="mailgun">{t('inboundEmail.provider.mailgun')}</SelectItem>
-                      <SelectItem value="mandrill">{t('inboundEmail.provider.mandrill')}</SelectItem>
-                      <SelectItem value="sendgrid">{t('inboundEmail.provider.sendgrid')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            {/* Relay fields */}
-            {service === 'relay' && (
-              renderSecretField('RAILS_INBOUND_EMAIL_PASSWORD_SECRET', t('inboundEmail.fields.password'), t('inboundEmail.placeholders.password'))
-            )}
-
-            {/* Mailgun fields */}
-            {service === 'mailgun' && (
-              renderSecretField('MAILGUN_SIGNING_SECRET', t('inboundEmail.fields.mailgunSigningKey'), t('inboundEmail.placeholders.mailgunSigningKey'))
-            )}
-
-            {/* Mandrill fields */}
-            {service === 'mandrill' && (
-              renderSecretField('MANDRILL_API_SECRET', t('inboundEmail.fields.mandrillApiKey'), t('inboundEmail.placeholders.mandrillApiKey'))
-            )}
-
-            {/* SendGrid fields */}
-            {service === 'sendgrid' && (
-              renderSecretField('RAILS_INBOUND_EMAIL_PASSWORD_SECRET', t('inboundEmail.fields.password'), t('inboundEmail.placeholders.password'))
-            )}
-
-            {/* Domain — always visible */}
-            <div className="space-y-2">
-              <Label htmlFor="MAILER_INBOUND_EMAIL_DOMAIN">{t('inboundEmail.fields.domain')}</Label>
-              <Input
-                id="MAILER_INBOUND_EMAIL_DOMAIN"
-                placeholder={t('inboundEmail.placeholders.domain')}
-                {...register('MAILER_INBOUND_EMAIL_DOMAIN' as InboundEmailFieldKey)}
-              />
-              {'MAILER_INBOUND_EMAIL_DOMAIN' in errors && errors.MAILER_INBOUND_EMAIL_DOMAIN && (
-                <p className="text-xs text-destructive">{errors.MAILER_INBOUND_EMAIL_DOMAIN.message}</p>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t('inboundEmail.provider.label')}</CardTitle>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-5">
+            <Controller
+              name="RAILS_INBOUND_EMAIL_SERVICE"
+              control={control}
+              render={({ field }) => (
+                <SelectField
+                  id="RAILS_INBOUND_EMAIL_SERVICE"
+                  label={t('inboundEmail.provider.label')}
+                  items={serviceItems}
+                  value={field.value}
+                  onValueChange={(v) => handleServiceChange(v as InboundService)}
+                />
               )}
-            </div>
+            />
 
-            {/* Actions */}
-            <div className="pt-2 flex gap-3">
-              <Button type="submit" disabled={saving}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {saving ? t('inboundEmail.saving') : t('inboundEmail.save')}
-              </Button>
+            <div className="grid gap-5 md:grid-cols-2">
+              {(service === 'relay' || service === 'sendgrid') &&
+                secretField('RAILS_INBOUND_EMAIL_PASSWORD_SECRET', t('inboundEmail.fields.password'), t('inboundEmail.placeholders.password'))}
+              {service === 'mailgun' &&
+                secretField('MAILGUN_SIGNING_SECRET', t('inboundEmail.fields.mailgunSigningKey'), t('inboundEmail.placeholders.mailgunSigningKey'))}
+              {service === 'mandrill' &&
+                secretField('MANDRILL_API_SECRET', t('inboundEmail.fields.mandrillApiKey'), t('inboundEmail.placeholders.mandrillApiKey'))}
+
+              <TextField
+                id="MAILER_INBOUND_EMAIL_DOMAIN"
+                label={t('inboundEmail.fields.domain')}
+                placeholder={t('inboundEmail.placeholders.domain')}
+                registration={register('MAILER_INBOUND_EMAIL_DOMAIN' as InboundEmailFieldKey)}
+                error={domainError}
+              />
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardPanel>
+        </Card>
+
+        <SettingsSaveBar
+          dirty={isDirty || Object.values(secretModified).some(Boolean)}
+          saving={saving}
+          saveLabel={t('inboundEmail.save')}
+          savingLabel={t('inboundEmail.saving')}
+        />
+      </form>
     </section>
   );
 }

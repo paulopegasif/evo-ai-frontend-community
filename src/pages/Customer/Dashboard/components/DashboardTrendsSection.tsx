@@ -1,5 +1,6 @@
 import { BarChart3, Layers, TrendingUp } from 'lucide-react';
-import { Badge, Card, CardContent, CardHeader, CardTitle } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { AreaChartCard, BarChartCard, DonutChartCard } from '@/components/charts';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
 import { formatCurrency, formatInteger, formatPercent } from './dashboardUtils';
@@ -29,9 +30,9 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
   const channelsRevenue = data.channels.reduce((sum, channel) => sum + channel.value, 0);
 
   return (
-    <section className="space-y-4">
+    <section className="flex flex-col gap-4">
       <div>
-        <h2 className="text-lg font-semibold">{tx('dashboard.sections.trends', 'Tendências no tempo')}</h2>
+        <h2 className="font-semibold text-lg">{tx('dashboard.sections.trends', 'Tendências no tempo')}</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {tx('dashboard.sections.trendsSubtitle', 'Evolução da operação ao longo do período filtrado')}
         </p>
@@ -90,8 +91,8 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
               <TooltipInfo title={tTours('dashboard.step12.title')} content={tTours('dashboard.step12.content')} />
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="rounded-md border p-3 bg-muted/10 flex items-center justify-between gap-3">
+          <CardPanel className="space-y-3">
+            <div className="rounded-lg border bg-muted/40 p-3 flex items-center justify-between gap-3">
               <div>
                 <div className="text-sm text-muted-foreground">{tx('dashboard.channels.topChannel', 'Canal líder')}</div>
                 <div className="font-semibold">{topChannel?.name || '-'}</div>
@@ -100,21 +101,21 @@ const DashboardTrendsSection = ({ data, t, channelShareData }: DashboardTrendsSe
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="rounded-md border p-3 bg-muted/10">
+              <div className="rounded-lg border bg-muted/40 p-3">
                 <div className="text-sm text-muted-foreground">{tx('dashboard.channels.concentration', 'Concentração Top 3')}</div>
-                <div className="text-xl font-semibold">{formatPercent(top3Share)}</div>
+                <div className="font-semibold text-xl tabular-nums">{formatPercent(top3Share)}</div>
               </div>
-              <div className="rounded-md border p-3 bg-muted/10">
+              <div className="rounded-lg border bg-muted/40 p-3">
                 <div className="text-sm text-muted-foreground">{tx('dashboard.channels.activeCount', 'Canais ativos')}</div>
-                <div className="text-xl font-semibold">{data.channels.length}</div>
+                <div className="font-semibold text-xl tabular-nums">{data.channels.length}</div>
               </div>
             </div>
 
-            <div className="rounded-md border p-3 bg-muted/10">
+            <div className="rounded-lg border bg-muted/40 p-3">
               <div className="text-sm text-muted-foreground">{tx('dashboard.channels.totalValue', 'Valor total por canais')}</div>
-              <div className="text-xl font-semibold">{formatCurrency(channelsRevenue)}</div>
+              <div className="font-semibold text-xl tabular-nums">{formatCurrency(channelsRevenue)}</div>
             </div>
-          </CardContent>
+          </CardPanel>
         </Card>
       </div>
     </section>

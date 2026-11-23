@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  Button,
-  Input,
-  Label,
-  Separator,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { Plus, Globe, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Macro, MACRO_ACTION_TYPES } from '@/types/automation';
 import { macrosService } from '@/services/macros';
 import MacroActionRow from './MacroActionRow';
+import RadioCardGroup from '@/components/base/RadioCard';
 
 interface MacroFormModalProps {
   isOpen: boolean;
@@ -226,158 +215,107 @@ export default function MacroFormModal({ isOpen, onClose, macro, onSuccess }: Ma
   //   return actionTypeObj?.name || actionType;
   // };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[85vw] min-w-[700px] max-h-[90vh] overflow-y-auto bg-sidebar border-sidebar-border">
-        <DialogHeader>
-          <DialogTitle className="text-sidebar-foreground">
-            {isEditing ? t('modal.title.edit') : t('modal.title.create')}
-          </DialogTitle>
-        </DialogHeader>
+  const visibilityOptions = [
+    {
+      value: 'personal' as const,
+      icon: Lock,
+      title: t('modal.form.visibilityPersonal'),
+      description: t('modal.form.visibilityPersonalDesc'),
+    },
+    {
+      value: 'global' as const,
+      icon: Globe,
+      title: t('modal.form.visibilityGlobal'),
+      description: t('modal.form.visibilityGlobalDesc'),
+    },
+  ];
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Informações básicas */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sidebar-foreground">
-                {t('modal.form.name')} *
-              </Label>
+  return (
+    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+      <DialogPopup className="sm:max-w-4xl">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-col">
+          <DialogHeader>
+            <DialogTitle>{isEditing ? t('modal.title.edit') : t('modal.title.create')}</DialogTitle>
+          </DialogHeader>
+
+          <DialogPanel className="flex flex-col gap-6">
+            <Field invalid={Boolean(errors.name)}>
+              <FieldLabel htmlFor="name">
+                {t('modal.form.name')} <span className="text-destructive-foreground">*</span>
+              </FieldLabel>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={e => handleFieldChange('name', e.target.value)}
                 placeholder={t('modal.form.namePlaceholder')}
-                className={`w-full bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                  errors.name ? 'border-red-500' : ''
-                }`}
+                aria-invalid={errors.name ? true : undefined}
                 disabled={loading}
               />
-              {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-            </div>
+              {errors.name && <FieldError match>{errors.name}</FieldError>}
+            </Field>
 
-            {/* Visibilidade */}
-            <div className="space-y-4">
-              <Label className="text-sidebar-foreground">{t('modal.form.visibility')}</Label>
-              <div className="grid grid-cols-2 gap-4">
-                <Card
-                  className={`cursor-pointer transition-all ${
-                    formData.visibility === 'personal'
-                      ? 'border-primary bg-primary/5'
-                      : 'border-sidebar-border hover:border-sidebar-accent'
-                  }`}
-                  onClick={() => handleFieldChange('visibility', 'personal')}
-                >
-                  <CardHeader className="p-4">
-                    <div className="flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-blue-600" />
-                      <CardTitle className="text-base">
-                        {t('modal.form.visibilityPersonal')}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <CardDescription className="text-sm">
-                      {t('modal.form.visibilityPersonalDesc')}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card
-                  className={`cursor-pointer transition-all ${
-                    formData.visibility === 'global'
-                      ? 'border-primary bg-primary/5'
-                      : 'border-sidebar-border hover:border-sidebar-accent'
-                  }`}
-                  onClick={() => handleFieldChange('visibility', 'global')}
-                >
-                  <CardHeader className="p-4">
-                    <div className="flex items-center gap-2">
-                      <Globe className="h-5 w-5 text-green-600" />
-                      <CardTitle className="text-base">
-                        {t('modal.form.visibilityGlobal')}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <CardDescription className="text-sm">
-                      {t('modal.form.visibilityGlobalDesc')}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-
-          <Separator className="bg-sidebar-border" />
-
-          {/* Ações */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-medium text-sidebar-foreground">
-                  {t('modal.form.actionsTitle')}
-                </h3>
-                <p className="text-sm text-sidebar-foreground/60">
-                  {t('modal.form.actionsSubtitle')}
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addAction}
+            <div className="flex flex-col gap-2">
+              <span className="font-medium text-sm" id="macro-visibility-label">
+                {t('modal.form.visibility')}
+              </span>
+              <RadioCardGroup
+                aria-labelledby="macro-visibility-label"
+                value={formData.visibility}
+                onValueChange={value => handleFieldChange('visibility', value)}
                 disabled={loading}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {t('modal.form.addAction')}
-              </Button>
+                options={visibilityOptions.map(opt => {
+                  const Icon = opt.icon;
+                  return { value: opt.value, title: opt.title, description: opt.description, icon: <Icon /> };
+                })}
+              />
             </div>
 
-            {errors.actions && <p className="text-sm text-red-500">{errors.actions}</p>}
+            <div className="flex flex-col gap-4 border-t pt-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-base">{t('modal.form.actionsTitle')}</h3>
+                  <p className="text-muted-foreground text-sm">{t('modal.form.actionsSubtitle')}</p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={addAction} disabled={loading}>
+                  <Plus />
+                  {t('modal.form.addAction')}
+                </Button>
+              </div>
 
-            <div className="space-y-4">
-              {formData.actions.map((action, index) => (
-                <MacroActionRow
-                  key={index}
-                  action={action}
-                  index={index}
-                  options={formDataOptions}
-                  onUpdate={updateAction}
-                  onRemove={removeAction}
-                  canRemove={formData.actions.length > 1}
-                  errors={errors}
-                  disabled={loading}
-                />
-              ))}
+              {errors.actions && (
+                <p className="text-destructive-foreground text-sm" role="alert">
+                  {errors.actions}
+                </p>
+              )}
+
+              <div className="flex flex-col gap-3">
+                {formData.actions.map((action, index) => (
+                  <MacroActionRow
+                    key={index}
+                    action={action}
+                    index={index}
+                    options={formDataOptions}
+                    onUpdate={updateAction}
+                    onRemove={removeAction}
+                    canRemove={formData.actions.length > 1}
+                    errors={errors}
+                    disabled={loading}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          </DialogPanel>
+
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+              {t('modal.buttons.cancel')}
+            </Button>
+            <Button type="submit" loading={loading}>
+              {loading ? t('modal.buttons.saving') : isEditing ? t('modal.buttons.update') : t('modal.buttons.create')}
+            </Button>
+          </DialogFooter>
         </form>
-
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            disabled={loading}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            {t('modal.buttons.cancel')}
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 font-semibold"
-          >
-            {loading
-              ? t('modal.buttons.saving')
-              : isEditing
-              ? t('modal.buttons.update')
-              : t('modal.buttons.create')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

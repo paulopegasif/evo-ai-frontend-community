@@ -1,16 +1,10 @@
 import { useState, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Label,
-} from '@evoapi/design-system';
-import { Upload, Trash2, FileText, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Label } from '@/components/ui/label';
+import { Download, FileText, Info, Trash2, Upload } from 'lucide-react';
 
 interface ContactImportModalProps {
   open: boolean;
@@ -83,7 +77,7 @@ export default function ContactImportModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogPopup className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('import.title')}</DialogTitle>
           <DialogDescription>
@@ -91,97 +85,88 @@ export default function ContactImportModal({
             <a
               href={csvTemplateUrl}
               download="import-contacts-sample.csv"
-              className="text-blue-600 hover:text-blue-700 underline inline-flex items-center gap-1"
+              className="inline-flex items-center gap-1 text-foreground underline underline-offset-4 hover:text-primary"
             >
               <Download className="h-3 w-3" />
               {t('import.downloadTemplate')}
             </a>
           </DialogDescription>
         </DialogHeader>
+        <DialogPanel>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="file-upload">{t('import.fileLabel')}</Label>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="file-upload">{t('import.fileLabel')}</Label>
-
-            {!selectedFile ? (
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={loading || uploading}
-                  className="w-full justify-start"
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  {t('import.chooseFile')}
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                <FileText className="h-5 w-5 text-gray-500" />
-                <span className="flex-1 text-sm text-gray-700">
-                  {processFileName(selectedFile.name)}
-                </span>
-                <div className="flex items-center gap-1">
+              {!selectedFile ? (
+                <div className="flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="ghost"
-                    size="sm"
+                    variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={loading || uploading}
+                    className="w-full justify-start"
                   >
-                    {t('import.changeFile')}
-                  </Button>
-                  <div className="w-px h-4 bg-gray-300" />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRemoveFile}
-                    disabled={loading || uploading}
-                  >
-                    <Trash2 className="h-4 w-4" />
+                    <Upload />
+                    {t('import.chooseFile')}
                   </Button>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="flex items-center gap-2 rounded-lg border bg-muted/48 p-2.5 ps-3 dark:bg-muted/24">
+                  <FileText className="size-5 text-muted-foreground" />
+                  <span className="min-w-0 flex-1 truncate text-sm">
+                    {processFileName(selectedFile.name)}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={loading || uploading}
+                    >
+                      {t('import.changeFile')}
+                    </Button>
+                    <div className="h-4 w-px bg-border" />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRemoveFile}
+                      disabled={loading || uploading}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,text/csv"
-              onChange={handleFileSelect}
-              className="hidden"
-              id="file-upload"
-            />
-          </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="file-upload"
+              />
+            </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="text-sm font-medium text-blue-900 mb-1">
-              {t('import.formatTitle')}
-            </h4>
-            <p className="text-xs text-blue-700">
-              {t('import.formatDescription')}
-            </p>
+            <Alert variant="info">
+            <Info />
+            <AlertTitle>{t('import.formatTitle')}</AlertTitle>
+            <AlertDescription>{t('import.formatDescription')}</AlertDescription>
+          </Alert>
           </div>
-        </div>
+        </DialogPanel>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading || uploading}
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading || uploading}>
             {t('import.actions.cancel')}
           </Button>
-          <Button
-            onClick={handleImport}
-            disabled={!selectedFile || loading || uploading}
-          >
-            {uploading ? t('import.actions.importing') : t('import.actions.import')}
+          <Button onClick={handleImport} disabled={!selectedFile || loading} loading={uploading}>
+            {t('import.actions.import')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }
