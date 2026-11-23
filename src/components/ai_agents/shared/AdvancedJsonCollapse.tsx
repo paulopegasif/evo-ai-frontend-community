@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Settings } from 'lucide-react';
+import { ChevronDown, Settings } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 /** Shared between Custom Tools (EVO-1790) and Custom MCP (EVO-1791) UIs. */

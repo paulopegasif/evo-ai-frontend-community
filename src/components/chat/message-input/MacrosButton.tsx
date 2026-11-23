@@ -5,7 +5,7 @@ import { Menu, MenuGroup, MenuGroupLabel, MenuItem, MenuPopup, MenuTrigger } fro
 import { Spinner } from '@/components/ui/spinner';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
-import { Zap, Play } from 'lucide-react';
+import { Zap, Play } from '@/components/icons';
 import { toast } from 'sonner';
 
 import { macrosService } from '@/services/macros/macrosService';

@@ -29,7 +29,7 @@ import ChatHeader from '@/components/chat/chat-header/ChatHeader';
 import ChatArea from '@/components/chat/chat-area/ChatArea';
 import ChatTabs from '@/components/chat/chat-tabs/ChatTabs';
 
-import { MessagesSquare } from 'lucide-react';
+import { MessagesSquare } from '@/components/icons';
 
 import { Conversation } from '@/types/chat/api';
 import { BaseFilter } from '@/types/core';

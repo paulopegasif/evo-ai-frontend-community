@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Building2, Search, X } from 'lucide-react';
+import { Building2, Search, X } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';

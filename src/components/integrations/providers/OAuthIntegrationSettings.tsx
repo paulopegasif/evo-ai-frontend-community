@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { Power, Settings, type LucideIcon } from 'lucide-react';
+import { Power, Settings, type LucideIcon } from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogClose,

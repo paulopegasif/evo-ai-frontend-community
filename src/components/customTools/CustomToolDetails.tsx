@@ -16,7 +16,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Calendar, FileText, Globe, Pencil, Settings, Tags, Wand } from 'lucide-react';
+import { Calendar, FileText, Globe, Pencil, Settings, Tags, Wand } from '@/components/icons';
 import { CustomTool } from '@/types/ai';
 
 interface CustomToolDetailsProps {

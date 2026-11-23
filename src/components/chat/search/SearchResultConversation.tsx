@@ -1,4 +1,4 @@
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare } from '@/components/icons';
 import type { SearchConversationResult } from '@/types/chat/search';
 import { highlightMatch } from './searchHighlight';
 import SearchResultItem from './SearchResultItem';

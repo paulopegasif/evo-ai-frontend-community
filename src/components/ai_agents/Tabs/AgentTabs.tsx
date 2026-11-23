@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardPanel } from '@/components/ui/card';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
-import { User, Settings, Wrench, Users } from 'lucide-react';
+import { User, Settings, Wrench, Users } from '@/components/icons';
 import BasicInfoForm, { BasicInfoData } from '../Forms/BasicInfoForm';
 import LLMConfigForm, { LLMConfigData } from '../Forms/LLMConfigForm';
 import A2AConfigForm, { A2AConfigData } from '../Forms/A2AConfigForm';

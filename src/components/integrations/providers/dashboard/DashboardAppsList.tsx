@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { Monitor } from 'lucide-react';
+import { Monitor } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ListSkeleton from '@/components/base/ListSkeleton';
 import ConfirmDialog from '@/components/base/ConfirmDialog';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileText, File, Image, Music, Video } from 'lucide-react';
+import { Download, FileText, File, Image, Music, Video } from '@/components/icons';
 import { toast } from 'sonner';
 import { Attachment } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';

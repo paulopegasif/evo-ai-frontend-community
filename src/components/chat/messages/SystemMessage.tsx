@@ -17,7 +17,7 @@ import {
   Calendar,
   FileText,
   Activity,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Message } from '@/types/chat/api';
 import { formatMessageTime } from '@/utils/time/timeHelpers';
 

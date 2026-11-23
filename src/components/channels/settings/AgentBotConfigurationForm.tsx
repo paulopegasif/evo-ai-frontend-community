@@ -22,7 +22,7 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 

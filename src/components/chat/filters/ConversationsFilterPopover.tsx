@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Filter, Hash, Tag, UserCheck, Users, Workflow } from 'lucide-react';
+import { Clock, Filter, Hash, Tag, UserCheck, Users, Workflow } from '@/components/icons';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/accordion';

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Filter, MoreVertical, Search, X } from 'lucide-react';
+import { Filter, MoreVertical, Search, X } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -84,7 +84,7 @@ export default function BaseHeader({
     <div className={cn('flex flex-col gap-4 sm:gap-5', className)}>
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 flex-1">
-          <h1 className="font-semibold text-xl tracking-tight sm:text-2xl">{title}</h1>
+          <h1 className="font-heading font-semibold text-xl sm:text-2xl">{title}</h1>
           {subtitle && <p className="mt-1 hidden text-muted-foreground text-sm sm:block">{subtitle}</p>}
         </div>
 

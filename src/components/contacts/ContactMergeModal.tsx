@@ -8,7 +8,7 @@ import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, Dia
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Contact } from '@/types/contacts';
-import { Building2, Calendar, Mail, MessageSquare, Phone, TriangleAlert, User } from 'lucide-react';
+import { Building2, Calendar, Mail, MessageSquare, Phone, TriangleAlert, User } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { formatContactPhone } from '@/utils/contact/formatContactPhone';
 

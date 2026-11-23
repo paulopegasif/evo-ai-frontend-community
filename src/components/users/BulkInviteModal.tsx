@@ -7,7 +7,7 @@ import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import usersService from '@/services/users/usersService';
-import { CheckCircle, Info, XCircle, Mail } from 'lucide-react';
+import { CheckCircle, Info, XCircle, Mail } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface BulkInviteModalProps {

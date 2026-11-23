@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, Globe } from 'lucide-react';
+import { ChevronDown, Globe } from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { type Locale } from '@/i18n/config';

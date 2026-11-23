@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChannelIcon } from '@/components/channels';

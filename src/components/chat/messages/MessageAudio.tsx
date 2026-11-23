@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download } from '@/components/icons';
 import { toast } from 'sonner';
 import { Attachment } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';

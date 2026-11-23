@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileVideo } from 'lucide-react';
+import { Download, FileVideo } from '@/components/icons';
 import { Attachment } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import { openAttachmentInNewTab } from '@/components/chat/messages/utils/openAttachmentInNewTab';

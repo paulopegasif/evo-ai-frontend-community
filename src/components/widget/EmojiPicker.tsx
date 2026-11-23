@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import EmojiPicker, { EmojiClickData, Theme } from 'emoji-picker-react';
-import { Smile } from 'lucide-react';
+import { Smile } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 

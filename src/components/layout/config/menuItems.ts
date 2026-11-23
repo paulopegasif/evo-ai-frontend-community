@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons';
 import {
   User,
   LogOut,
@@ -30,7 +30,7 @@ import {
   FileText,
   Calendar,
   TrendingUp,
-} from 'lucide-react';
+} from '@/components/icons';
 
 export interface MenuItem {
   id?: string;

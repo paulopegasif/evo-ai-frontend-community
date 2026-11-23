@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
-import { GitBranch } from 'lucide-react';
+import { GitBranch } from '@/components/icons';
 import OAuthIntegrationSettings from '@/components/integrations/providers/OAuthIntegrationSettings';
 
 export default function LinearPage() {

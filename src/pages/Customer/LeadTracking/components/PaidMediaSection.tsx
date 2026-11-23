@@ -1,4 +1,4 @@
-import { Eye, MessageCircle, MousePointerClick, Percent, Receipt, UserPlus } from 'lucide-react';
+import { Eye, MessageCircle, MousePointerClick, Percent, Receipt, UserPlus } from '@/components/icons';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import type { LeadTrackingKPIs } from '@/types/leadTracking';
 import type { KpiComparer } from '../compare';

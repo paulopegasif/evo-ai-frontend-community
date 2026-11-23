@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Plus, X } from 'lucide-react';
+import { Plus, X } from '@/components/icons';
 import { VariableInput, VariableMapping, type DataMapping } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';
 

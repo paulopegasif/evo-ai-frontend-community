@@ -2,7 +2,7 @@ import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react
 import { Card, CardPanel } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { Check, Users, Settings, Info } from 'lucide-react';
+import { Check, Users, Settings, Info } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 

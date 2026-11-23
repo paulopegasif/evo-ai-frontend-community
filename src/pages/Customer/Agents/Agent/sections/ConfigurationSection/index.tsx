@@ -6,7 +6,7 @@ import { TaskConfigData } from '@/components/ai_agents/Forms/TaskConfigForm';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import SectionHeader from '../SectionHeader';
 import { Agent, ApiKey } from '@/types/agents';
-import { Settings, SlidersHorizontal, Timer } from 'lucide-react';
+import { Settings, SlidersHorizontal, Timer } from '@/components/icons';
 import { InactivityAction } from '../InactivityActions';
 import { TransferRule } from '../TransferRules';
 import { PipelineRule } from '../PipelineRules';

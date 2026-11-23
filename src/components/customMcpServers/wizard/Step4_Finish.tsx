@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 export interface Step4Data {

@@ -18,7 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import OptionSelect from '@/components/segments/ui/OptionSelect';
-import { X, Plus } from 'lucide-react';
+import { X, Plus } from '@/components/icons';
 import {
   CustomAttributeDefinition,
   CustomAttributeFormData,

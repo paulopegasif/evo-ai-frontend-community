@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Smile, Meh, Frown } from 'lucide-react';
+import { Star, Smile, Meh, Frown } from '@/components/icons';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { surveyService } from '@/services/public/surveyService';

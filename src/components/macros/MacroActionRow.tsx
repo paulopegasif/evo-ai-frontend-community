@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import OptionSelect from '@/components/segments/ui/OptionSelect';
-import { Trash2, Upload, X } from 'lucide-react';
+import { Trash2, Upload, X } from '@/components/icons';
 import { MACRO_ACTION_TYPES } from '@/types/automation';
 
 interface ActionRowProps {

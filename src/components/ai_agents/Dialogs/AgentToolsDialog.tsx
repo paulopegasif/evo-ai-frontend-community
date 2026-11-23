@@ -24,7 +24,7 @@ import {
   RefreshCw,
   Workflow,
   CheckSquare,
-} from 'lucide-react';
+} from '@/components/icons';
 import { listAgents } from '@/services/agents';
 import { cn } from '@/utils/cn';
 import { useLanguage } from '@/hooks/useLanguage';

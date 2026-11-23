@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardPanel } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { X, User, ChevronDown, Info } from 'lucide-react';
+import { X, User, ChevronDown, Info } from '@/components/icons';
 
 import ContactHeader from './ContactHeader';
 import ContactDetails from './ContactDetails';

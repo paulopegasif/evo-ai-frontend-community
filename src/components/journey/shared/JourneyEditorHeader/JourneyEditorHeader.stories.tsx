@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from '@/components/ui/button';
-import { Variable } from 'lucide-react';
+import { Variable } from '@/components/icons';
 import { JourneyEditorHeader } from './JourneyEditorHeader';
 
 const meta: Meta<typeof JourneyEditorHeader> = {

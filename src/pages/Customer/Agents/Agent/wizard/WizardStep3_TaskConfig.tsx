@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import TaskConfigForm, { TaskConfigData } from '@/components/ai_agents/Forms/TaskConfigForm';
 

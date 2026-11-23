@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Copy } from 'lucide-react';
+import { Edit, Trash2, Copy } from '@/components/icons';
 import type { AutomationRule } from '@/types/automation';
 import BaseTable, { type TableColumn, type TableAction } from '@/components/base/BaseTable';
 import { useDateFormat } from '@/hooks/useDateFormat';

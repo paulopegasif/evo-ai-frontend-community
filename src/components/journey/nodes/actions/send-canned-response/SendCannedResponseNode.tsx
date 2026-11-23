@@ -1,4 +1,4 @@
-import { MessageSquareReply, Settings } from 'lucide-react';
+import { MessageSquareReply, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

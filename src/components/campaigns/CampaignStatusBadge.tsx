@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { CampaignStatus } from '@/types/campaigns';
-import { Clock, Send, Pause, StopCircle, CheckCircle, FileText, FlaskConical } from 'lucide-react';
+import { Clock, Send, Pause, StopCircle, CheckCircle, FileText, FlaskConical } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface CampaignStatusBadgeProps {

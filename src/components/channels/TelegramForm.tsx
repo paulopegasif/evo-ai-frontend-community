@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { MessageSquare, Key, Shield, Bot } from 'lucide-react';
+import { MessageSquare, Key, Shield, Bot } from '@/components/icons';
 import InboxesService from '@/services/channels/inboxesService';
 import type { TelegramChannelPayload } from '@/types/channels/inbox';
 import { useLanguage } from '@/hooks/useLanguage';

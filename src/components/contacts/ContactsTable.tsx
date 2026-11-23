@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { MessageSquare, Edit, Trash, Users, Lock } from 'lucide-react';
+import { MessageSquare, Edit, Trash, Users, Lock } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Contact } from '@/types/contacts';

@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Cloud, Package, Pencil, Trash2 } from 'lucide-react';
+import { Cloud, Package, Pencil, Trash2 } from '@/components/icons';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { BaseTable, type TableAction, type TableColumn } from '@/components/base';
 import type { Product } from '@/types/products';

@@ -1,4 +1,4 @@
-import { Plus, Trash2, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, RefreshCw } from '@/components/icons';
 import BaseHeader from '@/components/base/BaseHeader';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

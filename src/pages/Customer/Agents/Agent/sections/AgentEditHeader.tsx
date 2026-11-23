@@ -1,4 +1,4 @@
-import { ArrowLeft, MessageSquare, Save } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Save } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/hooks/useLanguage';

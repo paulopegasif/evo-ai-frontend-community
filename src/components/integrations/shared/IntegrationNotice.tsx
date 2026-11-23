@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { CircleAlert, Info, ShieldAlert } from 'lucide-react';
+import { CircleAlert, Info, ShieldAlert } from '@/components/icons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface IntegrationNoticeProps {

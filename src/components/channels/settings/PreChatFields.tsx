@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { GripVertical } from 'lucide-react';
+import { GripVertical } from '@/components/icons';
 import { PreChatField, isFieldEditable } from './helpers/preChatHelpers';
 import { useLanguage } from '@/hooks/useLanguage';
 

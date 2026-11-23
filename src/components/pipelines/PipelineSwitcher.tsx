@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Check, ChevronsUpDown, GitBranch } from 'lucide-react';
+import { Check, ChevronsUpDown, GitBranch } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command';

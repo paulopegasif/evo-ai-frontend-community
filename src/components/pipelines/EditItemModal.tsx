@@ -34,10 +34,9 @@ import {
   CheckSquare,
   Clock,
   Save,
-} from 'lucide-react';
+} from '@/components/icons';
 import { PipelineItem, PipelineStage, Pipeline, PipelineTask, CreateTaskData, UpdateTaskData, PipelineServiceDefinition } from '@/types/analytics';
 import pipelineServiceDefinitionsService from '@/services/pipelines/pipelineServiceDefinitionsService';
-import { getContactColor } from '@/utils/avatar';
 import { cn } from '@/lib/utils';
 import PipelineItemCustomAttributes from './PipelineItemCustomAttributes';
 import PipelineTasksList, { PipelineTasksListRef } from './tasks/PipelineTasksList';
@@ -235,7 +234,7 @@ export default function EditItemModal({
         {/* Header: contact identity + current stage */}
         <DialogHeader className="flex-row items-start gap-3 border-b pb-4">
           <Avatar className="size-11 text-base">
-            <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(displayName) }}>
+            <AvatarFallback className="bg-muted font-semibold text-foreground/80">
               {initials(displayName)}
             </AvatarFallback>
           </Avatar>

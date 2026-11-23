@@ -1,4 +1,4 @@
-import { Bot, Settings } from 'lucide-react';
+import { Bot, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

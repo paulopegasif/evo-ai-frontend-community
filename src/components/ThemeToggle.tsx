@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDarkMode } from '../hooks/useDarkMode';
