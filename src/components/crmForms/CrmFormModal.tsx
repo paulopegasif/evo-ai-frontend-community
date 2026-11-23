@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import OptionSelect from '@/components/segments/ui/OptionSelect';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { Pipeline } from '@/types/analytics/pipelines';
 import type { CustomAttributeDefinition } from '@/types/settings';

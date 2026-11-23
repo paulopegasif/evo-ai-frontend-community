@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import OptionSelect from './OptionSelect';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/components/icons';
 import {
   ALL_ACTION_NAMES,
   actionRegistry,

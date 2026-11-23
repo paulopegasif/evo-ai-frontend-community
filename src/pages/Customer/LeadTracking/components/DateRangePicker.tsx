@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays } from '@/components/icons';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';

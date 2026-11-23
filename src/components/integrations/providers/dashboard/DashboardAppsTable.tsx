@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Monitor, Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Monitor, Edit, Trash2, ExternalLink } from '@/components/icons';
 import { DashboardApp } from '@/types/integrations';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { Badge } from '@/components/ui/badge';

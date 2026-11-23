@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { GitFork, Send, Timer, Webhook } from 'lucide-react';
+import { GitFork, Send, Timer, Webhook } from '@/components/icons';
 import { NodeConfigModal } from './NodeConfigModal';
 
 const meta: Meta<typeof NodeConfigModal> = {

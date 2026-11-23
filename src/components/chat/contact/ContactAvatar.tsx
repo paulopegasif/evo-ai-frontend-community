@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/icons';
 import { Contact } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import {

@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
-import { Camera, Upload, ZoomIn, ZoomOut } from 'lucide-react';
+import { Camera, Upload, ZoomIn, ZoomOut } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { normalizeAvatarUrl } from '@/utils/avatarUrl';

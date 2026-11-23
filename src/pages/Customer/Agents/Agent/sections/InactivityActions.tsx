@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Clock, Trash2, Plus, Info } from 'lucide-react';
+import { Clock, Trash2, Plus, Info } from '@/components/icons';
 
 export interface InactivityAction {
   id: string;

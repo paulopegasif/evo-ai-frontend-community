@@ -8,7 +8,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/components/icons';
 import { productsService } from '@/services/products/productsService';
 import type {
   PipelineItemProductLink,

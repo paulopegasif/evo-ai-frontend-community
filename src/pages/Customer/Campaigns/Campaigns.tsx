@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Megaphone } from 'lucide-react';
+import { Megaphone } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 

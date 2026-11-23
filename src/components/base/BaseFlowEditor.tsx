@@ -9,7 +9,7 @@ import { BaseNodePanel, type NodeType, type NodeCategory } from './BaseNodePanel
 export type { NodeType, NodeCategory };
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { Save, Play, Pause, RotateCcw, AlertCircle } from 'lucide-react';
+import { Save, Play, Pause, RotateCcw, AlertCircle } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 // Tipos para configuração do editor

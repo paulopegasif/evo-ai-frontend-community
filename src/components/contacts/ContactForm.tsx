@@ -21,7 +21,7 @@ import {
   Building2,
   Briefcase,
   Users,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Contact, ContactFormData } from '@/types/contacts';
 import ContactLabels from './ContactLabels';
 import CustomAttributes from './CustomAttributes';

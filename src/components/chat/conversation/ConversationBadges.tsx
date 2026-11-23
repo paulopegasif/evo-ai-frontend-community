@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, ArrowUp, Minus, ArrowDown } from 'lucide-react';
+import { AlertTriangle, ArrowUp, Minus, ArrowDown } from '@/components/icons';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Conversation } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';

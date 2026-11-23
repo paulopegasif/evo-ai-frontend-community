@@ -2,7 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PlusIcon, Search, Upload } from 'lucide-react';
+import { PlusIcon, Search, Upload } from '@/components/icons';
 import { Link } from 'react-router-dom';
 import type { ProductKind, ProductStatus } from '@/types/products';
 

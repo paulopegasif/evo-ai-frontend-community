@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Users } from 'lucide-react';
+import { Users } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 

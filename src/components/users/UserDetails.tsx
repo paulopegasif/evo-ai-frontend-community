@@ -12,7 +12,7 @@ import {
   History,
   Settings,
   Shield,
-} from 'lucide-react';
+} from '@/components/icons';
 import { User } from '@/types/users';
 import { DetailRow, DetailSection } from './DetailSection';
 import { formatDistanceToNow } from 'date-fns';

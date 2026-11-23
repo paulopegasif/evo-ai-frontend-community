@@ -9,7 +9,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
-} from 'lucide-react';
+} from '@/components/icons';
 import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import type { LeadTrackingKPIs, TimelineDataPoint } from '@/types/leadTracking';
 import { SERIES } from './chartConfig';

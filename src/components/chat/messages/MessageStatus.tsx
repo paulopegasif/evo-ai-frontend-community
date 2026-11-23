@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, CheckCheck, Clock, AlertCircle, Loader2 } from 'lucide-react';
+import { Check, CheckCheck, Clock, AlertCircle, Loader2 } from '@/components/icons';
 import { toast } from 'sonner';
 import { Message } from '@/types/chat/api';
 import { formatMessageTime } from '@/utils/time/timeHelpers';

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type ComponentType } from 'react';
 import type { NodeProps } from '@xyflow/react';
-import { Activity, MessageSquare, User } from 'lucide-react';
+import { Activity, MessageSquare, User } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BaseFlowEditor, type NodeCategory, type NodeType } from '@/components/base';
 import type { SegmentNodeUnion } from '@/types/analytics/segments';

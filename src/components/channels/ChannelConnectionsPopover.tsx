@@ -2,7 +2,7 @@ import { useState, type ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Link2, List, Plus, Trash2 } from 'lucide-react';
+import { Link2, List, Plus, Trash2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/utils/cn';
 import { ChannelTypeStatus, formatLastSync } from '@/utils/channelStatus';

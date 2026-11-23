@@ -12,9 +12,8 @@ import {
   MoreHorizontal,
   Phone,
   Trash2,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { getContactColor } from '@/utils/avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -177,7 +176,7 @@ export default function KanbanCard({
       <div className="flex items-start gap-2.5 pe-14">
         <Avatar className="size-8 text-xs">
           {item.contact?.avatar_url && <AvatarImage src={item.contact.avatar_url} alt="" />}
-          <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(item.contact?.name) }}>
+          <AvatarFallback className="bg-muted font-semibold text-foreground/80">
             {initials(item.contact?.name)}
           </AvatarFallback>
         </Avatar>

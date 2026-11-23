@@ -13,7 +13,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Search, Code, Tag, Plus, ExternalLink } from 'lucide-react';
+import { Search, Code, Tag, Plus, ExternalLink } from '@/components/icons';
 import { listCustomTools, createCustomTool } from '@/services/agents/customToolsService';
 import { CustomTool, CustomToolFormData } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';

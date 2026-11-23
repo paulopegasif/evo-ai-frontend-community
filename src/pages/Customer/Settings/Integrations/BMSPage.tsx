@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare } from '@/components/icons';
 import GenericIntegrationSettings from '@/components/integrations/providers/GenericIntegrationSettings';
 import BMSModal from '@/components/integrations/providers/bms/BMSModal';
 

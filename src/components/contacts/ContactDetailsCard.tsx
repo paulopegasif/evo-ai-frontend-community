@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
-import { Edit, Lock } from 'lucide-react';
+import { Edit, Lock } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
 import { unixTimestampToIso } from '@/utils/chat/contactTimestamp';

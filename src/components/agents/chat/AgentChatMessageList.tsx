@@ -1,5 +1,5 @@
 import { ChatMessage } from '@/types';
-import { Bot } from 'lucide-react';
+import { Bot } from '@/components/icons';
 import { AgentChatMessage } from './AgentChatMessage';
 
 interface AgentChatMessageListProps {

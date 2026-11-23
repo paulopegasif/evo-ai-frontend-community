@@ -1,6 +1,6 @@
 import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Monitor } from 'lucide-react';
+import { Monitor } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';

@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardPanel } from '@/components/ui/card';
-import { Wrench } from 'lucide-react';
+import { Wrench } from '@/components/icons';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
 

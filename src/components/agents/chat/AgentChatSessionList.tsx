@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, Plus, Trash2 } from 'lucide-react';
+import { Search, Plus, Trash2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAgentChat } from '@/contexts/agents/AgentChatContext';
 import { formatDateTime } from '@/utils/time/formatDateTime';

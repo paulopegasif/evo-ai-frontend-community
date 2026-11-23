@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, Mail, Loader2 } from '@/components/icons';
 import { toast } from 'sonner';
 import { confirmEmail, resendConfirmation } from '@/services/auth/authService';
 

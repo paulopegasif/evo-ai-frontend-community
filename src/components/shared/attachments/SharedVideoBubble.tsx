@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Download, Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
+import { Download, Play, Pause, Volume2, VolumeX, Maximize } from '@/components/icons';
 import type { SharedAttachment } from './SharedImageBubble';
 
 interface SharedVideoBubbleProps {

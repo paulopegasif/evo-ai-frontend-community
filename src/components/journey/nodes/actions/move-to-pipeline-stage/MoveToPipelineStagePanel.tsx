@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, Workflow } from 'lucide-react';
+import { AlertCircle, Workflow } from '@/components/icons';
 import {
   MoveToPipelineStageNodeData,
   MoveToPipelineStagePipelineOption,

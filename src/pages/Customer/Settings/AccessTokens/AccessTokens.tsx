@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { SettingsAccessTokensTour } from '@/tours';
-import { Key } from 'lucide-react';
+import { Key } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import { useTranslation } from '@/hooks/useTranslation';
 import ConfirmDialog from '@/components/base/ConfirmDialog';

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   RefreshCw,
   Info,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';

@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import OptionSelect from '@/components/segments/ui/OptionSelect';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save } from '@/components/icons';
 import EmailEditorComponent, { EditorRef } from 'react-email-editor';
 import { useLanguage } from '@/hooks/useLanguage';
 import BaseHeader from '@/components/base/BaseHeader';

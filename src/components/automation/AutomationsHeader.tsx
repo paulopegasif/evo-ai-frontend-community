@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/components/icons';
 import { BaseHeader } from '@/components/base';
 
 interface Props {

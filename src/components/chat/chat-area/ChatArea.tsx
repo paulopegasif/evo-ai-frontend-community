@@ -7,7 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useConversationModerations } from '@/hooks/chat/useConversationModerations';
 import { useAppDataStore } from '@/store/appDataStore';
 
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/icons';
 
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

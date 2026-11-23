@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { PlugZap } from 'lucide-react';
+import { PlugZap } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import {

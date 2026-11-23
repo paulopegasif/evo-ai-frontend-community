@@ -31,7 +31,7 @@ import {
   Ban,
   User,
   ChevronRight,
-} from 'lucide-react';
+} from '@/components/icons';
 import { journeyService } from '@/services';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

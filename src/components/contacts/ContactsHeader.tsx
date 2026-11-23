@@ -5,7 +5,7 @@ import {
   Upload,
   Trash2,
   Merge,
-} from 'lucide-react';
+} from '@/components/icons';
 import { BaseHeader, HeaderAction, HeaderFilter } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';
 

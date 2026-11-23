@@ -1,4 +1,4 @@
-import { Send, Settings } from 'lucide-react';
+import { Send, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+import { Star } from '@/components/icons';
 import { CSAT_RATINGS, CSAT_DISPLAY_TYPES, CSATDisplayType } from './helpers/csatConstants';
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -1,5 +1,5 @@
-import type { LucideIcon } from 'lucide-react';
-import { Award, BadgeDollarSign, MessageCircle, PiggyBank } from 'lucide-react';
+import type { LucideIcon } from '@/components/icons';
+import { Award, BadgeDollarSign, MessageCircle, PiggyBank } from '@/components/icons';
 import { Card } from '@/components/ui/card';
 import { DeltaBadge } from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import type { MetricDirection } from '@/pages/Customer/Dashboard/components/metricComparison';

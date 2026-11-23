@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { UseFormRegisterReturn } from 'react-hook-form';
-import { Lock, LockOpen, X } from 'lucide-react';
+import { Lock, LockOpen, X } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader, CardPanel } from '@/components/ui/card';

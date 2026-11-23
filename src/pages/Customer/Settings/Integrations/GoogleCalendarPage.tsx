@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Calendar, Clock, RefreshCw, Sparkles, UserCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, RefreshCw, Sparkles, UserCheck } from '@/components/icons';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';

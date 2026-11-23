@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowRight, ArrowLeft, SkipForward, LogIn, LogOut } from 'lucide-react';
+import { ArrowRight, ArrowLeft, SkipForward, LogIn, LogOut } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 export interface Step5Data {

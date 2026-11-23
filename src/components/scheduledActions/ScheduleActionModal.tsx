@@ -21,7 +21,7 @@ import type { ScheduledAction, CreateScheduledAction } from '@/types/automation'
 import type { Inbox } from '@/types/channels/inbox';
 import type { Contact } from '@/types/contacts';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Search, XIcon } from 'lucide-react';
+import { Search, XIcon } from '@/components/icons';
 import {
   buildChannelOptions,
   getMessagingInboxes,

@@ -12,7 +12,7 @@ import {
   Calendar,
   Zap,
   Clock,
-} from 'lucide-react';
+} from '@/components/icons';
 import WizardStepLayout from './WizardStepLayout';
 import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';

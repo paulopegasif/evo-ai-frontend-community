@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsLabelsTour } from '@/tours';
 import { toast } from 'sonner';
-import { AlertTriangle, Search, Tags } from 'lucide-react';
+import { AlertTriangle, Search, Tags } from '@/components/icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import ListSkeleton from '@/components/base/ListSkeleton';

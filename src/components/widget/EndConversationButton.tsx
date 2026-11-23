@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';

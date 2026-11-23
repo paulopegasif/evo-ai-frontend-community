@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 export interface BaseStatsCardProps {

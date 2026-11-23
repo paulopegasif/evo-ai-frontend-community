@@ -1,4 +1,4 @@
-import { Clock, MessageSquare, Bot, CheckCircle2, AlertTriangle, UserX, Users } from 'lucide-react';
+import { Clock, MessageSquare, Bot, CheckCircle2, AlertTriangle, UserX, Users } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';

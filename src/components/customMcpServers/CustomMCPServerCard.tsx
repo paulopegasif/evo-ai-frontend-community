@@ -1,4 +1,4 @@
-import { Link2, Pencil, TestTube, Trash2, Wrench } from 'lucide-react';
+import { Link2, Pencil, TestTube, Trash2, Wrench } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ResourceCard } from '@/components/agents/resourceCard';

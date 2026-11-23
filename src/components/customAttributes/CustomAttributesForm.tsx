@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import OptionSelect from '@/components/segments/ui/OptionSelect';
-import { Plus, X, Settings, Pencil, Check } from 'lucide-react';
+import { Plus, X, Settings, Pencil, Check } from '@/components/icons';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import { CustomAttributeDefinition, AttributeModel } from '@/types/settings';
 import { toast } from 'sonner';
