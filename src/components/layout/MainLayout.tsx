@@ -99,7 +99,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }
 
   return (
-    <div className="flex flex-col h-dvh bg-background transition-colors duration-150 ease-in-out">
+    <div className="flex flex-col h-dvh bg-sidebar transition-colors duration-150 ease-in-out">
 
       {/* Header */}
       <Header
@@ -131,7 +131,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         />
 
         {/* Main Content */}
-        <main className="flex-1 min-h-0 overflow-auto bg-background transition-colors duration-150 ease-in-out">
+        <main className="relative flex-1 min-h-0 overflow-auto bg-background transition-colors duration-150 ease-in-out md:mb-2 md:me-2 md:rounded-xl md:border md:border-border md:shadow-xs/5 dark:md:bg-[color-mix(in_srgb,var(--background)_98%,white)]">
           <div className="h-full">{children}</div>
         </main>
 
