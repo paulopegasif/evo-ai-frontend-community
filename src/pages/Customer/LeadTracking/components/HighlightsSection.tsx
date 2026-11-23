@@ -53,11 +53,11 @@ const HIGHLIGHTS: Highlight[] = [
     direction: 'lower_is_better',
   },
   {
-    title: 'Mais vendas no CRM',
+    title: 'Mais assinaturas no CRM',
     icon: Award,
     metric: (c) => c.won,
     pick: (cs) => best(cs, (c) => c.won, (c) => c.won > 0),
-    format: (v) => `${formatNumber(v)} ${v === 1 ? 'venda' : 'vendas'}`,
+    format: (v) => `${formatNumber(v)} ${v === 1 ? 'assinatura' : 'assinaturas'}`,
     direction: 'higher_is_better',
   },
   {

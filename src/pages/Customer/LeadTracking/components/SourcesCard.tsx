@@ -121,7 +121,7 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
                     <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap">
                       {s.leads} <span className="text-muted-foreground">({percentOrDash(s.share)})</span>
                     </td>
-                    <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap" title={plural(s.won, 'venda', 'vendas')}>
+                    <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap" title={plural(s.won, 'assinatura', 'assinaturas')}>
                       {percentOrDash(s.conversion)}
                     </td>
                   </tr>

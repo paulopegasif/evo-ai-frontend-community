@@ -3,13 +3,10 @@ import {
   RefreshCw,
   Info,
 } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import BaseHeader from '@/components/base/BaseHeader';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import type { LeadTrackingDashboardResponse, LeadTrackingParams } from '@/types/leadTracking';
@@ -24,11 +21,6 @@ import PaidMediaSection from './components/PaidMediaSection';
 import HighlightsSection from './components/HighlightsSection';
 import YearOverYearCard from './components/YearOverYearCard';
 import ExecutiveSummary from './components/ExecutiveSummary';
-import VelocityAlertsSection from './components/VelocityAlertsSection';
-import AdsRankingCard from './components/AdsRankingCard';
-import LeadsTab from './components/LeadsTab';
-import ReviewQueueTab from './components/ReviewQueueTab';
-import LeadJourneySheet from './components/LeadJourneySheet';
 import { useLeadTrackingFilters } from './hooks/useLeadTrackingFilters';
 import { makeKpiComparer } from './compare';
 import { granularityFor, parseIsoDate, toApiRange, type DateRange } from './periods';
@@ -49,25 +41,7 @@ const Notice = ({ children }: { children: React.ReactNode }) => (
   </p>
 );
 
-
-const TABS = ['overview', 'leads', 'review'] as const;
-type TrackingTab = (typeof TABS)[number];
-
 export const LeadTrackingPage: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const rawTab = searchParams.get('tab');
-  const tab: TrackingTab = TABS.includes(rawTab as TrackingTab) ? (rawTab as TrackingTab) : 'overview';
-  const setTab = (value: string) =>
-    setSearchParams(
-      (current) => {
-        const next = new URLSearchParams(current);
-        if (value === 'overview') next.delete('tab');
-        else next.set('tab', value);
-        return next;
-      },
-      { replace: true },
-    );
-  const [journeyContact, setJourneyContact] = useState<string | null>(() => searchParams.get('lead'));
   const { filters, setPreset, setCompare, setFilter, clearFilters } = useLeadTrackingFilters();
   const [data, setData] = useState<LeadTrackingDashboardResponse | null>(null);
   const [previous, setPrevious] = useState<LeadTrackingDashboardResponse | null>(null);
@@ -169,87 +143,47 @@ export const LeadTrackingPage: React.FC = () => {
         </CardPanel>
       </Card>
 
-      <Tabs value={tab} onValueChange={(value) => setTab(String(value))} className="flex flex-col gap-4 md:gap-6">
-        <TabsList className="self-start">
-          <TabsTab value="overview">Visão geral</TabsTab>
-          <TabsTab value="leads">Leads</TabsTab>
-          <TabsTab value="review">
-            Revisão
-            {(kpis?.unlinked_sales ?? 0) > 0 && (
-              <Badge variant="warning" size="sm" className="tabular-nums">
-                {kpis?.unlinked_sales}
-              </Badge>
-            )}
-          </TabsTab>
-        </TabsList>
+      {historyIncomplete && (
+        <Notice>
+          O histórico da Meta Ads está completo a partir de {historyStart.toLocaleDateString('pt-BR')}; o investimento
+          {comparison ? ' do período comparado' : ''} antes dessa data pode estar incompleto enquanto a importação avança.
+        </Notice>
+      )}
 
-        <TabsPanel value="overview" className="flex flex-col gap-4 md:gap-6">
-          {historyIncomplete && (
-            <Notice>
-              O histórico da Meta Ads está completo a partir de {historyStart.toLocaleDateString('pt-BR')}; o investimento
-              {comparison ? ' do período comparado' : ''} antes dessa data pode estar incompleto enquanto a importação avança.
-            </Notice>
-          )}
+      <ExecutiveSummary kpis={kpis} compare={compare} timeline={data?.timeline} />
 
-          <ExecutiveSummary kpis={kpis} compare={compare} timeline={data?.timeline} />
-
-          <VelocityAlertsSection velocity={data?.velocity} alerts={data?.alerts} onOpenLead={setJourneyContact} />
-
-          {showAds && kpis && (
-            <>
-              <SectionTitle
-                title="Mídia paga (Meta)"
-                description="Entrega e resultados medidos pela Meta, e o que esses anúncios geraram no CRM"
-              />
-              <PaidMediaSection kpis={kpis} compare={compare} />
-              <HighlightsSection campaigns={data?.campaigns ?? []} previousCampaigns={previous?.campaigns} />
-            </>
-          )}
-
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
-            <div className="xl:col-span-3">
-              <FunnelCard funnel={data?.funnel ?? []} />
-            </div>
-            <div className="xl:col-span-2">
-              <SourcesCard sources={data?.sources ?? []} />
-            </div>
-          </div>
-
-          <TrendCharts
-            timeline={data?.timeline ?? []}
-            previousTimeline={previous?.timeline}
-            granularity={data?.period.granularity ?? 'day'}
-            showSpend={showAds}
+      {showAds && kpis && (
+        <>
+          <SectionTitle
+            title="Mídia paga (Meta)"
+            description="Entrega e resultados medidos pela Meta, e o que esses anúncios geraram no CRM"
           />
+          <PaidMediaSection kpis={kpis} compare={compare} />
+          <HighlightsSection campaigns={data?.campaigns ?? []} previousCampaigns={previous?.campaigns} />
+        </>
+      )}
 
-          <CampaignsSection campaigns={data?.campaigns ?? []} />
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+        <div className="xl:col-span-3">
+          <FunnelCard funnel={data?.funnel ?? []} />
+        </div>
+        <div className="xl:col-span-2">
+          <SourcesCard sources={data?.sources ?? []} />
+        </div>
+      </div>
 
-          {showAds && (data?.ads?.length ?? 0) > 0 && <AdsRankingCard ads={data?.ads ?? []} />}
-
-          <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
-
-        </TabsPanel>
-
-        <TabsPanel value="leads">
-          <LeadsTab params={{ ...baseParams, ...toApiRange(range) }} />
-        </TabsPanel>
-
-        <TabsPanel value="review">
-          <ReviewQueueTab />
-        </TabsPanel>
-      </Tabs>
-
-      <LeadJourneySheet
-        contactId={journeyContact}
-        onClose={() => {
-          setJourneyContact(null);
-          if (searchParams.has('lead')) {
-            const next = new URLSearchParams(searchParams);
-            next.delete('lead');
-            setSearchParams(next, { replace: true });
-          }
-        }}
+      <TrendCharts
+        timeline={data?.timeline ?? []}
+        previousTimeline={previous?.timeline}
+        granularity={data?.period.granularity ?? 'day'}
+        showSpend={showAds}
       />
+
+      <CampaignsSection campaigns={data?.campaigns ?? []} />
+
+
+      <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
+
     </div>
   );
 };

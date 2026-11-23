@@ -1,5 +1,4 @@
 import {
-  CalendarCheck,
   CheckCircle2,
   DollarSign,
   Megaphone,
@@ -41,11 +40,12 @@ const Block = ({ title, description, children }: { title: string; description: s
 /** Acquisition → conversion → return, the three questions management asks. */
 const ExecutiveSummary = ({ kpis, compare, timeline = [] }: Props) => {
   const ads = Boolean(kpis?.has_ad_spend);
-  const series = (key: 'leads' | 'scheduled' | 'attended' | 'spend') => timeline.map((point) => point[key] ?? 0);
+  const series = (key: 'leads' | 'spend') => timeline.map((point) => point[key] ?? 0);
+  const wonTicket = kpis?.total_won ? (kpis.cohort_revenue ?? 0) / kpis.total_won : null;
 
   return (
     <div className="space-y-6">
-      <Block title="Aquisição" description="Quanto custa trazer cada pessoa">
+      <Block title="Aquisição" description="Quanto custa trazer cada contato">
         {ads && (
           <DashboardMetricCard
             loading={!kpis}
@@ -82,7 +82,7 @@ const ExecutiveSummary = ({ kpis, compare, timeline = [] }: Props) => {
           tooltip={{
             title: 'Novos leads',
             content:
-              'Pessoas que entraram no período. Recompras não contam. Qualificados: agendaram avaliação ou chegaram a uma etapa marcada como qualificada.',
+              'Contatos que entraram no período por tráfego pago, outbound B2B e campanhas. Qualificados: chegaram a uma etapa marcada como qualificada no pipeline.',
           }}
           comparison={compare('total_leads', count)}
           sparkline={series('leads')}
@@ -101,50 +101,27 @@ const ExecutiveSummary = ({ kpis, compare, timeline = [] }: Props) => {
         )}
       </Block>
 
-      <Block title="Conversão" description="Onde o funil avança e quanto custa cada etapa">
+      <Block title="Conversão" description="Quantos leads avançam no funil comercial">
         <DashboardMetricCard
           loading={!kpis}
-          title="Agendaram"
-          value={kpis?.total_scheduled ?? 0}
-          subtitle={`${percentOrDash(kpis?.scheduling_rate)} dos leads${ads && kpis?.cost_per_scheduled != null ? ` · ${currencyOrDash(kpis.cost_per_scheduled)} por agendamento` : ''}`}
-          icon={CalendarCheck}
-          accentClassName={ACCENT}
-          comparison={compare('total_scheduled', count)}
-          sparkline={series('scheduled')}
-          sparklineColor={SERIES.scheduled.color}
-        />
-        <DashboardMetricCard
-          loading={!kpis}
-          title="Compareceram"
-          value={kpis?.total_attended ?? 0}
-          subtitle={`${percentOrDash(kpis?.show_rate)} de comparecimento${ads && kpis?.cost_per_attended != null ? ` · ${currencyOrDash(kpis.cost_per_attended)} cada` : ''}`}
+          title="Leads qualificados"
+          value={kpis?.total_qualified ?? 0}
+          subtitle={`${percentOrDash(kpis?.qualification_rate)} dos leads`}
           icon={CheckCircle2}
           accentClassName={ACCENT}
-          comparison={compare('total_attended', count)}
-          sparkline={series('attended')}
-          sparklineColor={SERIES.attended.color}
+          tooltip={{ title: 'Leads qualificados', content: 'Leads do período com oportunidade ativa ou que chegaram a uma etapa marcada como qualificada.' }}
+          comparison={compare('total_qualified', count)}
         />
         <DashboardMetricCard
           loading={!kpis}
-          title="Vendas"
+          title="Assinantes"
           value={kpis?.total_won ?? 0}
           subtitle={`${percentOrDash(kpis?.conversion_rate)} dos leads`}
           icon={Sparkles}
           accentClassName={ACCENT}
           importance="primary"
+          tooltip={{ title: 'Assinantes', content: 'Leads do período convertidos em clientes assinantes no pipeline.' }}
           comparison={compare('total_won', count)}
-        />
-        <DashboardMetricCard
-          loading={!kpis}
-          title="Sem desfecho"
-          value={kpis?.total_no_outcome ?? 0}
-          subtitle="Avaliações passadas sem status atualizado"
-          icon={Receipt}
-          accentClassName="bg-warning/10 text-warning-foreground"
-          tooltip={{
-            title: 'Sem desfecho',
-            content: 'Agendamentos com data passada que continuam como agendados ou confirmados. Atualize na Agenda.',
-          }}
         />
       </Block>
 
@@ -153,7 +130,7 @@ const ExecutiveSummary = ({ kpis, compare, timeline = [] }: Props) => {
           loading={!kpis}
           title="Receita dos novos leads"
           value={formatCurrency(kpis?.cohort_revenue ?? 0)}
-          subtitle={plural(kpis?.total_won ?? 0, 'venda', 'vendas')}
+          subtitle={plural(kpis?.total_won ?? 0, 'assinatura', 'assinaturas')}
           icon={TrendingUp}
           accentClassName={ACCENT}
           importance="primary"
@@ -176,7 +153,7 @@ const ExecutiveSummary = ({ kpis, compare, timeline = [] }: Props) => {
             loading={!kpis}
             title="CAC"
             value={currencyOrDash(kpis?.ad_cac)}
-            subtitle={plural(kpis?.ad_won ?? 0, 'venda de anúncio', 'vendas de anúncio')}
+            subtitle={plural(kpis?.ad_won ?? 0, 'assinante de anúncio', 'assinantes de anúncio')}
             icon={Wallet}
             accentClassName={ACCENT}
             comparison={compare('ad_cac', currency, 'lower_is_better')}
@@ -185,11 +162,10 @@ const ExecutiveSummary = ({ kpis, compare, timeline = [] }: Props) => {
         <DashboardMetricCard
           loading={!kpis}
           title="Ticket médio"
-          value={currencyOrDash(kpis?.won_ticket)}
-          subtitle="Receita ÷ vendas dos novos leads"
+          value={currencyOrDash(wonTicket)}
+          subtitle="Receita ÷ assinantes dos novos leads"
           icon={Receipt}
           accentClassName={ACCENT}
-          comparison={compare('won_ticket', currency)}
         />
       </Block>
     </div>
