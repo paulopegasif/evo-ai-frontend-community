@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Wand, Globe, FileText, Tags, Plus, X } from 'lucide-react';
+import { Wand, Globe, FileText, Tags, Plus, X } from '@/components/icons';
 import { CustomTool, CustomToolFormData } from '@/types/ai';
 import {
   KeyValueEditor,

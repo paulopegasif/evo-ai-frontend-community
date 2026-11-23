@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/components/icons';
 import PrimaryActionButton from './PrimaryActionButton';
 
 import { BaseFilter as BaseFilterType, FilterType } from '@/types/core';

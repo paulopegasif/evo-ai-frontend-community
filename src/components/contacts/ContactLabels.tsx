@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Check, Plus, Tag, X } from 'lucide-react';
+import { Check, Plus, Tag, X } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command';

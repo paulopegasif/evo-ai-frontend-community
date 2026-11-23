@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertCircle, Play } from 'lucide-react';
+import { AlertCircle, Play } from '@/components/icons';
 import BrandIcon from '@/components/BrandIcon';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ConfirmDialog from '@/components/base/ConfirmDialog';

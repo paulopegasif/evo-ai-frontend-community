@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from '@/components/icons';
 import { MenuItem } from '@/components/layout/config/menuItems';
 import { DashboardApp } from '@/types/integrations';
 

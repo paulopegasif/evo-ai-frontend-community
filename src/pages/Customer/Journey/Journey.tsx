@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Route, Copy, Trash2, Edit3, GitBranch } from 'lucide-react';
+import { Plus, Route, Copy, Trash2, Edit3, GitBranch } from '@/components/icons';
 import BaseHeader from '../../../components/base/BaseHeader';
 import BaseTable, { TableColumn, TableAction } from '../../../components/base/BaseTable';
 import ConfirmDialog from '../../../components/base/ConfirmDialog';

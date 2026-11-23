@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Loader2, CheckCircle, AlertTriangle, Mail } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle, Mail } from '@/components/icons';
 import { toast } from 'sonner';
 import oauthCallbackService from '@/services/channels/oauthCallbackService';
 // import { useLanguage } from '@/hooks/useLanguage';

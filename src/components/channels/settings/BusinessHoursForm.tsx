@@ -3,7 +3,7 @@ import { Card, CardPanel } from '@/components/ui/card';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Clock, Info, AlertTriangle } from 'lucide-react';
+import { Clock, Info, AlertTriangle } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -3,7 +3,7 @@ import {
   Download,
   Upload,
   Trash2,
-} from 'lucide-react';
+} from '@/components/icons';
 import { BaseHeader, HeaderAction, HeaderFilter } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardPanel } from '@/components/ui/card';
-import { FileText, Plus } from 'lucide-react';
+import { FileText, Plus } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import SchemaField from './SchemaField';
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map } from 'lucide-react';
+import { Map } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogDescription, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { tourRegistry } from '@/tours/tourRegistry';

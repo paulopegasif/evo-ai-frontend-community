@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import EmptyState from '@/components/base/EmptyState';
 import ListSkeleton from '@/components/base/ListSkeleton';
-import { ArrowLeft, Users, Save } from 'lucide-react';
+import { ArrowLeft, Users, Save } from '@/components/icons';
 import BaseHeader from '@/components/base/BaseHeader';
 import BaseTable, { TableColumn } from '@/components/base/BaseTable';
 import TeamsService from '@/services/teams/teamsService';

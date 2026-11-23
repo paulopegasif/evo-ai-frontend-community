@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/icons';
 import type { SearchMessageResult } from '@/types/chat/search';
 import { highlightMatch } from './searchHighlight';
 import SearchResultItem from './SearchResultItem';

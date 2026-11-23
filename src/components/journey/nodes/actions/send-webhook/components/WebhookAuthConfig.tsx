@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Shield, Eye, EyeOff, Lock } from 'lucide-react';
+import { Shield, Eye, EyeOff, Lock } from '@/components/icons';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

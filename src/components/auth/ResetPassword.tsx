@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff } from '@/components/icons';
 import { toast } from 'sonner';
 import { resetPassword } from '@/services/auth/authService';
 import { useForm } from 'react-hook-form';

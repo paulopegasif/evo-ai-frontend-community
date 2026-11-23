@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Edit, X, Clock, AlertCircle } from 'lucide-react';
+import { Edit, X, Clock, AlertCircle } from '@/components/icons';
 import { ScheduledAction } from '@/types/automation';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { Badge } from '@/components/ui/badge';

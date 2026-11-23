@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowRight, ArrowLeft, SkipForward } from 'lucide-react';
+import { ArrowRight, ArrowLeft, SkipForward } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
 

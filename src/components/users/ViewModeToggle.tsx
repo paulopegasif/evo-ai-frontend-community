@@ -1,4 +1,4 @@
-import { Grid3X3, List } from 'lucide-react';
+import { Grid3X3, List } from '@/components/icons';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 

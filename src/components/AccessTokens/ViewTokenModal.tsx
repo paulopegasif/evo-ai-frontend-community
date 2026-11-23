@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Copy, Eye, EyeOff, Key } from 'lucide-react';
+import { Copy, Eye, EyeOff, Key } from '@/components/icons';
 import type { AccessToken } from '@/types/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { parseScopesFromAPI } from '@/services/auth/accessTokensService';

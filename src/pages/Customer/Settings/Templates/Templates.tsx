@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { Button } from '@/components/ui/button';
-import { Download, Upload, Package } from 'lucide-react';
+import { Download, Upload, Package } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ExportWizard from './components/ExportWizard/ExportWizard';
 import ImportModal from './components/ImportModal/ImportModal';

@@ -2,7 +2,7 @@ import AgentToolsSection from '@/components/ai_agents/AgentToolsSection';
 import CustomToolsSection from '@/components/ai_agents/CustomToolsSection';
 import { CustomTool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Users, Code } from 'lucide-react';
+import { Users, Code } from '@/components/icons';
 import { Agent } from '@/types';
 import { Separator } from '@/components/ui/separator';
 import SectionHeader from './SectionHeader';

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { ReactNode } from 'react';
-import { Contact, Cog, PieChart } from 'lucide-react';
+import { Contact, Cog, PieChart } from '@/components/icons';
 import { useMenuState } from './useMenuState';
 import type { MenuItem } from '@/components/layout/config/menuItems';
 

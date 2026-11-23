@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Power } from 'lucide-react';
+import { ChevronRight, Power } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

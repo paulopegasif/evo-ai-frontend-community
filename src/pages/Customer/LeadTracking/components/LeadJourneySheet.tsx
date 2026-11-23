@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CalendarCheck, DollarSign, ExternalLink, Megaphone, MessageSquare, MoveRight, UserPlus } from 'lucide-react';
+import { CalendarCheck, DollarSign, ExternalLink, Megaphone, MessageSquare, MoveRight, UserPlus } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetDescription, SheetHeader, SheetPanel, SheetPopup, SheetTitle } from '@/components/ui/sheet';
 import { Alert, AlertDescription } from '@/components/ui/alert';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Check, ExternalLink, Library, Plug, Settings } from 'lucide-react';
+import { AlertCircle, Check, ExternalLink, Library, Plug, Settings } from '@/components/icons';
 import {
   IntegrationTile,
   IntegrationTileGridSkeleton,

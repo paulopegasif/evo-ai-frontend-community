@@ -14,7 +14,7 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import EmptyState from '@/components/base/EmptyState';
 import RadioCardGroup from '@/components/base/RadioCard';
-import { Plus, Save, ArrowLeft, RefreshCw, Target, Users, Filter, Eye, AlertCircle, List, Workflow } from 'lucide-react';
+import { Plus, Save, ArrowLeft, RefreshCw, Target, Users, Filter, Eye, AlertCircle, List, Workflow } from '@/components/icons';
 
 import { segmentsService } from '@/services/segments/segmentsService';
 import { SegmentCanvasBuilder } from '@/components/segments/canvas/SegmentCanvasBuilder';

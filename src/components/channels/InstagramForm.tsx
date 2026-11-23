@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import instagramService from '@/services/channels/instagramService';
-import { Instagram, AlertTriangle } from 'lucide-react';
+import { Instagram, AlertTriangle } from '@/components/icons';
 import HubConnectButton from '@/components/inbox/HubConnectButton';
 import { FormActionBar } from '@/components/channels/shared/FormActionBar';
 

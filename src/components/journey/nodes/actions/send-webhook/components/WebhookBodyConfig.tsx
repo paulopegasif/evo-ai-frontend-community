@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Code, Copy, Check, Table, FileText } from 'lucide-react';
+import { Code, Copy, Check, Table, FileText } from '@/components/icons';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableTextarea } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

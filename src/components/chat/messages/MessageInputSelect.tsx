@@ -1,5 +1,5 @@
 import React from 'react';
-import { List } from 'lucide-react';
+import { List } from '@/components/icons';
 
 interface SelectItem {
   title: string;

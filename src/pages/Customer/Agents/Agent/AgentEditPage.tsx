@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import { Skeleton } from '@/components/ui/skeleton';
 import SectionHeader from './sections/SectionHeader';

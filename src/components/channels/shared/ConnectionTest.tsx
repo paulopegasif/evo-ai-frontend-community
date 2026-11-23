@@ -1,4 +1,4 @@
-import { PlugZap } from 'lucide-react';
+import { PlugZap } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 

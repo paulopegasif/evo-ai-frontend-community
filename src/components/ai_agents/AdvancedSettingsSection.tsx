@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardPanel } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Brain, Zap } from 'lucide-react';
+import { Settings, Brain, Zap } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 import CollapsibleHeader from './CollapsibleHeader';

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { User } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 export interface TypingUser {

@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { ChevronRight, Layers, Link2, Plus } from 'lucide-react';
+import { ChevronRight, Layers, Link2, Plus } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/utils/cn';
 import { ChannelHealthStatus, ChannelTypeStatus } from '@/utils/channelStatus';

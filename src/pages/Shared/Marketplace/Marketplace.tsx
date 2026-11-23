@@ -18,7 +18,7 @@ import {
   ImageIcon,
   Filter,
   X,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 
 interface MarketplaceProduct {

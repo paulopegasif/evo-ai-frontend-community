@@ -1,4 +1,4 @@
-import { LogOut } from 'lucide-react';
+import { LogOut } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

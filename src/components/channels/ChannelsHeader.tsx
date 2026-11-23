@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus } from '@/components/icons';
 import { BaseHeader, HeaderAction } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

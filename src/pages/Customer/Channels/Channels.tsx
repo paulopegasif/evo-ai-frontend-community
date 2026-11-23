@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/components/icons';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';

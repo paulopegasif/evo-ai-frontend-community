@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Settings, Hash, Calendar } from 'lucide-react';
+import { Settings, Hash, Calendar } from '@/components/icons';
 import { SetVariableNodeData } from './SetVariableNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';

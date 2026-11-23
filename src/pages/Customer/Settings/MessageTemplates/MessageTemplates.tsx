@@ -8,7 +8,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import OptionSelect from '@/components/segments/ui/OptionSelect';
-import { Edit, Eye, LayoutTemplate, Plus, RefreshCw, Search, Trash2 } from 'lucide-react';
+import { Edit, Eye, LayoutTemplate, Plus, RefreshCw, Search, Trash2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useAppDataStore } from '@/store/appDataStore';

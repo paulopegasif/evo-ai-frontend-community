@@ -14,7 +14,7 @@ import {
   Mail,
   MessageCircle,
   Smartphone,
-} from 'lucide-react';
+} from '@/components/icons';
 import WizardStepLayout from './WizardStepLayout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/hooks/useLanguage';

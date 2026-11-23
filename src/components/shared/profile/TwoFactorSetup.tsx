@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import RadioCardGroup from '@/components/base/RadioCard';
-import { Shield, Smartphone, Mail, AlertTriangle, Check, Copy, RefreshCw } from 'lucide-react';
+import { Shield, Smartphone, Mail, AlertTriangle, Check, Copy, RefreshCw } from '@/components/icons';
 import { toast } from 'sonner';
 import { twoFactorService } from '@/services/profile/twoFactorService';
 import { useLanguage } from '@/hooks/useLanguage';

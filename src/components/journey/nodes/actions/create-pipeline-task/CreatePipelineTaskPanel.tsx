@@ -3,7 +3,7 @@ import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ClipboardList, AlertCircle } from 'lucide-react';
+import { ClipboardList, AlertCircle } from '@/components/icons';
 import {
   CreatePipelineTaskNodeData,
   CreatePipelineTaskAgentOption,

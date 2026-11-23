@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Code, Plus, X, ExternalLink } from 'lucide-react';
+import { Code, Plus, X, ExternalLink } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CustomTool } from '@/types/ai';
 import CustomToolsSelectionDialog from './Dialogs/CustomToolsSelectionDialog';

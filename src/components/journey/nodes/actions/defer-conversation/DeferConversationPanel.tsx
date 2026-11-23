@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/components/icons';
 import { DeferConversationNodeData } from './DeferConversationNode';
 import { automationService } from '@/services/automation/automationService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

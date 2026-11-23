@@ -1,6 +1,6 @@
 
 import EmptyState from '@/components/base/EmptyState';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons';
 
 interface IntegrationEmptyStateProps {
   icon: LucideIcon;

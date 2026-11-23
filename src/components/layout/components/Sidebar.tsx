@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useUnreadConversationsStore } from '@/store/unreadConversationsStore';
 import { Link, useLocation } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import MenuItem from './MenuItem';
