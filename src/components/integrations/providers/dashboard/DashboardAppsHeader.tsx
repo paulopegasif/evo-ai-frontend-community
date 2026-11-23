@@ -47,7 +47,7 @@ export default function DashboardAppsHeader({
   ] : [];
 
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <IntegrationBackButton onBack={onBack} />
       
       <BaseHeader

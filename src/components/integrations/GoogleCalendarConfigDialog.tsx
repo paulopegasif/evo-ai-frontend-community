@@ -1,41 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Label,
-  Button,
-  Select,
-} from '@evoapi/design-system';
-import BrandIcon from '@/components/BrandIcon';
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@evoapi/design-system';
-import {
-  Calendar,
-  Clock,
-  Video,
-  Settings,
-  User,
   Building2,
-  FileText,
-  Mail,
-  Loader2,
+  Calendar,
   CalendarCheck,
   CalendarClock,
+  Clock,
+  FileText,
+  Mail,
   Repeat,
+  Settings,
+  User,
+  Video,
   Zap,
 } from 'lucide-react';
+import BrandIcon from '@/components/BrandIcon';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { AgentIntegrationDialog, SettingRow } from './agentConfig/AgentIntegrationDialog';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import GoogleCalendarService from '@/services/integrations/googleCalendarService';
@@ -65,6 +61,7 @@ const GoogleCalendarConfigDialog = ({
   const [isConnecting, setIsConnecting] = useState(false);
   const [isLoadingCalendars, setIsLoadingCalendars] = useState(false);
   const [availableCalendars, setAvailableCalendars] = useState<GoogleCalendarItem[]>([]);
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false);
 
   const [config, setConfig] = useState<GoogleCalendarConfig>({
     provider: 'google_calendar',
@@ -189,10 +186,10 @@ const GoogleCalendarConfigDialog = ({
     try {
       const calendars = await GoogleCalendarService.getCalendars(agentId);
       setAvailableCalendars(calendars);
-      setConfig((prev) => ({ ...prev, calendars }));
+      setConfig(prev => ({ ...prev, calendars }));
     } catch (error) {
       console.error('Error loading calendars:', error);
-      toast.error('Erro ao carregar agendas');
+      toast.error(t('edit.integrations.toasts.loadCalendarsError'));
     } finally {
       setIsLoadingCalendars(false);
     }
@@ -200,16 +197,13 @@ const GoogleCalendarConfigDialog = ({
 
   const handleConnectGoogle = async () => {
     if (!config.email) {
-      toast.error('Por favor, insira um e-mail');
+      toast.error(t('edit.integrations.toasts.emailRequired'));
       return;
     }
 
     setIsConnecting(true);
     try {
-      const response = await GoogleCalendarService.generateAuthorization(
-        agentId,
-        config.email
-      );
+      const response = await GoogleCalendarService.generateAuthorization(agentId, config.email);
 
       if (response.url) {
         // Redirect to Google OAuth
@@ -217,7 +211,7 @@ const GoogleCalendarConfigDialog = ({
       }
     } catch (error) {
       console.error('Error connecting to Google Calendar:', error);
-      toast.error('Erro ao conectar com Google Calendar');
+      toast.error(t('edit.integrations.toasts.connectError', { name: 'Google Calendar' }));
     } finally {
       setIsConnecting(false);
     }
@@ -225,7 +219,7 @@ const GoogleCalendarConfigDialog = ({
 
   const handleSave = async () => {
     if (!config.settings?.selectedCalendarId) {
-      toast.error('Por favor, selecione uma agenda');
+      toast.error(t('edit.integrations.toasts.selectCalendar'));
       return;
     }
 
@@ -235,11 +229,11 @@ const GoogleCalendarConfigDialog = ({
 
       // Then update local state
       onSave(config);
-      toast.success('Configurações salvas com sucesso!');
+      toast.success(t('edit.integrations.toasts.saveSuccess'));
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving Google Calendar configuration:', error);
-      toast.error('Erro ao salvar configurações');
+      toast.error(t('edit.integrations.toasts.saveError'));
     }
   };
 
@@ -253,17 +247,25 @@ const GoogleCalendarConfigDialog = ({
         onDisconnect();
       }
 
-      toast.success('Google Calendar desconectado com sucesso!');
+      toast.success(t('edit.integrations.toasts.disconnectSuccess', { name: 'Google Calendar' }));
       onOpenChange(false);
     } catch (error) {
       console.error('Error disconnecting Google Calendar:', error);
-      toast.error('Erro ao desconectar Google Calendar');
+      toast.error(t('edit.integrations.toasts.disconnectError', { name: 'Google Calendar' }));
     }
   };
 
-  const updateBusinessHours = (day: string, field: 'enabled' | 'start' | 'end', value: boolean | string) => {
-    setConfig((prev) => {
-      const currentDayData = prev.settings?.businessHours?.[day] || { enabled: false, start: '08:00', end: '18:00' };
+  const updateBusinessHours = (
+    day: string,
+    field: 'enabled' | 'start' | 'end',
+    value: boolean | string,
+  ) => {
+    setConfig(prev => {
+      const currentDayData = prev.settings?.businessHours?.[day] || {
+        enabled: false,
+        start: '08:00',
+        end: '18:00',
+      };
       return {
         ...prev,
         settings: {
@@ -282,12 +284,12 @@ const GoogleCalendarConfigDialog = ({
   };
 
   const updateBookingField = (fieldId: string, enabled: boolean) => {
-    setConfig((prev) => ({
+    setConfig(prev => ({
       ...prev,
       settings: {
         ...prev.settings,
-        bookingFields: prev.settings?.bookingFields?.map((field) =>
-          field.id === fieldId ? { ...field, enabled } : field
+        bookingFields: prev.settings?.bookingFields?.map(field =>
+          field.id === fieldId ? { ...field, enabled } : field,
         ),
       },
     }));
@@ -296,603 +298,548 @@ const GoogleCalendarConfigDialog = ({
   const getFieldIcon = (fieldName: string) => {
     switch (fieldName) {
       case 'name':
-        return <User className="h-4 w-4" />;
+        return <User />;
       case 'company':
-        return <Building2 className="h-4 w-4" />;
+        return <Building2 />;
       case 'subject':
-        return <FileText className="h-4 w-4" />;
+        return <FileText />;
       case 'duration':
-        return <Clock className="h-4 w-4" />;
+        return <Clock />;
       case 'email':
-        return <Mail className="h-4 w-4" />;
+        return <Mail />;
       case 'summary':
-        return <FileText className="h-4 w-4" />;
+        return <FileText />;
       default:
         return null;
     }
   };
 
+  const patchSettings = (patch: Partial<NonNullable<GoogleCalendarConfig['settings']>>) =>
+    setConfig({
+      ...config,
+      settings: { ...config.settings, ...patch } as GoogleCalendarConfig['settings'],
+    });
+
+  const calendarItems = availableCalendars.map(calendar => ({
+    value: calendar.id,
+    label: `${calendar.name}${calendar.primary ? ' (Principal)' : ''}`,
+  }));
+
+  const bookingFieldHint: Record<string, string> = {
+    name: 'Solicitar nome do usuário',
+    company: 'Solicitar nome da empresa',
+    subject: 'Solicitar assunto',
+    duration: 'Quanto tempo vai durar',
+    email: 'Solicitar e-mail para enviar convite na agenda',
+    summary: 'Anexar um resumo da conversa no agendamento',
+  };
+
+  const distributionModes = [
+    {
+      value: 'sequential' as const,
+      title: 'Distribuir sequencial',
+      description:
+        'Os agendamentos são distribuídos entre as agendas alternando entre elas de maneira sequencial.',
+    },
+    {
+      value: 'intelligent' as const,
+      title: 'Distribuição Inteligente',
+      description:
+        'Seleciona automaticamente a agenda mais apropriada de acordo com a conversa com o cliente.',
+    },
+  ];
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BrandIcon id="google-calendar" size={20} className="h-5 w-5" />
-            {t('edit.integrations.googleCalendar.configTitle') || 'Configurar Google Calendar'}
-          </DialogTitle>
-        </DialogHeader>
-
+    <>
+      <AgentIntegrationDialog
+        open={open}
+        onOpenChange={onOpenChange}
+        className="sm:max-w-3xl"
+        icon={<BrandIcon id="google-calendar" size={20} />}
+        title={t('edit.integrations.googleCalendar.configTitle') || 'Configurar Google Calendar'}
+        description={
+          t('edit.integrations.googleCalendar.connectDescription') ||
+          'Permita que o agente acesse e gerencie agendamentos na sua agenda do Google'
+        }
+        footerStart={
+          onDisconnect && config.connected ? (
+            <Button variant="destructive-outline" onClick={() => setConfirmDisconnect(true)}>
+              {t('edit.integrations.googleCalendar.disconnect') || 'Desconectar'}
+            </Button>
+          ) : undefined
+        }
+        footer={
+          config.connected ? (
+            <Button onClick={handleSave}>
+              {t('edit.integrations.googleCalendar.saveConfig') || 'APLICAR CONFIGURAÇÕES'}
+            </Button>
+          ) : (
+            <Button
+              onClick={handleConnectGoogle}
+              loading={isConnecting}
+              className="w-full sm:w-auto"
+            >
+              {!isConnecting && <Calendar />}
+              {isConnecting
+                ? t('edit.integrations.googleCalendar.connecting') || 'Conectando...'
+                : t('edit.integrations.googleCalendar.connectButton') || 'Conectar com Google'}
+            </Button>
+          )
+        }
+      >
         {!config.connected ? (
-          /* Not connected - Show connect screen */
-          <div className="space-y-6 py-4">
-            <div className="text-center space-y-4">
-              <div className="flex justify-center">
-                <div className="p-4 bg-primary/10 rounded-full">
-                  <BrandIcon id="google-calendar" size={48} className="h-12 w-12" />
-                </div>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed bg-muted/40 px-6 py-6 text-center">
+              <div className="flex size-14 items-center justify-center rounded-full border bg-card shadow-xs/5">
+                <BrandIcon id="google-calendar" size={28} />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {t('edit.integrations.googleCalendar.connectTitle') || 'Conectar com Google Calendar'}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('edit.integrations.googleCalendar.connectDescription') ||
-                    'Permita que o agente acesse e gerencie agendamentos na sua agenda do Google'}
-                </p>
-              </div>
+              <h3 className="font-semibold text-base">
+                {t('edit.integrations.googleCalendar.connectTitle') ||
+                  'Conectar com Google Calendar'}
+              </h3>
             </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email">
-                  {t('edit.integrations.googleCalendar.email') || 'E-mail do Google'}
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seuemail@gmail.com"
-                  value={config.email}
-                  onChange={(e) => setConfig({ ...config, email: e.target.value })}
-                />
-              </div>
-
-              <Button onClick={handleConnectGoogle} disabled={isConnecting} className="w-full" size="lg">
-                {isConnecting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('edit.integrations.googleCalendar.connecting') || 'Conectando...'}
-                  </>
-                ) : (
-                  <>
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {t('edit.integrations.googleCalendar.connectButton') || 'Conectar com Google'}
-                  </>
-                )}
-              </Button>
-            </div>
+            <Field>
+              <FieldLabel>
+                {t('edit.integrations.googleCalendar.email') || 'E-mail do Google'}
+              </FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seuemail@gmail.com"
+                value={config.email}
+                onChange={e => setConfig({ ...config, email: e.target.value })}
+              />
+            </Field>
           </div>
         ) : (
-          /* Connected - Show configuration */
-          <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="general">
-                <Settings className="h-4 w-4 mr-2" />
+          <Tabs defaultValue="general" className="flex flex-col gap-5">
+            <TabsList className="w-full">
+              <TabsTab value="general" className="flex-1">
+                <Settings />
                 Geral
-              </TabsTrigger>
-              <TabsTrigger value="schedule">
-                <CalendarClock className="h-4 w-4 mr-2" />
+              </TabsTab>
+              <TabsTab value="schedule" className="flex-1">
+                <CalendarClock />
                 Horários
-              </TabsTrigger>
-              <TabsTrigger value="settings">
-                <Zap className="h-4 w-4 mr-2" />
+              </TabsTab>
+              <TabsTab value="settings" className="flex-1">
+                <Zap />
                 Configurações
-              </TabsTrigger>
+              </TabsTab>
             </TabsList>
 
-            {/* General Tab */}
-            <TabsContent value="general" className="space-y-6">
-              {/* Calendar Selection */}
-              <div className="space-y-3">
-                <Label>
+            <TabsPanel value="general" className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel>
                   {t('edit.integrations.googleCalendar.calendar.selectCalendar') || 'Agenda'}
-                </Label>
+                </FieldLabel>
                 <Select
-                  value={config.settings?.selectedCalendarId}
-                  onValueChange={(value) =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, selectedCalendarId: value },
-                    })
+                  items={calendarItems}
+                  value={config.settings?.selectedCalendarId || null}
+                  onValueChange={value =>
+                    patchSettings({ selectedCalendarId: (value as string) || '' })
                   }
                   disabled={isLoadingCalendars}
                 >
                   <SelectTrigger>
                     {isLoadingCalendars ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Spinner className="size-4" />
                         Carregando agendas...
                       </span>
                     ) : (
                       <SelectValue placeholder="Selecione uma agenda" />
                     )}
                   </SelectTrigger>
-                  <SelectContent>
-                    {availableCalendars.map((calendar) => (
-                      <SelectItem key={calendar.id} value={calendar.id}>
-                        {calendar.name} {calendar.primary && '(Principal)'}
+                  <SelectPopup>
+                    {calendarItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
-              </div>
+              </Field>
 
-              {/* Min Advance Time */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <Label>
-                      {t('edit.integrations.googleCalendar.minAdvanceTime.title') || 'Tempo mínimo de antecedência'}
-                    </Label>
-                  </div>
-                  <Switch
-                    checked={config.settings?.minAdvanceTime?.enabled}
-                    onCheckedChange={(checked) =>
-                      setConfig({
-                        ...config,
-                        settings: {
-                          ...config.settings,
-                          minAdvanceTime: { ...config.settings?.minAdvanceTime, enabled: checked },
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {config.settings?.minAdvanceTime?.enabled && (
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      min="1"
-                      value={config.settings?.minAdvanceTime?.value || 1}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          settings: {
-                            ...config.settings,
-                            minAdvanceTime: {
-                              enabled: config.settings?.minAdvanceTime?.enabled || false,
-                              value: parseInt(e.target.value) || 1,
-                              unit: config.settings?.minAdvanceTime?.unit || 'hours',
-                            },
-                          },
-                        })
-                      }
-                      className="w-24"
-                    />
-                    <Select
-                      value={config.settings?.minAdvanceTime?.unit || 'hours'}
-                      onValueChange={(value: 'hours' | 'days' | 'weeks') =>
-                        setConfig({
-                          ...config,
-                          settings: {
-                            ...config.settings,
-                            minAdvanceTime: {
-                              enabled: config.settings?.minAdvanceTime?.enabled || false,
-                              value: config.settings?.minAdvanceTime?.value || 1,
-                              unit: value,
-                            },
-                          },
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="hours">Horas</SelectItem>
-                        <SelectItem value="days">Dias</SelectItem>
-                        <SelectItem value="weeks">Semanas</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Não permita agendamentos em cima da hora
-                </p>
-              </div>
-
-              {/* Max Distance */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CalendarCheck className="h-4 w-4 text-muted-foreground" />
-                    <Label>
-                      {t('edit.integrations.googleCalendar.maxDistance.title') || 'Distância máxima permitida'}
-                    </Label>
-                  </div>
-                  <Switch
-                    checked={config.settings?.maxDistance?.enabled}
-                    onCheckedChange={(checked) =>
-                      setConfig({
-                        ...config,
-                        settings: {
-                          ...config.settings,
-                          maxDistance: { ...config.settings?.maxDistance, enabled: checked },
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {config.settings?.maxDistance?.enabled && (
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      min="1"
-                      value={config.settings?.maxDistance?.value || 1}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          settings: {
-                            ...config.settings,
-                            maxDistance: {
-                              enabled: config.settings?.maxDistance?.enabled || false,
-                              value: parseInt(e.target.value) || 1,
-                              unit: config.settings?.maxDistance?.unit || 'weeks',
-                            },
-                          },
-                        })
-                      }
-                      className="w-24"
-                    />
-                    <Select
-                      value={config.settings?.maxDistance?.unit || 'weeks'}
-                      onValueChange={(value: 'days' | 'weeks' | 'months') =>
-                        setConfig({
-                          ...config,
-                          settings: {
-                            ...config.settings,
-                            maxDistance: {
-                              enabled: config.settings?.maxDistance?.enabled || false,
-                              value: config.settings?.maxDistance?.value || 1,
-                              unit: value,
-                            },
-                          },
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="days">Dias</SelectItem>
-                        <SelectItem value="weeks">Semanas</SelectItem>
-                        <SelectItem value="months">Meses</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Limite máximo de dias permitido
-                </p>
-              </div>
-
-              {/* Max Duration */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <Label>
-                    {t('edit.integrations.googleCalendar.maxDuration.title') || 'Duração máxima da agenda'}
-                  </Label>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    min="1"
-                    value={config.settings?.maxDuration?.value || 1}
-                    onChange={(e) =>
-                      setConfig({
-                        ...config,
-                        settings: {
-                          ...config.settings,
-                          maxDuration: {
-                            value: parseInt(e.target.value) || 1,
-                            unit: config.settings?.maxDuration?.unit || 'hours',
-                          },
-                        },
-                      })
-                    }
-                    className="w-24"
-                  />
-                  <Select
-                    value={config.settings?.maxDuration?.unit || 'hours'}
-                    onValueChange={(value: 'minutes' | 'hours') =>
-                      setConfig({
-                        ...config,
-                        settings: {
-                          ...config.settings,
-                          maxDuration: {
-                            value: config.settings?.maxDuration?.value || 1,
-                            unit: value,
-                          },
-                        },
-                      })
-                    }
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="minutes">Minutos</SelectItem>
-                      <SelectItem value="hours">Horas</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Limite tempo para cada agendamento
-                </p>
-              </div>
-            </TabsContent>
-
-            {/* Schedule Tab */}
-            <TabsContent value="schedule" className="space-y-6">
-              {/* Simultaneous Bookings */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Repeat className="h-4 w-4 text-muted-foreground" />
-                    <Label>Agendamentos simultâneos</Label>
-                  </div>
-                  <Switch
-                    checked={config.settings?.simultaneousBookings?.enabled}
-                    onCheckedChange={(checked) =>
-                      setConfig({
-                        ...config,
-                        settings: {
-                          ...config.settings,
-                          simultaneousBookings: {
-                            ...config.settings?.simultaneousBookings,
-                            enabled: checked,
-                          },
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {config.settings?.simultaneousBookings?.enabled && (
-                  <div>
-                    <Label>Limite de agendamento no mesmo horário</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={config.settings?.simultaneousBookings?.limit || 1}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          settings: {
-                            ...config.settings,
-                            simultaneousBookings: {
-                              enabled: config.settings?.simultaneousBookings?.enabled || false,
-                              limit: parseInt(e.target.value) || 1,
-                            },
-                          },
-                        })
-                      }
-                      className="w-24"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Always Open */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Repeat className="h-4 w-4 text-muted-foreground" />
-                    <Label>Sempre aberto</Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Permite agendamento em qualquer horário
-                  </p>
-                </div>
-                <Switch
-                  checked={config.settings?.alwaysOpen}
-                  onCheckedChange={(checked) =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, alwaysOpen: checked },
+              <ToggleBlock
+                icon={<Clock />}
+                title={
+                  t('edit.integrations.googleCalendar.minAdvanceTime.title') ||
+                  'Tempo mínimo de antecedência'
+                }
+                description="Não permita agendamentos em cima da hora"
+                checked={Boolean(config.settings?.minAdvanceTime?.enabled)}
+                onCheckedChange={checked =>
+                  patchSettings({
+                    minAdvanceTime: { ...config.settings?.minAdvanceTime, enabled: checked },
+                  })
+                }
+              >
+                <AmountUnit
+                  value={config.settings?.minAdvanceTime?.value || 1}
+                  unit={config.settings?.minAdvanceTime?.unit || 'hours'}
+                  units={[
+                    { value: 'hours', label: 'Horas' },
+                    { value: 'days', label: 'Dias' },
+                    { value: 'weeks', label: 'Semanas' },
+                  ]}
+                  onValueChange={value =>
+                    patchSettings({
+                      minAdvanceTime: {
+                        enabled: config.settings?.minAdvanceTime?.enabled || false,
+                        value,
+                        unit: config.settings?.minAdvanceTime?.unit || 'hours',
+                      },
+                    })
+                  }
+                  onUnitChange={unit =>
+                    patchSettings({
+                      minAdvanceTime: {
+                        enabled: config.settings?.minAdvanceTime?.enabled || false,
+                        value: config.settings?.minAdvanceTime?.value || 1,
+                        unit: unit as 'hours' | 'days' | 'weeks',
+                      },
                     })
                   }
                 />
-              </div>
+              </ToggleBlock>
 
-              {/* Business Hours */}
+              <ToggleBlock
+                icon={<CalendarCheck />}
+                title={
+                  t('edit.integrations.googleCalendar.maxDistance.title') ||
+                  'Distância máxima permitida'
+                }
+                description="Limite máximo de dias permitido"
+                checked={Boolean(config.settings?.maxDistance?.enabled)}
+                onCheckedChange={checked =>
+                  patchSettings({
+                    maxDistance: { ...config.settings?.maxDistance, enabled: checked },
+                  })
+                }
+              >
+                <AmountUnit
+                  value={config.settings?.maxDistance?.value || 1}
+                  unit={config.settings?.maxDistance?.unit || 'weeks'}
+                  units={[
+                    { value: 'days', label: 'Dias' },
+                    { value: 'weeks', label: 'Semanas' },
+                    { value: 'months', label: 'Meses' },
+                  ]}
+                  onValueChange={value =>
+                    patchSettings({
+                      maxDistance: {
+                        enabled: config.settings?.maxDistance?.enabled || false,
+                        value,
+                        unit: config.settings?.maxDistance?.unit || 'weeks',
+                      },
+                    })
+                  }
+                  onUnitChange={unit =>
+                    patchSettings({
+                      maxDistance: {
+                        enabled: config.settings?.maxDistance?.enabled || false,
+                        value: config.settings?.maxDistance?.value || 1,
+                        unit: unit as 'days' | 'weeks' | 'months',
+                      },
+                    })
+                  }
+                />
+              </ToggleBlock>
+
+              <Field>
+                <FieldLabel>
+                  <Clock className="size-4 text-muted-foreground" />
+                  {t('edit.integrations.googleCalendar.maxDuration.title') ||
+                    'Duração máxima da agenda'}
+                </FieldLabel>
+                <AmountUnit
+                  value={config.settings?.maxDuration?.value || 1}
+                  unit={config.settings?.maxDuration?.unit || 'hours'}
+                  units={[
+                    { value: 'minutes', label: 'Minutos' },
+                    { value: 'hours', label: 'Horas' },
+                  ]}
+                  onValueChange={value =>
+                    patchSettings({
+                      maxDuration: { value, unit: config.settings?.maxDuration?.unit || 'hours' },
+                    })
+                  }
+                  onUnitChange={unit =>
+                    patchSettings({
+                      maxDuration: {
+                        value: config.settings?.maxDuration?.value || 1,
+                        unit: unit as 'minutes' | 'hours',
+                      },
+                    })
+                  }
+                />
+                <FieldDescription>Limite tempo para cada agendamento</FieldDescription>
+              </Field>
+            </TabsPanel>
+
+            <TabsPanel value="schedule" className="flex flex-col gap-5">
+              <ToggleBlock
+                icon={<Repeat />}
+                title="Agendamentos simultâneos"
+                checked={Boolean(config.settings?.simultaneousBookings?.enabled)}
+                onCheckedChange={checked =>
+                  patchSettings({
+                    simultaneousBookings: {
+                      ...config.settings?.simultaneousBookings,
+                      enabled: checked,
+                    },
+                  })
+                }
+              >
+                <Field>
+                  <FieldLabel>Limite de agendamento no mesmo horário</FieldLabel>
+                  <Input
+                    type="number"
+                    min="1"
+                    className="w-24"
+                    value={config.settings?.simultaneousBookings?.limit || 1}
+                    onChange={e =>
+                      patchSettings({
+                        simultaneousBookings: {
+                          enabled: config.settings?.simultaneousBookings?.enabled || false,
+                          limit: parseInt(e.target.value) || 1,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              </ToggleBlock>
+
+              <SettingRow
+                icon={<Repeat />}
+                title="Sempre aberto"
+                description="Permite agendamento em qualquer horário"
+                control={
+                  <Switch
+                    checked={Boolean(config.settings?.alwaysOpen)}
+                    onCheckedChange={checked => patchSettings({ alwaysOpen: checked })}
+                  />
+                }
+              />
+
               {!config.settings?.alwaysOpen && (
-                <div className="space-y-4">
-                  <Label>Horários de atendimento</Label>
-                  <div className="space-y-3">
-                    {DAYS_OF_WEEK.map((day) => {
+                <section className="flex flex-col gap-2">
+                  <h4 className="font-medium text-sm">Horários de atendimento</h4>
+                  <div className="flex flex-col divide-y rounded-lg border">
+                    {DAYS_OF_WEEK.map(day => {
                       const dayData = config.settings?.businessHours?.[day];
                       return (
-                        <div key={day} className="flex items-center gap-3">
-                          <div className="flex items-center gap-2 w-32">
-                            <input
-                              type="checkbox"
-                              checked={dayData?.enabled}
-                              onChange={(e) => updateBusinessHours(day, 'enabled', e.target.checked)}
-                              className="rounded"
+                        <div
+                          key={day}
+                          className="flex min-h-12 flex-wrap items-center gap-3 px-3.5 py-2"
+                        >
+                          <Label className="w-36 cursor-pointer capitalize">
+                            <Checkbox
+                              checked={Boolean(dayData?.enabled)}
+                              onCheckedChange={checked =>
+                                updateBusinessHours(day, 'enabled', Boolean(checked))
+                              }
                             />
-                            <Label className="text-sm capitalize">{t(`edit.integrations.googleCalendar.businessHours.days.${day}`) || day}</Label>
-                          </div>
+                            {t(`edit.integrations.googleCalendar.businessHours.days.${day}`) || day}
+                          </Label>
                           {dayData?.enabled && (
-                            <>
+                            <div className="flex items-center gap-2">
                               <Input
                                 type="time"
+                                className="w-32"
                                 value={dayData.start}
-                                onChange={(e) => updateBusinessHours(day, 'start', e.target.value)}
-                                className="w-32"
+                                onChange={e => updateBusinessHours(day, 'start', e.target.value)}
                               />
-                              <span>-</span>
+                              <span className="text-muted-foreground">–</span>
                               <Input
                                 type="time"
-                                value={dayData.end}
-                                onChange={(e) => updateBusinessHours(day, 'end', e.target.value)}
                                 className="w-32"
+                                value={dayData.end}
+                                onChange={e => updateBusinessHours(day, 'end', e.target.value)}
                               />
-                            </>
+                            </div>
                           )}
                         </div>
                       );
                     })}
                   </div>
-                </div>
+                </section>
               )}
-            </TabsContent>
+            </TabsPanel>
 
-            {/* Settings Tab */}
-            <TabsContent value="settings" className="space-y-6">
-              {/* Google Meet Integration */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Video className="h-4 w-4 text-muted-foreground" />
-                    <Label>Integração com Google Meet</Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Gerar link do meet ao fazer o agendamento
-                  </p>
-                </div>
-                <Switch
-                  checked={config.settings?.meetIntegration}
-                  onCheckedChange={(checked) =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, meetIntegration: checked },
-                    })
+            <TabsPanel value="settings" className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <SettingRow
+                  icon={<Video />}
+                  title="Integração com Google Meet"
+                  description="Gerar link do meet ao fazer o agendamento"
+                  control={
+                    <Switch
+                      checked={Boolean(config.settings?.meetIntegration)}
+                      onCheckedChange={checked => patchSettings({ meetIntegration: checked })}
+                    />
+                  }
+                />
+                <SettingRow
+                  icon={<CalendarCheck />}
+                  title="Consulta de horários"
+                  description="Agente pode consultar horários disponíveis"
+                  control={
+                    <Switch
+                      checked={Boolean(config.settings?.allowAvailabilityCheck)}
+                      onCheckedChange={checked =>
+                        patchSettings({ allowAvailabilityCheck: checked })
+                      }
+                    />
                   }
                 />
               </div>
 
-              {/* Allow Availability Check */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <CalendarCheck className="h-4 w-4 text-muted-foreground" />
-                    <Label>Consulta de horários</Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Agente pode consultar horários disponíveis
+              <section className="flex flex-col gap-2">
+                <div className="flex flex-col gap-0.5">
+                  <h4 className="font-medium text-sm">Modo de distribuição</h4>
+                  <p className="text-muted-foreground text-xs">
+                    Como os agendamentos serão divididos
                   </p>
                 </div>
-                <Switch
-                  checked={config.settings?.allowAvailabilityCheck}
-                  onCheckedChange={(checked) =>
-                    setConfig({
-                      ...config,
-                      settings: { ...config.settings, allowAvailabilityCheck: checked },
-                    })
-                  }
-                />
-              </div>
-
-              {/* Distribution Mode */}
-              <div className="space-y-3">
-                <Label>Modo de distribuição</Label>
-                <p className="text-xs text-muted-foreground">
-                  Como os agendamentos serão divididos
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      config.settings?.distributionMode === 'sequential'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    onClick={() =>
-                      setConfig({
-                        ...config,
-                        settings: { ...config.settings, distributionMode: 'sequential' },
-                      })
-                    }
-                  >
-                    <h4 className="font-semibold mb-1">Distribuir sequencial</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Os agendamentos são distribuídos entre as agendas alternando entre elas de maneira sequencial.
-                    </p>
-                  </div>
-                  <div
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      config.settings?.distributionMode === 'intelligent'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    onClick={() =>
-                      setConfig({
-                        ...config,
-                        settings: { ...config.settings, distributionMode: 'intelligent' },
-                      })
-                    }
-                  >
-                    <h4 className="font-semibold mb-1">Distribuição Inteligente</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Seleciona automaticamente a agenda mais apropriada de acordo com a conversa com o cliente.
-                    </p>
-                  </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {distributionModes.map(mode => {
+                    const active = config.settings?.distributionMode === mode.value;
+                    return (
+                      <button
+                        key={mode.value}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => patchSettings({ distributionMode: mode.value })}
+                        className={cn(
+                          'flex flex-col gap-1 rounded-lg border p-3.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                          active
+                            ? 'border-primary bg-primary/8'
+                            : 'hover:border-primary/40 hover:bg-accent/50',
+                        )}
+                      >
+                        <span className="font-medium text-sm">{mode.title}</span>
+                        <span className="text-muted-foreground text-xs">{mode.description}</span>
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
+              </section>
 
-              {/* Booking Fields */}
-              <div className="space-y-3">
-                <Label>Campos para agendamento</Label>
-                <div className="space-y-2">
-                  {config.settings?.bookingFields?.map((field) => (
-                    <div key={field.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        {getFieldIcon(field.name)}
-                        <div>
-                          <p className="text-sm font-medium">{field.label}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {field.name === 'name' && 'Solicitar nome do usuário'}
-                            {field.name === 'company' && 'Solicitar nome da empresa'}
-                            {field.name === 'subject' && 'Solicitar assunto'}
-                            {field.name === 'duration' && 'Quanto tempo vai durar'}
-                            {field.name === 'email' && 'Solicitar e-mail para enviar convite na agenda'}
-                            {field.name === 'summary' && 'Anexar um resumo da conversa no agendamento'}
-                          </p>
-                        </div>
-                      </div>
+              <section className="flex flex-col gap-2">
+                <h4 className="font-medium text-sm">Campos para agendamento</h4>
+                {config.settings?.bookingFields?.map(field => (
+                  <SettingRow
+                    key={field.id}
+                    icon={getFieldIcon(field.name)}
+                    title={field.label}
+                    description={bookingFieldHint[field.name]}
+                    control={
                       <Switch
                         checked={field.enabled}
-                        onCheckedChange={(checked) => updateBookingField(field.id, checked)}
+                        onCheckedChange={checked => updateBookingField(field.id, checked)}
                       />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
+                    }
+                  />
+                ))}
+              </section>
+            </TabsPanel>
           </Tabs>
         )}
+      </AgentIntegrationDialog>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-3 pt-4 border-t">
-          {config.connected && (
-            <Button onClick={handleSave} className="w-full">
-              {t('edit.integrations.googleCalendar.saveConfig') || 'APLICAR CONFIGURAÇÕES'}
-            </Button>
-          )}
-
-          {onDisconnect && config.connected && (
-            <Button
-              variant="ghost"
-              onClick={handleDisconnect}
-              className="w-full text-destructive hover:text-destructive/80"
-            >
-              {t('edit.integrations.googleCalendar.disconnect') || 'Desconectar'}
-            </Button>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+      <ConfirmDialog
+        open={confirmDisconnect}
+        onOpenChange={setConfirmDisconnect}
+        title={t('edit.integrations.disconnectConfirm.title', { name: 'Google Calendar' })}
+        description={t('edit.integrations.disconnectConfirm.description', {
+          name: 'Google Calendar',
+        })}
+        cancelLabel={t('edit.integrations.disconnectConfirm.cancel')}
+        confirmLabel={t('edit.integrations.googleCalendar.disconnect') || 'Desconectar'}
+        onConfirm={async () => {
+          await handleDisconnect();
+          setConfirmDisconnect(false);
+        }}
+      />
+    </>
   );
 };
+
+/** Switch-gated block: header row with switch, extra controls revealed when on. */
+function ToggleBlock({
+  icon,
+  title,
+  description,
+  checked,
+  onCheckedChange,
+  children,
+}: {
+  icon: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border bg-card px-3.5 py-3">
+      <label className="flex cursor-pointer items-center justify-between gap-4">
+        <span className="flex min-w-0 items-start gap-3">
+          <span className="mt-0.5 text-muted-foreground [&_svg]:size-4">{icon}</span>
+          <span className="flex flex-col gap-0.5">
+            <span className="font-medium text-sm">{title}</span>
+            {description && <span className="text-muted-foreground text-xs">{description}</span>}
+          </span>
+        </span>
+        <Switch checked={checked} onCheckedChange={onCheckedChange} />
+      </label>
+      {checked && children && <div className="ps-7">{children}</div>}
+    </div>
+  );
+}
+
+function AmountUnit({
+  value,
+  unit,
+  units,
+  onValueChange,
+  onUnitChange,
+}: {
+  value: number;
+  unit: string;
+  units: { value: string; label: string }[];
+  onValueChange: (value: number) => void;
+  onUnitChange: (unit: string) => void;
+}) {
+  return (
+    <div className="flex gap-2">
+      <Input
+        type="number"
+        min="1"
+        className="w-24"
+        value={value}
+        onChange={e => onValueChange(parseInt(e.target.value) || 1)}
+      />
+      <Select
+        items={units}
+        value={unit}
+        onValueChange={next => next && onUnitChange(next as string)}
+      >
+        <SelectTrigger className="w-32 min-w-32">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectPopup>
+          {units.map(item => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectPopup>
+      </Select>
+    </div>
+  );
+}
 
 export default GoogleCalendarConfigDialog;

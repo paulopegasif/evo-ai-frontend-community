@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import { CampaignType } from '@/types/campaigns';
 import { Layers, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -39,7 +39,7 @@ export default function CampaignTypeBadge({ type, className }: CampaignTypeBadge
 
   return (
     <Badge variant={config.variant} className={className}>
-      <Icon className="h-3 w-3 mr-1" />
+      <Icon />
       {config.label}
     </Badge>
   );

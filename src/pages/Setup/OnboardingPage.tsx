@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { ChevronDown, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { type Locale } from '@/i18n/config';
@@ -6,6 +7,13 @@ import { setupService } from '@/services/setup/setupService';
 import { surveyService } from '@/services/survey/surveyService';
 import { useAuth } from '@/contexts/AuthContext';
 import { AppLogo } from '@/components/AppLogo';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/utils/cn';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -31,82 +39,36 @@ interface SelectFieldProps {
   placeholder?: string;
 }
 
+// Native <select> styled like a coss input: best on mobile for a short survey.
+const NATIVE_SELECT =
+  'h-10 w-full appearance-none rounded-lg border border-input bg-background ps-3 pe-9 text-sm shadow-xs/5 outline-none transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/24 sm:h-9 dark:bg-input/32';
+
+function NativeSelect({ id, value, options, onChange, placeholder }: Omit<SelectFieldProps, 'label'>) {
+  return (
+    <div className="relative">
+      <select
+        id={id}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className={cn(NATIVE_SELECT, !value && 'text-muted-foreground')}
+      >
+        <option value="">{placeholder}</option>
+        {options.map(opt => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    </div>
+  );
+}
+
 function SelectField({ label, id, value, options, onChange, placeholder = 'Select...' }: SelectFieldProps) {
   return (
-    <div style={{ marginBottom: '1.1rem' }}>
-      <label
-        htmlFor={id}
-        style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: 500,
-          color: '#fafafa',
-          marginBottom: '6px',
-          fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        }}
-      >
-        {label}
-      </label>
-      <div style={{ position: 'relative' }}>
-        <select
-          id={id}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{
-            width: '100%',
-            height: '40px',
-            background: '#09090b',
-            border: value ? '0.5px solid #3f3f46' : '0.5px solid #27272a',
-            borderRadius: '8px',
-            color: value ? '#fafafa' : '#a1a1aa',
-            fontSize: '14px',
-            fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-            padding: '0 36px 0 12px',
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            cursor: 'pointer',
-            outline: 'none',
-            transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = 'var(--primary)';
-            e.target.style.boxShadow = '0 0 0 2px rgba(0, 255, 167, 0.35)';
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = value ? '#3f3f46' : '#27272a';
-            e.target.style.boxShadow = 'none';
-          }}
-        >
-          <option value="" style={{ background: '#18181b', color: '#52525b' }}>
-            {placeholder}
-          </option>
-          {options.map((opt) => (
-            <option key={opt} value={opt} style={{ background: '#18181b', color: '#fafafa' }}>
-              {opt}
-            </option>
-          ))}
-        </select>
-        <span
-          style={{
-            position: 'absolute',
-            right: '11px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            pointerEvents: 'none',
-            color: '#52525b',
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path
-              d="M3 5l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </div>
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={id}>{label}</Label>
+      <NativeSelect id={id} value={value} options={options} onChange={onChange} placeholder={placeholder} />
     </div>
   );
 }
@@ -125,19 +87,6 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
   const { t, currentLanguage, changeLanguage } = useLanguage('onboarding');
   const { isAuthenticated, refreshUser } = useAuth();
-
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setLangOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const [form, setForm] = useState<OnboardingFormData>({
     teamSize: '',
@@ -223,418 +172,98 @@ export default function OnboardingPage() {
   const crmOptions        = t('survey.crm.options', { returnObjects: true }) as unknown as string[];
   const goalOptions       = t('survey.goal.options', { returnObjects: true }) as unknown as string[];
 
+  const languageItems = LANGUAGES.map(lang => ({ value: lang.value, label: t(lang.labelKey) }));
+  const placeholder = t('survey.placeholder');
+  const opts = (list: unknown) => (Array.isArray(list) ? (list as string[]) : []);
+
   return (
-    <>
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes expandIn {
-          from { opacity: 0; transform: translateY(-4px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .evo-other-input {
-          margin-top: 8px;
-          animation: expandIn 0.2s ease-out;
-        }
-        .evo-other-input input {
-          width: 100%;
-          height: 40px;
-          background: #09090b;
-          border: 0.5px solid var(--primary);
-          box-shadow: 0 0 0 2px rgba(0, 255, 167, 0.35);
-          border-radius: 8px;
-          color: #fafafa;
-          font-size: 14px;
-          font-family: ui-sans-serif, system-ui, sans-serif;
-          padding: 0 12px;
-          outline: none;
-          transition: border-color 0.15s ease;
-          box-sizing: border-box;
-        }
-        .evo-other-input input::placeholder { color: #52525b; }
-        .evo-submit-btn {
-          width: 100%;
-          height: 40px;
-          background: var(--primary);
-          color: #000;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 600;
-          font-family: ui-sans-serif, system-ui, sans-serif;
-          cursor: pointer;
-          transition: opacity 0.2s ease, transform 0.1s ease;
-        }
-        .evo-submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .evo-submit-btn:not(:disabled):hover { opacity: 0.88; }
-        .evo-submit-btn:not(:disabled):active { transform: scale(0.98); }
-        .evo-fields-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0 1.5rem;
-        }
-        @media (max-width: 600px) {
-          .evo-fields-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
+    <div className="relative flex min-h-screen flex-col bg-muted/40">
       <div
-        style={{
-          position: 'relative',
-          minHeight: '100vh',
-          background: '#09090b',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2rem 1rem',
-          fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        }}
-      >
-        {/* Language selector */}
-        <div ref={langRef} style={{ position: 'absolute', top: '16px', right: '16px' }}>
-          <button
-            onClick={() => setLangOpen((o) => !o)}
-            aria-haspopup="listbox"
-            aria-expanded={langOpen}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 10px',
-              background: langOpen ? '#1c1c1f' : 'transparent',
-              border: '0.5px solid',
-              borderColor: langOpen ? '#3f3f46' : '#27272a',
-              borderRadius: '6px',
-              color: '#a1a1aa',
-              fontSize: '13px',
-              fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-              cursor: 'pointer',
-              outline: 'none',
-              transition: 'background 0.15s, border-color 0.15s',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = '#3f3f46';
-              (e.currentTarget as HTMLButtonElement).style.background = '#1c1c1f';
-            }}
-            onMouseLeave={(e) => {
-              if (!langOpen) {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#27272a';
-                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              }
-            }}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="2" y1="12" x2="22" y2="12" />
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            <span>{LANGUAGES.find((l) => l.value === currentLanguage)?.labelKey ? t(LANGUAGES.find((l) => l.value === currentLanguage)!.labelKey) : currentLanguage}</span>
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              aria-hidden="true"
-              style={{ transition: 'transform 0.15s', transform: langOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            >
-              <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-primary)_16%,transparent),transparent_70%)]"
+      />
+      <header className="relative flex justify-end p-4">
+        <Select items={languageItems} value={currentLanguage} onValueChange={value => value && changeLanguage(value as Locale)}>
+          <SelectTrigger size="sm" className="w-auto min-w-36 bg-background" aria-label="Language">
+            <Globe className="text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectPopup>
+            {languageItems.map(lang => (
+              <SelectItem key={lang.value} value={lang.value}>
+                {lang.label}
+              </SelectItem>
+            ))}
+          </SelectPopup>
+        </Select>
+      </header>
 
-          {langOpen && (
-            <div
-              role="listbox"
-              aria-label="Select language"
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 6px)',
-                right: 0,
-                background: '#18181b',
-                border: '0.5px solid #27272a',
-                borderRadius: '8px',
-                padding: '4px',
-                minWidth: '150px',
-                zIndex: 50,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-              }}
-            >
-              {LANGUAGES.map((lang) => {
-                const isSelected = lang.value === currentLanguage;
-                return (
-                  <button
-                    key={lang.value}
-                    role="option"
-                    aria-selected={isSelected}
-                    onClick={() => { changeLanguage(lang.value); setLangOpen(false); }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      padding: '8px 10px',
-                      borderRadius: '5px',
-                      border: 'none',
-                      background: isSelected ? 'rgba(0,255,167,0.08)' : 'transparent',
-                      color: isSelected ? 'var(--primary)' : '#a1a1aa',
-                      fontSize: '13px',
-                      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background 0.1s, color 0.1s',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)';
-                        (e.currentTarget as HTMLButtonElement).style.color = '#fafafa';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                        (e.currentTarget as HTMLButtonElement).style.color = '#a1a1aa';
-                      }
-                    }}
-                  >
-                    <span>{t(lang.labelKey)}</span>
-                    {isSelected && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M2 6l3 3 5-5" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </button>
-                );
-              })}
+      <main className="relative flex flex-1 items-start justify-center px-4 pb-12 sm:items-center">
+        <Card className="w-full max-w-2xl">
+          <CardPanel className="space-y-6 p-6 sm:p-8">
+            <div className="space-y-4">
+              <AppLogo className="h-8" />
+              <div className="space-y-1.5">
+                <h1 className="font-semibold text-xl">{t('survey.title')}</h1>
+                <p className="text-muted-foreground text-sm">{t('survey.subtitle')}</p>
+              </div>
             </div>
-          )}
-        </div>
 
-        <div
-          style={{
-            background: '#111113',
-            border: '0.5px solid #27272a',
-            borderRadius: '16px',
-            padding: '2rem',
-            width: '100%',
-            maxWidth: '820px',
-            animation: 'fadeIn 0.3s ease-out',
-          }}
-        >
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.75rem' }}>
-            <AppLogo style={{ height: '30px' }} forceTheme="dark" />
-          </div>
-
-          {/* Title */}
-          <div style={{ fontSize: '20px', fontWeight: 600, color: '#fafafa', marginBottom: '6px' }}>
-            {t('survey.title')}
-          </div>
-          <div style={{ fontSize: '13px', color: '#a1a1aa', lineHeight: '1.55', marginBottom: '1.75rem' }}>
-            {t('survey.subtitle')}
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
-            <div
-              style={{
-                flex: 1,
-                height: '3px',
-                background: '#27272a',
-                borderRadius: '99px',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                role="progressbar"
+            <div className="flex items-center gap-3">
+              <Progress
+                value={progressPct}
+                className="flex-1"
                 aria-valuenow={filledCount}
                 aria-valuemin={0}
                 aria-valuemax={totalSteps}
                 data-testid="progress-bar-fill"
-                style={{
-                  height: '3px',
-                  background: 'var(--primary)',
-                  borderRadius: '99px',
-                  width: `${progressPct}%`,
-                  transition: 'width 0.3s ease',
-                }}
               />
+              <span
+                className="whitespace-nowrap text-muted-foreground text-xs tabular-nums"
+                data-testid="progress-text"
+                data-filled={filledCount}
+                data-total={totalSteps}
+              >
+                {filledCount} {t('survey.progress.of')} {totalSteps}
+              </span>
             </div>
-            <span
-              style={{ fontSize: '11px', color: '#52525b', whiteSpace: 'nowrap' }}
-              data-testid="progress-text"
-              data-filled={filledCount}
-              data-total={totalSteps}
-            >
-              {filledCount} {t('survey.progress.of')} {totalSteps}
-            </span>
-          </div>
 
-          {/* Fields — 2 columns */}
-          <div className="evo-fields-grid">
-            {/* Left column */}
-            <div>
-              <SelectField
-                label={t('survey.teamSize.label')}
-                id="teamSize"
-                value={form.teamSize}
-                options={Array.isArray(teamSizeOptions) ? teamSizeOptions : []}
-                onChange={set('teamSize')}
-                placeholder={t('survey.placeholder')}
-              />
-
-              <SelectField
-                label={t('survey.dailyVolume.label')}
-                id="dailyVolume"
-                value={form.dailyVolume}
-                options={Array.isArray(dailyVolumeOptions) ? dailyVolumeOptions : []}
-                onChange={set('dailyVolume')}
-                placeholder={t('survey.placeholder')}
-              />
-
-              {/* Channel — with "Other" free text */}
-              <div style={{ marginBottom: '1.1rem' }}>
-                <label
-                  htmlFor="mainChannel"
-                  style={{
-                    display: 'block',
-                    fontSize: '13px',
-                    fontWeight: 500,
-                    color: '#fafafa',
-                    marginBottom: '6px',
-                  }}
-                >
-                  {t('survey.channel.label')}
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <select
-                    id="mainChannel"
-                    value={form.mainChannel}
-                    onChange={(e) => set('mainChannel')(e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      background: '#09090b',
-                      border: form.mainChannel ? '0.5px solid #3f3f46' : '0.5px solid #27272a',
-                      borderRadius: '8px',
-                      color: form.mainChannel ? '#fafafa' : '#a1a1aa',
-                      fontSize: '14px',
-                      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-                      padding: '0 36px 0 12px',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = 'var(--primary)';
-                      e.target.style.boxShadow = '0 0 0 2px rgba(0, 255, 167, 0.35)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = form.mainChannel ? '#3f3f46' : '#27272a';
-                      e.target.style.boxShadow = 'none';
-                    }}
-                  >
-                    <option value="" style={{ background: '#18181b', color: '#52525b' }}>
-                      {t('survey.placeholder')}
-                    </option>
-                    {Array.isArray(channelOptions) && channelOptions.map((opt) => (
-                      <option key={opt} value={opt} style={{ background: '#18181b', color: '#fafafa' }}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                  <span
-                    style={{
-                      position: 'absolute',
-                      right: '11px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      pointerEvents: 'none',
-                      color: '#52525b',
-                    }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </div>
-
-                {form.mainChannel === t('survey.channel.other') && (
-                  <div className="evo-other-input">
-                    <input
+            <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-4">
+                <SelectField label={t('survey.teamSize.label')} id="teamSize" value={form.teamSize} options={opts(teamSizeOptions)} onChange={set('teamSize')} placeholder={placeholder} />
+                <SelectField label={t('survey.dailyVolume.label')} id="dailyVolume" value={form.dailyVolume} options={opts(dailyVolumeOptions)} onChange={set('dailyVolume')} placeholder={placeholder} />
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="mainChannel">{t('survey.channel.label')}</Label>
+                  <NativeSelect id="mainChannel" value={form.mainChannel} options={opts(channelOptions)} onChange={set('mainChannel')} placeholder={placeholder} />
+                  {form.mainChannel === t('survey.channel.other') && (
+                    <Input
                       type="text"
                       placeholder={t('survey.channel.otherPlaceholder')}
                       value={form.mainChannelOther}
-                      onChange={(e) => set('mainChannelOther')(e.target.value)}
+                      onChange={e => set('mainChannelOther')(e.target.value)}
+                      aria-label={t('survey.channel.otherPlaceholder')}
                       autoFocus
                     />
-                  </div>
-                )}
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <SelectField label={t('survey.ai.label')} id="usesAI" value={form.usesAI} options={opts(aiOptions)} onChange={set('usesAI')} placeholder={placeholder} />
+                <SelectField label={t('survey.pain.label')} id="biggestPain" value={form.biggestPain} options={opts(painOptions)} onChange={set('biggestPain')} placeholder={placeholder} />
+                <SelectField label={t('survey.crm.label')} id="crmExperience" value={form.crmExperience} options={opts(crmOptions)} onChange={set('crmExperience')} placeholder={placeholder} />
+                <SelectField label={t('survey.goal.label')} id="mainGoal" value={form.mainGoal} options={opts(goalOptions)} onChange={set('mainGoal')} placeholder={placeholder} />
               </div>
             </div>
 
-            {/* Right column */}
-            <div>
-              <SelectField
-                label={t('survey.ai.label')}
-                id="usesAI"
-                value={form.usesAI}
-                options={Array.isArray(aiOptions) ? aiOptions : []}
-                onChange={set('usesAI')}
-                placeholder={t('survey.placeholder')}
-              />
-
-              <SelectField
-                label={t('survey.pain.label')}
-                id="biggestPain"
-                value={form.biggestPain}
-                options={Array.isArray(painOptions) ? painOptions : []}
-                onChange={set('biggestPain')}
-                placeholder={t('survey.placeholder')}
-              />
-
-              <SelectField
-                label={t('survey.crm.label')}
-                id="crmExperience"
-                value={form.crmExperience}
-                options={Array.isArray(crmOptions) ? crmOptions : []}
-                onChange={set('crmExperience')}
-                placeholder={t('survey.placeholder')}
-              />
-
-              <SelectField
-                label={t('survey.goal.label')}
-                id="mainGoal"
-                value={form.mainGoal}
-                options={Array.isArray(goalOptions) ? goalOptions : []}
-                onChange={set('mainGoal')}
-                placeholder={t('survey.placeholder')}
-              />
+            <div className="space-y-3 border-t pt-5">
+              <Button size="lg" className="w-full" loading={loading} onClick={handleSubmit}>
+                {loading ? t('survey.submit.loading') : t('survey.submit.idle')}
+              </Button>
+              <p className="text-center text-muted-foreground text-xs">{t('survey.footer')}</p>
             </div>
-          </div>
-
-          {/* Divider */}
-          <div style={{ borderTop: '0.5px solid #27272a', margin: '1.5rem 0 1.25rem' }} />
-
-          {/* Submit */}
-          <button
-            className="evo-submit-btn"
-            disabled={loading}
-            onClick={handleSubmit}
-          >
-            {loading ? t('survey.submit.loading') : t('survey.submit.idle')}
-          </button>
-
-          <div style={{ textAlign: 'center', fontSize: '11px', color: '#52525b', marginTop: '1rem' }}>
-            {t('survey.footer')}
-          </div>
-        </div>
-      </div>
-    </>
+          </CardPanel>
+        </Card>
+      </main>
+    </div>
   );
 }

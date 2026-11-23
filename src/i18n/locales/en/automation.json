@@ -193,6 +193,22 @@
       "update": "Save",
       "saving": "Saving...",
       "cancel": "Cancel"
+    },
+    "sections": {
+      "details": {
+        "title": "Details",
+        "description": "Rule name and context for your team."
+      },
+      "trigger": {
+        "title": "Trigger",
+        "description": "The event that starts this automation."
+      },
+      "conditions": {
+        "description": "The rule only runs when the conditions match."
+      },
+      "actions": {
+        "description": "What happens when the rule fires, in the listed order."
+      }
     }
   },
   "dialog": {
@@ -232,7 +248,8 @@
     "detail": {
       "timeline": "Timeline",
       "payload": "Payload"
-    }
+    },
+    "statusFilter": "Filter by status"
   },
   "messages": {
     "loadError": "Failed to load automations",

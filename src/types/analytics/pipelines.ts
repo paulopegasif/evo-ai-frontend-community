@@ -104,6 +104,8 @@ export interface PipelineStage {
   position: number;
   pipeline_id?: string;
   stage_type?: string;
+  /** Lead tracking: cards that reach this stage count as qualified leads. */
+  counts_as_qualified?: boolean;
   automation_rules?: {
     description?: string;
     rules?: StageAutomationRule[];

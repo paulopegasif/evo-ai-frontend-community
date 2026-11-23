@@ -95,8 +95,8 @@ export const SmsForm = ({ selectedProvider, form, onFormChange }: SmsFormProps) 
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-                    {t('fields.phoneNumber.label')} <span className="text-destructive">*</span>
+                  <label className="mb-2 block font-medium text-sm">
+                    {t('fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
                   </label>
                   <PhoneInput
                     value={getStr('phone_number')}
@@ -119,8 +119,8 @@ export const SmsForm = ({ selectedProvider, form, onFormChange }: SmsFormProps) 
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-tour="sms-credentials">
           <div>
-            <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-              {t('fields.bandwidth.phoneNumber.label')} <span className="text-destructive">*</span>
+            <label className="mb-2 block font-medium text-sm">
+              {t('fields.bandwidth.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
             </label>
             <PhoneInput
               value={getStr('phone_number')}
@@ -166,7 +166,7 @@ export const SmsForm = ({ selectedProvider, form, onFormChange }: SmsFormProps) 
           className="bg-orange-50/10 border-orange-200/20"
           data-tour="sms-phone-config"
         >
-          <div className="text-sm text-sidebar-foreground/70 space-y-2">
+          <div className="text-sm text-muted-foreground space-y-2">
             <p><strong>API Key & Secret:</strong> {t('fields.bandwidth.info.apiKeyInfo')}</p>
             <p><strong>Application ID:</strong> {t('fields.bandwidth.info.applicationIdInfo')}</p>
             <p><strong>Account ID:</strong> {t('fields.bandwidth.info.accountIdInfo')}</p>
@@ -178,7 +178,7 @@ export const SmsForm = ({ selectedProvider, form, onFormChange }: SmsFormProps) 
 
   return (
     <div className="text-center py-8">
-      <p className="text-sidebar-foreground/70">
+      <p className="text-muted-foreground">
         {t('errors.providerNotImplemented', { provider: selectedProvider.name })}
       </p>
     </div>

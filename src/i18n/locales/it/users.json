@@ -235,5 +235,9 @@
       "deleting": "Eliminazione...",
       "confirm": "Elimina Tutti"
     }
+  },
+  "viewMode": {
+    "cards": "Vista a schede",
+    "table": "Vista tabella"
   }
 }

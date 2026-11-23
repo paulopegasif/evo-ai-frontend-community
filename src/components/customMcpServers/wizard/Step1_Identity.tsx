@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Input, Label, Button, Textarea } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TagInput } from '@/components/ai_agents/shared';
@@ -35,19 +38,20 @@ export default function Step1_Identity({ data, onChange, onNext }: Step1Props) {
         <div className="w-full max-w-2xl mx-auto space-y-4">
           <div>
             <Label className="text-sm mb-1.5 block font-semibold">
-              {t('form.labels.name')} <span className="text-red-500">*</span>
+              {t('form.labels.name')} <span className="text-destructive">*</span>
             </Label>
             <Input
+              size="lg"
               placeholder={t('form.placeholders.name')}
               value={data.name}
               onChange={e => onChange({ ...data, name: e.target.value })}
-              className={`h-10 text-sm ${error ? 'border-red-500' : ''}`}
+              aria-invalid={!!error || undefined}
               autoFocus
               onKeyDown={e => {
                 if (e.key === 'Enter' && data.name) handleNext();
               }}
             />
-            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+            {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
           </div>
 
           <div>
@@ -58,7 +62,7 @@ export default function Step1_Identity({ data, onChange, onNext }: Step1Props) {
               placeholder={t('form.placeholders.description')}
               value={data.description}
               onChange={e => onChange({ ...data, description: e.target.value })}
-              className="min-h-[80px] text-sm resize-none"
+              className="min-h-[80px] resize-none"
               maxLength={500}
             />
           </div>

@@ -2,28 +2,14 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
-import {
-  ArrowLeft,
-  X,
-  Plus,
-  Trash2,
-  GripVertical,
-  Loader2,
-  Users,
-  Lock,
-  Globe,
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, Globe, GripVertical, Lock, Plus, Trash2, Users, X } from 'lucide-react';
+import PipelineTeamPicker from '@/components/pipelines/PipelineTeamPicker';
+import { cn } from '@/lib/utils';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { pipelinesService } from '@/services/pipelines';
 import { CreatePipelineData, PipelineStage } from '@/types/analytics';
@@ -228,30 +214,30 @@ export default function PipelineFormPage() {
   };
 
   const visIcon = (v: string) =>
-    v === 'private' ? <Lock className="h-3.5 w-3.5" /> : v === 'public' ? <Globe className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
+    v === 'private' ? <Lock className="size-3.5" /> : v === 'public' ? <Globe className="size-3.5" /> : <Users className="size-3.5" />;
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       {/* Page header */}
-      <div className="flex items-center justify-between gap-3 pb-3 border-b border-border shrink-0">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b pb-3">
         <div className="flex items-center gap-2 min-w-0">
           <Button variant="ghost" size="sm" onClick={close} className="shrink-0">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft />
             {t('createPipeline.back')}
           </Button>
-          <h1 className="text-base font-semibold truncate">{t('createPipeline.pageTitle')}</h1>
+          <h1 className="truncate font-semibold text-base">{t('createPipeline.pageTitle')}</h1>
         </div>
-        <Button variant="ghost" size="sm" onClick={close} aria-label={t('createPipeline.cancel')}>
-          <X className="h-4 w-4" />
+        <Button variant="ghost" size="icon-sm" onClick={close} aria-label={t('createPipeline.cancel')}>
+          <X />
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 overflow-auto pt-5">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 max-w-6xl mx-auto">
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+        <div className="flex-1 overflow-auto pt-6">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-5">
             {/* Left — basic info (2/5) */}
             <div className="lg:col-span-2 space-y-5">
-              <h3 className="text-lg font-semibold">{t('createPipeline.basicInfo')}</h3>
+              <h3 className="font-semibold text-base">{t('createPipeline.basicInfo')}</h3>
 
               <div className="space-y-2">
                 <Label htmlFor="name">{t('createPipeline.pipelineName')}</Label>
@@ -285,19 +271,18 @@ export default function PipelineFormPage() {
                   {TYPE_CHIPS.map(type => {
                     const active = formData.pipeline_type === type;
                     return (
-                      <button
+                      <Button
                         key={type}
                         type="button"
+                        size="sm"
+                        variant={active ? 'secondary' : 'outline'}
                         disabled={submitting}
                         onClick={() => setFormData({ ...formData, pipeline_type: type })}
-                        className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors ${
-                          active
-                            ? 'bg-primary/10 border-primary text-primary'
-                            : 'bg-background border-border text-muted-foreground hover:border-primary/40'
-                        }`}
+                        aria-pressed={active}
+                        className={cn('rounded-full', active && 'border-primary/40 text-foreground')}
                       >
                         {t(`createPipeline.types.${type}`)}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -307,92 +292,53 @@ export default function PipelineFormPage() {
               <div className="space-y-2">
                 <Label htmlFor="visibility">{t('createPipeline.visibility')}</Label>
                 <Select
+                  items={(['private', 'public', 'team'] as const).map(v => ({
+                    value: v,
+                    label: t(`createPipeline.visibilities.${v}`),
+                  }))}
                   value={formData.visibility}
-                  onValueChange={(value: 'private' | 'public' | 'team') =>
-                    setFormData({ ...formData, visibility: value })
+                  onValueChange={(value: 'private' | 'public' | 'team' | null) =>
+                    value != null && setFormData({ ...formData, visibility: value })
                   }
                   disabled={submitting}
                 >
-                  <SelectTrigger id="visibility">
+                  <SelectTrigger id="visibility" className="w-full">
                     <span className="flex items-center gap-2">
                       {visIcon(formData.visibility || 'private')}
                       <SelectValue />
                     </span>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup>
                     <SelectItem value="private">{t('createPipeline.visibilities.private')}</SelectItem>
                     <SelectItem value="public">{t('createPipeline.visibilities.public')}</SelectItem>
                     <SelectItem value="team">{t('createPipeline.visibilities.team')}</SelectItem>
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
               </div>
 
               {formData.visibility === 'team' && (
-                <div className="space-y-2">
-                  <Label>{t('createPipeline.teamSelection.label')}</Label>
-                  {teamIds.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {teamIds.map(id => {
-                        const team = teams.find(tm => tm.id === id);
-                        return team ? (
-                          <span key={id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground text-xs">
-                            <Users className="h-3 w-3" />
-                            {team.name}
-                            <button type="button" onClick={() => setTeamIds(prev => prev.filter(tid => tid !== id))} className="hover:text-destructive">
-                              <X className="h-3 w-3" />
-                            </button>
-                          </span>
-                        ) : null;
-                      })}
-                    </div>
-                  )}
-                  <div className="border border-border rounded-lg max-h-40 overflow-y-auto">
-                    {teamsLoading ? (
-                      <div className="flex items-center justify-center py-4">
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      </div>
-                    ) : teams.length === 0 ? (
-                      <div className="text-center text-sm text-muted-foreground py-4">
-                        {t('createPipeline.teamSelection.noTeams')}
-                      </div>
-                    ) : (
-                      <div className="p-1.5 space-y-0.5">
-                        {teams.map(team => (
-                          <label key={team.id} className="flex items-center gap-2 p-1.5 hover:bg-muted/50 rounded cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={teamIds.includes(team.id)}
-                              onChange={() =>
-                                setTeamIds(prev =>
-                                  prev.includes(team.id) ? prev.filter(id => id !== team.id) : [...prev, team.id],
-                                )
-                              }
-                              className="rounded border-border"
-                            />
-                            <span className="text-sm">{team.name}</span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {teamIds.length === 0 && (
-                    <p className="text-xs text-destructive">{t('createPipeline.teamSelection.required')}</p>
-                  )}
-                </div>
+                <PipelineTeamPicker
+                  prefix="createPipeline"
+                  teams={teams}
+                  teamIds={teamIds}
+                  loading={teamsLoading}
+                  disabled={submitting}
+                  onChange={setTeamIds}
+                />
               )}
             </div>
 
             {/* Right — stages (3/5) */}
-            <div className="lg:col-span-3 flex flex-col">
+            <div className="flex flex-col lg:col-span-3">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">{t('createPipeline.stages')}</h3>
+                <h3 className="font-semibold text-base">{t('createPipeline.stages')}</h3>
                 <div className="flex items-center gap-2">
                   {hasManualStageChanges && (
-                    <Button type="button" variant="ghost" size="sm" onClick={resetToTemplate} className="text-primary text-xs">
+                    <Button type="button" variant="ghost" size="sm" onClick={resetToTemplate}>
                       {t('createPipeline.reset')}
                     </Button>
                   )}
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm tabular-nums">
                     {t('createPipeline.stagesCount', { count: formData.stages?.length || 0 })}
                   </span>
                 </div>
@@ -406,14 +352,15 @@ export default function PipelineFormPage() {
                     onDragStart={e => handleDragStart(e, index)}
                     onDragOver={handleDragOver}
                     onDrop={e => handleDrop(e, index)}
-                    className={`flex items-center justify-between p-3.5 bg-background border rounded-xl hover:shadow-sm transition-all cursor-move group ${
-                      draggedIndex === index ? 'opacity-50 scale-95 border-primary/40' : 'border-border'
-                    }`}
+                    className={cn(
+                      'group flex cursor-move items-center justify-between rounded-xl border bg-background p-3.5 transition-all hover:border-ring/40',
+                      draggedIndex === index && 'scale-95 border-primary/40 opacity-50',
+                    )}
                   >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="text-xs font-medium text-muted-foreground w-5 text-center">{index + 1}</span>
-                      <div className="w-3 h-3 rounded-full ring-1 ring-background" style={{ backgroundColor: stage.color }} />
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <GripVertical className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                      <span className="w-5 text-center font-medium text-muted-foreground text-xs tabular-nums">{index + 1}</span>
+                      <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-sm truncate">{stage.name}</div>
                         {stage.description && (
@@ -424,48 +371,52 @@ export default function PipelineFormPage() {
                     <Button
                       type="button"
                       variant="ghost"
-                      size="sm"
+                      size="icon-xs"
                       onClick={() => removeStage(index)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive p-1 h-auto"
+                      className="text-muted-foreground opacity-0 transition-opacity hover:text-destructive-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                      aria-label={t('createPipeline.removeStage', { name: stage.name })}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 />
                     </Button>
                   </div>
                 ))}
 
                 {/* Inline add-stage row */}
-                <div className="border-2 border-dashed border-border rounded-xl p-3 bg-muted/30 space-y-2">
+                <div className="space-y-2 rounded-xl border border-dashed bg-muted/48 p-3 dark:bg-muted/24">
                   <Input
                     value={newStage.name}
                     onChange={e => setNewStage({ ...newStage, name: e.target.value })}
                     placeholder={t('createPipeline.newStageName')}
                     onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addStage())}
-                    className="text-sm"
                   />
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={newStage.color}
                       onChange={e => setNewStage({ ...newStage, color: e.target.value })}
-                      className="w-9 h-9 border border-border rounded cursor-pointer"
+                      className="size-9 shrink-0 cursor-pointer rounded-lg border bg-background p-1"
                       aria-label={t('createPipeline.newStageColor')}
                     />
                     <Input
                       value={newStage.description}
                       onChange={e => setNewStage({ ...newStage, description: e.target.value })}
                       placeholder={t('createPipeline.newStageDescription')}
-                      className="text-sm flex-1"
+                      className="flex-1"
                     />
-                    <Button type="button" onClick={addStage} disabled={!newStage.name.trim()} size="sm" className="px-3">
-                      <Plus className="w-4 h-4" />
+                    <Button
+                      type="button"
+                      onClick={addStage}
+                      disabled={!newStage.name.trim()}
+                      size="icon"
+                      aria-label={t('createPipeline.addStage')}
+                    >
+                      <Plus />
                     </Button>
                   </div>
                 </div>
 
                 {(!formData.stages || formData.stages.length === 0) && (
-                  <div className="text-center py-6 text-muted-foreground text-sm">
-                    {t('createPipeline.addStageMessage')}
-                  </div>
+                  <p className="py-6 text-center text-muted-foreground text-sm">{t('createPipeline.addStageMessage')}</p>
                 )}
               </div>
             </div>
@@ -473,12 +424,12 @@ export default function PipelineFormPage() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border shrink-0">
-          <Button type="button" variant="outline" onClick={close} disabled={submitting}>
+        <div className="flex shrink-0 items-center justify-end gap-2 border-t pt-4">
+          <Button type="button" variant="ghost" onClick={close} disabled={submitting}>
             {t('createPipeline.cancel')}
           </Button>
-          <Button type="submit" disabled={submitting || !canCreate}>
-            {submitting ? t('createPipeline.creating') : t('createPipeline.create')}
+          <Button type="submit" disabled={!canCreate} loading={submitting}>
+            {t('createPipeline.create')}
           </Button>
         </div>
       </form>

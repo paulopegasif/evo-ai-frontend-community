@@ -53,7 +53,7 @@ The Community Edition is **single-tenant** by design — one account, no multi-t
 | Build | Vite |
 | Routing | React Router 7 |
 | Styling | TailwindCSS 4 |
-| Design system | `@evoapi/design-system` |
+| Design system | [coss ui](https://coss.com/ui) on Base UI (`src/components/ui`) |
 | Forms | React Hook Form + Zod |
 | HTTP | Axios |
 | WebSocket | ActionCable |

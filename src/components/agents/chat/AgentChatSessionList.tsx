@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Button, Input, ScrollArea } from '@evoapi/design-system';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAgentChat } from '@/contexts/agents/AgentChatContext';
@@ -7,11 +9,12 @@ import { formatDateTime } from '@/utils/time/formatDateTime';
 
 export function AgentChatSessionList() {
   const { t } = useLanguage('aiAgents');
-  const { sessions, selectedSessionId, isLoading, selectSession, createNewSession, deleteSession } = useAgentChat();
+  const { sessions, selectedSessionId, isLoading, selectSession, createNewSession, deleteSession } =
+    useAgentChat();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredSessions = sessions.filter(session =>
-    session.id.toLowerCase().includes(searchTerm.toLowerCase())
+    session.id.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const sortedSessions = [...filteredSessions].sort((a, b) => {
@@ -34,15 +37,16 @@ export function AgentChatSessionList() {
             {t('chat.newConversation') || 'Nova Conversa'}
           </Button>
         </div>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
+        <InputGroup>
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
             placeholder={t('chat.searchConversations') || 'Buscar conversas...'}
-            className="pl-9"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-        </div>
+        </InputGroup>
       </div>
 
       <ScrollArea className="flex-1">
@@ -97,4 +101,3 @@ export function AgentChatSessionList() {
     </div>
   );
 }
-

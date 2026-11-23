@@ -110,7 +110,9 @@
         "required": true,
         "errors": {
           "required": "List must have at least one value"
-        }
+        },
+        "add": "Add value",
+        "remove": "Remove {{value}}"
       },
       "regexEnabled": {
         "label": "Regex Validation",

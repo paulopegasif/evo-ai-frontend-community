@@ -90,7 +90,7 @@ export default function BaseDefaultEdge({
               className="rounded-full bg-white p-1 shadow-md"
               onClick={onEdgeClick}
             >
-              <Trash2 className="text-red-500" size={16} />
+              <Trash2 className="text-destructive" size={16} />
             </button>
           </div>
         </EdgeLabelRenderer>

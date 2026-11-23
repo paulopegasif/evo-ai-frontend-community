@@ -834,7 +834,9 @@
         "apiKeyHeader": "API Key in header: {{header}}",
         "apiKeyNotConfigured": "API Key not configured",
         "noAuth": "No authentication",
-        "sensitiveDataEncrypted": "Sensitive data will be encrypted when saving"
+        "sensitiveDataEncrypted": "Sensitive data will be encrypted when saving",
+        "showValue": "Mostra valore",
+        "hideValue": "Nascondi valore"
       },
       "basic": {
         "endpointUrl": "Endpoint URL *",
@@ -943,7 +945,8 @@
         "suggestedHeaders": "Suggested Headers:",
         "summaryTitle": "Summary:",
         "headersConfigured": "{{count}} header{{plural}} configured{{plural}}",
-        "containsSensitive": "Contains sensitive headers - will be encrypted when saving"
+        "containsSensitive": "Contains sensitive headers - will be encrypted when saving",
+        "removeHeader": "Rimuovi intestazione"
       }
     },
     "assignBot": {
@@ -1175,7 +1178,10 @@
       },
       "placeholders": {
         "selectVariable": "Seleziona variabile..."
-      }
+      },
+      "removeCondition": "Rimuovi condizione",
+      "duplicatePath": "Duplica percorso",
+      "removePath": "Rimuovi percorso"
     },
     "deferConversation": {
       "title": "Configure Deferment of Conversation",
@@ -1489,7 +1495,8 @@
         "addVariant": "Add Variant",
         "distributeEqually": "Distribute Equally",
         "cancel": "Cancel",
-        "save": "Save"
+        "save": "Save",
+        "removeVariant": "Rimuovi variante"
       },
       "status": {
         "total": "Total",
@@ -1855,7 +1862,8 @@
         "ultima_atividade": "Ultima Attività",
         "criado": "Creato",
         "atualizado": "Aggiornato"
-      }
+      },
+      "removeField": "Rimuovi campo"
     },
     "pipelineStageChanged": {
       "pipeline": "Pipeline",
@@ -2001,7 +2009,22 @@
       "method": "Metodo",
       "headersCount": "header(s) personalizzato/i",
       "captureWebhookData": "Cattura Dati del Webhook",
-      "urlCopied": "URL del Webhook copiato negli appunti"
+      "urlCopied": "URL del Webhook copiato negli appunti",
+      "copyUrl": "Copia URL",
+      "removeHeader": "Rimuovi intestazione"
+    }
+  },
+  "sessions": {
+    "viewer": {
+      "actions": {
+        "close": "Chiudi"
+      },
+      "confirm": {
+        "deleteTitle": "Eliminare la sessione?",
+        "cancelTitle": "Annullare la sessione?",
+        "cancelConfirm": "Annulla sessione",
+        "back": "Indietro"
+      }
     }
   }
 }

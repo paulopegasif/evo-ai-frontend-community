@@ -823,7 +823,11 @@
         "addTask": "Aggiungi Attività",
         "removeTask": "Rimuovi Attività",
         "notifyTeam": "Notifica il team quando arriva a questa fase",
-        "removeStageAutomation": "Rimuovi Fase"
+        "removeStageAutomation": "Rimuovi Fase",
+        "modalTitle": "Automazione delle pipeline"
+      },
+      "contactEdit": {
+        "modalTitle": "Modifica dei contatti"
       }
     },
     "knowledge": {
@@ -1159,6 +1163,24 @@
         "noTools": "Nessuno strumento disponibile",
         "saveConfig": "SALVA CONFIGURAZIONI",
         "disconnect": "Disconnetti"
+      },
+      "disconnectConfirm": {
+        "title": "Disconnettere {{name}}?",
+        "description": "L'agente perderà l'accesso agli strumenti di {{name}} finché non lo ricolleghi.",
+        "cancel": "Annulla"
+      },
+      "toasts": {
+        "loadToolsError": "Impossibile caricare gli strumenti disponibili",
+        "connectError": "Impossibile connettersi a {{name}}",
+        "saveSuccess": "Impostazioni salvate",
+        "saveError": "Impossibile salvare le impostazioni",
+        "disconnectSuccess": "{{name}} disconnesso",
+        "disconnectError": "Impossibile disconnettere {{name}}",
+        "loadSheetsError": "Impossibile caricare i fogli di calcolo",
+        "loadCalendarsError": "Impossibile caricare i calendari",
+        "emailRequired": "Inserisci un'email",
+        "selectSheet": "Seleziona un foglio di calcolo",
+        "selectCalendar": "Seleziona un calendario"
       }
     },
     "mcpServers": {
@@ -1184,7 +1206,8 @@
       "saving": "Salvataggio...",
       "saveSuccess": "Prodotti aggiornati",
       "saveError": "Impossibile aggiornare i prodotti"
-    }
+    },
+    "unsavedChanges": "Modifiche non salvate"
   },
   "actions": {
     "save": "Salva",
@@ -1209,7 +1232,8 @@
     "view": "Visualizza",
     "saving": "Salvataggio...",
     "continue": "Continua",
-    "skip": "Salta"
+    "skip": "Salta",
+    "more": "Altre azioni"
   },
   "wizardActions": {
     "back": "Indietro",
@@ -1320,7 +1344,8 @@
         "searchTools": "Cerca strumenti...",
         "noToolsAvailable": "Nessuno strumento disponibile",
         "toolsFromAgents": "Gli strumenti degli agenti LLM selezionati appariranno qui",
-        "saveSettings": "Salva Impostazioni"
+        "saveSettings": "Salva Impostazioni",
+        "expandDescription": "Espandi descrizione"
       }
     },
     "step4": {
@@ -1436,7 +1461,9 @@
         "description": "Configura strumenti e integrazioni per espandere le capacità"
       },
       "viewAllAgents": "Visualizza tutti gli agenti"
-    }
+    },
+    "close": "Chiudi procedura guidata",
+    "creating": "Creazione dell'agente..."
   },
   "chat": {
     "newConversation": "Nuova Conversazione",
@@ -1452,7 +1479,10 @@
     "typeMessage": "Digita il tuo messaggio...",
     "deleteSession": "Elimina Sessione",
     "deleteSessionConfirm": "Sei sicuro di voler eliminare questa sessione? Questa azione non può essere annullata.",
-    "session": "Sessione"
+    "session": "Sessione",
+    "attachFile": "Allega file",
+    "removeFile": "Rimuovi {{name}}",
+    "send": "Invia messaggio"
   },
   "mcpServers": {
     "title": "Server MCP",

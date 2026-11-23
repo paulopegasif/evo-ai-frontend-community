@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button, Input, Checkbox, Badge } from '@evoapi/design-system';
+import EmptyState from '@/components/base/EmptyState';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Skeleton } from '@/components/ui/skeleton';
+import SectionHeader from './SectionHeader';
 import { Package, Cloud, Search } from 'lucide-react';
 import { productsService } from '@/services/products/productsService';
 import type { Agent } from '@/types/agents';
@@ -92,69 +99,86 @@ export default function ProductsSection({ agent }: Props) {
   );
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold">{t('edit.products.title') || 'Produtos do agente'}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t('edit.products.subtitle') ||
-            'Selecione os produtos que este agente pode recomendar durante conversas. Eles serão injetados no system prompt automaticamente.'}
-        </p>
-      </div>
+    <div className="flex flex-col gap-6">
+      <SectionHeader
+        icon={Package}
+        title={t('edit.products.title') || 'Produtos do agente'}
+        description={
+          t('edit.products.subtitle') ||
+          'Selecione os produtos que este agente pode recomendar durante conversas. Eles serão injetados no system prompt automaticamente.'
+        }
+        action={
+          <Button onClick={handleSave} disabled={!isDirty} loading={saving}>
+            {saving ? t('edit.products.saving') || 'Salvando...' : t('edit.products.save') || 'Salvar'}
+          </Button>
+        }
+      />
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={tp('header.searchPlaceholder')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Badge variant="outline">
-          {attachedIds.size}/{allProducts.length}
-        </Badge>
-        <Button onClick={handleSave} disabled={!isDirty || saving}>
-          {saving ? (t('edit.products.saving') || 'Salvando...') : (t('edit.products.save') || 'Salvar')}
-        </Button>
-      </div>
-
-      {loading ? (
-        <div className="text-center text-sm text-muted-foreground py-10">
-          {tp('page.loading')}
-        </div>
-      ) : (
-        <div className="border rounded-md divide-y max-h-[60vh] overflow-y-auto">
-          {filteredProducts.length === 0 && (
-            <p className="text-sm text-muted-foreground py-6 text-center">
-              {tp('table.empty')}
-            </p>
-          )}
-          {filteredProducts.map((product) => {
-            const Icon = product.kind === 'digital' ? Cloud : Package;
-            const checked = attachedIds.has(product.id);
-            return (
-              <label
-                key={product.id}
-                className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/30"
-              >
-                <Checkbox checked={checked} onCheckedChange={() => toggle(product.id)} />
-                <Icon className="h-4 w-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{product.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {tp(`kind.${product.kind}`)} · {product.currency}{' '}
-                    {Number(product.default_price).toFixed(2)}
+      <Card>
+        <CardHeader className="flex-row items-center gap-3">
+          <InputGroup className="max-w-md flex-1">
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
+            <InputGroupInput
+              type="search"
+              aria-label={tp('header.searchPlaceholder')}
+              placeholder={tp('header.searchPlaceholder')}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </InputGroup>
+          <Badge variant="secondary" className="tabular-nums">
+            {attachedIds.size}/{allProducts.length}
+          </Badge>
+        </CardHeader>
+        <CardPanel className="p-0">
+          {loading ? (
+            <div className="flex flex-col divide-y border-t" aria-busy="true">
+              {Array.from({ length: 5 }, (_, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-3">
+                  <Skeleton className="size-4 rounded-sm" />
+                  <Skeleton className="size-4 rounded-sm" />
+                  <div className="flex flex-1 flex-col gap-1.5">
+                    <Skeleton className="h-3.5 w-1/3" />
+                    <Skeleton className="h-3 w-1/5" />
                   </div>
                 </div>
-                {product.sku && (
-                  <span className="text-xs text-muted-foreground font-mono">{product.sku}</span>
-                )}
-              </label>
-            );
-          })}
-        </div>
-      )}
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="border-t">
+              <EmptyState icon={Package} title={tp('table.empty')} description="" />
+            </div>
+          ) : (
+            <div className="flex max-h-[60vh] flex-col divide-y overflow-y-auto border-t">
+              {filteredProducts.map(product => {
+                const Icon = product.kind === 'digital' ? Cloud : Package;
+                const checked = attachedIds.has(product.id);
+                return (
+                  <label
+                    key={product.id}
+                    className="flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors hover:bg-accent/50 has-data-checked:bg-primary/4"
+                  >
+                    <Checkbox checked={checked} onCheckedChange={() => toggle(product.id)} />
+                    <Icon className="size-4 text-muted-foreground" />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-medium text-sm">{product.name}</div>
+                      <div className="text-muted-foreground text-xs">
+                        {tp(`kind.${product.kind}`)} · {product.currency}{' '}
+                        {Number(product.default_price).toFixed(2)}
+                      </div>
+                    </div>
+                    {product.sku && (
+                      <span className="font-mono text-muted-foreground text-xs">{product.sku}</span>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </CardPanel>
+      </Card>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/utils/cn';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ChannelHealthStatus } from '@/utils/channelStatus';
@@ -9,10 +9,10 @@ interface ChannelStatusBadgeProps {
 }
 
 const dotClasses: Record<ChannelHealthStatus, string> = {
-  active: 'bg-emerald-500',
-  attention: 'bg-amber-500',
-  error: 'bg-red-500',
-  available: 'bg-sidebar-foreground/30',
+  active: 'bg-success',
+  attention: 'bg-warning',
+  error: 'bg-destructive',
+  available: 'bg-muted-foreground/40',
 };
 
 export default function ChannelStatusBadge({ status, className }: ChannelStatusBadgeProps) {
@@ -20,7 +20,7 @@ export default function ChannelStatusBadge({ status, className }: ChannelStatusB
 
   return (
     <Badge variant="outline" className={cn('gap-1.5 font-normal', className)}>
-      <span className={cn('h-2 w-2 rounded-full', dotClasses[status])} aria-hidden="true" />
+      <span className={cn('size-2 rounded-full', dotClasses[status])} aria-hidden="true" />
       {t(`overview.statusLabel.${status}`)}
     </Badge>
   );

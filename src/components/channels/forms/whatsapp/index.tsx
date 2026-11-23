@@ -65,7 +65,7 @@ export const WhatsappForms = ({
     default:
       return (
         <div className="text-center py-8">
-          <p className="text-sidebar-foreground/70">
+          <p className="text-muted-foreground">
             {t('errors.providerNotImplemented', { provider: selectedProvider.name })}
           </p>
         </div>

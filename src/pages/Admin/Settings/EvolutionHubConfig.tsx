@@ -2,17 +2,18 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@evoapi/design-system';
 import { toast } from 'sonner';
-import { Loader2, CheckCircle2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, PlugZap, RefreshCw } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { SettingsHeader, SettingsSaveBar, SettingsSkeleton, ToggleGroupBox, ToggleRow } from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import type { AdminConfigData } from '@/types/admin/adminConfig';
@@ -84,7 +85,7 @@ export default function EvolutionHubConfig() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, watch, setValue } = useForm<FormData>({
+  const { register, handleSubmit, reset, watch, setValue, formState: { isDirty } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: DEFAULTS,
   });
@@ -201,58 +202,54 @@ export default function EvolutionHubConfig() {
   }, [loading, enabledBool, apiKeyConfigured]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <SettingsSkeleton cards={1} fields={3} />;
   }
 
-  return (
-    <div className="space-y-6 p-6 max-w-3xl">
-      <header>
-        <h1 className="text-2xl font-bold tracking-tight">{t('evolutionHub.title')}</h1>
-        <p className="text-muted-foreground">{t('evolutionHub.description')}</p>
-      </header>
+  const setBadge = (configured: boolean, touched: boolean) =>
+    configured && !touched ? <Badge variant="success">{t('evolutionHub.fields.secretSet')}</Badge> : null;
+  const loadingText = (fallback: string) => (
+    <p className="text-muted-foreground text-sm">{previewLoading ? 'Carregando…' : fallback}</p>
+  );
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+  return (
+    <div className="flex max-w-3xl flex-col gap-6">
+      <SettingsHeader
+        title={t('evolutionHub.title')}
+        description={t('evolutionHub.description')}
+        status={
+          enabledBool
+            ? { label: t('evolutionHub.fields.enabled'), variant: apiKeyConfigured ? 'success' : 'warning' }
+            : null
+        }
+      />
+
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>{t('evolutionHub.sections.connection')}</CardTitle>
+            <CardTitle className="text-base">{t('evolutionHub.sections.connection')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between border rounded-md p-3">
-              <div>
-                <Label htmlFor="enabled" className="text-base">
-                  {t('evolutionHub.fields.enabled')}
-                </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t('evolutionHub.fields.enabledHelp')}
-                </p>
-              </div>
-              <input
+          <CardPanel className="flex flex-col gap-5">
+            <ToggleGroupBox>
+              <ToggleRow
                 id="enabled"
-                type="checkbox"
+                label={t('evolutionHub.fields.enabled')}
+                description={t('evolutionHub.fields.enabledHelp')}
                 checked={enabledBool}
-                onChange={(e) => {
-                  const next = e.target.checked;
-                  setValue('EVOLUTION_HUB_ENABLED', next ? 'true' : 'false');
+                onCheckedChange={(next) => {
+                  setValue('EVOLUTION_HUB_ENABLED', next ? 'true' : 'false', { shouldDirty: true });
                   if (next && !webhookSecretConfigured && !secretTouched) {
                     setValue('EVOLUTION_HUB_WEBHOOK_SECRET', generateSecret());
                     setSecretTouched(true);
                   }
                 }}
-                className="h-5 w-5"
               />
-            </div>
+            </ToggleGroupBox>
 
-            <div className="space-y-2">
-              <Label htmlFor="apiKey">
-                {t('evolutionHub.fields.apiKey')}
-                {apiKeyConfigured && !apiKeyTouched && (
-                  <span className="ml-2 text-xs text-muted-foreground">({t('evolutionHub.fields.secretSet')})</span>
-                )}
-              </Label>
+            <Field>
+              <div className="flex w-full items-center justify-between gap-2">
+                <FieldLabel htmlFor="apiKey">{t('evolutionHub.fields.apiKey')}</FieldLabel>
+                {setBadge(apiKeyConfigured, apiKeyTouched)}
+              </div>
               <Input
                 id="apiKey"
                 type="password"
@@ -261,17 +258,15 @@ export default function EvolutionHubConfig() {
                   onChange: () => setApiKeyTouched(true),
                 })}
               />
-            </div>
+            </Field>
 
-            <div className="space-y-2">
-              <Label htmlFor="webhookSecret">
-                {t('evolutionHub.fields.webhookSecret')}
-                {webhookSecretConfigured && !secretTouched && (
-                  <span className="ml-2 text-xs text-muted-foreground">({t('evolutionHub.fields.secretSet')})</span>
-                )}
-              </Label>
-              <div className="flex items-center gap-2">
-                <Input
+            <Field>
+              <div className="flex w-full items-center justify-between gap-2">
+                <FieldLabel htmlFor="webhookSecret">{t('evolutionHub.fields.webhookSecret')}</FieldLabel>
+                {setBadge(webhookSecretConfigured, secretTouched)}
+              </div>
+              <InputGroup>
+                <InputGroupInput
                   id="webhookSecret"
                   type="password"
                   placeholder={webhookSecretConfigured ? MASKED.repeat(4) : t('evolutionHub.fields.webhookSecretPlaceholder')}
@@ -279,178 +274,167 @@ export default function EvolutionHubConfig() {
                     onChange: () => setSecretTouched(true),
                   })}
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setValue('EVOLUTION_HUB_WEBHOOK_SECRET', generateSecret());
-                    setSecretTouched(true);
-                  }}
-                  title={t('evolutionHub.actions.generateSecret')}
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t('evolutionHub.fields.webhookSecretHelp')}
-              </p>
-            </div>
-          </CardContent>
+                <InputGroupAddon align="inline-end">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          aria-label={t('evolutionHub.actions.generateSecret')}
+                          onClick={() => {
+                            setValue('EVOLUTION_HUB_WEBHOOK_SECRET', generateSecret());
+                            setSecretTouched(true);
+                          }}
+                        />
+                      }
+                    >
+                      <RefreshCw />
+                    </TooltipTrigger>
+                    <TooltipPopup>{t('evolutionHub.actions.generateSecret')}</TooltipPopup>
+                  </Tooltip>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription>{t('evolutionHub.fields.webhookSecretHelp')}</FieldDescription>
+            </Field>
+
+            {testResult && (
+              <Alert variant={testResult.ok ? 'success' : 'error'}>
+                {testResult.ok ? <CheckCircle2 /> : <AlertTriangle />}
+                <AlertDescription className="text-foreground">{testResult.message}</AlertDescription>
+              </Alert>
+            )}
+          </CardPanel>
         </Card>
 
-        <div className="flex items-center gap-3">
-          <Button type="submit" disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-            {t('evolutionHub.actions.save')}
-          </Button>
-
+        <SettingsSaveBar
+          dirty={isDirty || apiKeyTouched || secretTouched}
+          saving={saving}
+          saveLabel={t('evolutionHub.actions.save')}
+        >
           {/* Test só faz sentido depois que API Key foi salva pelo menos
               uma vez — sem credencial persistida o backend retorna
               "EVOLUTION_HUB_URL not configured" mesmo com URL no form. */}
           {apiKeyConfigured && (
-            <Button type="button" variant="outline" onClick={onTest} disabled={testing}>
-              {testing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            <Button type="button" variant="outline" onClick={onTest} loading={testing}>
+              <PlugZap />
               {t('evolutionHub.actions.test')}
             </Button>
           )}
-        </div>
-
-        {testResult && (
-          <div
-            className={`flex items-start gap-2 rounded-md border p-3 text-sm ${
-              testResult.ok ? 'border-green-500/30 bg-green-500/10' : 'border-destructive/30 bg-destructive/10'
-            }`}
-          >
-            {testResult.ok ? (
-              <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
-            ) : (
-              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
-            )}
-            <span>{testResult.message}</span>
-          </div>
-        )}
+        </SettingsSaveBar>
       </form>
 
       {/* Configuração detectada no Hub — só renderiza quando integração
-          está habilitada E API key salva. Mostra plano + Meta Apps +
-          canais que o admin tem do outro lado pra confirmar que a
-          conexão está OK antes de criar inboxes. */}
+          está habilitada E API key salva. */}
       {enabledBool && apiKeyConfigured && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle>Configuração detectada no Evo Hub</CardTitle>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={loadHubPreview}
-              disabled={previewLoading}
-            >
-              {previewLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              <span className="ml-2">Atualizar</span>
-            </Button>
+          <CardHeader>
+            <CardTitle className="text-base">Configuração detectada no Evo Hub</CardTitle>
+            <CardAction>
+              <Button type="button" variant="outline" size="sm" onClick={loadHubPreview} disabled={previewLoading}>
+                <RefreshCw className={previewLoading ? 'animate-spin' : undefined} />
+                Atualizar
+              </Button>
+            </CardAction>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardPanel className="flex flex-col gap-6">
             {previewError && (
-              <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm">
-                <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
-                <span>{previewError}</span>
-              </div>
+              <Alert variant="error">
+                <AlertTriangle />
+                <AlertDescription className="text-foreground">{previewError}</AlertDescription>
+              </Alert>
             )}
 
-            {/* Plano */}
-            <section>
-              <h3 className="text-sm font-semibold mb-2">Plano atual</h3>
+            <section className="flex flex-col gap-2">
+              <h3 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Plano atual</h3>
               {hubPreview?.plan ? (
-                <div className="rounded-md border p-3 text-sm space-y-1">
-                  <div>
-                    <span className="font-medium">{hubPreview.plan.name}</span>
-                    <span className="ml-2 text-xs text-muted-foreground">({hubPreview.plan.slug})</span>
+                <div className="flex flex-col gap-2 rounded-xl border bg-muted/24 p-4 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold">{hubPreview.plan.name}</span>
+                    <Badge variant="outline" className="font-mono">{hubPreview.plan.slug}</Badge>
                   </div>
                   {hubPreview.plan.description && (
-                    <p className="text-xs text-muted-foreground">{hubPreview.plan.description}</p>
+                    <p className="text-muted-foreground text-xs">{hubPreview.plan.description}</p>
                   )}
-                  <div className="text-xs text-muted-foreground pt-2">
-                    Meta App compartilhada: <strong>{hubPreview.plan.allow_shared_meta_app ? 'sim' : 'não'}</strong>{' '}
-                    · Meta App própria (BYO): <strong>{hubPreview.plan.allow_own_meta_app ? 'sim' : 'não'}</strong>{' '}
-                    · Total de canais: <strong>{hubPreview.plan.max_channels_total ?? 'ilimitado'}</strong>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Badge variant={hubPreview.plan.allow_shared_meta_app ? 'success' : 'secondary'}>
+                      Meta App compartilhada: {hubPreview.plan.allow_shared_meta_app ? 'sim' : 'não'}
+                    </Badge>
+                    <Badge variant={hubPreview.plan.allow_own_meta_app ? 'success' : 'secondary'}>
+                      Meta App própria (BYO): {hubPreview.plan.allow_own_meta_app ? 'sim' : 'não'}
+                    </Badge>
+                    <Badge variant="info">
+                      Total de canais: {hubPreview.plan.max_channels_total ?? 'ilimitado'}
+                    </Badge>
                   </div>
                 </div>
+              ) : previewLoading ? (
+                <Skeleton className="h-20 rounded-xl" />
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  {previewLoading ? 'Carregando…' : 'Sem dados.'}
-                </p>
+                loadingText('Sem dados.')
               )}
             </section>
 
-            {/* Meta Apps disponíveis */}
-            <section>
-              <h3 className="text-sm font-semibold mb-2">Meta Apps disponíveis</h3>
+            <section className="flex flex-col gap-2">
+              <h3 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Meta Apps disponíveis</h3>
               {hubPreview?.options ? (
-                <ul className="space-y-2">
+                <ul className="flex flex-col divide-y rounded-xl border">
                   {hubPreview.options.allowed_modes.includes('shared') && (
-                    <li className="rounded-md border p-3 text-sm">
+                    <li className="flex items-center justify-between gap-2 px-4 py-3 text-sm">
                       <span className="font-medium">Meta App da Evolution (Cloud)</span>
-                      <span className="ml-2 text-xs text-muted-foreground">compartilhada</span>
+                      <Badge variant="secondary">compartilhada</Badge>
                     </li>
                   )}
                   {hubPreview.options.byo_credentials.map((c) => (
-                    <li key={c.id} className="rounded-md border p-3 text-sm">
+                    <li key={c.id} className="flex items-center justify-between gap-2 px-4 py-3 text-sm">
                       <span className="font-medium">{c.name}</span>
-                      <span className="ml-2 text-xs text-muted-foreground">própria (BYO) · {c.app_id}</span>
+                      <span className="text-muted-foreground text-xs">própria (BYO) · <span className="font-mono">{c.app_id}</span></span>
                     </li>
                   ))}
                   {hubPreview.options.allowed_modes.length === 0 && (
-                    <li className="text-sm text-muted-foreground">
+                    <li className="px-4 py-3 text-muted-foreground text-sm">
                       Nenhuma Meta App disponível. Cadastre uma no Evo Hub para começar a criar canais.
                     </li>
                   )}
                 </ul>
+              ) : previewLoading ? (
+                <Skeleton className="h-12 rounded-xl" />
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  {previewLoading ? 'Carregando…' : 'Sem dados.'}
-                </p>
+                loadingText('Sem dados.')
               )}
             </section>
 
-            {/* Canais já existentes */}
-            <section>
-              <h3 className="text-sm font-semibold mb-2">
-                Canais já criados no Hub{' '}
-                {hubPreview && (
-                  <span className="text-xs text-muted-foreground font-normal">
-                    ({hubPreview.channels.length})
-                  </span>
-                )}
+            <section className="flex flex-col gap-2">
+              <h3 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                Canais já criados no Hub {hubPreview && <span className="normal-case">({hubPreview.channels.length})</span>}
               </h3>
               {hubPreview && hubPreview.channels.length > 0 ? (
-                <ul className="space-y-2">
+                <ul className="flex flex-col divide-y rounded-xl border">
                   {hubPreview.channels.slice(0, 10).map((ch) => (
-                    <li key={ch.id} className="rounded-md border p-3 text-sm flex items-center justify-between">
-                      <div>
-                        <span className="text-xs font-mono uppercase text-muted-foreground mr-2">[{ch.type}]</span>
-                        <span className="font-medium">{ch.name}</span>
+                    <li key={ch.id} className="flex items-center justify-between gap-2 px-4 py-3 text-sm">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <Badge variant="outline" className="font-mono uppercase">{ch.type}</Badge>
+                        <span className="truncate font-medium">{ch.name}</span>
                       </div>
-                      <span className="text-xs text-muted-foreground">{ch.status}</span>
+                      <Badge variant={ch.status === 'active' || ch.status === 'connected' ? 'success' : 'secondary'}>
+                        {ch.status}
+                      </Badge>
                     </li>
                   ))}
                   {hubPreview.channels.length > 10 && (
-                    <li className="text-xs text-muted-foreground text-center">
+                    <li className="px-4 py-2 text-center text-muted-foreground text-xs">
                       + {hubPreview.channels.length - 10} canais
                     </li>
                   )}
                 </ul>
+              ) : previewLoading ? (
+                <Skeleton className="h-12 rounded-xl" />
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  {previewLoading ? 'Carregando…' : 'Nenhum canal criado ainda.'}
-                </p>
+                loadingText('Nenhum canal criado ainda.')
               )}
             </section>
-          </CardContent>
+          </CardPanel>
         </Card>
       )}
     </div>

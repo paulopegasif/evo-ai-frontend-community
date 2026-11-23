@@ -108,10 +108,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ attachment, messageType, onTo
   if (!videoUrl) {
     return (
       <div className={`rounded-lg p-3 max-w-xs ${
-        messageType === 'out' ? 'bg-white/10' : 'bg-slate-100'
+        messageType === 'out' ? 'bg-white/10' : 'bg-muted'
       }`}>
         <div className={`flex items-center gap-2 ${
-          messageType === 'out' ? 'text-white/70' : 'text-slate-500'
+          messageType === 'out' ? 'text-white/70' : 'text-muted-foreground'
         }`}>
           <Play className="h-4 w-4" />
           <span className="text-sm">{t('attachments.video.notAvailable')}</span>
@@ -152,9 +152,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ attachment, messageType, onTo
             className="p-3 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all duration-200"
           >
             {isPlaying ? (
-              <Pause className="w-6 h-6 text-gray-700" />
+              <Pause className="w-6 h-6 text-foreground" />
             ) : (
-              <Play className="w-6 h-6 text-gray-700 ml-1" />
+              <Play className="w-6 h-6 text-foreground ml-1" />
             )}
           </button>
         </div>
@@ -209,10 +209,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ attachment, messageType, onTo
 
       {/* Video Title */}
       <div className={`p-2 ${
-        messageType === 'out' ? 'bg-white/10' : 'bg-slate-100'
+        messageType === 'out' ? 'bg-white/10' : 'bg-muted'
       }`}>
         <p className={`text-sm font-medium truncate ${
-          messageType === 'out' ? 'text-white/90' : 'text-slate-700'
+          messageType === 'out' ? 'text-white/90' : 'text-foreground'
         }`}>
           {filename}
         </p>

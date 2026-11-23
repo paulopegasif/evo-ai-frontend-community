@@ -2,17 +2,9 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@evoapi/design-system';
 import { Users } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { contactsService } from '@/services/contacts';
@@ -810,7 +802,7 @@ export default function Contacts() {
   };
 
   return (
-    <div className="h-full flex flex-col p-3 sm:p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       <ContactsTour />
       {isNewRoute ? (
         <ContactFormPage
@@ -837,43 +829,37 @@ export default function Contacts() {
       ) : (
         <>
           <div data-tour="contacts-header">
-          <ContactsHeader
-            totalCount={state.meta.pagination.total}
-            selectedCount={state.selectedContactIds.length}
-            searchValue={state.searchQuery}
-            onSearchChange={handleSearchChange}
-            onNewContact={handleCreateContact}
-            onImport={handleImportContacts}
-            onExport={handleExportContacts}
-            onFilter={handleOpenFilter}
-            onBulkDelete={handleBulkDelete}
-            onMergeContacts={handleMergeContacts}
-            onClearSelection={() => setState(prev => ({ ...prev, selectedContactIds: [] }))}
-            activeFilters={appliedFilters}
-            showFilters={false}
-          />
-          </div>
-
-          {/* Filter Popover trigger */}
-          <div className="flex items-center justify-end mt-3 mb-2 sm:mt-6 sm:mb-3">
-            <ContactsFilterPopover
-              open={filterModalOpen}
-              onOpenChange={setFilterModalOpen}
-              filters={activeFilters}
-              onFiltersChange={setActiveFilters}
-              onApplyFilters={handleApplyFilters}
-              onClearFilters={handleClearFilters}
-              activeFiltersCount={activeFilters.length}
+            <ContactsHeader
+              totalCount={state.meta.pagination.total}
+              selectedCount={state.selectedContactIds.length}
+              searchValue={state.searchQuery}
+              onSearchChange={handleSearchChange}
+              onNewContact={handleCreateContact}
+              onImport={handleImportContacts}
+              onExport={handleExportContacts}
+              onFilter={handleOpenFilter}
+              onBulkDelete={handleBulkDelete}
+              onMergeContacts={handleMergeContacts}
+              onClearSelection={() => setState(prev => ({ ...prev, selectedContactIds: [] }))}
+              activeFilters={appliedFilters}
             />
           </div>
 
+          {/* Filters popover, anchored to the header's filter button */}
+          <ContactsFilterPopover
+            open={filterModalOpen}
+            onOpenChange={setFilterModalOpen}
+            filters={activeFilters}
+            onFiltersChange={setActiveFilters}
+            onApplyFilters={handleApplyFilters}
+            onClearFilters={handleClearFilters}
+            activeFiltersCount={activeFilters.length}
+            anchorSelector='[data-tour="contacts-filter-button"]'
+          />
+
           {/* Content */}
-          <div className="flex-1 overflow-auto" data-tour="contacts-list">
-            {state.loading.list ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="text-muted-foreground">{t('loading.contacts')}</div>
-              </div>
-            ) : state.contacts.length === 0 ? (
+          <div className="mt-4 min-h-0 flex-1 overflow-auto md:mt-6" data-tour="contacts-list">
+            {!state.loading.list && state.contacts.length === 0 ? (
               <EmptyState
                 icon={Users}
                 title={t('empty.title')}
@@ -924,7 +910,7 @@ export default function Contacts() {
 
           {/* Pagination */}
           {state.meta.pagination.total > 0 && (
-            <div data-tour="contacts-pagination" className="mt-4 border-t border-border pt-4">
+            <div data-tour="contacts-pagination" className="mt-4">
               <ContactsPagination
                 currentPage={state.meta.pagination.page}
                 totalPages={state.meta.pagination.total_pages}
@@ -940,61 +926,33 @@ export default function Contacts() {
       )}
 
       {/* Bulk Delete Dialog */}
-      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.bulkDelete.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.bulkDelete.description', { count: state.selectedContactIds.length })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBulkDeleteDialogOpen(false)}
-              disabled={state.loading.bulk}
-            >
-              {t('dialog.bulkDelete.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmBulkDelete} disabled={state.loading.bulk}>
-              {state.loading.bulk
-                ? t('dialog.bulkDelete.deleting')
-                : t('dialog.bulkDelete.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={setBulkDeleteDialogOpen}
+        title={t('dialog.bulkDelete.title')}
+        description={t('dialog.bulkDelete.description', { count: state.selectedContactIds.length })}
+        cancelLabel={t('dialog.bulkDelete.cancel')}
+        confirmLabel={t('dialog.bulkDelete.confirm')}
+        onConfirm={confirmBulkDelete}
+        loading={state.loading.bulk}
+      />
 
       {/* Single Contact Delete Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={open => {
-        if (!open && !state.loading.delete) {
-          setDeleteDialogOpen(false);
-          setContactToDelete(null);
-        }
-      }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('dialog.deleteContact.title')}</DialogTitle>
-            <DialogDescription>
-              {t('dialog.deleteContact.description', { name: contactToDelete?.name ?? '' })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => { setDeleteDialogOpen(false); setContactToDelete(null); }}
-              disabled={state.loading.delete}
-            >
-              {t('dialog.deleteContact.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDeleteContact} disabled={state.loading.delete}>
-              {state.loading.delete
-                ? t('dialog.deleteContact.deleting')
-                : t('dialog.deleteContact.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={open => {
+          if (!open) {
+            setDeleteDialogOpen(false);
+            setContactToDelete(null);
+          }
+        }}
+        title={t('dialog.deleteContact.title')}
+        description={t('dialog.deleteContact.description', { name: contactToDelete?.name ?? '' })}
+        cancelLabel={t('dialog.deleteContact.cancel')}
+        confirmLabel={t('dialog.deleteContact.confirm')}
+        onConfirm={confirmDeleteContact}
+        loading={state.loading.delete}
+      />
 
       {/* Start Conversation Modal */}
       {conversationContact && (

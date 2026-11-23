@@ -84,7 +84,9 @@
     "visitOfficialSite": "Visita il sito ufficiale",
     "delete": "Elimina",
     "reconnect": "Riconnetti",
-    "backToIntegrations": "Torna alle Integrazioni"
+    "backToIntegrations": "Torna alle Integrazioni",
+    "showSecret": "Mostra",
+    "hideSecret": "Nascondi"
   },
   "status": {
     "active": "Attivo",
@@ -1267,5 +1269,10 @@
   "email": {
     "name": "Email",
     "description": "Supporto via email integrato"
+  },
+  "confirmDisconnect": {
+    "title": "Disconnettere {{name}}?",
+    "description": "L'integrazione smette di funzionare finché non viene ricollegata. I dati salvati vengono mantenuti.",
+    "cancel": "Annulla"
   }
 }

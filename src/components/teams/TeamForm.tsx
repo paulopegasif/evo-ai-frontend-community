@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Switch,
-  Separator,
-} from '@evoapi/design-system';
-import { Users, Settings, Save, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
 import { Team, TeamFormData } from '@/types/users';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -96,110 +94,61 @@ export default function TeamForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Basic Information */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-lg font-semibold">
-          <Users className="h-5 w-5" />
-          {t('form.basicInfo')}
-        </div>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <Field invalid={Boolean(errors.name)}>
+        <FieldLabel htmlFor="name">{t('form.name.label')}</FieldLabel>
+        <Input
+          id="name"
+          value={formData.name}
+          onChange={(e) => handleInputChange('name', e.target.value)}
+          placeholder={t('form.name.placeholder')}
+          aria-invalid={errors.name ? true : undefined}
+          disabled={loading}
+        />
+        {errors.name && <FieldError match>{errors.name}</FieldError>}
+      </Field>
 
-        <div className="grid gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium">
-              {t('form.name.label')}
-            </Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder={t('form.name.placeholder')}
-              className={errors.name ? 'border-red-500' : ''}
-              disabled={loading}
-            />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name}</p>
-            )}
-          </div>
+      <Field invalid={Boolean(errors.description)}>
+        <FieldLabel htmlFor="description">{t('form.description.label')}</FieldLabel>
+        <Textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) => handleInputChange('description', e.target.value)}
+          placeholder={t('form.description.placeholder')}
+          aria-invalid={errors.description ? true : undefined}
+          rows={3}
+          disabled={loading}
+        />
+        {errors.description ? (
+          <FieldError match>{errors.description}</FieldError>
+        ) : (
+          <FieldDescription className="self-end tabular-nums">
+            {t('form.description.counter', { current: formData.description.length })}
+          </FieldDescription>
+        )}
+      </Field>
 
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium">
-              {t('form.description.label')}
-            </Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder={t('form.description.placeholder')}
-              className={`resize-none ${errors.description ? 'border-red-500' : ''}`}
-              rows={3}
-              disabled={loading}
-            />
-            {errors.description && (
-              <p className="text-sm text-red-500">{errors.description}</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {t('form.description.counter', { current: formData.description.length })}
-            </p>
-          </div>
+      <div className="flex items-center justify-between gap-4 rounded-xl border bg-muted/24 px-4 py-3">
+        <div className="flex flex-col gap-0.5">
+          <Label htmlFor="allow_auto_assign">{t('form.autoAssign.label')}</Label>
+          <p className="text-muted-foreground text-xs">{t('form.autoAssign.description')}</p>
         </div>
+        <Switch
+          id="allow_auto_assign"
+          checked={formData.allow_auto_assign}
+          onCheckedChange={(checked) => handleInputChange('allow_auto_assign', checked)}
+          disabled={loading}
+        />
       </div>
 
-      <Separator />
-
-      {/* Configuration */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-lg font-semibold">
-          <Settings className="h-5 w-5" />
-          {t('form.configuration')}
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-sm font-medium">
-                {t('form.autoAssign.label')}
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {t('form.autoAssign.description')}
-              </p>
-            </div>
-            <Switch
-              checked={formData.allow_auto_assign}
-              onCheckedChange={(checked) => handleInputChange('allow_auto_assign', checked)}
-              disabled={loading}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Form Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
         {onCancel && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={loading}
-            className="min-w-[100px]"
-          >
-            <X className="h-4 w-4 mr-2" />
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
             {t('form.actions.cancel')}
           </Button>
         )}
-        <Button
-          type="submit"
-          disabled={loading || !formData.name.trim()}
-          className="min-w-[120px]"
-        >
-          {loading ? (
-            t('form.actions.saving')
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-2" />
-              {isNew ? t('form.actions.create') : t('form.actions.save')}
-            </>
-          )}
+        <Button type="submit" disabled={!formData.name.trim()} loading={loading}>
+          {loading ? t('form.actions.saving') : isNew ? t('form.actions.create') : t('form.actions.save')}
         </Button>
       </div>
     </form>

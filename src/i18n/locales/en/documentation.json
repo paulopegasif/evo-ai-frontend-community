@@ -23,7 +23,8 @@
         "managingAgents": "Managing Agents",
         "chatSettings": "Chat Settings",
         "apiIntegration": "API Integration",
-        "backupRestore": "Backup and Restore"
+        "backupRestore": "Backup and Restore",
+        "knowledgeBase": "Knowledge Base"
       }
     },
     "apiReference": {
@@ -72,6 +73,10 @@
       "advancedSettings": {
         "title": "Advanced Settings:",
         "description": "Control total over the behavior of agents"
+      },
+      "knowledgeBase": {
+        "title": "Knowledge Base:",
+        "description": "Give your agents documents and content to answer from"
       }
     },
     "gettingStarted": {
@@ -80,7 +85,8 @@
       "steps": {
         "step1": "Configure your profile in the <strong>Settings</strong> area",
         "step2": "Create your first agent in the <strong>Agents</strong> section",
-        "step4": "Start chatting with your agent in the <strong>Chat</strong>"
+        "step4": "Start chatting with your agent in the <strong>Chat</strong>",
+        "step3": "Add documents to the <strong>Knowledge Base</strong> so your agent can use them"
       }
     },
     "tip": {

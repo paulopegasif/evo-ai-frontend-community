@@ -1,26 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Label,
-  Input,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { PipelineStage } from '@/types/analytics';
 import type { StageAutomationRule } from '@/types/analytics/pipelines';
 import type { Label as ConversationLabel } from '@/types/settings/labels';
@@ -60,6 +47,7 @@ interface EditStageModalProps {
     name: string;
     color: string;
     stage_type: string;
+    counts_as_qualified?: boolean;
     automation_rules?: { description?: string; rules?: StageAutomationRule[] };
     custom_fields?: Record<string, unknown> & {
       attributes?: string[];
@@ -83,6 +71,7 @@ export default function EditStageModal({
   const [name, setName] = useState('');
   const [color, setColor] = useState('#3B82F6');
   const [stageType, setStageType] = useState('active');
+  const [countsAsQualified, setCountsAsQualified] = useState(false);
   const [description, setDescription] = useState('');
   const [customAttributes, setCustomAttributes] = useState<Record<string, unknown>>({});
   const [automationRules, setAutomationRules] = useState<StageAutomationRule[]>([]);
@@ -199,6 +188,7 @@ export default function EditStageModal({
       setName(stage.name);
       setColor(stage.color);
       setStageType(stage.stage_type || 'active');
+      setCountsAsQualified(Boolean(stage.counts_as_qualified));
       setDescription(stage.automation_rules?.description || stage.description || '');
       setAutomationRules(stage.automation_rules?.rules || []);
       // Load attributes array from custom_fields.attributes
@@ -261,6 +251,7 @@ export default function EditStageModal({
       name: name.trim(),
       color,
       stage_type: stageType,
+      counts_as_qualified: countsAsQualified,
       automation_rules: Object.keys(automationRulesPayload).length > 0 ? automationRulesPayload : undefined,
       custom_fields: attributeKeys.length > 0
         ? {
@@ -280,7 +271,7 @@ export default function EditStageModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t('editStage.title')}</DialogTitle>
           <DialogDescription>
@@ -288,161 +279,181 @@ export default function EditStageModal({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="details">{t('editStage.details')}</TabsTrigger>
-            <TabsTrigger value="automation">{t('editStage.automation')}</TabsTrigger>
-            <TabsTrigger value="attributes">{t('editStage.customAttributes')}</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="details" className="py-4 space-y-4 overflow-y-auto flex-1">
-          {/* Stage Name */}
-          <div className="grid gap-2">
-            <Label htmlFor="stage-name">{t('editStage.name')}</Label>
-            <Input
-              id="stage-name"
-              placeholder={t('editStage.namePlaceholder')}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={100}
-            />
+        <Tabs defaultValue="details" className="contents">
+          <div className="px-6">
+            <TabsList className="w-full">
+              <TabsTab value="details" className="flex-1">{t('editStage.details')}</TabsTab>
+              <TabsTab value="automation" className="flex-1">{t('editStage.automation')}</TabsTab>
+              <TabsTab value="attributes" className="flex-1">{t('editStage.customAttributes')}</TabsTab>
+            </TabsList>
           </div>
 
-          {/* Stage Color */}
-          <div className="grid gap-2">
-            <Label>{t('editStage.color')}</Label>
-            <Select value={color} onValueChange={setColor}>
-              <SelectTrigger>
-                <SelectValue>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-4 h-4 rounded-full border border-border"
-                      style={{ backgroundColor: color }}
-                    />
-                    {stageColors.find(c => c.value === color)?.label || t('editStage.customColor')}
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {stageColors.map((colorOption) => (
-                  <SelectItem key={colorOption.value} value={colorOption.value}>
+          <DialogPanel>
+            <TabsPanel value="details" className="space-y-4">
+            {/* Stage Name */}
+            <div className="grid gap-2">
+              <Label htmlFor="stage-name">{t('editStage.name')}</Label>
+              <Input
+                id="stage-name"
+                placeholder={t('editStage.namePlaceholder')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={100}
+              />
+            </div>
+
+            {/* Stage Color */}
+            <div className="grid gap-2">
+              <Label>{t('editStage.color')}</Label>
+              <Select
+                items={Object.fromEntries(stageColors.map(c => [c.value, c.label]))}
+                value={color}
+                onValueChange={value => value != null && setColor(String(value))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue>
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-4 h-4 rounded-full border border-border"
-                        style={{ backgroundColor: colorOption.value }}
+                        className="size-3 rounded-full"
+                        style={{ backgroundColor: color }}
                       />
-                      {colorOption.label}
+                      {stageColors.find(c => c.value === color)?.label || t('editStage.customColor')}
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectPopup>
+                  {stageColors.map((colorOption) => (
+                    <SelectItem key={colorOption.value} value={colorOption.value}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="size-3 rounded-full"
+                          style={{ backgroundColor: colorOption.value }}
+                        />
+                        {colorOption.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            </div>
 
-          {/* Stage Type */}
-          <div className="grid gap-2">
-            <Label>{t('editStage.stageType')}</Label>
-            <Select value={stageType} onValueChange={setStageType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">{t('editStage.stageTypes.active')}</SelectItem>
-                <SelectItem value="completed">{t('editStage.stageTypes.completed')}</SelectItem>
-                <SelectItem value="cancelled">{t('editStage.stageTypes.cancelled')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Stage Type */}
+            <div className="grid gap-2">
+              <Label>{t('editStage.stageType')}</Label>
+              <Select
+                items={{
+                  active: t('editStage.stageTypes.active'),
+                  completed: t('editStage.stageTypes.completed'),
+                  cancelled: t('editStage.stageTypes.cancelled'),
+                }}
+                value={stageType}
+                onValueChange={value => value != null && setStageType(String(value))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup>
+                  <SelectItem value="active">{t('editStage.stageTypes.active')}</SelectItem>
+                  <SelectItem value="completed">{t('editStage.stageTypes.completed')}</SelectItem>
+                  <SelectItem value="cancelled">{t('editStage.stageTypes.cancelled')}</SelectItem>
+                </SelectPopup>
+              </Select>
+            </div>
 
-          {/* Description */}
-          <div className="grid gap-2">
-            <Label htmlFor="stage-description">{t('editStage.descriptionLabel')}</Label>
-            <Textarea
-              id="stage-description"
-              placeholder={t('editStage.descriptionPlaceholder')}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              maxLength={500}
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('editStage.characterCount', { current: description.length, max: 500 })}
-            </p>
-          </div>
+            {/* Lead tracking qualification */}
+            <div className="flex items-start justify-between gap-4 rounded-lg border p-3">
+              <div>
+                <Label htmlFor="stage-counts-as-qualified">{t('editStage.countsAsQualified')}</Label>
+                <p className="mt-1 text-muted-foreground text-xs">{t('editStage.countsAsQualifiedHint')}</p>
+              </div>
+              <Switch
+                id="stage-counts-as-qualified"
+                checked={countsAsQualified}
+                onCheckedChange={setCountsAsQualified}
+                disabled={stageType === 'cancelled'}
+              />
+            </div>
 
-          {/* Preview */}
-          <div className="grid gap-2">
-            <Label>{t('editStage.preview')}</Label>
-            <div className="p-3 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center space-x-3">
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: color }}
-                />
-                <div>
-                  <h4 className="text-sm font-medium text-foreground">
-                    {name || t('editStage.name')}
-                  </h4>
-                  {description && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {description}
-                    </p>
-                  )}
+            {/* Description */}
+            <div className="grid gap-2">
+              <Label htmlFor="stage-description">{t('editStage.descriptionLabel')}</Label>
+              <Textarea
+                id="stage-description"
+                placeholder={t('editStage.descriptionPlaceholder')}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                maxLength={500}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('editStage.characterCount', { current: description.length, max: 500 })}
+              </p>
+            </div>
+
+            {/* Preview */}
+            <div className="grid gap-2">
+              <Label>{t('editStage.preview')}</Label>
+              <div className="rounded-lg border bg-muted/48 p-3 dark:bg-muted/24">
+                <div className="flex items-center gap-3">
+                  <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                  <div>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {name || t('editStage.name')}
+                    </h4>
+                    {description && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {description}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          </TabsContent>
+            </TabsPanel>
 
-          <TabsContent value="automation" className="py-4 overflow-y-auto flex-1">
-            <StageAutomationRules
-              rules={automationRules}
-              onChange={setAutomationRules}
-              disabled={loading}
-              currentStageId={stage?.id}
-              currentPipelineId={stage?.pipeline_id}
-              stages={stages}
-              agents={agents}
-              labels={labels}
-              pipelines={pipelinesWithStages}
-              agentBots={agentBots}
-              messageTemplates={messageTemplates}
-            />
-          </TabsContent>
+            <TabsPanel value="automation">
+              <StageAutomationRules
+                rules={automationRules}
+                onChange={setAutomationRules}
+                disabled={loading}
+                currentStageId={stage?.id}
+                currentPipelineId={stage?.pipeline_id}
+                stages={stages}
+                agents={agents}
+                labels={labels}
+                pipelines={pipelinesWithStages}
+                agentBots={agentBots}
+                messageTemplates={messageTemplates}
+              />
+            </TabsPanel>
 
-          <TabsContent value="attributes" className="py-4 overflow-y-auto flex-1">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">{t('editStage.customAttributes')}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t('editStage.attributesDescription')}
-              </p>
-            </div>
-            <PipelineStageCustomAttributes
-              attributes={customAttributes}
-              onAttributesChange={setCustomAttributes}
-              disabled={loading}
-              pipelineId={stage.pipeline_id}
-              stageId={stage.id}
-            />
-          </TabsContent>
+            <TabsPanel value="attributes">
+              <div className="mb-4">
+                <h3 className="mb-1 font-semibold text-base">{t('editStage.customAttributes')}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {t('editStage.attributesDescription')}
+                </p>
+              </div>
+              <PipelineStageCustomAttributes
+                attributes={customAttributes}
+                onAttributesChange={setCustomAttributes}
+                disabled={loading}
+                pipelineId={stage.pipeline_id}
+                stageId={stage.id}
+              />
+            </TabsPanel>
+          </DialogPanel>
         </Tabs>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
             {t('editStage.cancel')}
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!canSubmit || loading}
-          >
-            {loading ? t('editStage.saving') : t('editStage.save')}
+          <Button onClick={handleSubmit} disabled={!canSubmit} loading={loading}>
+            {t('editStage.save')}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

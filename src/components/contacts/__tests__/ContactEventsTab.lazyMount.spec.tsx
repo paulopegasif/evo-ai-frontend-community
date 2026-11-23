@@ -1,12 +1,12 @@
 /**
  * AC12 — lazy mount: when ContactDetails opens with a non-events tab active,
- * the events service must not be hit. Uses real Radix Tabs (not the mocked
+ * the events service must not be hit. Uses real coss Tabs (not the mocked
  * hook from ContactEventsTab.spec.tsx) so we exercise the actual lazy-mount
- * behavior of TabsContent.
+ * behavior of TabsPanel.
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@evoapi/design-system';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const listMock = vi.fn();
@@ -31,13 +31,13 @@ function Harness({ defaultValue }: { defaultValue: 'pipeline' | 'events' }) {
   return (
     <Tabs defaultValue={defaultValue}>
       <TabsList>
-        <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
-        <TabsTrigger value="events">Eventos</TabsTrigger>
+        <TabsTab value="pipeline">Pipeline</TabsTab>
+        <TabsTab value="events">Eventos</TabsTab>
       </TabsList>
-      <TabsContent value="pipeline">pipeline content</TabsContent>
-      <TabsContent value="events">
+      <TabsPanel value="pipeline">pipeline content</TabsPanel>
+      <TabsPanel value="events">
         <ContactEventsTab contactId="contact-lazy-1" />
-      </TabsContent>
+      </TabsPanel>
     </Tabs>
   );
 }

@@ -1,12 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import {
-  Button,
-  Card,
-  CardContent,
-  Textarea,
-  Skeleton,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Pencil, StickyNote, Trash, X, Check } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -43,6 +43,7 @@ export default function ContactNotesCard({ contactId }: ContactNotesCardProps) {
   const [editingContent, setEditingContent] = useState('');
   const [savingEditId, setSavingEditId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
 
   const loadNotes = useCallback(async () => {
     setLoading(true);
@@ -126,28 +127,31 @@ export default function ContactNotesCard({ contactId }: ContactNotesCardProps) {
 
   return (
     <Card>
-      <CardContent className="p-5">
-        <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-          <StickyNote className="h-4 w-4 text-primary" />
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <StickyNote className="size-4 text-muted-foreground" />
           {t('notes.title')}
-        </h3>
-
+          {!loading && notes.length > 0 && (
+            <Badge variant="secondary" className="tabular-nums">
+              {notes.length}
+            </Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardPanel className="flex flex-col gap-4">
         {canUpdate && (
-          <div className="flex flex-col gap-2 mb-4">
+          <div className="flex flex-col gap-2">
             <Textarea
               value={newNote}
               onChange={e => setNewNote(e.target.value)}
               placeholder={t('notes.addPlaceholder')}
+              aria-label={t('notes.addPlaceholder')}
               rows={3}
               disabled={submitting}
             />
             <div className="flex justify-end">
-              <Button
-                size="sm"
-                onClick={handleAddNote}
-                disabled={submitting || !newNote.trim()}
-              >
-                {submitting ? t('notes.actions.adding') : t('notes.actions.add')}
+              <Button size="sm" onClick={handleAddNote} disabled={!newNote.trim()} loading={submitting}>
+                {t('notes.actions.add')}
               </Button>
             </div>
           </div>
@@ -155,47 +159,58 @@ export default function ContactNotesCard({ contactId }: ContactNotesCardProps) {
 
         {loading ? (
           <div className="flex flex-col gap-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-16 w-full rounded-lg" />
+            <Skeleton className="h-16 w-full rounded-lg" />
           </div>
         ) : notes.length === 0 ? (
-          <div className="text-center text-sm text-muted-foreground py-6">
-            {t('notes.empty')}
-          </div>
+          <p className="rounded-lg border border-dashed py-6 text-center text-muted-foreground text-sm">{t('notes.empty')}</p>
         ) : (
-          <div className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-2">
             {notes.map(note => (
-              <div key={note.id} className="rounded-lg border border-border p-3">
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="text-xs text-muted-foreground truncate">
+              <li key={note.id} className="group rounded-lg border bg-muted/24 p-3">
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <div className="truncate text-muted-foreground text-xs">
                     <span className="font-medium text-foreground">{note.user?.name}</span>
                     {' · '}
-                    {formatDateTime(note.created_at)}
+                    <span className="tabular-nums">{formatDateTime(note.created_at)}</span>
                   </div>
                   {editingId !== note.id && (canUpdate || canDelete) && (
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="-my-1 flex shrink-0 items-center gap-0.5">
                       {canUpdate && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0"
-                          onClick={() => startEdit(note)}
-                          aria-label={t('notes.actions.edit')}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon-xs"
+                                onClick={() => startEdit(note)}
+                                aria-label={t('notes.actions.edit')}
+                              />
+                            }
+                          >
+                            <Pencil />
+                          </TooltipTrigger>
+                          <TooltipPopup>{t('notes.actions.edit')}</TooltipPopup>
+                        </Tooltip>
                       )}
                       {canDelete && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-                          onClick={() => handleDelete(note.id)}
-                          disabled={deletingId === note.id}
-                          aria-label={t('notes.actions.delete')}
-                        >
-                          <Trash className="h-3.5 w-3.5" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon-xs"
+                                className="text-destructive-foreground"
+                                onClick={() => setNoteToDelete(note.id)}
+                                disabled={deletingId === note.id}
+                                aria-label={t('notes.actions.delete')}
+                              />
+                            }
+                          >
+                            <Trash />
+                          </TooltipTrigger>
+                          <TooltipPopup>{t('notes.actions.delete')}</TooltipPopup>
+                        </Tooltip>
                       )}
                     </div>
                   )}
@@ -206,32 +221,48 @@ export default function ContactNotesCard({ contactId }: ContactNotesCardProps) {
                     <Textarea
                       value={editingContent}
                       onChange={e => setEditingContent(e.target.value)}
+                      aria-label={t('notes.actions.edit')}
                       rows={3}
                       disabled={savingEditId === note.id}
                     />
                     <div className="flex items-center justify-end gap-1.5">
                       <Button variant="ghost" size="sm" onClick={cancelEdit} disabled={savingEditId === note.id}>
-                        <X className="h-3.5 w-3.5 mr-1" />
+                        <X />
                         {t('notes.actions.cancel')}
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => handleSaveEdit(note.id)}
-                        disabled={savingEditId === note.id || !editingContent.trim()}
+                        disabled={!editingContent.trim()}
+                        loading={savingEditId === note.id}
                       >
-                        <Check className="h-3.5 w-3.5 mr-1" />
+                        <Check />
                         {t('notes.actions.save')}
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm whitespace-pre-wrap break-words">{note.content}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm">{note.content}</p>
                 )}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
-      </CardContent>
+      </CardPanel>
+
+      <ConfirmDialog
+        open={noteToDelete !== null}
+        onOpenChange={open => !open && setNoteToDelete(null)}
+        title={t('notes.deleteConfirm.title')}
+        description={t('notes.deleteConfirm.description')}
+        cancelLabel={t('notes.actions.cancel')}
+        confirmLabel={t('notes.actions.delete')}
+        loading={deletingId !== null}
+        onConfirm={async () => {
+          if (noteToDelete) await handleDelete(noteToDelete);
+          setNoteToDelete(null);
+        }}
+      />
     </Card>
   );
 }

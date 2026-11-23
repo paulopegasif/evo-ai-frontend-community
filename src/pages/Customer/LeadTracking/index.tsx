@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Users,
-  CheckCircle2,
   RefreshCw,
-  Sparkles,
-  TrendingUp,
   Info,
 } from 'lucide-react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import BaseHeader from '@/components/base/BaseHeader';
-import DashboardMetricCard from '@/pages/Customer/Dashboard/components/DashboardMetricCard';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import type { LeadTrackingDashboardResponse, LeadTrackingParams } from '@/types/leadTracking';
 import { toast } from 'sonner';
@@ -22,7 +20,7 @@ import FiltersBar from './components/FiltersBar';
 import PaidMediaSection from './components/PaidMediaSection';
 import HighlightsSection from './components/HighlightsSection';
 import YearOverYearCard from './components/YearOverYearCard';
-import { currencyOrDash, formatCurrency, formatNumber, percentOrDash, plural } from './components/format';
+import ExecutiveSummary from './components/ExecutiveSummary';
 import { useLeadTrackingFilters } from './hooks/useLeadTrackingFilters';
 import { makeKpiComparer } from './compare';
 import { granularityFor, parseIsoDate, toApiRange, type DateRange } from './periods';
@@ -30,22 +28,18 @@ import { granularityFor, parseIsoDate, toApiRange, type DateRange } from './peri
 const viewerTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const SectionTitle = ({ title, description }: { title: string; description: string }) => (
-  <div className="pt-2">
-    <h2 className="text-base font-semibold">{title}</h2>
-    <p className="text-sm text-muted-foreground">{description}</p>
+  <div className="-mb-1 md:-mb-3">
+    <h2 className="font-semibold text-base">{title}</h2>
+    <p className="text-muted-foreground text-sm">{description}</p>
   </div>
 );
 
 const Notice = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-    <Info className="h-3.5 w-3.5 shrink-0" />
+  <p className="flex items-center gap-1.5 text-muted-foreground text-xs">
+    <Info className="size-3.5 shrink-0" />
     {children}
   </p>
 );
-
-const count = (value: number | null) => formatNumber(value);
-const percent = (value: number | null) => percentOrDash(value);
-const currency = (value: number | null) => currencyOrDash(value);
 
 export const LeadTrackingPage: React.FC = () => {
   const { filters, setPreset, setCompare, setFilter, clearFilters } = useLeadTrackingFilters();
@@ -101,36 +95,53 @@ export const LeadTrackingPage: React.FC = () => {
   const historyIncomplete = showAds && historyStart && historyStart > oldestDay;
 
   return (
-    <div className="h-full min-w-0 flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto overflow-x-hidden">
+    <div className="flex h-full min-w-0 flex-col gap-4 overflow-y-auto overflow-x-hidden p-4 md:gap-6 md:p-6">
       <BaseHeader
         title="Tracking de Leads & Funil"
         subtitle="Campanhas, mídia paga e conversão do funil comercial"
-      >
-        <div className="flex items-start gap-2 flex-wrap">
-          <PeriodControls
-            preset={filters.preset}
-            range={range}
-            compareMode={filters.compareMode}
-            comparison={comparison}
-            onPresetChange={setPreset}
-            onCompareChange={setCompare}
-          />
-          <Button variant="outline" size="sm" className="h-9" onClick={fetchTrackingData} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
-        </div>
-      </BaseHeader>
-
-      <FiltersBar
-        sources={data?.filter_options.sources ?? []}
-        campaigns={data?.filter_options.campaigns ?? []}
-        source={filters.source}
-        campaign={filters.campaign}
-        user={filters.user}
-        onChange={setFilter}
-        onClear={clearFilters}
       />
+
+      {/* Toolbar: period, comparison and segment filters */}
+      <Card className="gap-0">
+        <CardPanel className="flex flex-col gap-3 p-3 xl:flex-row xl:items-start xl:justify-between">
+          <div className="flex items-start gap-2">
+            <PeriodControls
+              preset={filters.preset}
+              range={range}
+              compareMode={filters.compareMode}
+              comparison={comparison}
+              onPresetChange={setPreset}
+              onCompareChange={setCompare}
+            />
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-muted-foreground"
+                    onClick={fetchTrackingData}
+                    disabled={loading}
+                    aria-label="Atualizar"
+                  />
+                }
+              >
+                <RefreshCw className={cn(loading && 'animate-spin')} />
+              </TooltipTrigger>
+              <TooltipPopup>Atualizar</TooltipPopup>
+            </Tooltip>
+          </div>
+          <FiltersBar
+            sources={data?.filter_options.sources ?? []}
+            campaigns={data?.filter_options.campaigns ?? []}
+            source={filters.source}
+            campaign={filters.campaign}
+            user={filters.user}
+            onChange={setFilter}
+            onClear={clearFilters}
+          />
+        </CardPanel>
+      </Card>
 
       {historyIncomplete && (
         <Notice>
@@ -138,6 +149,8 @@ export const LeadTrackingPage: React.FC = () => {
           {comparison ? ' do período comparado' : ''} antes dessa data pode estar incompleto enquanto a importação avança.
         </Notice>
       )}
+
+      <ExecutiveSummary kpis={kpis} compare={compare} timeline={data?.timeline} />
 
       {showAds && kpis && (
         <>
@@ -149,49 +162,6 @@ export const LeadTrackingPage: React.FC = () => {
           <HighlightsSection campaigns={data?.campaigns ?? []} previousCampaigns={previous?.campaigns} />
         </>
       )}
-
-      <SectionTitle title="Aquisição" description="Contatos que viraram lead no período, acompanhados até a assinatura" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <DashboardMetricCard
-          title="Novos leads"
-          value={kpis?.total_leads ?? 0}
-          subtitle={`${percentOrDash(kpis?.qualification_rate)} qualificados`}
-          icon={Users}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Novos leads', content: 'Contatos criados no período a partir de tráfego pago, outbound B2B e campanhas.' }}
-          comparison={compare('total_leads', count)}
-        />
-        <DashboardMetricCard
-          title="Leads qualificados"
-          value={kpis?.total_qualified ?? 0}
-          subtitle={`${percentOrDash(kpis?.qualification_rate)} qualificados`}
-          icon={CheckCircle2}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Leads qualificados', content: 'Leads do período com oportunidade ativa ou que avançaram no pipeline.' }}
-          comparison={compare('total_qualified', count)}
-        />
-        <DashboardMetricCard
-          title="Taxa de conversão"
-          value={percentOrDash(kpis?.conversion_rate)}
-          subtitle={plural(kpis?.total_won ?? 0, 'assinante', 'assinantes')}
-          icon={Sparkles}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{
-            title: 'Taxa de conversão',
-            content: 'Leads do período convertidos em clientes assinantes no pipeline ÷ novos leads.',
-          }}
-          comparison={compare('conversion_rate', percent)}
-        />
-        <DashboardMetricCard
-          title="Receita dos novos leads"
-          value={formatCurrency(kpis?.cohort_revenue ?? 0)}
-          subtitle={plural(kpis?.total_won ?? 0, 'venda fechada', 'vendas fechadas')}
-          icon={TrendingUp}
-          accentClassName="bg-primary/15 text-primary"
-          tooltip={{ title: 'Receita dos novos leads', content: 'Receita total gerada pelos novos clientes que entraram no período.' }}
-          comparison={compare('cohort_revenue', currency)}
-        />
-      </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
         <div className="xl:col-span-3">
@@ -211,7 +181,9 @@ export const LeadTrackingPage: React.FC = () => {
 
       <CampaignsSection campaigns={data?.campaigns ?? []} />
 
+
       <YearOverYearCard filters={baseParams} adsHistoryFrom={data?.period.ads_history_from ?? null} />
+
     </div>
   );
 };

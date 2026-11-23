@@ -235,5 +235,9 @@
       "deleting": "Suppression en cours...",
       "confirm": "Supprimer Tous"
     }
+  },
+  "viewMode": {
+    "cards": "Vue en cartes",
+    "table": "Vue en tableau"
   }
 }

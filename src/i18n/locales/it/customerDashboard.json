@@ -19,7 +19,8 @@
       "until": "A",
       "period": "Periodo",
       "apply": "Applica filtri",
-      "clear": "Pulisci filtri"
+      "clear": "Pulisci filtri",
+      "days": "giorni"
     },
     "stats": {
       "totalPipeline": "Totale nella Canalizzazione",
@@ -146,6 +147,7 @@
       "agents": "Nessun dato agenti per il periodo selezionato.",
       "channels": "Nessun dato canali per il periodo selezionato.",
       "pipelineInactive": "Pipeline inattiva nel periodo selezionato."
-    }
+    },
+    "retry": "Riprova"
   }
 }

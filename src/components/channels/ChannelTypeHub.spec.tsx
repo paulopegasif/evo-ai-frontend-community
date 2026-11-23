@@ -107,7 +107,7 @@ describe('ChannelTypeHub', () => {
     // A disconnected inbox pushes the type-level status to error, painting the
     // manage button's status dot red.
     const manageButton = screen.getByRole('button', { name: 'overview.actions.manage' });
-    expect(manageButton.querySelector('.bg-red-500')).toBeInTheDocument();
+    expect(manageButton.querySelector('.bg-destructive')).toBeInTheDocument();
   });
 
   it('opens the connections popover with the row details when the manage button is clicked', async () => {

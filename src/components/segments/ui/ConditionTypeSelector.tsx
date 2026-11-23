@@ -1,11 +1,5 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@evoapi/design-system';
+import { Field, FieldLabel } from '@/components/ui/field';
+import OptionSelect from './OptionSelect';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface ConditionTypeSelectorProps {
@@ -47,31 +41,16 @@ export default function ConditionTypeSelector({
   const categories = getCategories(t);
 
   return (
-    <div>
-      <Label className="text-sm font-medium">
-        {t('conditionTypeSelector.groupCondition')}
-      </Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger>
-          <SelectValue placeholder={t('conditionTypeSelector.placeholder')} />
-        </SelectTrigger>
-        <SelectContent>
-          {categories.map((category) => (
-            <div key={category.key}>
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
-                {category.label}
-              </div>
-              {conditionTypes
-                .filter((type) => type.category === category.key)
-                .map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-            </div>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Field>
+      <FieldLabel htmlFor="segment-condition-type">{t('conditionTypeSelector.groupCondition')}</FieldLabel>
+      <OptionSelect
+        id="segment-condition-type"
+        value={value}
+        onValueChange={onChange}
+        placeholder={t('conditionTypeSelector.placeholder')}
+        groups={categories}
+        options={conditionTypes.map(type => ({ value: type.value, label: type.label, group: type.category }))}
+      />
+    </Field>
   );
 }

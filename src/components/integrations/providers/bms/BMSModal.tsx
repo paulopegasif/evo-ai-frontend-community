@@ -1,18 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Card,
-  Switch,
-  Label
-} from '@evoapi/design-system';
-import { MessageSquare, AlertCircle, ExternalLink } from 'lucide-react';
+import { Check, ExternalLink, MessageSquare } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DialogClose } from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Switch } from '@/components/ui/switch';
 import { BMSHook, BMSFormData, IntegrationHook } from '@/types/integrations';
+import { AgentIntegrationDialog, SettingRow } from '../../agentConfig/AgentIntegrationDialog';
+import IntegrationNotice from '../../shared/IntegrationNotice';
+import SecretInput from '../../shared/SecretInput';
+
+const SYNC_OPTIONS = [
+  { field: 'enable_contact_sync', key: 'contactSync' },
+  { field: 'enable_label_sync', key: 'labelSync' },
+  { field: 'enable_custom_attributes_sync', key: 'customAttributesSync' },
+  { field: 'enable_campaign_sync', key: 'campaignSync' },
+] as const;
+
+const FEATURES = ['bidirectionalSync', 'labelSync', 'customAttributes', 'campaignSync', 'centralizedHistory'];
 
 interface BMSModalProps {
   hook?: IntegrationHook;
@@ -32,6 +37,7 @@ export default function BMSModal({
   loading: submitting = false
 }: BMSModalProps) {
   const { t } = useLanguage('integrations');
+  const formId = useId();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<BMSFormData>({
     api_key: '',
@@ -95,159 +101,98 @@ export default function BMSModal({
     window.open('https://docs.brius.com/api', '_blank');
   };
 
+  const saving = loading || submitting;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5" />
-            {hook ? t('bms.modal.updateTitle') : t('bms.modal.title')}
-          </DialogTitle>
-        </DialogHeader>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={<MessageSquare className="text-muted-foreground" />}
+      title={hook ? t('bms.modal.updateTitle') : t('bms.modal.title')}
+      description={t('bms.modal.description')}
+      footerStart={
+        <Button type="button" variant="ghost" onClick={openBMSDoc}>
+          <ExternalLink />
+          {t('bms.modal.actions.documentation')}
+        </Button>
+      }
+      footer={
+        <>
+          <DialogClose render={<Button type="button" variant="ghost" />} disabled={saving}>
+            {t('bms.modal.actions.cancel')}
+          </DialogClose>
+          <Button type="submit" form={formId} loading={saving}>
+            {saving
+              ? t('bms.modal.actions.saving')
+              : hook
+                ? t('bms.modal.actions.update')
+                : t('bms.modal.actions.configure')}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+        <section className="flex flex-col gap-4">
+          <h3 className="font-medium text-sm">{t('bms.modal.apiConfig')}</h3>
+          <Field invalid={Boolean(errors.api_key)}>
+            <FieldLabel htmlFor="bms-api-key">
+              {t('bms.modal.fields.apiKey.label')} <span className="text-destructive-foreground">*</span>
+            </FieldLabel>
+            <SecretInput
+              id="bms-api-key"
+              placeholder={t('bms.modal.fields.apiKey.placeholder')}
+              value={formData.api_key}
+              onChange={e => {
+                setFormData(prev => ({ ...prev, api_key: e.target.value }));
+                if (errors.api_key) setErrors(prev => ({ ...prev, api_key: '' }));
+              }}
+              aria-invalid={errors.api_key ? true : undefined}
+            />
+            {errors.api_key ? (
+              <FieldError match>{errors.api_key}</FieldError>
+            ) : (
+              <FieldDescription>{t('bms.modal.fields.apiKey.hint')}</FieldDescription>
+            )}
+          </Field>
+        </section>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Header Description */}
-          <div className="text-sm text-muted-foreground">
-            {t('bms.modal.description')}
+        <section className="flex flex-col gap-3">
+          <h3 className="font-medium text-sm">{t('bms.modal.syncOptions')}</h3>
+          <div className="flex flex-col gap-2">
+            {SYNC_OPTIONS.map(({ field, key }) => (
+              <SettingRow
+                key={field}
+                htmlFor={field}
+                title={t(`bms.modal.fields.${key}.label`)}
+                description={t(`bms.modal.fields.${key}.description`)}
+                control={
+                  <Switch
+                    id={field}
+                    checked={Boolean(formData[field])}
+                    onCheckedChange={checked => setFormData(prev => ({ ...prev, [field]: checked }))}
+                  />
+                }
+              />
+            ))}
           </div>
+        </section>
 
-          {/* API Configuration */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('bms.modal.apiConfig')}</h4>
+        <section className="flex flex-col gap-3 rounded-xl border bg-muted/24 p-4">
+          <h3 className="font-medium text-sm">{t('bms.modal.features.title')}</h3>
+          <ul className="grid gap-2 text-muted-foreground text-sm sm:grid-cols-2">
+            {FEATURES.map(key => (
+              <li key={key} className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-success" />
+                {t(`bms.modal.features.${key}`)}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="api_key" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  {t('bms.modal.fields.apiKey.label')} *
-                </label>
-                <Input
-                  id="api_key"
-                  type="password"
-                  placeholder={t('bms.modal.fields.apiKey.placeholder')}
-                  value={formData.api_key}
-                  onChange={(e) => setFormData(prev => ({ ...prev, api_key: e.target.value }))}
-                  className={errors.api_key ? 'border-red-500' : ''}
-                />
-                {errors.api_key && (
-                  <p className="text-sm text-red-600 mt-1">{errors.api_key}</p>
-                )}
-                <p className="text-xs text-slate-500 mt-1">
-                  {t('bms.modal.fields.apiKey.hint')}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Sync Options */}
-          <Card className="p-4">
-            <h4 className="font-semibold mb-4">{t('bms.modal.syncOptions')}</h4>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="enable_contact_sync">{t('bms.modal.fields.contactSync.label')}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('bms.modal.fields.contactSync.description')}
-                  </p>
-                </div>
-                <Switch
-                  id="enable_contact_sync"
-                  checked={formData.enable_contact_sync}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_contact_sync: checked }))}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="enable_label_sync">{t('bms.modal.fields.labelSync.label')}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('bms.modal.fields.labelSync.description')}
-                  </p>
-                </div>
-                <Switch
-                  id="enable_label_sync"
-                  checked={formData.enable_label_sync}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_label_sync: checked }))}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="enable_custom_attributes_sync">{t('bms.modal.fields.customAttributesSync.label')}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('bms.modal.fields.customAttributesSync.description')}
-                  </p>
-                </div>
-                <Switch
-                  id="enable_custom_attributes_sync"
-                  checked={formData.enable_custom_attributes_sync}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_custom_attributes_sync: checked }))}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="enable_campaign_sync">{t('bms.modal.fields.campaignSync.label')}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('bms.modal.fields.campaignSync.description')}
-                  </p>
-                </div>
-                <Switch
-                  id="enable_campaign_sync"
-                  checked={formData.enable_campaign_sync}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_campaign_sync: checked }))}
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Features Info */}
-          <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-            <h4 className="font-semibold mb-3 text-blue-800 dark:text-blue-200">
-              {t('bms.modal.features.title')}
-            </h4>
-            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-2">
-              <li>• {t('bms.modal.features.bidirectionalSync')}</li>
-              <li>• {t('bms.modal.features.labelSync')}</li>
-              <li>• {t('bms.modal.features.customAttributes')}</li>
-              <li>• {t('bms.modal.features.campaignSync')}</li>
-              <li>• {t('bms.modal.features.centralizedHistory')}</li>
-            </ul>
-          </Card>
-
-          {/* Security Warning */}
-          <Card className="p-4 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-amber-700 dark:text-amber-300">
-                <strong>{t('bms.modal.security.title')}</strong> {t('bms.modal.security.description')}
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex justify-between pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={openBMSDoc}
-              className="flex items-center gap-2"
-            >
-              <ExternalLink className="w-4 h-4" />
-              {t('bms.modal.actions.documentation')}
-            </Button>
-
-            <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t('bms.modal.actions.cancel')}
-              </Button>
-              <Button type="submit" disabled={loading || submitting}>
-                {loading || submitting ? t('bms.modal.actions.saving') : (hook ? t('bms.modal.actions.update') : t('bms.modal.actions.configure'))}
-              </Button>
-            </div>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <IntegrationNotice variant="warning" title={t('bms.modal.security.title')}>
+          {t('bms.modal.security.description')}
+        </IntegrationNotice>
+      </form>
+    </AgentIntegrationDialog>
   );
 }

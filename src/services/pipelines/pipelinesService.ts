@@ -113,6 +113,7 @@ class PipelinesService {
       position?: number;
       color?: string;
       stage_type?: string;
+      counts_as_qualified?: boolean;
       automation_rules?: { description?: string };
       custom_fields?: Record<string, unknown>;
     },

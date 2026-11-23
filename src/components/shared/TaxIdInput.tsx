@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { IMaskInput } from 'react-imask';
-import { Input } from '@evoapi/design-system';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { InputGroup } from '@/components/ui/input-group';
 
 interface TaxIdInputProps {
   type: 'person' | 'company';
@@ -18,10 +18,13 @@ interface TaxIdInputProps {
 /**
  * Tax ID Configuration by Country
  */
-const TAX_ID_CONFIG: Record<string, {
-  person: { mask?: string; placeholder: string };
-  company: { mask?: string; placeholder: string };
-}> = {
+const TAX_ID_CONFIG: Record<
+  string,
+  {
+    person: { mask?: string; placeholder: string };
+    company: { mask?: string; placeholder: string };
+  }
+> = {
   BR: {
     person: {
       mask: '000.000.000-00',
@@ -112,30 +115,24 @@ export const TaxIdInput: React.FC<TaxIdInputProps> = ({
 
   const hasMask = !!config.mask;
 
-  const baseClassName = cn(
-    'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors',
-    'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
-    'placeholder:text-muted-foreground',
-    'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
-    'disabled:cursor-not-allowed disabled:opacity-50',
-    'md:text-sm',
-    error && 'border-destructive focus-visible:ring-destructive',
-    className
-  );
-
-  // If country has mask, use IMaskInput
+  // If country has mask, render IMaskInput inside the coss input frame
+  // (InputGroup styles focus/invalid/disabled states of its native <input>).
   if (hasMask) {
     return (
-      <IMaskInput
-        mask={config.mask!}
-        value={value}
-        unmask={true} // Return only numbers/letters
-        onAccept={(value: string) => onChange(value)}
-        disabled={disabled}
-        placeholder={placeholder || config.placeholder}
-        id={id}
-        className={baseClassName}
-      />
+      <InputGroup className={className}>
+        <IMaskInput
+          mask={config.mask!}
+          value={value}
+          unmask={true} // Return only numbers/letters
+          onAccept={(value: string) => onChange(value)}
+          disabled={disabled}
+          placeholder={placeholder || config.placeholder}
+          id={id}
+          aria-invalid={error || undefined}
+          data-slot="input"
+          className="h-8.5 w-full min-w-0 rounded-[inherit] bg-transparent px-[calc(--spacing(3)-1px)] text-foreground leading-8.5 outline-none placeholder:text-muted-foreground/72 disabled:cursor-not-allowed sm:h-7.5 sm:leading-7.5"
+        />
+      </InputGroup>
     );
   }
 
@@ -145,10 +142,11 @@ export const TaxIdInput: React.FC<TaxIdInputProps> = ({
       id={id}
       type="text"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       disabled={disabled}
       placeholder={placeholder || config.placeholder}
-      className={baseClassName}
+      aria-invalid={error || undefined}
+      className={className}
     />
   );
 };

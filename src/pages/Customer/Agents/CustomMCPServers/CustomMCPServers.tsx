@@ -4,16 +4,9 @@ import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useLanguage } from '@/hooks/useLanguage';
 import { AgentsCustomMCPsTour } from '@/tours';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-} from '@evoapi/design-system';
-import { Grid3X3, List, TestTube } from 'lucide-react';
+import { ResourceGridSkeleton, ResourceViewToggle, type ResourceView } from '@/components/agents/resourceCard';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import { TestTube } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import {
   CustomMcpServer,
@@ -24,6 +17,7 @@ import {
 import { BaseFilter, AppliedFilter, CUSTOM_MCP_SERVER_FILTER_TYPES } from '@/types/core';
 import { buildAppliedFilterChips } from '@/utils/appliedFilterChips';
 import { CustomMCPServerCard } from '@/components/customMcpServers';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 import CustomMCPServersHeader from '@/components/customMcpServers/CustomMCPServersHeader';
 import CustomMCPServersTable from '@/components/customMcpServers/CustomMCPServersTable';
@@ -73,7 +67,7 @@ export default function CustomMCPServers() {
   const isWizardEdit = !!editServerId && location.pathname.endsWith('/edit');
   const isWizardOpen = isWizardCreate || isWizardEdit;
   const [state, setState] = useState<CustomMcpServersState>(INITIAL_STATE);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<ResourceView>('cards');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [serverToDelete, setServerToDelete] = useState<CustomMcpServer | null>(null);
 
@@ -430,7 +424,7 @@ export default function CustomMCPServers() {
   }
 
   return (
-    <div className="h-full flex flex-col p-4" data-tour="agents-custom-mcps-page">
+    <div className="flex h-full flex-col p-4 md:p-6" data-tour="agents-custom-mcps-page">
       <AgentsCustomMCPsTour />
       <div data-tour="agents-custom-mcps-header">
         <CustomMCPServersHeader
@@ -446,34 +440,14 @@ export default function CustomMCPServers() {
         />
       </div>
 
-      {/* View Mode Toggle */}
-      <div className="flex items-center justify-end mb-3" data-tour="agents-custom-mcps-view-toggle">
-        <div className="flex items-center border rounded-lg">
-          <Button
-            variant={viewMode === 'cards' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('cards')}
-            className="border-0 rounded-r-none"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'table' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setViewMode('table')}
-            className="border-0 rounded-l-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+      <div className="mb-3 flex items-center justify-end" data-tour="agents-custom-mcps-view-toggle">
+        <ResourceViewToggle value={viewMode} onChange={setViewMode} />
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto" data-tour="agents-custom-mcps-content">
         {state.loading.list ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-muted-foreground">{t('loading.servers')}</div>
-          </div>
+          viewMode === 'cards' ? <ResourceGridSkeleton /> : <ListSkeleton rows={6} />
         ) : state.servers.length === 0 ? (
           <EmptyState
             icon={TestTube}
@@ -486,7 +460,7 @@ export default function CustomMCPServers() {
             className="h-full"
           />
         ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {state.servers.map(server => (
               <CustomMCPServerCard
                 key={server.id}
@@ -536,32 +510,16 @@ export default function CustomMCPServers() {
       )}
 
       {/* Delete Server Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: serverToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={state.loading.delete}
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeleteServer}
-              disabled={state.loading.delete}
-            >
-              {state.loading.delete ? t('loading.deleting') : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: serverToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDeleteServer}
+        loading={state.loading.delete}
+      />
 
       {/* Server Details Modal */}
       <CustomMCPServerDetails

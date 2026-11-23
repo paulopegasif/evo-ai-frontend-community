@@ -93,10 +93,10 @@ export const getContactAvatarColor = (name: string | null | undefined): string =
 
   // Cores baseadas no hash do nome
   const colors = [
-    'bg-red-100 text-red-600',
-    'bg-blue-100 text-blue-600',
-    'bg-green-100 text-green-600',
-    'bg-yellow-100 text-yellow-600',
+    'bg-destructive/12 text-destructive-foreground',
+    'bg-info/12 text-info-foreground',
+    'bg-success/12 text-success-foreground',
+    'bg-warning/12 text-warning-foreground',
     'bg-purple-100 text-purple-600',
     'bg-pink-100 text-pink-600',
     'bg-indigo-100 text-indigo-600',

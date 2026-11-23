@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@evoapi/design-system';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Label } from '@/components/ui/label';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Loader2, ExternalLink, CheckCircle2, Link2 } from 'lucide-react';
+import { ExternalLink, CheckCircle2, Link2 } from 'lucide-react';
 import { api } from '@/services/core';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
-import {
-  evolutionHubService,
-  type HubChannel,
-} from '@/services/integrations';
+import { evolutionHubService, type HubChannel } from '@/services/integrations';
 
 /**
  * Hub-relayed Inbox creation button.
@@ -43,20 +52,13 @@ interface InboxCreateResponse {
 
 type Mode = 'new' | 'existing';
 
-const HUB_TYPE_BY_CHANNEL: Record<
-  HubConnectButtonProps['channelType'],
-  HubChannel['type']
-> = {
+const HUB_TYPE_BY_CHANNEL: Record<HubConnectButtonProps['channelType'], HubChannel['type']> = {
   whatsapp_cloud: 'whatsapp',
   facebook_page: 'facebook',
   instagram: 'instagram',
 };
 
-export default function HubConnectButton({
-  channelType,
-  name,
-  onCreated,
-}: HubConnectButtonProps) {
+export default function HubConnectButton({ channelType, name, onCreated }: HubConnectButtonProps) {
   // Flag genérica (default ON p/ community standalone): quando false (deploy
   // enterprise/SaaS), esconde "Usar canal existente do Hub". Motivo: a listagem
   // de canais existentes do Hub usa credenciais GLOBAIS e NÃO filtra por tenant
@@ -85,7 +87,7 @@ export default function HubConnectButton({
     setChannelsError(null);
     evolutionHubService
       .getAvailableChannels(HUB_TYPE_BY_CHANNEL[channelType])
-      .then((channels) => {
+      .then(channels => {
         if (cancelled) return;
         setAvailableChannels(channels);
         if (channels.length === 0) {
@@ -187,9 +189,9 @@ export default function HubConnectButton({
   // 'linkar existente' só mostra confirmação (canal já está conectado).
   if (publicLink && inboxId !== null) {
     return (
-      <div className="space-y-3 border rounded-md p-4 bg-muted/30">
-        <div className="flex items-center gap-2 text-sm">
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
+      <div className="flex flex-col items-start gap-3 rounded-xl border bg-muted/24 p-4">
+        <div className="flex items-center gap-2 text-sm text-foreground">
+          <CheckCircle2 className="size-5 shrink-0 text-success" />
           <span>Inbox criada. Aguardando conexão Meta no Hub…</span>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -200,7 +202,7 @@ export default function HubConnectButton({
           variant="outline"
           onClick={() => window.open(publicLink, '_blank', 'noopener,noreferrer')}
         >
-          <ExternalLink className="h-4 w-4 mr-2" />
+          <ExternalLink />
           Abrir link de conexão
         </Button>
       </div>
@@ -209,9 +211,9 @@ export default function HubConnectButton({
 
   if (linkedDone && inboxId !== null) {
     return (
-      <div className="space-y-2 border rounded-md p-4 bg-muted/30">
-        <div className="flex items-center gap-2 text-sm">
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
+      <div className="flex flex-col gap-2 rounded-xl border bg-muted/24 p-4">
+        <div className="flex items-center gap-2 text-sm text-foreground">
+          <CheckCircle2 className="size-5 shrink-0 text-success" />
           <span>Inbox vinculada ao canal Evo Hub existente.</span>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -221,87 +223,86 @@ export default function HubConnectButton({
     );
   }
 
+  const channelItems = availableChannels.map(channel => ({
+    value: channel.id,
+    label: `${channel.name} (${channel.status})`,
+  }));
+
   return (
-    <div className="space-y-3">
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-medium">Como conectar este canal no Evo Hub?</legend>
-        <label className="flex items-start gap-2 text-sm cursor-pointer">
-          <input
-            type="radio"
-            name="hub_mode"
-            value="new"
-            checked={mode === 'new'}
-            onChange={() => setMode('new')}
-            className="mt-1"
-          />
-          <div>
-            <div className="font-medium">Criar nova conexão</div>
-            <div className="text-xs text-muted-foreground">
-              Cria um canal novo no Hub e abre o fluxo de OAuth Meta em outra aba.
-            </div>
-          </div>
-        </label>
-        {allowExistingHubChannels && (
-          <label className="flex items-start gap-2 text-sm cursor-pointer">
-            <input
-              type="radio"
-              name="hub_mode"
-              value="existing"
-              checked={mode === 'existing'}
-              onChange={() => setMode('existing')}
-              className="mt-1"
-            />
-            <div>
-              <div className="font-medium">Usar canal existente do Hub</div>
-              <div className="text-xs text-muted-foreground">
-                Apenas configura o webhook deste CRM em um canal já conectado.
-              </div>
-            </div>
-          </label>
-        )}
-      </fieldset>
+    <div className="flex flex-col items-start gap-4">
+      <div className="flex w-full flex-col gap-2">
+        <Label id="hub-mode-label">Como conectar este canal no Evo Hub?</Label>
+        <RadioGroup
+          aria-labelledby="hub-mode-label"
+          value={mode}
+          onValueChange={value => setMode(String(value) as Mode)}
+          className="gap-2"
+        >
+          <Label className="flex cursor-pointer items-start gap-2 rounded-lg border p-3 font-normal has-data-checked:border-primary/48 has-data-checked:bg-accent/48">
+            <Radio value="new" className="mt-0.5" />
+            <span className="flex flex-col gap-0.5">
+              <span className="font-medium text-foreground">Criar nova conexão</span>
+              <span className="text-xs text-muted-foreground">
+                Cria um canal novo no Hub e abre o fluxo de OAuth Meta em outra aba.
+              </span>
+            </span>
+          </Label>
+          {allowExistingHubChannels && (
+            <Label className="flex cursor-pointer items-start gap-2 rounded-lg border p-3 font-normal has-data-checked:border-primary/48 has-data-checked:bg-accent/48">
+              <Radio value="existing" className="mt-0.5" />
+              <span className="flex flex-col gap-0.5">
+                <span className="font-medium text-foreground">Usar canal existente do Hub</span>
+                <span className="text-xs text-muted-foreground">
+                  Apenas configura o webhook deste CRM em um canal já conectado.
+                </span>
+              </span>
+            </Label>
+          )}
+        </RadioGroup>
+      </div>
 
       {mode === 'existing' && (
-        <div className="space-y-2">
-          <label className="block text-sm font-medium">Canal do Hub</label>
+        <Field className="w-full">
+          <FieldLabel htmlFor="hub-channel">Canal do Hub</FieldLabel>
           {loadingChannels ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Carregando canais disponíveis…
+            <div className="w-full" aria-busy="true">
+              <span className="sr-only">Carregando canais disponíveis…</span>
+              <Skeleton className="h-9 w-full rounded-lg sm:h-8" />
             </div>
           ) : (
-            <select
-              className="w-full border rounded-md px-3 py-2 bg-background text-sm"
-              value={selectedHubChannelId}
-              onChange={(e) => setSelectedHubChannelId(e.target.value)}
+            <Select
+              items={channelItems}
+              value={selectedHubChannelId || null}
+              onValueChange={value => setSelectedHubChannelId(String(value ?? ''))}
               disabled={availableChannels.length === 0}
             >
-              <option value="">— Selecione —</option>
-              {availableChannels.map((channel) => (
-                <option key={channel.id} value={channel.id}>
-                  {channel.name} ({channel.status})
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="hub-channel">
+                <SelectValue placeholder="— Selecione —" />
+              </SelectTrigger>
+              <SelectPopup alignItemWithTrigger={false}>
+                {channelItems.map(item => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectPopup>
+            </Select>
           )}
           {channelsError && (
-            <p className="text-xs text-destructive">{channelsError}</p>
+            <Alert variant="error">
+              <AlertDescription>{channelsError}</AlertDescription>
+            </Alert>
           )}
-        </div>
+        </Field>
       )}
 
       <Button
         type="button"
         onClick={handleSubmit}
-        disabled={submitting || (mode === 'existing' && !selectedHubChannelId)}
+        loading={submitting}
+        disabled={mode === 'existing' && !selectedHubChannelId}
       >
-        {submitting ? (
-          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-        ) : mode === 'new' ? (
-          <ExternalLink className="h-4 w-4 mr-2" />
-        ) : (
-          <Link2 className="h-4 w-4 mr-2" />
-        )}
+        {mode === 'new' ? <ExternalLink /> : <Link2 />}
         {mode === 'new' ? 'Conectar via Evo Hub' : 'Vincular canal existente'}
       </Button>
     </div>

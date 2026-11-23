@@ -57,7 +57,7 @@ export interface Inbox {
   // Auth/status
   reauthorization_required?: boolean;
   // EVO-1680 — true when an AgentBot is connected and its AgentBotInbox.status
-  // is :active. Gates the "Devolver ao bot" UI control in ConversationActionsDropdown.
+  // is :active. (The "Devolver ao bot" control is not currently rendered.)
   agent_bot_active?: boolean;
   // Live channel health (EVO-1674)
   connection_state?: InboxConnectionState;

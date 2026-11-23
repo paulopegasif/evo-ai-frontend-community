@@ -23,7 +23,7 @@ const LoadingScreen = ({ fullScreen = false, showLogo = false, className }: Load
       )}
       <Loader2
         className={cn(
-          'h-8 w-8 animate-spin text-primary-interaction-default dark:text-primary-surface-default'
+          'h-8 w-8 animate-spin text-primary'
         )}
       />
     </div>

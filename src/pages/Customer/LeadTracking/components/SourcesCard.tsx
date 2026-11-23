@@ -1,17 +1,8 @@
 import { useMemo } from 'react';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { Cell, Pie, PieChart } from 'recharts';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from '@evoapi/design-system';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import type { LeadSourcePerformance } from '@/types/leadTracking';
 import { CATEGORICAL, OTHER_COLOR } from './chartConfig';
 import { percentOrDash, plural } from './format';
@@ -81,7 +72,7 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
         </CardTitle>
         <CardDescription>Canal do primeiro contato e quanto cada um converte</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardPanel>
         {total === 0 ? (
           <div className="h-[260px] flex items-center justify-center text-sm text-muted-foreground">
             Nenhum lead no período.
@@ -130,7 +121,7 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
                     <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap">
                       {s.leads} <span className="text-muted-foreground">({percentOrDash(s.share)})</span>
                     </td>
-                    <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap" title={plural(s.won, 'venda', 'vendas')}>
+                    <td className="py-1.5 pl-3 text-right tabular-nums whitespace-nowrap" title={plural(s.won, 'assinatura', 'assinaturas')}>
                       {percentOrDash(s.conversion)}
                     </td>
                   </tr>
@@ -140,7 +131,7 @@ const SourcesCard = ({ sources }: SourcesCardProps) => {
           </div>
           </div>
         )}
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

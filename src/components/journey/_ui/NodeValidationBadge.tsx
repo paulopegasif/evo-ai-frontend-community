@@ -1,10 +1,5 @@
 import { AlertCircle, AlertTriangle } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@evoapi/design-system';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNodeValidationIssues } from '@/contexts/JourneyValidationContext';
 
@@ -26,12 +21,12 @@ export function NodeValidationBadge({ nodeId }: NodeValidationBadgeProps) {
 
   const hasError = issues.some((i) => i.severity === 'error');
   const Icon = hasError ? AlertCircle : AlertTriangle;
-  const color = hasError ? 'text-flow-feedback-error-fg' : 'text-amber-500';
+  const color = hasError ? 'text-flow-feedback-error-fg' : 'text-warning';
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
+    <Tooltip>
+      <TooltipTrigger
+        render={
           <span
             className={`absolute -top-2 -right-2 z-10 rounded-full bg-card p-0.5 ${color}`}
             role="img"
@@ -40,18 +35,18 @@ export function NodeValidationBadge({ nodeId }: NodeValidationBadgeProps) {
                 ? 'flowEditor.validation.nodeHasErrors'
                 : 'flowEditor.validation.nodeHasWarnings',
             )}
-          >
-            <Icon className="w-4 h-4" />
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <ul className="space-y-1 text-xs">
-            {issues.map((issue, idx) => (
-              <li key={idx}>{t(issue.messageKey, issue.params)}</li>
-            ))}
-          </ul>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          />
+        }
+      >
+        <Icon className="size-4" />
+      </TooltipTrigger>
+      <TooltipPopup>
+        <ul className="space-y-1 text-xs">
+          {issues.map((issue, idx) => (
+            <li key={idx}>{t(issue.messageKey, issue.params)}</li>
+          ))}
+        </ul>
+      </TooltipPopup>
+    </Tooltip>
   );
 }

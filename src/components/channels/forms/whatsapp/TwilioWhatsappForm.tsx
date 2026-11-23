@@ -80,8 +80,8 @@ export const TwilioWhatsappForm = ({ form, onFormChange }: TwilioWhatsappFormPro
         />
       ) : (
         <div>
-          <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-            {t('twilioForm.fields.phoneNumber.label')} <span className="text-destructive">*</span>
+          <label className="mb-2 block font-medium text-sm">
+            {t('twilioForm.fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
           </label>
           <PhoneInput
             value={getStr('phone_number')}
@@ -95,10 +95,10 @@ export const TwilioWhatsappForm = ({ form, onFormChange }: TwilioWhatsappFormPro
       {/* Help Section */}
       <FormSection
         title={t('twilioForm.help.title')}
-        className="bg-blue-50/10 border-blue-200/20"
+        className="bg-info/8 border-info/24"
         data-tour="whatsapp-help"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p>
             <strong>
               1. {t('twilioForm.fields.accountSid.label')}:

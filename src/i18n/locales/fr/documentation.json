@@ -23,7 +23,8 @@
         "managingAgents": "Gérer les Agents",
         "chatSettings": "Paramètres de Chat",
         "apiIntegration": "Intégration avec les APIs",
-        "backupRestore": "Sauvegarde et Restauration"
+        "backupRestore": "Sauvegarde et Restauration",
+        "knowledgeBase": "Base de connaissances"
       }
     },
     "apiReference": {
@@ -72,6 +73,10 @@
       "advancedSettings": {
         "title": "Paramètres Avancés :",
         "description": "Contrôle total sur le comportement des agents"
+      },
+      "knowledgeBase": {
+        "title": "Base de connaissances :",
+        "description": "Fournissez à vos agents des documents et contenus pour répondre"
       }
     },
     "gettingStarted": {
@@ -80,7 +85,8 @@
       "steps": {
         "step1": "1. Configurez votre profil dans la zone <strong>Paramètres</strong>",
         "step2": "2. Créez votre premier agent dans la section <strong>Agents</strong>",
-        "step4": "4. Commencez à converser avec votre agent dans le <strong>Chat</strong>"
+        "step4": "4. Commencez à converser avec votre agent dans le <strong>Chat</strong>",
+        "step3": "Ajoutez des documents à la <strong>Base de connaissances</strong> pour que votre agent les utilise"
       }
     },
     "tip": {

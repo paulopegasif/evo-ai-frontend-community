@@ -9,7 +9,9 @@ import { useAppDataStore } from '@/store/appDataStore';
 
 import { MessageCircle } from 'lucide-react';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 
 import { MessageSkeleton } from '../loading-states';
 import { NoMessages } from '../empty-states';
@@ -260,11 +262,21 @@ const ChatArea = ({
   // Determinar se deve mostrar restrições
   const hasMessagingWindowRestriction =
     isWhatsAppChannel || isInstagramChannel || isMessengerChannel;
+  // Bitrix24 mirror: a read-only copy of the history; replies go through Bitrix until WhatsApp is connected here.
+  const inboxRecord = inbox as { read_only_mirror?: boolean; additional_attributes?: Record<string, unknown> } | null;
+  const isReadOnlyMirror =
+    inboxRecord?.read_only_mirror === true || inboxRecord?.additional_attributes?.read_only_mirror === true;
   const shouldShowRestrictionBanner =
-    (!canReply && hasMessagingWindowRestriction && !isWhatsAppFreeTextChannel) || isDisconnected;
+    (!canReply && hasMessagingWindowRestriction && !isWhatsAppFreeTextChannel) || isDisconnected || isReadOnlyMirror;
 
   // Mensagem do banner quando não pode responder
   const getBannerMessage = () => {
+    if (isReadOnlyMirror) {
+      return t(
+        'chatArea.banner.readOnlyMirror',
+        'Cópia das conversas do Bitrix24, somente leitura. Responda pelo Bitrix24 até o WhatsApp ser conectado aqui.',
+      );
+    }
     if (isDisconnected) {
       const errorMessage = providerConnection?.error || '';
       return (
@@ -287,7 +299,7 @@ const ChatArea = ({
   const getBannerLinkText = () => {
     // Não mostrar texto do link quando Z-API/Evolution está desconectado ou é canal free text
     // Esses providers não têm restrições de janela de 24 horas, apenas precisam estar conectados
-    if (isDisconnected || isZapiChannel || isEvolutionChannel) {
+    if (isReadOnlyMirror || isDisconnected || isZapiChannel || isEvolutionChannel) {
       return undefined;
     }
     return t('chatArea.banner.linkText');
@@ -298,7 +310,7 @@ const ChatArea = ({
   const getBannerLink = () => {
     // Se Z-API/Evolution está desconectado, não mostrar link de restrições de 24 horas
     // Esses providers não têm restrições de janela de 24 horas, apenas precisam estar conectados
-    if (isDisconnected || isZapiChannel || isEvolutionChannel) {
+    if (isReadOnlyMirror || isDisconnected || isZapiChannel || isEvolutionChannel) {
       return undefined;
     }
     if (isWhatsAppChannel && !isWhatsAppFreeTextChannel) {
@@ -318,20 +330,22 @@ const ChatArea = ({
 
   if (!selectedConversationId) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">{t('chatArea.selectConversation.title')}</h3>
-          <p className="text-muted-foreground">{t('chatArea.selectConversation.description')}</p>
-        </div>
-      </div>
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <MessageCircle />
+          </EmptyMedia>
+          <EmptyTitle>{t('chatArea.selectConversation.title')}</EmptyTitle>
+          <EmptyDescription>{t('chatArea.selectConversation.description')}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
   const typingUsers = websocket.getTypingUsers(selectedConversationId);
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden min-h-0 bg-muted/10">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-muted/24 dark:bg-background">
       {/* 🎯 MESSAGING WINDOW RESTRICTIONS: Banner de aviso (WhatsApp, Instagram, Messenger) */}
       {/* Posicionado no topo, logo após o header, para máxima visibilidade */}
       {shouldShowRestrictionBanner && (
@@ -355,22 +369,25 @@ const ChatArea = ({
 
       {/* Messages Area */}
       {messages.isMessagesLoading(selectedConversationId) ? (
-        <div className="p-4">
+        <div className="min-h-0 flex-1 overflow-hidden">
           <MessageSkeleton count={6} />
         </div>
       ) : messages.getMessagesError(selectedConversationId) ? (
-        <div className="p-4 text-center">
-          <div className="text-destructive mb-2">{t('chatArea.errors.loadMessages')}</div>
-          <p className="text-sm text-muted-foreground mb-4">
-            {messages.getMessagesError(selectedConversationId)}
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => messages.loadMessages(selectedConversationId)}
-          >
-            {t('chatArea.errors.tryAgain')}
-          </Button>
+        <div className="mx-auto w-full max-w-lg p-4">
+          <Alert variant="error">
+            <AlertTitle>{t('chatArea.errors.loadMessages')}</AlertTitle>
+            <AlertDescription>
+              <p>{messages.getMessagesError(selectedConversationId)}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => messages.loadMessages(selectedConversationId)}
+              >
+                {t('chatArea.errors.tryAgain')}
+              </Button>
+            </AlertDescription>
+          </Alert>
         </div>
       ) : selectedMessages.length === 0 ? (
         <NoMessages />

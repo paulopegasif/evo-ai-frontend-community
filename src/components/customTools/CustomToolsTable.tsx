@@ -1,5 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge, Button } from '@evoapi/design-system';
+import { HttpMethodBadge } from '@/components/agents/resourceCard';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Wand, Loader2, Globe } from 'lucide-react';
 import { CustomTool } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -34,23 +36,6 @@ export default function CustomToolsTable({
   const { can, isReady } = usePermissions();
   const toolsList = tools || [];
 
-  const getMethodColor = (method: string) => {
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
-      case 'POST':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
-      case 'PUT':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'DELETE':
-        return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'PATCH':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
-      default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
-    }
-  };
-
   const columns: TableColumn<CustomTool>[] = [
     {
       key: 'tool',
@@ -65,11 +50,11 @@ export default function CustomToolsTable({
             <Wand className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-sm truncate mb-1">{tool.name || t('table.noName')}</div>
+            <div className="font-medium text-sm truncate mb-1">
+              {tool.name || t('table.noName')}
+            </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className={`text-xs ${getMethodColor(tool.method)}`}>
-                {tool.method}
-              </Badge>
+              <HttpMethodBadge method={tool.method} />
             </div>
           </div>
         </div>
@@ -95,9 +80,7 @@ export default function CustomToolsTable({
         <div className="max-w-[200px]">
           <div className="flex items-center gap-1">
             <Globe className="h-3 w-3 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground truncate">
-              {tool.endpoint}
-            </span>
+            <span className="text-sm text-muted-foreground truncate">{tool.endpoint}</span>
           </div>
         </div>
       ),
@@ -143,7 +126,7 @@ export default function CustomToolsTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             onTestTool(tool);
           }}
@@ -199,7 +182,6 @@ export default function CustomToolsTable({
           : undefined
       }
       getRowKey={tool => String(tool.id)}
-      className="border-0 shadow-none"
     />
   );
 }

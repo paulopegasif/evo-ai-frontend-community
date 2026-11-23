@@ -225,6 +225,7 @@
         "qrCodeError": "If the problem persists, use the manual key below",
         "manualKey": "Manual Key",
         "manualKeyDescription": "Use this key if you can't scan the QR code",
+        "copyKey": "Copy key",
         "actions": {
           "cancel": "Cancel",
           "configured": "Already Configured"

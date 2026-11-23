@@ -47,7 +47,7 @@ export default function WebhooksHeader({
   ] : [];
 
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <IntegrationBackButton onBack={onBack} />
 
       <BaseHeader

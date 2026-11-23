@@ -18,7 +18,7 @@ interface FormActionBarProps {
  */
 export const FormActionBar = ({ children, flush = true, className = '' }: FormActionBarProps) => (
   <div
-    className={`border-t border-border bg-muted/20 px-6 py-4 ${
+    className={`border-t bg-muted/72 px-6 py-4 ${
       flush ? '-mx-6 -mb-6 mt-6' : ''
     } ${className}`}
   >

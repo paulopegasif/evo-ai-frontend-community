@@ -1,21 +1,13 @@
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { Filter, MoreVertical, Search, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  Badge,
-} from '@evoapi/design-system';
-import {
-  Search,
-  Filter,
-  MoreVertical,
-  X,
-} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu';
+import { cn } from '@/utils/cn';
 import PrimaryActionButton from './PrimaryActionButton';
+import { renderIcon } from './renderIcon';
 
 export interface HeaderAction {
   label: string;
@@ -82,26 +74,27 @@ export default function BaseHeader({
   const hasSelection = selectedCount > 0;
   const visibleSecondaryActions = secondaryActions.filter(action => action.show !== false);
   const visibleMoreActions = moreActions.filter(action => action.show !== false);
+  const hasToolbar =
+    Boolean(onSearchChange) ||
+    (showFilters && Boolean(onFilterClick)) ||
+    visibleSecondaryActions.length > 0 ||
+    visibleMoreActions.length > 0;
 
   return (
-    <div className={`space-y-4 sm:space-y-6 ${className}`}>
-      <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-start md:justify-between">
-        {/* Title Section */}
-        <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-7 sm:leading-8 text-sidebar-foreground mb-1 sm:mb-2">{title}</h1>
-          {subtitle && (
-            <p className="hidden sm:block text-sm leading-5 text-sidebar-foreground/70">{subtitle}</p>
-          )}
+    <div className={cn('flex flex-col gap-4 sm:gap-5', className)}>
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-semibold text-xl tracking-tight sm:text-2xl">{title}</h1>
+          {subtitle && <p className="mt-1 hidden text-muted-foreground text-sm sm:block">{subtitle}</p>}
         </div>
 
-        {/* Primary Action */}
         {primaryAction && primaryAction.show !== false && (
-          <div className="flex-shrink-0" data-tour={primaryAction.dataTour}>
+          <div className="shrink-0" data-tour={primaryAction.dataTour}>
             <PrimaryActionButton
               label={primaryAction.label}
               icon={primaryAction.icon}
               onClick={primaryAction.onClick}
-              size="sm"
+              size="default"
               variant={primaryAction.variant || 'default'}
               className={primaryAction.className}
               disabled={primaryAction.disabled}
@@ -111,143 +104,85 @@ export default function BaseHeader({
         )}
       </div>
 
-      {/* Search and Filter Row */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3 flex-1">
-          {/* Search */}
-          {onSearchChange && (
-            <div className="relative flex-1 max-w-md" data-tour={searchDataTour}>
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sidebar-foreground/60" />
-              <Input
-                type="search"
-                placeholder={placeholder}
-                value={searchValue}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-9 bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:border-sidebar-border"
-              />
+      {hasToolbar && (
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-1 items-center gap-2">
+            {onSearchChange && (
+              <InputGroup className="max-w-md flex-1" data-tour={searchDataTour}>
+                <InputGroupAddon>
+                  <Search />
+                </InputGroupAddon>
+                <InputGroupInput
+                  type="search"
+                  aria-label={placeholder}
+                  placeholder={placeholder}
+                  value={searchValue}
+                  onChange={e => onSearchChange(e.target.value)}
+                />
+              </InputGroup>
+            )}
+
+            {showFilters && onFilterClick && (
+              <Button variant="outline" onClick={onFilterClick} data-tour={filterButtonDataTour}>
+                <Filter />
+                {t('base.header.filters')}
+                {filters.length > 0 && (
+                  <Badge variant="secondary" size="sm" className="tabular-nums">
+                    {filters.length}
+                  </Badge>
+                )}
+              </Button>
+            )}
+          </div>
+
+          {(visibleSecondaryActions.length > 0 || visibleMoreActions.length > 0) && (
+            <div className="flex items-center gap-2">
+              {visibleSecondaryActions.map((action, index) => (
+                <Button
+                  key={index}
+                  variant={action.variant === 'default' ? 'default' : action.variant || 'outline'}
+                  onClick={action.onClick}
+                  disabled={action.disabled}
+                  className={action.className}
+                  data-tour={action.dataTour}
+                >
+                  {renderIcon(action.icon)}
+                  {action.label}
+                </Button>
+              ))}
+
+              {visibleMoreActions.length > 0 && (
+                <Menu>
+                  <MenuTrigger render={<Button variant="outline" size="icon" aria-label={t('base.table.actions')} />}>
+                    <MoreVertical />
+                  </MenuTrigger>
+                  <MenuPopup align="end">
+                    {visibleMoreActions.map((action, index) => (
+                      <MenuItem
+                        key={index}
+                        onClick={action.onClick}
+                        disabled={action.disabled}
+                        variant={action.variant === 'destructive' ? 'destructive' : 'default'}
+                      >
+                        {renderIcon(action.icon)}
+                        {action.label}
+                      </MenuItem>
+                    ))}
+                  </MenuPopup>
+                </Menu>
+              )}
             </div>
           )}
-
-          {/* Filter Button */}
-          {showFilters && onFilterClick && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onFilterClick}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent whitespace-nowrap"
-              data-tour={filterButtonDataTour}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              {t('base.header.filters')}
-              {filters.length > 0 && (
-                <Badge
-                  variant="secondary"
-                  className="ml-2 h-5 px-1.5 text-xs bg-sidebar-accent"
-                >
-                  {filters.length}
-                </Badge>
-              )}
-            </Button>
-          )}
         </div>
+      )}
 
-        {/* Secondary Actions */}
-        <div className="flex items-center gap-2">
-          {visibleSecondaryActions.map((action, index) => {
-            const renderIcon = () => {
-              if (!action.icon) return null;
-              // Check if it's a React component (function or object with $$typeof)
-              if (typeof action.icon === 'function') {
-                const IconComponent = action.icon as React.ComponentType<{ className?: string }>;
-                return <IconComponent className="h-4 w-4 mr-2" />;
-              }
-              // If it's already a React element, render it directly
-              if (React.isValidElement(action.icon)) {
-                return <span className="mr-2">{action.icon}</span>;
-              }
-              // Otherwise render as is
-              return <span className="mr-2">{action.icon}</span>;
-            };
-
-            return (
-              <Button
-                key={index}
-                variant={action.variant || 'outline'}
-                size="sm"
-                onClick={action.onClick}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-                data-tour={action.dataTour}
-              >
-                {renderIcon()}
-                {action.label}
-              </Button>
-            );
-          })}
-
-          {/* More Actions Dropdown */}
-          {visibleMoreActions.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-              >
-                {visibleMoreActions.map((action, index) => {
-                  const renderIcon = () => {
-                    if (!action.icon) return null;
-                    // Check if it's a React component (function)
-                    if (typeof action.icon === 'function') {
-                      const IconComponent = action.icon as React.ComponentType<{ className?: string }>;
-                      return <IconComponent className="h-4 w-4 mr-2" />;
-                    }
-                    // If it's already a React element, render it directly
-                    if (React.isValidElement(action.icon)) {
-                      return <span className="mr-2">{action.icon}</span>;
-                    }
-                    // Otherwise render as is
-                    return <span className="mr-2">{action.icon}</span>;
-                  };
-
-                  return (
-                    <DropdownMenuItem
-                      key={index}
-                      onClick={action.onClick}
-                      className={`hover:bg-sidebar-accent ${action.variant === 'destructive' ? 'text-red-400' : ''}`}
-                    >
-                      {renderIcon()}
-                      {action.label}
-                    </DropdownMenuItem>
-                  );
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-      </div>
-
-      {/* Selection Bar */}
       {hasSelection && (
-        <div className="flex items-center justify-between rounded-lg bg-sidebar-accent/50 border border-sidebar-border px-4 py-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/48 px-3 py-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-sidebar-foreground">
-              {t('base.header.selected', { count: selectedCount })}
-            </span>
+            <span className="font-medium text-sm">{t('base.header.selected', { count: selectedCount })}</span>
             {onClearSelection && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClearSelection}
-                className="h-7 px-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-              >
-                <X className="h-3 w-3 mr-1" />
+              <Button variant="ghost" size="xs" onClick={onClearSelection}>
+                <X />
                 {t('base.header.clear')}
               </Button>
             )}
@@ -257,21 +192,13 @@ export default function BaseHeader({
               {bulkActions.map((action, index) => (
                 <Button
                   key={index}
-                  variant={action.variant || 'outline'}
+                  variant={action.variant === 'destructive' ? 'destructive-outline' : action.variant || 'outline'}
                   size="sm"
                   onClick={action.onClick}
-                  className="h-7 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar"
+                  disabled={action.disabled}
+                  className={action.className}
                 >
-                  {action.icon && (typeof action.icon === 'function' ? (
-                    (() => {
-                      const IconComponent = action.icon as React.ComponentType<{ className?: string }>;
-                      return <IconComponent className="h-4 w-4 mr-1.5" />;
-                    })()
-                  ) : React.isValidElement(action.icon) ? (
-                    <span className="mr-1.5">{action.icon}</span>
-                  ) : (
-                    <span className="mr-1.5">{action.icon}</span>
-                  ))}
+                  {renderIcon(action.icon)}
                   {action.label}
                 </Button>
               ))}
@@ -280,30 +207,25 @@ export default function BaseHeader({
         </div>
       )}
 
-      {/* Active Filters */}
       {filters.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {filters.map((filter, index) => (
-            <Badge
-              key={index}
-              variant="secondary"
-              className="pl-2 pr-1 py-1 bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar"
-            >
+            <Badge key={index} variant="outline" className="gap-1 pe-0.5">
               {filter.label}: {filter.value}
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon-xs"
                 onClick={filter.onRemove}
-                className="ml-1 h-4 w-4 p-0 hover:bg-transparent text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                aria-label={t('base.header.clear')}
+                className="size-4 sm:size-4"
               >
-                <X className="h-3 w-3" />
+                <X />
               </Button>
             </Badge>
           ))}
         </div>
       )}
 
-      {/* Custom Content */}
       {children}
     </div>
   );

@@ -1,18 +1,9 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Avatar,
-  AvatarFallback,
-  Badge,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Separator,
-} from '@evoapi/design-system';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import {
   Edit,
   Mail,
@@ -23,6 +14,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { User } from '@/types/users';
+import { DetailRow, DetailSection } from './DetailSection';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -52,17 +44,8 @@ export default function UserDetails({
       .toUpperCase()
       .slice(0, 2);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return 'text-green-600';
-      case 'busy':
-        return 'text-yellow-600';
-      case 'offline':
-      default:
-        return 'text-gray-600';
-    }
-  };
+  const statusVariant = (status: string) =>
+    status === 'online' ? 'success' : status === 'busy' ? 'warning' : 'secondary';
 
   const getStatusLabel = (status: string) => {
     const statusKey = `details.status.${status}`;
@@ -80,241 +63,145 @@ export default function UserDetails({
 
   if (!user) return null;
 
+  const statusBadge = (
+    <Badge variant={statusVariant(user.availability)}>{getStatusLabel(user.availability)}</Badge>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b bg-muted/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12">
-                {user.thumbnail ? (
-                  <img
-                    src={user.thumbnail}
-                    alt={user.name}
-                    className="h-12 w-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
-                    {getInitials(user.name)}
-                  </AvatarFallback>
-                )}
+      <DialogPopup className="sm:max-w-3xl">
+        <DialogHeader className="border-b">
+          <div className="flex flex-col gap-4 pe-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-4">
+              <Avatar className="size-12 text-base">
+                {user.thumbnail && <AvatarImage src={user.thumbnail} alt={user.name} />}
+                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
               </Avatar>
-              <div>
-                <DialogTitle className="text-xl font-semibold">
-                  {user.name}
-                </DialogTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge
-                    variant={user.availability === 'online' ? "secondary" : "outline"}
-                    className={`text-xs ${getStatusColor(user.availability)}`}
-                  >
-                    {getStatusLabel(user.availability)}
-                  </Badge>
-                  <Badge variant={user.confirmed ? "secondary" : "outline"} className="text-xs">
+              <div className="min-w-0">
+                <DialogTitle className="truncate">{user.name}</DialogTitle>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  {statusBadge}
+                  <Badge variant={user.confirmed ? 'success' : 'warning'}>
                     {user.confirmed ? t('details.status.confirmed') : t('details.status.pending')}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {t('details.id')}: {user.id}
+                  <span className="text-muted-foreground text-xs">
+                    {t('details.id')}: <span className="font-mono">{user.id}</span>
                   </span>
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onEdit(user)}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                {t('details.edit')}
-              </Button>
-            </div>
+            <Button variant="outline" size="sm" onClick={() => onEdit(user)}>
+              <Edit />
+              {t('details.edit')}
+            </Button>
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto">
-          <Tabs defaultValue="overview" className="h-full">
-            <TabsList className="w-full justify-start px-6 py-0 h-12 bg-transparent border-b rounded-none">
-              <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
-                <UserIcon className="h-4 w-4 mr-2" />
-                {t('details.tabs.overview')}
-              </TabsTrigger>
-              <TabsTrigger value="activity" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
-                <History className="h-4 w-4 mr-2" />
-                {t('details.tabs.activity')}
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
-                <Settings className="h-4 w-4 mr-2" />
-                {t('details.tabs.settings')}
-              </TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="overview" className="flex min-h-0 flex-1 flex-col gap-0">
+          <TabsList variant="underline" className="w-full justify-start border-b px-6">
+            <TabsTab value="overview">
+              <UserIcon />
+              {t('details.tabs.overview')}
+            </TabsTab>
+            <TabsTab value="activity">
+              <History />
+              {t('details.tabs.activity')}
+            </TabsTab>
+            <TabsTab value="settings">
+              <Settings />
+              {t('details.tabs.settings')}
+            </TabsTab>
+          </TabsList>
 
-            <TabsContent value="overview" className="px-6 py-4 space-y-6">
-              {/* Contact Information */}
-              <div className="space-y-3">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  {t('details.contactInfo.title')}
-                </h3>
-                <div className="space-y-2 bg-muted/30 rounded-lg p-4">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t('details.contactInfo.email')}</span>
-                    <span className="font-mono text-sm">{user.email}</span>
-                  </div>
-                </div>
-              </div>
+          <DialogPanel className="pt-4">
+            <TabsPanel value="overview" className="flex flex-col gap-5">
+              <DetailSection icon={<Mail />} title={t('details.contactInfo.title')}>
+                <DetailRow label={t('details.contactInfo.email')}>
+                  <span className="font-mono text-xs">{user.email}</span>
+                </DetailRow>
+              </DetailSection>
 
-              <Separator />
+              <DetailSection icon={<Shield />} title={t('details.rolePermissions.title')}>
+                <DetailRow label={t('details.rolePermissions.role')}>
+                  <Badge variant="outline">{getRoleLabel(user)}</Badge>
+                </DetailRow>
+                <DetailRow label={t('details.rolePermissions.availability')}>{statusBadge}</DetailRow>
+              </DetailSection>
 
-              {/* Role and Permissions */}
-              <div className="space-y-3">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
-                  {t('details.rolePermissions.title')}
-                </h3>
-                <div className="space-y-2 bg-muted/30 rounded-lg p-4">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t('details.rolePermissions.role')}</span>
-                    <Badge variant="outline">{getRoleLabel(user)}</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t('details.rolePermissions.availability')}</span>
-                    <Badge
-                      variant={user.availability === 'online' ? "secondary" : "outline"}
-                      className={getStatusColor(user.availability)}
-                    >
-                      {getStatusLabel(user.availability)}
-                    </Badge>
-                  </div>
+              <DetailSection icon={<Settings />} title={t('details.accountStatus.title')}>
+                <DetailRow label={t('details.accountStatus.confirmation')}>
+                  <Badge variant={user.confirmed ? 'success' : 'warning'}>
+                    {user.confirmed ? t('details.accountStatus.confirmed') : t('details.accountStatus.pending')}
+                  </Badge>
+                </DetailRow>
+              </DetailSection>
 
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Account Status */}
-              <div className="space-y-3">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  {t('details.accountStatus.title')}
-                </h3>
-                <div className="space-y-2 bg-muted/30 rounded-lg p-4">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t('details.accountStatus.confirmation')}</span>
-                    <Badge variant={user.confirmed ? "secondary" : "outline"}>
-                      {user.confirmed ? t('details.accountStatus.confirmed') : t('details.accountStatus.pending')}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Timestamps */}
-              <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {t('details.timestamps.title')}
-                </h3>
-                <div className="space-y-2 text-sm">
+              {(user.created_at || user.updated_at) && (
+                <DetailSection icon={<Clock />} title={t('details.timestamps.title')}>
                   {user.created_at && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('details.timestamps.created')}</span>
-                      <span className="font-mono">
-                        {formatDistanceToNow(parseApiDate(user.created_at) ?? new Date(), {
-                          addSuffix: true,
-                          locale: ptBR,
-                        })}
-                      </span>
-                    </div>
+                    <DetailRow label={t('details.timestamps.created')}>
+                      {formatDistanceToNow(parseApiDate(user.created_at) ?? new Date(), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </DetailRow>
                   )}
                   {user.updated_at && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t('details.timestamps.lastUpdate')}</span>
-                      <span className="font-mono">
-                        {formatDistanceToNow(new Date(user.updated_at), {
-                          addSuffix: true,
-                          locale: ptBR,
-                        })}
-                      </span>
-                    </div>
+                    <DetailRow label={t('details.timestamps.lastUpdate')}>
+                      {formatDistanceToNow(new Date(user.updated_at), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </DetailRow>
                   )}
-                </div>
-              </div>
-            </TabsContent>
+                </DetailSection>
+              )}
+            </TabsPanel>
 
-            <TabsContent value="activity" className="px-6 py-4">
-              <div className="text-center py-12 text-muted-foreground">
-                <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t('details.activity.placeholder')}</p>
-              </div>
-            </TabsContent>
+            <TabsPanel value="activity">
+              <Empty className="py-10">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <History />
+                  </EmptyMedia>
+                  <EmptyDescription>{t('details.activity.placeholder')}</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            </TabsPanel>
 
-            <TabsContent value="settings" className="px-6 py-4 space-y-6">
-              <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  {t('details.settingsTab.title')}
-                </h3>
-
-                <div className="space-y-4 bg-muted/30 rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{t('details.settingsTab.systemRole.title')}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {t('details.settingsTab.systemRole.description')}
-                      </p>
-                    </div>
-                    <Badge variant="outline">
-                      {getRoleLabel(user)}
-                    </Badge>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{t('details.settingsTab.availabilityStatus.title')}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {t('details.settingsTab.availabilityStatus.description')}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={user.availability === 'online' ? "secondary" : "outline"}
-                      className={getStatusColor(user.availability)}
-                    >
-                      {getStatusLabel(user.availability)}
-                    </Badge>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{t('details.settingsTab.emailConfirmation.title')}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {t('details.settingsTab.emailConfirmation.description')}
-                      </p>
-                    </div>
-                    <Badge variant={user.confirmed ? "secondary" : "outline"}>
-                      {user.confirmed ? t('details.settingsTab.emailConfirmation.verified') : t('details.settingsTab.emailConfirmation.pending')}
-                    </Badge>
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  onClick={() => onEdit(user)}
-                  className="w-full"
+            <TabsPanel value="settings" className="flex flex-col gap-4">
+              <DetailSection icon={<Settings />} title={t('details.settingsTab.title')}>
+                <DetailRow
+                  label={t('details.settingsTab.systemRole.title')}
+                  hint={t('details.settingsTab.systemRole.description')}
                 >
-                  <Edit className="h-4 w-4 mr-2" />
-                  {t('details.settingsTab.editSettings')}
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </DialogContent>
+                  <Badge variant="outline">{getRoleLabel(user)}</Badge>
+                </DetailRow>
+                <DetailRow
+                  label={t('details.settingsTab.availabilityStatus.title')}
+                  hint={t('details.settingsTab.availabilityStatus.description')}
+                >
+                  {statusBadge}
+                </DetailRow>
+                <DetailRow
+                  label={t('details.settingsTab.emailConfirmation.title')}
+                  hint={t('details.settingsTab.emailConfirmation.description')}
+                >
+                  <Badge variant={user.confirmed ? 'success' : 'warning'}>
+                    {user.confirmed
+                      ? t('details.settingsTab.emailConfirmation.verified')
+                      : t('details.settingsTab.emailConfirmation.pending')}
+                  </Badge>
+                </DetailRow>
+              </DetailSection>
+              <Button variant="outline" onClick={() => onEdit(user)} className="w-full">
+                <Edit />
+                {t('details.settingsTab.editSettings')}
+              </Button>
+            </TabsPanel>
+          </DialogPanel>
+        </Tabs>
+      </DialogPopup>
     </Dialog>
   );
 }

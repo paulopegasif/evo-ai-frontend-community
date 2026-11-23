@@ -66,7 +66,8 @@
     "emailTranscriptError": "Falla al enviar historial por email. Intente nuevamente.",
     "conversationEnded": "¡Conversación finalizada con éxito!",
     "newConversationStarted": "¡Nueva conversación iniciada!",
-    "uploadFailed": "Falla en el envío del archivo"
+    "uploadFailed": "Falla en el envío del archivo",
+    "close": "Cerrar"
   },
   "buttons": {
     "sendEmailTranscript": "Enviar historial por email",

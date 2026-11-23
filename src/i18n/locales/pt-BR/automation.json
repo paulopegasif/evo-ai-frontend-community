@@ -193,6 +193,22 @@
       "update": "Salvar",
       "saving": "Salvando...",
       "cancel": "Cancelar"
+    },
+    "sections": {
+      "details": {
+        "title": "Detalhes",
+        "description": "Nome e contexto da regra para o time."
+      },
+      "trigger": {
+        "title": "Gatilho",
+        "description": "O evento que inicia esta automação."
+      },
+      "conditions": {
+        "description": "A regra só executa quando todas as condições forem atendidas."
+      },
+      "actions": {
+        "description": "O que acontece quando a regra dispara, na ordem listada."
+      }
     }
   },
   "dialog": {
@@ -232,7 +248,8 @@
     "detail": {
       "timeline": "Linha do tempo",
       "payload": "Payload"
-    }
+    },
+    "statusFilter": "Filtrar por status"
   },
   "messages": {
     "loadError": "Falha ao carregar automações",

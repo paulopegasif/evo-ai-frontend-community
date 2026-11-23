@@ -1,14 +1,8 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  ScrollArea,
-  Badge,
-  Button,
-  Separator,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 import { Server, Edit, Wrench, Settings, FileText } from 'lucide-react';
 import { MCPServer } from '@/types/ai';
 
@@ -29,36 +23,37 @@ export default function MCPServerDetails({
 
   if (!server) return null;
 
-  const getTypeColor = (type: string) => {
+  const getTypeBadge = (
+    type: string,
+  ): { variant: 'success' | 'warning' | 'info' | 'outline'; className?: string } => {
     switch (type) {
       case 'official':
-        return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30';
-      case 'community':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'oauth':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
       case 'webhook':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
+        return { variant: 'success' };
+      case 'community':
       case 'basic_auth':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
+        return { variant: 'warning' };
+      case 'oauth':
+        return { variant: 'info' };
       case 'credentials':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
+        // categorical accent, no status token for it
+        return { variant: 'outline', className: 'border-purple-500/30 bg-purple-500/8 text-purple-600 dark:text-purple-400' };
       default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+        return { variant: 'outline', className: 'text-muted-foreground' };
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Server className="h-5 w-5" />
+            <Server className="size-5" />
             {server.name}
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-120px)]">
+        <DialogPanel>
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="space-y-4">
@@ -69,9 +64,8 @@ export default function MCPServerDetails({
                     variant="outline"
                     size="sm"
                     onClick={() => onEdit(server)}
-                    className="gap-2"
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit />
                     {t('details.buttons.edit')}
                   </Button>
                 )}
@@ -85,7 +79,7 @@ export default function MCPServerDetails({
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">{t('details.labels.type')}</label>
                   <div className="mt-1">
-                    <Badge variant="outline" className={`text-xs ${getTypeColor(server.type)}`}>
+                    <Badge variant={getTypeBadge(server.type).variant} className={getTypeBadge(server.type).className}>
                       {server.type}
                     </Badge>
                   </div>
@@ -103,7 +97,7 @@ export default function MCPServerDetails({
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">{t('details.labels.configType')}</label>
                   <div className="mt-1">
-                    <Badge variant="outline" className={`text-xs ${getTypeColor(server.config_type)}`}>
+                    <Badge variant={getTypeBadge(server.config_type).variant} className={getTypeBadge(server.config_type).className}>
                       {server.config_type?.toUpperCase() || 'N/A'}
                     </Badge>
                   </div>
@@ -123,7 +117,7 @@ export default function MCPServerDetails({
               {server.tools && server.tools.length > 0 ? (
                 <div className="space-y-3">
                   {server.tools.map((tool, index) => (
-                    <div key={index} className="p-3 border rounded-lg bg-muted/30">
+                    <div key={index} className="p-3 border rounded-lg bg-muted/24">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <h4 className="font-medium text-sm mb-1">{tool.name}</h4>
@@ -131,13 +125,13 @@ export default function MCPServerDetails({
                             <p className="text-xs text-muted-foreground">{tool.description}</p>
                           )}
                         </div>
-                        <Wrench className="h-4 w-4 text-emerald-400 mt-0.5" />
+                        <Wrench className="h-4 w-4 text-success mt-0.5" />
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-muted/30 rounded-lg border border-dashed text-center">
+                <div className="p-4 bg-muted/24 rounded-lg border border-dashed text-center">
                   <Wrench className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">
                     {t('details.empty.tools')}
@@ -158,7 +152,7 @@ export default function MCPServerDetails({
               {server.environments && Object.keys(server.environments).length > 0 ? (
                 <div className="space-y-2">
                   {Object.entries(server.environments).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between p-2 bg-muted/30 rounded">
+                    <div key={key} className="flex items-center justify-between p-2 bg-muted/24 rounded">
                       <span className="text-sm font-medium">{key}</span>
                       <span className="text-xs text-muted-foreground">
                         {typeof value === 'string' && value !== 'required' ? value : t('details.environment.configured')}
@@ -167,7 +161,7 @@ export default function MCPServerDetails({
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-muted/30 rounded-lg border border-dashed text-center">
+                <div className="p-4 bg-muted/24 rounded-lg border border-dashed text-center">
                   <Settings className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">
                     {t('details.empty.environments')}
@@ -185,7 +179,7 @@ export default function MCPServerDetails({
                     <FileText className="h-5 w-5" />
                     {t('details.sections.configJson')}
                   </h3>
-                  <div className="p-3 bg-muted/30 rounded-lg border">
+                  <div className="p-3 bg-muted/24 rounded-lg border">
                     <pre className="text-xs overflow-auto max-h-96 whitespace-pre-wrap break-words">
                       {JSON.stringify(server.config_json, null, 2)}
                     </pre>
@@ -194,8 +188,8 @@ export default function MCPServerDetails({
               </>
             )}
           </div>
-        </ScrollArea>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }

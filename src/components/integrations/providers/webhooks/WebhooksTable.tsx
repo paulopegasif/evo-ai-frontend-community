@@ -1,7 +1,7 @@
 import { CheckCircle, XCircle, Globe, Edit, Trash2, Play } from 'lucide-react';
 import { Webhook } from '@/types/integrations';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface WebhooksTableProps {
@@ -37,12 +37,10 @@ export default function WebhooksTable({
   const webhooksList = webhooks || [];
 
   const getEventBadgeColor = (event: string) => {
-    const eventColors: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      'conversation_created': 'default',
-      'conversation_updated': 'secondary',
-      'message_created': 'default',
-      'contact_created': 'default',
-      'contact_updated': 'secondary'
+    const eventColors: Record<string, 'info' | 'secondary'> = {
+      conversation_created: 'info',
+      message_created: 'info',
+      contact_created: 'info',
     };
     return eventColors[event] || 'secondary';
   };
@@ -95,9 +93,9 @@ export default function WebhooksTable({
             <Badge
               key={event}
               variant={getEventBadgeColor(event)}
-              className="text-xs"
+              
             >
-              {event.replace('_', ' ')}
+              {event.replace(/_/g, ' ')}
             </Badge>
           ))}
           {webhook.subscriptions && webhook.subscriptions.length > 2 && (
@@ -114,13 +112,13 @@ export default function WebhooksTable({
       sortable: true,
       render: webhook => (
         webhook.enabled ? (
-          <Badge variant="default" className="flex items-center gap-1 w-fit">
-            <CheckCircle className="w-3 h-3" />
+          <Badge variant="success">
+            <CheckCircle />
             {t('webhooks.table.status.active')}
           </Badge>
         ) : (
-          <Badge variant="secondary" className="flex items-center gap-1 w-fit">
-            <XCircle className="w-3 h-3" />
+          <Badge variant="outline">
+            <XCircle />
             {t('webhooks.table.status.inactive')}
           </Badge>
         )
@@ -183,7 +181,6 @@ export default function WebhooksTable({
           : undefined
       }
       getRowKey={webhook => String(webhook.id)}
-      className="border-0 shadow-none"
     />
   );
 }

@@ -81,7 +81,8 @@
       "downloadFallbackReason": {
         "serverError": "Servidor retornou {{status}} — não foi possível baixar diretamente.",
         "network": "Falha de rede ou bloqueio de CORS — não foi possível baixar diretamente."
-      }
+      },
+      "download": "Baixar"
     },
     "messageImage": {
       "downloadStarted": "Download iniciado",
@@ -261,7 +262,8 @@
     "paused": "(pausado)",
     "send": "Enviar",
     "preparingConverter": "Preparando conversor de áudio...",
-    "maxDurationReached": "Duração máxima de gravação atingida (5 min). Áudio parado automaticamente."
+    "maxDurationReached": "Duração máxima de gravação atingida (5 min). Áudio parado automaticamente.",
+    "cancel": "Cancelar"
   },
   "cannedResponses": {
     "loading": "Carregando respostas prontas...",
@@ -284,7 +286,9 @@
       "whatsappMessage": "Você só pode responder a esta conversa usando um modelo de mensagem devido a",
       "cannotReply": "Você não pode responder porque",
       "linkText": "Restrições de janela de mensagem de 24 horas",
-      "zapiDisconnected": "WhatsApp desconectado. Conecte o número para enviar mensagens."
+      "zapiDisconnected": "WhatsApp desconectado. Conecte o número para enviar mensagens.",
+      "readOnlyMirror": "Cópia das conversas do Bitrix24, somente leitura. Responda pelo Bitrix24 até o WhatsApp ser conectado aqui.",
+      "whatsappDisconnected": "WhatsApp desconectado. Conecte o número para enviar mensagens."
     },
     "noteBanner": {
       "title": "Nota do atendimento",
@@ -319,7 +323,8 @@
       "bulkStatusSuccess": "{{count}} conversa(s) atualizada(s)",
       "bulkStatusPartialSuccess": "{{success}} atualizada(s), {{failed}} falhada(s)",
       "bulkStatusError": "Erro ao atualizar conversas em lote",
-      "bulkStatusNoPermission": "Você não tem permissão para atualizar conversas"
+      "bulkStatusNoPermission": "Você não tem permissão para atualizar conversas",
+      "priorityLabel": "Prioridade"
     },
     "contactNoName": "Contato sem nome",
     "status": "Status:",
@@ -327,7 +332,9 @@
       "open": "Abrir",
       "complete": "Concluir",
       "reopen": "Reabrir",
-      "more": "Mais opções de status"
+      "more": "Mais opções de status",
+      "openFull": "Abrir atendimento",
+      "pause": "Pausar Conversa"
     },
     "statusPill": {
       "open": "Atendimento em Aberto",
@@ -339,7 +346,8 @@
     "closeConversation": "Fechar conversa",
     "phoneNumber": "Número de telefone",
     "openContactPanel": "Abrir detalhes do contato",
-    "closeContactPanel": "Fechar detalhes do contato"
+    "closeContactPanel": "Fechar detalhes do contato",
+    "openContact": "Ver detalhes do contato"
   },
   "chatSidebar": {
     "segments": {
@@ -399,7 +407,8 @@
       "all": "Todas",
       "chipCleared": "Não lidas/Grupos não combinam com esta aba e foram removidos"
     },
-    "draftPrefix": "Rascunho:"
+    "draftPrefix": "Rascunho:",
+    "loadMore": "Carregar mais"
   },
   "chatTabs": {
     "chat": "Chat"
@@ -733,7 +742,8 @@
       "helper": "Salve notas importantes na conversa para que outros usuários possam ver no futuro.",
       "placeholder": "Adicionar nota ao atendimento...",
       "save": "Salvar",
-      "saving": "Salvando..."
+      "saving": "Salvando...",
+      "cancel": "Cancelar"
     },
     "emojiPicker": {
       "searchPlaceholder": "Buscar emojis..."
@@ -1072,6 +1082,11 @@
       "conversationsEmpty": "Nenhuma conversa encontrada",
       "contactsEmpty": "Nenhum contato encontrado",
       "messagesEmpty": "Nenhuma mensagem encontrada"
+    },
+    "hints": {
+      "navigate": "navegar",
+      "open": "abrir",
+      "close": "fechar"
     }
   },
   "pipeline": {
@@ -1103,6 +1118,7 @@
     "send": "Enviar",
     "recordAudio": "Gravar áudio",
     "moreActions": "Mais ações",
-    "back": "Voltar"
+    "back": "Voltar",
+    "remove": "Remover"
   }
 }
