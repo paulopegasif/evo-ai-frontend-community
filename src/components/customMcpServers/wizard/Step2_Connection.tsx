@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Input, Label, Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
@@ -41,16 +43,17 @@ export default function Step2_Connection({ data, onChange, onNext, onBack }: Ste
         <div className="w-full max-w-2xl mx-auto space-y-4">
           <div>
             <Label className="text-sm mb-1.5 block font-semibold">
-              {t('form.labels.url')} <span className="text-red-500">*</span>
+              {t('form.labels.url')} <span className="text-destructive">*</span>
             </Label>
             <Input
+              size="lg"
               placeholder={t('form.placeholders.url')}
               value={data.url}
               onChange={e => onChange({ ...data, url: e.target.value })}
-              className={`h-10 text-sm ${error ? 'border-red-500' : ''}`}
+              aria-invalid={!!error || undefined}
               autoFocus
             />
-            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+            {error && <p className="text-sm text-destructive-foreground mt-2">{error}</p>}
           </div>
 
           <div className="pt-2">

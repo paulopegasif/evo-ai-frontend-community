@@ -112,7 +112,8 @@
       "selectType": "Type de Canal",
       "selectProvider": "Fournisseur",
       "configure": "Configurer",
-      "review": "Vérifier"
+      "review": "Vérifier",
+      "done": "Terminé"
     },
     "breadcrumb": {
       "channels": "Canaux",
@@ -122,7 +123,10 @@
       "title": "Sélectionnez un type de canal",
       "subtitle": "Choisissez le canal qui répond le mieux à vos besoins de communication",
       "searchPlaceholder": "Rechercher des canaux...",
-      "notConfiguredTooltip": "Ce canal n'est pas configuré. Configurez-le dans Paramètres Admin > Canaux avant de l'utiliser."
+      "notConfiguredTooltip": "Ce canal n'est pas configuré. Configurez-le dans Paramètres Admin > Canaux avant de l'utiliser.",
+      "notConfigured": "Non configuré",
+      "noResults": "Aucun canal trouvé",
+      "noResultsDescription": "Essayez un autre nom."
     },
     "channelTypes": {
       "website": {
@@ -251,6 +255,15 @@
         "placeholder": "généré automatiquement",
         "helpText": "Généré automatiquement à partir du nom d'affichage."
       }
+    },
+    "validation": {
+      "required": "Champ obligatoire"
+    },
+    "successState": {
+      "title": "Canal créé",
+      "description": "{{name}} est connecté. Vérifiez ses paramètres pour commencer à répondre.",
+      "openSettings": "Configurer le canal",
+      "backToChannels": "Voir les canaux"
     }
   },
   "settings": {
@@ -905,7 +918,8 @@
             "errors": {
               "apiUrlRequired": "L'URL de base est obligatoire",
               "updateError": "Erreur lors de la mise à jour des paramètres de connexion"
-            }
+            },
+            "adminTokenSet": "Une clé est déjà configurée. Laissez vide pour la conserver."
           },
           "actions": {
             "title": "Actions de l'Instance",
@@ -1331,7 +1345,8 @@
       "avatar": {
         "label": "Avatar du Widget",
         "upload": "Télécharger un Avatar",
-        "change": "Modifier l'Avatar"
+        "change": "Modifier l'Avatar",
+        "remove": "Retirer l'avatar"
       },
       "websiteName": {
         "label": "Nom du Site Web",
@@ -1661,6 +1676,10 @@
       "success": {
         "channelCreated": "Canal créé avec succès"
       }
+    },
+    "a11y": {
+      "copy": "Copier",
+      "remove": "Retirer"
     }
   },
   "deleteDialog": {

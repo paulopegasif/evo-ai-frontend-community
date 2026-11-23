@@ -37,7 +37,7 @@ export default function CannedResponsesTable({
       sortable: true,
       render: (cannedResponse: CannedResponse) => (
         <div className="flex items-center gap-2">
-          <span className="font-mono font-medium text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded border inline-block">
+          <span className="font-mono font-medium text-sm bg-muted px-2 py-1 rounded border inline-block">
             {cannedResponse.short_code}
           </span>
           {!!cannedResponse.attachments?.length && (

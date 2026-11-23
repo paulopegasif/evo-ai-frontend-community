@@ -235,5 +235,9 @@
       "deleting": "Eliminando...",
       "confirm": "Eliminar Todos"
     }
+  },
+  "viewMode": {
+    "cards": "Vista de tarjetas",
+    "table": "Vista de tabla"
   }
 }

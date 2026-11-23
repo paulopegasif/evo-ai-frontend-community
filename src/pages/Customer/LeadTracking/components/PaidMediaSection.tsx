@@ -9,7 +9,7 @@ interface PaidMediaSectionProps {
   compare: KpiComparer;
 }
 
-const ACCENT = 'bg-primary/15 text-primary';
+const ACCENT = 'bg-primary/10 text-primary';
 const currency = (value: number | null) => currencyOrDash(value);
 const count = (value: number | null) => formatNumber(value);
 const percent = (value: number | null) => percentOrDash(value);

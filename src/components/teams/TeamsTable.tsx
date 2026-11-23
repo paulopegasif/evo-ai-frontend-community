@@ -1,4 +1,5 @@
-import { Avatar, AvatarFallback, Badge } from '@evoapi/design-system';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Users, Edit, Trash2 } from 'lucide-react';
 import { Team } from '@/types/users';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -55,8 +56,8 @@ export default function TeamsTable({
       width: '300px',
       render: (team) => (
         <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+          <Avatar className="size-8 rounded-lg">
+            <AvatarFallback className="rounded-lg text-xs">
               {getInitials(team.name)}
             </AvatarFallback>
           </Avatar>
@@ -81,7 +82,7 @@ export default function TeamsTable({
       render: (team) => (
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-muted-foreground" />
-          <span className="font-mono text-sm">
+          <span className="text-sm tabular-nums">
             {team.members_count || 0}
           </span>
         </div>
@@ -94,11 +95,11 @@ export default function TeamsTable({
       render: (team) => (
         <div>
           {team.allow_auto_assign ? (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="success">
               {t('table.columns.enabled')}
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="secondary">
               {t('table.columns.disabled')}
             </Badge>
           )}

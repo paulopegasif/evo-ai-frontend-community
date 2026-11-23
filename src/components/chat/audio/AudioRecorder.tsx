@@ -120,7 +120,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
       {/* Ponto vermelho + timer */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
-        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+        <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
         <span className="text-sm font-mono text-foreground tabular-nums">{formatDuration(duration)}</span>
       </div>
 

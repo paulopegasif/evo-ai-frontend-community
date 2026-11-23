@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import PrimaryActionButton from './PrimaryActionButton';
 
@@ -133,15 +134,13 @@ export default function BaseFilter<T extends BaseFilterType>({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`max-w-4xl bg-sidebar border-sidebar-border ${className}`}>
+      <DialogPopup className={`max-w-4xl ${className}`}>
         <DialogHeader>
-          <DialogTitle className="text-sidebar-foreground">{finalTitle}</DialogTitle>
-          <DialogDescription className="text-sidebar-foreground/70">
-            {finalDescription}
-          </DialogDescription>
+          <DialogTitle>{finalTitle}</DialogTitle>
+          <DialogDescription>{finalDescription}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <DialogPanel className="flex flex-col gap-4">
           {localFilters.map((filter, index) => (
             <BaseFilterRow
               key={`filter-${index}`}
@@ -155,37 +154,24 @@ export default function BaseFilter<T extends BaseFilterType>({
             />
           ))}
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addFilter}
-            className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            <Plus className="h-4 w-4 mr-2" />
+          <Button type="button" variant="outline" onClick={addFilter} className="w-full">
+            <Plus />
             {finalAddText}
           </Button>
-        </div>
+        </DialogPanel>
 
-        <DialogFooter className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handleClear}
-            className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-          >
+        <DialogFooter className="sm:justify-between">
+          <Button variant="outline" onClick={handleClear}>
             {finalClearText}
           </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-            >
+          <div className="flex flex-col-reverse gap-2 sm:flex-row">
+            <Button variant="outline" onClick={handleClose}>
               {translations.cancel}
             </Button>
             <PrimaryActionButton label={finalApplyText} onClick={handleApply} size="default" />
           </div>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

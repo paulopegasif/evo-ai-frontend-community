@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Textarea, Label, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ArrowRight, ArrowLeft, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
@@ -25,7 +28,8 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
 
   // AI actions call the CRM integrations processor, so they demand both the
   // configured provider and the integrations.execute grant.
-  const showAIActions = config.openaiConfigured === true && isReady && can('integrations', 'execute');
+  const showAIActions =
+    config.openaiConfigured === true && isReady && can('integrations', 'execute');
 
   useEffect(() => {
     if (data.instruction && data.instruction.trim().length < 10) {
@@ -63,7 +67,8 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
       }
     } catch (error) {
       console.error('Error reviewing prompt:', error);
-      const errorMessage = error instanceof Error ? error.message : t('wizard.promptGenerator.messages.reviewError');
+      const errorMessage =
+        error instanceof Error ? error.message : t('wizard.promptGenerator.messages.reviewError');
       toast.error(errorMessage);
     } finally {
       setIsReviewing(false);
@@ -75,13 +80,13 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
       <div className="flex-1 flex flex-col space-y-2 min-h-0">
         <div className="flex items-center justify-between">
           <Label className="text-sm font-semibold">
-            {t('wizard.step5.instructionLabel')} <span className="text-red-500">*</span>
+            {t('wizard.step5.instructionLabel')} <span className="text-destructive">*</span>
           </Label>
           <TooltipProvider>
             <div className="flex gap-2">
               {data.instruction && data.instruction.trim() && (
                 <Tooltip>
-                  <TooltipTrigger asChild>
+                  <TooltipTrigger render={<span className="inline-flex" />}>
                     <Button
                       type="button"
                       variant="outline"
@@ -98,21 +103,21 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
                         </>
                       ) : (
                         <>
-                          <Wand2 className="h-4 w-4 text-blue-500" />
+                          <Wand2 className="h-4 w-4 text-info" />
                           {t('wizard.promptGenerator.buttons.review')}
                         </>
                       )}
                     </Button>
                   </TooltipTrigger>
                   {!showAIActions && (
-                    <TooltipContent>
+                    <TooltipPopup>
                       <p>{t('wizard.step5.aiNotConfigured')}</p>
-                    </TooltipContent>
+                    </TooltipPopup>
                   )}
                 </Tooltip>
               )}
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger render={<span className="inline-flex" />}>
                   <Button
                     type="button"
                     variant="outline"
@@ -122,14 +127,14 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
                     aria-disabled={!showAIActions}
                     className="gap-2"
                   >
-                    <Sparkles className="h-4 w-4 text-purple-500" />
+                    <Sparkles className="h-4 w-4 text-primary" />
                     {t('wizard.step5.generateWithAI')}
                   </Button>
                 </TooltipTrigger>
                 {!showAIActions && (
-                  <TooltipContent>
+                  <TooltipPopup>
                     <p>{t('wizard.step5.aiNotConfigured')}</p>
-                  </TooltipContent>
+                  </TooltipPopup>
                 )}
               </Tooltip>
             </div>
@@ -137,15 +142,16 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
         </div>
         <Textarea
           value={data.instruction || ''}
-          onChange={(e) => onChange({ instruction: e.target.value })}
+          onChange={e => onChange({ instruction: e.target.value })}
           placeholder={t('wizard.step5.instructionPlaceholder')}
-          className={`flex-1 text-sm min-h-[160px] ${error ? 'border-red-500' : ''}`}
+          className="flex-1 min-h-[160px]"
+          aria-invalid={!!error || undefined}
         />
         <div className="flex justify-between text-xs text-muted-foreground flex-shrink-0">
           <span>{t('wizard.step5.minCharacters')}</span>
           <span>{t('wizard.step5.characterCount', { count: data.instruction?.length || 0 })}</span>
         </div>
-        {error && <p className="text-sm text-red-600 flex-shrink-0">{error}</p>}
+        {error && <p className="text-sm text-destructive-foreground flex-shrink-0">{error}</p>}
 
         <div className="bg-muted/50 p-3 rounded-lg flex-shrink-0">
           <p className="text-xs text-muted-foreground">
@@ -159,11 +165,7 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
           <ArrowLeft className="h-4 w-4" />
           {t('actions.back')}
         </Button>
-        <Button
-          onClick={handleNext}
-          disabled={!data.instruction || !!error}
-          className="gap-2 px-6"
-        >
+        <Button onClick={handleNext} disabled={!data.instruction || !!error} className="gap-2 px-6">
           {t('actions.continue')}
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -172,7 +174,7 @@ const Step5_Instructions = ({ data, onChange, onNext, onBack }: Step5Props) => {
       <PromptGeneratorModal
         open={showPromptModal}
         onOpenChange={setShowPromptModal}
-        onGenerated={(prompt) => {
+        onGenerated={prompt => {
           onChange({ instruction: prompt });
           setError('');
         }}

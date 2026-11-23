@@ -595,5 +595,11 @@
     "clearing": "Cancellazione...",
     "success": "Configurazione cancellata con successo",
     "error": "Impossibile cancellare la configurazione"
+  },
+  "common": {
+    "unsavedChanges": "Modifiche non salvate",
+    "noChanges": "Nessuna modifica in sospeso",
+    "configured": "Configurato",
+    "notConfigured": "Non configurato"
   }
 }

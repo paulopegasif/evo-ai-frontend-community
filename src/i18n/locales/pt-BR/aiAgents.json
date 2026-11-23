@@ -814,7 +814,11 @@
         "addTask": "Adicionar",
         "noTasks": "Nenhuma tarefa configurada",
         "taskTitle": "Título da tarefa",
-        "noStagesConfigured": "Nenhum estágio configurado. Adicione estágios para criar automações."
+        "noStagesConfigured": "Nenhum estágio configurado. Adicione estágios para criar automações.",
+        "modalTitle": "Automação de Pipelines"
+      },
+      "contactEdit": {
+        "modalTitle": "Edição de Contatos"
       }
     },
     "knowledge": {
@@ -1232,6 +1236,24 @@
         "noTools": "Nenhuma ferramenta disponível",
         "saveConfig": "SALVAR CONFIGURAÇÕES",
         "disconnect": "Desconectar"
+      },
+      "disconnectConfirm": {
+        "title": "Desconectar {{name}}?",
+        "description": "O agente perderá o acesso às ferramentas do {{name}} até que você conecte novamente.",
+        "cancel": "Cancelar"
+      },
+      "toasts": {
+        "loadToolsError": "Erro ao carregar ferramentas disponíveis",
+        "connectError": "Erro ao conectar com {{name}}",
+        "saveSuccess": "Configurações salvas com sucesso!",
+        "saveError": "Erro ao salvar configurações",
+        "disconnectSuccess": "{{name}} desconectado com sucesso!",
+        "disconnectError": "Erro ao desconectar {{name}}",
+        "loadSheetsError": "Erro ao carregar planilhas",
+        "loadCalendarsError": "Erro ao carregar agendas",
+        "emailRequired": "Por favor, insira um e-mail",
+        "selectSheet": "Por favor, selecione uma planilha",
+        "selectCalendar": "Por favor, selecione uma agenda"
       }
     },
     "mcpServers": {
@@ -1249,7 +1271,8 @@
       "title": "Configurações",
       "subtitle": "Configurações avançadas do agente",
       "comingSoon": "Em breve..."
-    }
+    },
+    "unsavedChanges": "Alterações não salvas"
   },
   "actions": {
     "save": "Salvar",
@@ -1274,7 +1297,8 @@
     "view": "Visualizar",
     "saving": "Salvando...",
     "continue": "Continuar",
-    "skip": "Pular"
+    "skip": "Pular",
+    "more": "Mais ações"
   },
   "wizardActions": {
     "back": "Voltar",
@@ -1385,7 +1409,8 @@
         "searchTools": "Buscar ferramentas...",
         "noToolsAvailable": "Nenhuma ferramenta disponível",
         "toolsFromAgents": "Ferramentas dos agentes LLM selecionados aparecerão aqui",
-        "saveSettings": "Salvar Configurações"
+        "saveSettings": "Salvar Configurações",
+        "expandDescription": "Expandir descrição"
       }
     },
     "step4": {
@@ -1506,7 +1531,9 @@
         "description": "Configure ferramentas e integrações para expandir capacidades"
       },
       "viewAllAgents": "Ver todos os agentes"
-    }
+    },
+    "close": "Fechar assistente",
+    "creating": "Criando agente..."
   },
   "chat": {
     "newConversation": "Nova Conversa",
@@ -1522,7 +1549,10 @@
     "typeMessage": "Digite sua mensagem...",
     "deleteSession": "Deletar Sessão",
     "deleteSessionConfirm": "Tem certeza que deseja deletar esta sessão? Esta ação não pode ser desfeita.",
-    "session": "Sessão"
+    "session": "Sessão",
+    "attachFile": "Anexar arquivo",
+    "removeFile": "Remover {{name}}",
+    "send": "Enviar mensagem"
   },
   "mcpServers": {
     "title": "Servidores MCP",

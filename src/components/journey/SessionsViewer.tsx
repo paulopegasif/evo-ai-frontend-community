@@ -1,8 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Button, Badge, Card, CardContent } from '@evoapi/design-system';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import {
-  X,
   Trash2,
   RefreshCw,
   Filter,
@@ -16,7 +31,6 @@ import {
   Ban,
   User,
   ChevronRight,
-  Loader2,
 } from 'lucide-react';
 import { journeyService } from '@/services';
 import { formatDistanceToNow } from 'date-fns';
@@ -67,48 +81,63 @@ interface JourneySession {
 export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsViewerProps) {
   const { t } = useLanguage('journey');
 
-  const getStatusConfig = () => ({
+  type StatusTone = {
+    label: string;
+    icon: typeof Activity;
+    badge: 'success' | 'info' | 'warning' | 'error' | 'secondary';
+    color: string;
+    bgColor: string;
+    borderColor: string;
+  };
+
+  const getStatusConfig = (): Record<SessionStatus, StatusTone> => ({
     active: {
       label: t('sessions.viewer.status.active'),
       icon: Activity,
-      color: 'text-green-500',
-      bgColor: 'bg-green-500/10',
-      borderColor: 'border-green-500/20',
+      badge: 'success',
+      color: 'text-success-foreground',
+      bgColor: 'bg-success/8',
+      borderColor: 'border-success/24',
     },
     waiting: {
       label: t('sessions.viewer.status.waiting'),
       icon: Clock,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/20',
+      badge: 'info',
+      color: 'text-info-foreground',
+      bgColor: 'bg-info/8',
+      borderColor: 'border-info/24',
     },
     paused: {
       label: t('sessions.viewer.status.paused'),
       icon: PauseCircle,
-      color: 'text-yellow-500',
-      bgColor: 'bg-yellow-500/10',
-      borderColor: 'border-yellow-500/20',
+      badge: 'warning',
+      color: 'text-warning-foreground',
+      bgColor: 'bg-warning/8',
+      borderColor: 'border-warning/24',
     },
     completed: {
       label: t('sessions.viewer.status.completed'),
       icon: CheckCircle,
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-500/10',
-      borderColor: 'border-emerald-500/20',
+      badge: 'success',
+      color: 'text-success-foreground',
+      bgColor: 'bg-success/8',
+      borderColor: 'border-success/24',
     },
     failed: {
       label: t('sessions.viewer.status.failed'),
       icon: XCircle,
-      color: 'text-red-500',
-      bgColor: 'bg-red-500/10',
-      borderColor: 'border-red-500/20',
+      badge: 'error',
+      color: 'text-destructive-foreground',
+      bgColor: 'bg-destructive/8',
+      borderColor: 'border-destructive/24',
     },
     cancelled: {
       label: t('sessions.viewer.status.cancelled'),
       icon: Ban,
-      color: 'text-gray-500',
-      bgColor: 'bg-gray-500/10',
-      borderColor: 'border-gray-500/20',
+      badge: 'secondary',
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted',
+      borderColor: 'border-border',
     },
   });
 
@@ -122,6 +151,10 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const pageSize = 20;
+  const [pendingAction, setPendingAction] = useState<
+    { type: 'delete' | 'cancel'; sessionId: string } | null
+  >(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const loadSessions = async () => {
     try {
@@ -160,8 +193,6 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
   }, [journeyId, filterStatus, searchContact, page]);
 
   const handleDeleteSession = async (sessionId: string) => {
-    if (!confirm(t('sessions.viewer.actions.confirmDelete'))) return;
-
     try {
       await journeyService.deleteJourneySession(journeyId, sessionId);
       toast.success(t('sessions.viewer.messages.deleteSuccess'));
@@ -173,8 +204,6 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
   };
 
   const handleCancelSession = async (sessionId: string) => {
-    if (!confirm(t('sessions.viewer.actions.confirmCancel'))) return;
-
     try {
       await journeyService.cancelJourneySession(journeyId, sessionId);
       toast.success(t('sessions.viewer.messages.cancelSuccess'));
@@ -185,136 +214,148 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    const config = statusConfig[status as keyof ReturnType<typeof getStatusConfig>];
-    const Icon = config?.icon || Activity;
-    return <Icon className={`h-4 w-4 ${config?.color}`} />;
+  const confirmPendingAction = async () => {
+    if (!pendingAction) return;
+    setActionLoading(true);
+    try {
+      if (pendingAction.type === 'delete') {
+        await handleDeleteSession(pendingAction.sessionId);
+      } else {
+        await handleCancelSession(pendingAction.sessionId);
+      }
+    } finally {
+      setActionLoading(false);
+      setPendingAction(null);
+    }
   };
 
+  const getStatusIcon = (status: string) => {
+    const config = statusConfig[status as SessionStatus];
+    const Icon = config?.icon || Activity;
+    return <Icon className={`size-4 ${config?.color ?? ''}`} aria-hidden="true" />;
+  };
+
+  const statusFilterItems = [
+    { value: 'all', label: t('sessions.viewer.filters.allStatus') },
+    ...(['active', 'waiting', 'paused', 'completed', 'failed', 'cancelled'] as const).map(status => ({
+      value: status,
+      label: t(`sessions.viewer.status.${status}`),
+    })),
+  ];
+
+  const statCards: { key: 'total' | SessionStatus; testId: string; value: number; className: string; valueClassName: string }[] = [
+    { key: 'total', testId: 'sessions-stat-total', value: stats?.total ?? 0, className: 'bg-muted/48', valueClassName: 'text-foreground' },
+    ...(['active', 'waiting', 'paused', 'completed', 'failed', 'cancelled'] as const).map(status => ({
+      key: status,
+      testId: `sessions-stat-${status}`,
+      value: stats?.byStatus?.[status] ?? 0,
+      className: `${statusConfig[status].bgColor} ${statusConfig[status].borderColor}`,
+      valueClassName: statusConfig[status].color,
+    })),
+  ];
+
+  const logBadgeVariant = (status: string): 'success' | 'error' | 'secondary' =>
+    status === 'completed' ? 'success' : status === 'failed' ? 'error' : 'secondary';
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-sidebar w-full max-w-6xl h-[90vh] rounded-lg shadow-2xl flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-sidebar-border">
-          <div>
-            <h2 className="text-xl font-semibold text-sidebar-foreground">{t('sessions.viewer.title')}</h2>
-            <p className="text-sm text-sidebar-foreground/60 mt-1">{journeyName}</p>
-          </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
+    <Dialog open onOpenChange={open => !open && onClose()}>
+      <DialogPopup
+        className="h-[90vh] max-w-6xl"
+        closeProps={{ 'aria-label': t('sessions.viewer.actions.close') }}
+      >
+        <DialogHeader className="border-b">
+          <DialogTitle>{t('sessions.viewer.title')}</DialogTitle>
+          <DialogDescription>{journeyName}</DialogDescription>
+        </DialogHeader>
 
         {/* Stats Cards */}
         {stats && (
-          <div className="p-6 border-b border-sidebar-border" data-testid="sessions-stats-grid">
-            <div className="grid grid-cols-2 md:grid-cols-7 gap-3">
-              <Card className="bg-sidebar-accent" data-testid="sessions-stat-total">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-sidebar-foreground">{stats.total ?? 0}</div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.total')}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-green-500/10 border-green-500/20" data-testid="sessions-stat-active">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-green-500">{stats.byStatus?.active ?? 0}</div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.active')}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-blue-500/10 border-blue-500/20" data-testid="sessions-stat-waiting">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-blue-500">{stats.byStatus?.waiting ?? 0}</div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.waiting')}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-yellow-500/10 border-yellow-500/20" data-testid="sessions-stat-paused">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-yellow-500">{stats.byStatus?.paused ?? 0}</div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.paused')}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-emerald-500/10 border-emerald-500/20" data-testid="sessions-stat-completed">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-emerald-500">
-                    {stats.byStatus?.completed ?? 0}
-                  </div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.completed')}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-red-500/10 border-red-500/20" data-testid="sessions-stat-failed">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-red-500">{stats.byStatus?.failed ?? 0}</div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.failed')}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-500/10 border-gray-500/20" data-testid="sessions-stat-cancelled">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-gray-500">{stats.byStatus?.cancelled ?? 0}</div>
-                  <div className="text-xs text-sidebar-foreground/60 mt-1">{t('sessions.viewer.stats.cancelled')}</div>
-                </CardContent>
-              </Card>
+          <div className="border-b px-6 py-4" data-testid="sessions-stats-grid">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-7">
+              {statCards.map(card => (
+                <Card key={card.key} className={card.className} data-testid={card.testId}>
+                  <CardPanel className="p-4">
+                    <div className={`font-bold text-2xl ${card.valueClassName}`}>{card.value}</div>
+                    <div className="mt-1 text-muted-foreground text-xs">
+                      {t(`sessions.viewer.stats.${card.key}`)}
+                    </div>
+                  </CardPanel>
+                </Card>
+              ))}
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <div className="p-6 border-b border-sidebar-border bg-sidebar-accent/50">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="border-b bg-muted/24 px-6 py-4">
+          <div className="flex flex-col gap-4 md:flex-row">
             {/* Status Filter */}
-            <div className="flex items-center gap-2 flex-1">
-              <Filter className="h-4 w-4 text-sidebar-foreground/60" />
-              <select
+            <div className="flex flex-1 items-center gap-2">
+              <Filter className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <Select
+                items={statusFilterItems}
                 value={filterStatus}
-                onChange={e => {
-                  setFilterStatus(e.target.value);
+                onValueChange={value => {
+                  if (value == null) return;
+                  setFilterStatus(String(value));
                   setPage(1);
                 }}
-                className="flex-1 bg-sidebar border border-sidebar-border rounded-md px-3 py-2 text-sm text-sidebar-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option value="all">{t('sessions.viewer.filters.allStatus')}</option>
-                <option value="active">{t('sessions.viewer.status.active')}</option>
-                <option value="waiting">{t('sessions.viewer.status.waiting')}</option>
-                <option value="paused">{t('sessions.viewer.status.paused')}</option>
-                <option value="completed">{t('sessions.viewer.status.completed')}</option>
-                <option value="failed">{t('sessions.viewer.status.failed')}</option>
-                <option value="cancelled">{t('sessions.viewer.status.cancelled')}</option>
-              </select>
+                <SelectTrigger aria-label={t('sessions.viewer.filters.allStatus')}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectPopup alignItemWithTrigger={false}>
+                  {statusFilterItems.map(item => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
             </div>
 
             {/* Contact Search */}
-            <div className="flex items-center gap-2 flex-1">
-              <Search className="h-4 w-4 text-sidebar-foreground/60" />
-              <input
-                type="text"
+            <InputGroup className="flex-1">
+              <InputGroupAddon>
+                <Search aria-hidden="true" />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
                 value={searchContact}
                 onChange={e => {
                   setSearchContact(e.target.value);
                   setPage(1);
                 }}
                 placeholder={t('sessions.viewer.filters.searchPlaceholder')}
-                className="flex-1 bg-sidebar border border-sidebar-border rounded-md px-3 py-2 text-sm text-sidebar-foreground placeholder:text-sidebar-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label={t('sessions.viewer.filters.searchPlaceholder')}
               />
-            </div>
+            </InputGroup>
 
             {/* Refresh Button */}
-            <Button variant="outline" size="sm" onClick={() => loadSessions()} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <Button variant="outline" onClick={() => loadSessions()} disabled={loading}>
+              <RefreshCw className={loading ? 'animate-spin' : undefined} aria-hidden="true" />
               {t('sessions.viewer.filters.refresh')}
             </Button>
           </div>
         </div>
 
         {/* Sessions List */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <DialogPanel className="pt-4!">
           {loading && sessions.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin text-sidebar-foreground/40" />
+            <div className="space-y-3" aria-busy="true" aria-label={t('sessions.viewer.list.loading')}>
+              {[0, 1, 2, 3].map(i => (
+                <Skeleton key={i} className="h-28 w-full rounded-2xl" />
+              ))}
             </div>
           ) : sessions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-sidebar-foreground/60">
-              <Activity className="h-12 w-12 mb-4 opacity-40" />
-              <p>{t('sessions.viewer.list.noSessions')}</p>
-            </div>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Activity />
+                </EmptyMedia>
+                <EmptyTitle>{t('sessions.viewer.list.noSessions')}</EmptyTitle>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <div className="space-y-3">
               {sessions.map(session => {
@@ -322,29 +363,34 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
                 return (
                   <Card
                     key={session.id}
-                    className={`hover:shadow-md transition-shadow cursor-pointer ${config.borderColor}`}
+                    className={`cursor-pointer transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${config.borderColor}`}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedSession(session)}
+                    onKeyDown={e => {
+                      if (e.target !== e.currentTarget) return;
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedSession(session);
+                      }
+                    }}
                   >
-                    <CardContent className="p-4">
+                    <CardPanel className="p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${config.bgColor}`}>
+                            <div className={`rounded-lg p-2 ${config.bgColor}`}>
                               {getStatusIcon(session.status)}
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-sidebar-foreground">
-                                  {config.label}
-                                </span>
-                                <Badge variant="outline" className="text-xs">
-                                  {session.id.slice(0, 8)}
-                                </Badge>
+                                <span className="font-medium text-foreground">{config.label}</span>
+                                <Badge variant="outline">{session.id.slice(0, 8)}</Badge>
                               </div>
-                              <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60 mt-1">
-                                <User className="h-3 w-3" />
+                              <div className="mt-1 flex items-center gap-2 text-muted-foreground text-xs">
+                                <User className="size-3" aria-hidden="true" />
                                 <span>{t('sessions.viewer.list.contact')}: {session.contactId.slice(0, 8)}...</span>
-                                <span>•</span>
+                                <span aria-hidden="true">•</span>
                                 <span>
                                   {formatDistanceToNow(new Date(session.createdAt), {
                                     addSuffix: true,
@@ -356,19 +402,19 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
                           </div>
 
                           {session.errorMessage && (
-                            <div className="flex items-start gap-2 p-2 bg-red-500/10 rounded-md text-xs text-red-600 dark:text-red-400">
-                              <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                            <div className="flex items-start gap-2 rounded-md bg-destructive/8 p-2 text-destructive-foreground text-xs">
+                              <AlertCircle className="mt-0.5 size-3 shrink-0" aria-hidden="true" />
                               <span className="flex-1">{session.errorMessage}</span>
                             </div>
                           )}
 
                           {session.currentNodeId && (
-                            <div className="text-xs text-sidebar-foreground/60">
+                            <div className="text-muted-foreground text-xs">
                               {t('sessions.viewer.list.currentNode')}: <span className="font-mono">{session.currentNodeId}</span>
                             </div>
                           )}
 
-                          <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60">
+                          <div className="flex items-center gap-4 text-muted-foreground text-xs">
                             <span>{t('sessions.viewer.list.logs')}: {session.executionLogs?.length || 0}</span>
                             <span>
                               {t('sessions.viewer.list.retries')}: {session.retryCount}/{session.maxRetries}
@@ -376,46 +422,49 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 ml-4">
+                        <div className="ms-4 flex items-center gap-2">
                           {(session.status === 'active' || session.status === 'waiting') && (
                             <Button
                               variant="outline"
-                              size="sm"
+                              size="icon-sm"
                               onClick={e => {
                                 e.stopPropagation();
-                                handleCancelSession(session.id);
+                                setPendingAction({ type: 'cancel', sessionId: session.id });
                               }}
-                              className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-950"
+                              className="text-warning-foreground hover:bg-warning/8"
+                              aria-label={t('sessions.viewer.actions.cancel')}
+                              title={t('sessions.viewer.actions.cancel')}
                             >
-                              <Ban className="h-4 w-4" />
+                              <Ban />
                             </Button>
                           )}
                           <Button
-                            variant="outline"
-                            size="sm"
+                            variant="destructive-outline"
+                            size="icon-sm"
                             onClick={e => {
                               e.stopPropagation();
-                              handleDeleteSession(session.id);
+                              setPendingAction({ type: 'delete', sessionId: session.id });
                             }}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                            aria-label={t('sessions.viewer.actions.delete')}
+                            title={t('sessions.viewer.actions.delete')}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 />
                           </Button>
-                          <ChevronRight className="h-5 w-5 text-sidebar-foreground/40" />
+                          <ChevronRight className="size-5 text-muted-foreground/72" aria-hidden="true" />
                         </div>
                       </div>
-                    </CardContent>
+                    </CardPanel>
                   </Card>
                 );
               })}
             </div>
           )}
-        </div>
+        </DialogPanel>
 
         {/* Pagination */}
         {total > pageSize && (
-          <div className="border-t border-sidebar-border p-4 flex items-center justify-between">
-            <div className="text-sm text-sidebar-foreground/60">
+          <DialogFooter className="sm:items-center sm:justify-between">
+            <div className="text-muted-foreground text-sm">
               {t('sessions.viewer.pagination.showing', {
                 from: (page - 1) * pageSize + 1,
                 to: Math.min(page * pageSize, total),
@@ -440,79 +489,60 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
                 {t('sessions.viewer.pagination.next')}
               </Button>
             </div>
-          </div>
+          </DialogFooter>
         )}
-      </div>
+      </DialogPopup>
 
-      {/* Session Details Modal (opcional - pode expandir depois) */}
-      {selectedSession && (
-        <div
-          className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4"
-          onClick={() => setSelectedSession(null)}
+      {/* Session Details Modal */}
+      <Dialog open={!!selectedSession} onOpenChange={open => !open && setSelectedSession(null)}>
+        <DialogPopup
+          className="max-h-[80vh] max-w-2xl"
+          closeProps={{ 'aria-label': t('sessions.viewer.actions.close') }}
         >
-          <Card
-            className="w-full max-w-2xl max-h-[80vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold">{t('sessions.viewer.details.title')}</h3>
-                <Button variant="ghost" size="sm" onClick={() => setSelectedSession(null)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
+          {selectedSession && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{t('sessions.viewer.details.title')}</DialogTitle>
+                <DialogDescription className="sr-only">{journeyName}</DialogDescription>
+              </DialogHeader>
 
-              <div className="space-y-4">
+              <DialogPanel className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-sidebar-foreground/60">{t('sessions.viewer.details.status')}</label>
+                  <div className="font-medium text-muted-foreground text-sm">{t('sessions.viewer.details.status')}</div>
                   <div className="mt-1">
-                    <Badge className={statusConfig[selectedSession.status].bgColor}>
+                    <Badge variant={statusConfig[selectedSession.status].badge}>
                       {statusConfig[selectedSession.status].label}
                     </Badge>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-sidebar-foreground/60">
+                  <div className="font-medium text-muted-foreground text-sm">
                     {t('sessions.viewer.details.sessionId')}
-                  </label>
+                  </div>
                   <div className="mt-1 font-mono text-sm">{selectedSession.id}</div>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-sidebar-foreground/60">
+                  <div className="font-medium text-muted-foreground text-sm">
                     {t('sessions.viewer.details.contactId')}
-                  </label>
+                  </div>
                   <div className="mt-1 font-mono text-sm">{selectedSession.contactId}</div>
                 </div>
 
                 {selectedSession.executionLogs && selectedSession.executionLogs.length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-sidebar-foreground/60 mb-2 block">
+                    <div className="mb-2 font-medium text-muted-foreground text-sm">
                       {t('sessions.viewer.details.executionLogs')} ({selectedSession.executionLogs.length})
-                    </label>
-                    <div className="space-y-2 max-h-60 overflow-y-auto bg-sidebar-accent rounded-lg p-3">
+                    </div>
+                    <div className="max-h-60 space-y-2 overflow-y-auto rounded-lg bg-muted/48 p-3">
                       {selectedSession.executionLogs.map((log, index) => (
-                        <div
-                          key={index}
-                          className="text-xs p-2 bg-sidebar rounded border border-sidebar-border"
-                        >
-                          <div className="flex items-center justify-between mb-1">
+                        <div key={index} className="rounded border bg-background p-2 text-xs">
+                          <div className="mb-1 flex items-center justify-between">
                             <span className="font-mono text-primary">{log.nodeId}</span>
-                            <Badge
-                              variant={
-                                log.status === 'completed'
-                                  ? 'default'
-                                  : log.status === 'failed'
-                                  ? 'destructive'
-                                  : 'secondary'
-                              }
-                              className="text-xs"
-                            >
-                              {log.status}
-                            </Badge>
+                            <Badge variant={logBadgeVariant(log.status)}>{log.status}</Badge>
                           </div>
-                          <div className="text-sidebar-foreground/60">
+                          <div className="text-muted-foreground">
                             {log.nodeType} •{' '}
                             {formatDistanceToNow(new Date(log.timestamp), {
                               addSuffix: true,
@@ -520,7 +550,7 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
                             })}
                           </div>
                           {log.error && (
-                            <div className="mt-1 text-red-600 dark:text-red-400">{log.error}</div>
+                            <div className="mt-1 text-destructive-foreground">{log.error}</div>
                           )}
                         </div>
                       ))}
@@ -530,19 +560,43 @@ export function SessionsViewer({ journeyId, journeyName, onClose }: SessionsView
 
                 {selectedSession.variables && Object.keys(selectedSession.variables).length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-sidebar-foreground/60 mb-2 block">
+                    <div className="mb-2 font-medium text-muted-foreground text-sm">
                       {t('sessions.viewer.details.variables')}
-                    </label>
-                    <pre className="text-xs bg-sidebar-accent p-3 rounded-lg overflow-auto max-h-40">
+                    </div>
+                    <pre className="max-h-40 overflow-auto rounded-lg bg-muted/48 p-3 text-xs">
                       {JSON.stringify(selectedSession.variables, null, 2)}
                     </pre>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+              </DialogPanel>
+            </>
+          )}
+        </DialogPopup>
+      </Dialog>
+
+      <ConfirmDialog
+        open={!!pendingAction}
+        onOpenChange={open => !open && setPendingAction(null)}
+        title={
+          pendingAction?.type === 'cancel'
+            ? t('sessions.viewer.confirm.cancelTitle')
+            : t('sessions.viewer.confirm.deleteTitle')
+        }
+        description={
+          pendingAction?.type === 'cancel'
+            ? t('sessions.viewer.actions.confirmCancel')
+            : t('sessions.viewer.actions.confirmDelete')
+        }
+        cancelLabel={t('sessions.viewer.confirm.back')}
+        confirmLabel={
+          pendingAction?.type === 'cancel'
+            ? t('sessions.viewer.confirm.cancelConfirm')
+            : t('sessions.viewer.actions.delete')
+        }
+        icon={pendingAction?.type === 'cancel' ? <Ban /> : <Trash2 />}
+        onConfirm={confirmPendingAction}
+        loading={actionLoading}
+      />
+    </Dialog>
   );
 }

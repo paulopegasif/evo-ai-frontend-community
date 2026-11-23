@@ -67,7 +67,8 @@
       "selectDate": "Seleziona data",
       "selectOption": "Seleziona opzione",
       "enterNumber": "Inserisci un numero",
-      "enterValue": "Inserisci il valore"
+      "enterValue": "Inserisci il valore",
+      "removeFilter": "Rimuovi filtro"
     },
     "form": {
       "required": "{{field}} è obbligatorio",
@@ -106,7 +107,10 @@
         "noResults": "Nessun componente trovato per \"{{query}}\"",
         "dragToAdd": "Trascina per aggiungere",
         "allComponents": "Tutti",
-        "allDescription": "Tutti i componenti"
+        "allDescription": "Tutti i componenti",
+        "close": "Chiudi pannello",
+        "addNode": "Aggiungi {{name}}",
+        "toggle": "Mostra o nascondi componenti"
       }
     },
     "status": {

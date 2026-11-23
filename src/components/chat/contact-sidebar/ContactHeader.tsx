@@ -13,8 +13,8 @@ interface ContactHeaderProps {
 type AvailabilityStatus = NonNullable<Contact['availability_status']>;
 
 const AVAILABILITY_DOT_CLASS: Record<AvailabilityStatus, string> = {
-  online: 'bg-green-500',
-  away: 'bg-yellow-500',
+  online: 'bg-success',
+  away: 'bg-warning',
   busy: 'bg-orange-500',
   offline: 'bg-gray-400',
 };

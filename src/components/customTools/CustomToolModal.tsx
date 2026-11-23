@@ -1,11 +1,11 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  ScrollArea,
-} from '@evoapi/design-system';
+} from '@/components/ui/dialog';
 import { CustomTool, CustomToolFormData } from '@/types/ai';
 import CustomToolForm from './CustomToolForm';
 
@@ -38,16 +38,20 @@ export default function CustomToolModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">
+      <DialogPopup className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
             {mode === 'view'
-              ? (tool?.name ? t('modal.title.view', { name: tool.name }) : t('modal.title.viewFallback'))
-              : (tool?.name ? t('modal.title.edit', { name: tool.name }) : t('modal.title.editFallback'))}
+              ? tool?.name
+                ? t('modal.title.view', { name: tool.name })
+                : t('modal.title.viewFallback')
+              : tool?.name
+                ? t('modal.title.edit', { name: tool.name })
+                : t('modal.title.editFallback')}
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6 py-4">
+        <DialogPanel>
           <CustomToolForm
             tool={tool}
             mode={mode}
@@ -55,8 +59,8 @@ export default function CustomToolModal({
             onSubmit={onSubmit}
             onCancel={handleCancel}
           />
-        </ScrollArea>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 }

@@ -1,59 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { type Locale } from '@/i18n/config';
-import {
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Button,
-  Switch,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useCurrentUser } from '@/utils/auth';
 import { isAdminRole } from '@/constants/roles';
 import BaseHeader from '@/components/base/BaseHeader';
+import SettingsSection from '@/components/base/SettingsSection';
 import { accountService } from '@/services/account/accountService';
 import { useAppDataStore } from '@/store/appDataStore';
 import type { Account, FormDataOptions } from '@/types/settings';
 import { Copy } from 'lucide-react';
 
 import { SettingsTour } from '@/tours';
-
-// Componente para seção
-interface SectionLayoutProps {
-  title: string;
-  description: string;
-  withBorder?: boolean;
-  children: React.ReactNode;
-  headerActions?: React.ReactNode;
-}
-
-function SectionLayout({
-  title,
-  description,
-  withBorder = false,
-  children,
-  headerActions,
-}: SectionLayoutProps) {
-  return (
-    <section className={`pt-8 ${withBorder ? 'border-t border-sidebar-border' : ''} pb-8`}>
-      <div className="grid grid-cols-4 gap-5 mb-5">
-        <div className="col-span-3">
-          <h4 className="text-lg font-medium text-sidebar-foreground mb-2">{title}</h4>
-          <p className="text-sidebar-foreground/70 text-sm">{description}</p>
-        </div>
-        <div className="col-span-1 flex justify-end">{headerActions}</div>
-      </div>
-      <div className="text-sidebar-foreground">{children}</div>
-    </section>
-  );
-}
 
 export default function AccountSettings() {
   const { t, changeLanguage } = useLanguage('accountSettings');
@@ -323,276 +292,277 @@ export default function AccountSettings() {
   const isOnEvolutionCloud = globalConfig.isOnEvolutionCloud;
 
 
+  const languageItems = languages.map(lang => ({ value: lang.code, label: lang.name }));
+  const labelItems = [
+    { value: 'none', label: t('fields.applyLabel.none') },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...formDataOptions.labels.map((label: any) => ({ value: label.title as string, label: label.title as string })),
+  ];
+
   if (loading) {
     return (
-      <div className="h-full flex flex-col p-4">
+      <div className="flex h-full flex-col p-4 md:p-6">
         <BaseHeader title={t('title')} subtitle={t('subtitle')} />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-            <p className="text-sidebar-foreground/60">{t('loading')}</p>
-          </div>
+        <div className="mx-auto mt-6 flex w-full max-w-5xl flex-col gap-8" aria-busy="true">
+          <span className="sr-only">{t('loading')}</span>
+          {[0, 1, 2].map(i => (
+            <div key={i} className="grid gap-4 md:grid-cols-[17rem_1fr] md:gap-8">
+              <div className="flex flex-col gap-2">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-4 w-56" />
+              </div>
+              <Skeleton className="h-36 rounded-2xl" />
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4 md:p-6">
       <SettingsTour />
       <div data-tour="settings-header">
         <BaseHeader title={t('title')} subtitle={t('subtitle')} />
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl w-full mx-auto">
+      <div className="mt-6 flex-1 overflow-auto">
+        <div className="mx-auto w-full max-w-5xl">
           {/* Configurações Gerais */}
           <div data-tour="settings-general">
-          <SectionLayout
-            title={t('sections.general.title')}
-            description={t('sections.general.description')}
-          >
-            <form onSubmit={handleGeneralSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">{t('fields.name.label')}</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={e => handleFieldChange('name', e.target.value)}
-                  placeholder={t('fields.name.placeholder')}
-                  className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                    errors.name ? 'border-red-500' : ''
-                  }`}
-                  disabled={saving}
-                />
-                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-              </div>
+            <form onSubmit={handleGeneralSubmit}>
+              <SettingsSection
+                title={t('sections.general.title')}
+                description={t('sections.general.description')}
+                footer={
+                  <Button type="submit" loading={saving}>
+                    {saving ? t('buttons.saving') : t('buttons.save')}
+                  </Button>
+                }
+              >
+                <div className="grid gap-5 md:grid-cols-2">
+                  <Field invalid={Boolean(errors.name)}>
+                    <FieldLabel htmlFor="name">{t('fields.name.label')}</FieldLabel>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={e => handleFieldChange('name', e.target.value)}
+                      placeholder={t('fields.name.placeholder')}
+                      aria-invalid={errors.name ? true : undefined}
+                      disabled={saving}
+                    />
+                    {errors.name && <FieldError match>{errors.name}</FieldError>}
+                  </Field>
 
-              <div className="space-y-2">
-                <Label htmlFor="locale">{t('fields.locale.label')}</Label>
-                <Select
-                  value={formData.locale}
-                  onValueChange={value => handleFieldChange('locale', value)}
-                >
-                  <SelectTrigger
-                    className={`bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                      errors.locale ? 'border-red-500' : ''
-                    }`}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {languages.map(lang => (
-                      <SelectItem key={lang.code} value={lang.code}>
-                        {lang.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.locale && <p className="text-sm text-red-500">{errors.locale}</p>}
-              </div>
-
-              {account?.features?.custom_reply_domain && (
-                <div className="space-y-2">
-                  <Label htmlFor="domain">{t('fields.domain.label')}</Label>
-                  <Input
-                    id="domain"
-                    value={formData.domain}
-                    onChange={e => handleFieldChange('domain', e.target.value)}
-                    placeholder={t('fields.domain.placeholder')}
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-                    disabled={saving}
-                  />
-                  <p className="text-xs text-sidebar-foreground/60">
-                    {t('fields.domain.description')}
-                  </p>
+                  <Field invalid={Boolean(errors.locale)}>
+                    <FieldLabel htmlFor="locale">{t('fields.locale.label')}</FieldLabel>
+                    <Select
+                      items={languageItems}
+                      value={formData.locale}
+                      onValueChange={value => value && handleFieldChange('locale', value)}
+                    >
+                      <SelectTrigger id="locale">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectPopup>
+                        {languageItems.map(item => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectPopup>
+                    </Select>
+                    {errors.locale && <FieldError match>{errors.locale}</FieldError>}
+                  </Field>
                 </div>
-              )}
 
-              {account?.features?.custom_reply_email && (
-                <div className="space-y-2">
-                  <Label htmlFor="supportEmail">{t('fields.supportEmail.label')}</Label>
-                  <Input
-                    id="supportEmail"
-                    type="email"
-                    value={formData.supportEmail}
-                    onChange={e => handleFieldChange('supportEmail', e.target.value)}
-                    placeholder={t('fields.supportEmail.placeholder')}
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-                    disabled={saving}
-                  />
-                </div>
-              )}
+                {account?.features?.custom_reply_domain && (
+                  <Field>
+                    <FieldLabel htmlFor="domain">{t('fields.domain.label')}</FieldLabel>
+                    <Input
+                      id="domain"
+                      value={formData.domain}
+                      onChange={e => handleFieldChange('domain', e.target.value)}
+                      placeholder={t('fields.domain.placeholder')}
+                      disabled={saving}
+                    />
+                    <FieldDescription>{t('fields.domain.description')}</FieldDescription>
+                  </Field>
+                )}
 
-              <div>
-                <Button type="submit" disabled={saving} className="bg-primary hover:bg-primary/85 text-primary-foreground border-0 font-semibold">
-                  {saving ? t('buttons.saving') : t('buttons.save')}
-                </Button>
-              </div>
+                {account?.features?.custom_reply_email && (
+                  <Field>
+                    <FieldLabel htmlFor="supportEmail">{t('fields.supportEmail.label')}</FieldLabel>
+                    <Input
+                      id="supportEmail"
+                      type="email"
+                      value={formData.supportEmail}
+                      onChange={e => handleFieldChange('supportEmail', e.target.value)}
+                      placeholder={t('fields.supportEmail.placeholder')}
+                      disabled={saving}
+                    />
+                  </Field>
+                )}
+              </SettingsSection>
             </form>
-          </SectionLayout>
           </div>
 
           {/* Auto-Resolução */}
           <div data-tour="settings-auto-resolve">
-          <SectionLayout
-            title={t('sections.autoResolve.title')}
-            description={t('sections.autoResolve.description')}
-            withBorder
-            headerActions={
-              <Switch
-                checked={formData.autoResolveEnabled}
-                onCheckedChange={checked => {
-                  handleFieldChange('autoResolveEnabled', checked);
-                  if (!checked) {
-                    handleAutoResolveSubmit();
-                  }
-                }}
-              />
-            }
-          >
-            {formData.autoResolveEnabled && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>{t('fields.autoResolveTime.label')}</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      type="number"
-                      min="10"
-                      max="1438560"
-                      value={formData.autoResolveAfter}
-                      onChange={e =>
-                        handleFieldChange('autoResolveAfter', parseInt(e.target.value) || 0)
-                      }
-                      className={`w-32 bg-sidebar border-sidebar-border text-sidebar-foreground ${
-                        errors.autoResolveAfter ? 'border-red-500' : ''
-                      }`}
+            <SettingsSection
+              title={t('sections.autoResolve.title')}
+              description={t('sections.autoResolve.description')}
+              headerActions={
+                <Switch
+                  aria-label={t('sections.autoResolve.title')}
+                  checked={formData.autoResolveEnabled}
+                  onCheckedChange={checked => {
+                    handleFieldChange('autoResolveEnabled', checked);
+                    if (!checked) {
+                      handleAutoResolveSubmit();
+                    }
+                  }}
+                />
+              }
+              footer={
+                formData.autoResolveEnabled ? (
+                  <Button onClick={handleAutoResolveSubmit} loading={saving}>
+                    {saving ? t('buttons.saving') : t('buttons.updateAutoResolve')}
+                  </Button>
+                ) : undefined
+              }
+            >
+              {formData.autoResolveEnabled && (
+                <>
+                  <Field invalid={Boolean(errors.autoResolveAfter)}>
+                    <FieldLabel htmlFor="autoResolveAfter">{t('fields.autoResolveTime.label')}</FieldLabel>
+                    <InputGroup className="max-w-56">
+                      <InputGroupInput
+                        id="autoResolveAfter"
+                        type="number"
+                        min="10"
+                        max="1438560"
+                        value={formData.autoResolveAfter}
+                        aria-invalid={errors.autoResolveAfter ? true : undefined}
+                        onChange={e => handleFieldChange('autoResolveAfter', parseInt(e.target.value) || 0)}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupText>{t('fields.autoResolveTime.unit')}</InputGroupText>
+                      </InputGroupAddon>
+                    </InputGroup>
+                    {errors.autoResolveAfter ? (
+                      <FieldError match>{errors.autoResolveAfter}</FieldError>
+                    ) : (
+                      <FieldDescription>{t('fields.autoResolveTime.description')}</FieldDescription>
+                    )}
+                  </Field>
+
+                  <Field>
+                    <FieldLabel htmlFor="autoResolveMessage">{t('fields.autoResolveMessage.label')}</FieldLabel>
+                    <Textarea
+                      id="autoResolveMessage"
+                      value={formData.autoResolveMessage}
+                      onChange={e => handleFieldChange('autoResolveMessage', e.target.value)}
+                      placeholder={t('fields.autoResolveMessage.placeholder')}
+                      rows={3}
                     />
-                    <span className="text-sm text-sidebar-foreground/60">
-                      {t('fields.autoResolveTime.unit')}
-                    </span>
-                  </div>
-                  {errors.autoResolveAfter && (
-                    <p className="text-sm text-red-500">{errors.autoResolveAfter}</p>
-                  )}
-                  <p className="text-xs text-sidebar-foreground/60">
-                    {t('fields.autoResolveTime.description')}
-                  </p>
-                </div>
+                  </Field>
 
-                <div className="space-y-2">
-                  <Label>{t('fields.autoResolveMessage.label')}</Label>
-                  <Textarea
-                    value={formData.autoResolveMessage}
-                    onChange={e => handleFieldChange('autoResolveMessage', e.target.value)}
-                    placeholder={t('fields.autoResolveMessage.placeholder')}
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <div className="bg-sidebar-accent/30 border border-sidebar-border rounded-lg divide-y divide-sidebar-border">
-                    <div className="p-3 flex items-center justify-between">
-                      <span className="text-sm">{t('fields.ignoreWaiting.label')}</span>
+                  <div className="flex flex-col divide-y rounded-xl border bg-muted/24">
+                    <div className="flex items-center justify-between gap-4 px-4 py-3">
+                      <Label htmlFor="ignoreWaiting" className="font-normal">
+                        {t('fields.ignoreWaiting.label')}
+                      </Label>
                       <Switch
+                        id="ignoreWaiting"
                         checked={formData.autoResolveIgnoreWaiting}
-                        onCheckedChange={checked =>
-                          handleFieldChange('autoResolveIgnoreWaiting', checked)
-                        }
+                        onCheckedChange={checked => handleFieldChange('autoResolveIgnoreWaiting', checked)}
                       />
                     </div>
-                    <div className="p-3 flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-4 px-4 py-3">
                       <span className="text-sm">{t('fields.applyLabel.label')}</span>
                       <Select
+                        items={labelItems}
                         value={formData.autoResolveLabel}
-                        onValueChange={value => handleFieldChange('autoResolveLabel', value)}
+                        onValueChange={value => value && handleFieldChange('autoResolveLabel', value)}
                       >
-                        <SelectTrigger className="w-40 bg-sidebar border-sidebar-border text-sidebar-foreground">
+                        <SelectTrigger className="w-44" aria-label={t('fields.applyLabel.label')}>
                           <SelectValue placeholder={t('fields.applyLabel.placeholder')} />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">{t('fields.applyLabel.none')}</SelectItem>
-                          {formDataOptions.labels.map((label: any) => (
-                            <SelectItem key={label.title} value={label.title}>
-                              {label.title}
+                        <SelectPopup>
+                          {labelItems.map(item => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                   </div>
-                </div>
-
-                <div>
-                  <Button
-                    onClick={handleAutoResolveSubmit}
-                    disabled={saving}
-                    className="bg-primary hover:bg-primary/85 text-primary-foreground border-0 font-semibold"
-                  >
-                    {saving ? t('buttons.saving') : t('buttons.updateAutoResolve')}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </SectionLayout>
+                </>
+              )}
+            </SettingsSection>
           </div>
 
           {/* Transcrição de Áudio */}
           {isOnEvolutionCloud && (
-            <SectionLayout
+            <SettingsSection
               title={t('sections.audioTranscription.title')}
               description={t('sections.audioTranscription.description')}
-              withBorder
               headerActions={
                 <Switch
+                  aria-label={t('sections.audioTranscription.title')}
                   checked={formData.audioTranscriptions}
                   onCheckedChange={handleAudioTranscriptionToggle}
                 />
               }
-            >
-              <></>
-            </SectionLayout>
+            />
           )}
 
           {/* Mascaramento de PII dos Contatos — admin tiers only (super_admin / account_owner / administrator). */}
           {isAdmin && (
-            <SectionLayout
+            <SettingsSection
               title={t('sections.maskContactPii.title')}
               description={t('sections.maskContactPii.description')}
-              withBorder
               headerActions={
                 <Switch
+                  aria-label={t('sections.maskContactPii.title')}
                   checked={formData.maskContactPii}
                   onCheckedChange={handleMaskContactPiiToggle}
                 />
               }
-            >
-              <></>
-            </SectionLayout>
+            />
           )}
 
           {/* ID da Conta */}
           <div data-tour="settings-account-id">
-          <SectionLayout
-            title={t('sections.accountId.title')}
-            description={t('sections.accountId.description')}
-            withBorder
-          >
-            <div className="flex items-center gap-2 p-3 bg-sidebar-accent/30 border border-sidebar-border rounded-lg font-mono text-sm">
-              <span className="text-sidebar-foreground">{account?.id}</span>
-              <Button size="sm" variant="ghost" onClick={copyAccountId} className="ml-auto">
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-          </SectionLayout>
+            <SettingsSection title={t('sections.accountId.title')} description={t('sections.accountId.description')}>
+              <InputGroup>
+                <InputGroupInput readOnly value={String(account?.id ?? '')} className="font-mono" aria-label={t('sections.accountId.title')} />
+                <InputGroupAddon align="inline-end">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={copyAccountId}
+                          aria-label={t('buttons.copyAccountId')}
+                        />
+                      }
+                    >
+                      <Copy />
+                    </TooltipTrigger>
+                    <TooltipPopup>{t('buttons.copyAccountId')}</TooltipPopup>
+                  </Tooltip>
+                </InputGroupAddon>
+              </InputGroup>
+            </SettingsSection>
           </div>
 
           {/* Informações de Build */}
-          <div className="text-center py-4 text-sm text-sidebar-foreground/60 border-t border-sidebar-border">
-            <div className="flex items-center justify-center gap-4">
-              <span>v{globalConfig.appVersion || '1.0.0'}</span>
-            </div>
+          <div className="border-t py-4 text-center text-muted-foreground text-xs">
+            v{globalConfig.appVersion || '1.0.0'}
           </div>
         </div>
       </div>

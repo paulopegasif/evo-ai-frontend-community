@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { Checkbox, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@evoapi/design-system';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Minus } from 'lucide-react';
 import { TimeSlot, generateTimeSlots, validateTimeSlot, calculateTotalHours } from './helpers/businessHours';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -15,6 +16,8 @@ export default function BusinessDay({ dayName, timeSlot, onUpdate }: BusinessDay
   // Generate time slots
   const fromTimeSlots = useMemo(() => generateTimeSlots(30), []);
   const toTimeSlots = useMemo(() => fromTimeSlots.filter(slot => slot !== '12:00 AM'), [fromTimeSlots]);
+  const fromItems = useMemo(() => fromTimeSlots.map(slot => ({ value: slot, label: slot })), [fromTimeSlots]);
+  const toItems = useMemo(() => toTimeSlots.map(slot => ({ value: slot, label: slot })), [toTimeSlots]);
 
   const isDayEnabled = Boolean(timeSlot.from && timeSlot.to);
   const hasError = !timeSlot.valid && isDayEnabled;
@@ -114,43 +117,53 @@ export default function BusinessDay({ dayName, timeSlot, onUpdate }: BusinessDay
             </div>
 
             {/* From Time */}
-            <Select value={timeSlot.from} onValueChange={handleFromTimeChange} disabled={timeSlot.openAllDay}>
+            <Select
+              items={fromItems}
+              value={timeSlot.from || null}
+              onValueChange={v => handleFromTimeChange(String(v ?? ''))}
+              disabled={timeSlot.openAllDay}
+            >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder={t('settings.businessDay.startPlaceholder')} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup alignItemWithTrigger={false}>
                 {fromTimeSlots.map((slot) => (
                   <SelectItem key={slot} value={slot}>
                     {slot}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
 
             {/* Separator */}
             <div className="flex items-center px-2">
-              <Minus className="h-4 w-4 text-muted-foreground" />
+              <Minus className="size-4 text-muted-foreground" />
             </div>
 
             {/* To Time */}
-            <Select value={timeSlot.to} onValueChange={handleToTimeChange} disabled={timeSlot.openAllDay}>
+            <Select
+              items={toItems}
+              value={timeSlot.to || null}
+              onValueChange={v => handleToTimeChange(String(v ?? ''))}
+              disabled={timeSlot.openAllDay}
+            >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder={t('settings.businessDay.endPlaceholder')} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup alignItemWithTrigger={false}>
                 {toTimeSlots.map((slot) => (
                   <SelectItem key={slot} value={slot}>
                     {slot}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           </div>
 
           {/* Error Message */}
           {hasError && (
             <div className="pt-2">
-              <span className="text-xs text-red-500">
+              <span className="text-xs text-destructive">
                 {t('settings.businessDay.timeError')}
               </span>
             </div>
@@ -166,7 +179,7 @@ export default function BusinessDay({ dayName, timeSlot, onUpdate }: BusinessDay
       {/* Hours Badge */}
       <div className="flex-shrink-0">
         {isDayEnabled && !hasError && (
-          <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-lg whitespace-nowrap">
+          <span className="inline-block px-3 py-1 text-xs font-medium bg-info/12 text-info-foreground rounded-lg whitespace-nowrap">
             {totalHours}h
           </span>
         )}

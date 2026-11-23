@@ -1,3 +1,7 @@
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/utils/cn';
+
 interface FormCheckboxProps {
   label: string;
   checked: boolean;
@@ -5,21 +9,11 @@ interface FormCheckboxProps {
   className?: string;
 }
 
-export const FormCheckbox = ({
-  label,
-  checked,
-  onChange,
-  className,
-}: FormCheckboxProps) => {
+export const FormCheckbox = ({ label, checked, onChange, className }: FormCheckboxProps) => {
   return (
-    <label className={`flex items-center gap-2 text-sm text-sidebar-foreground/80 select-none ${className || ''}`}>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={e => onChange(e.target.checked)}
-        className="h-4 w-4 rounded border-sidebar-border bg-sidebar text-primary focus:ring-0"
-      />
+    <Label className={cn('cursor-pointer select-none font-normal', className)}>
+      <Checkbox checked={checked} onCheckedChange={value => onChange(value === true)} />
       <span>{label}</span>
-    </label>
+    </Label>
   );
 };

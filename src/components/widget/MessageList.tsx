@@ -1,4 +1,7 @@
 import React, { useRef, useEffect, useMemo } from 'react';
+import { History, Reply, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es, fr, it, pt, ptBR } from 'date-fns/locale';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -156,22 +159,20 @@ const MessageList: React.FC<MessageListProps> = ({
   }, [items]);
 
   return (
-    <div ref={scrollContainerRef} className="p-3 flex-1 overflow-y-auto bg-slate-50 min-h-0">
+    <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-y-auto bg-muted/40 px-3 py-4 dark:bg-background">
       {/* Load More Button / Loading Indicator */}
       {(hasMore || isLoadingMore) && (
-        <div className="flex justify-center py-3 mb-2">
+        <div className="mb-3 flex justify-center">
           {isLoadingMore ? (
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
+            <div className="flex items-center gap-2 text-muted-foreground text-xs" aria-live="polite">
+              <Spinner className="size-3.5" />
               {t('messageList.loadingOld')}
             </div>
           ) : hasMore ? (
-            <button
-              onClick={onLoadMore}
-              className="px-4 py-2 text-sm text-slate-600 bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors"
-            >
+            <Button variant="outline" size="xs" onClick={onLoadMore}>
+              <History />
               {t('messageList.loadOldMessages')}
-            </button>
+            </Button>
           ) : null}
         </div>
       )}
@@ -187,11 +188,11 @@ const MessageList: React.FC<MessageListProps> = ({
         // Render email collect input as a special interactive message
         if (isEmailCollect) {
           return (
-            <div key={m.id} className="mb-2 flex justify-center animate-fadeIn">
-              <div className="max-w-[90%] w-full mx-auto">
-                <div className="text-[13px] leading-tight rounded-[10px] shadow-sm bg-white border border-slate-200 px-3 py-3">
+            <div key={m.id} className="mb-3 flex animate-fadeIn justify-center">
+              <div className="mx-auto w-full max-w-[90%]">
+                <div className="rounded-2xl border bg-card p-3 text-[13px] leading-snug shadow-xs/5">
                   {m.text && (
-                    <div className="whitespace-pre-wrap break-words text-slate-700 mb-2">{m.text}</div>
+                    <div className="mb-2 whitespace-pre-wrap break-words text-foreground">{m.text}</div>
                   )}
                   <EmailCollectInput
                     messageId={m.originalId || m.id}
@@ -208,7 +209,7 @@ const MessageList: React.FC<MessageListProps> = ({
         return (
           <div
             key={m.id}
-            className={`mb-2 flex ${m.isSystem || m.type === 'system'
+            className={`mb-3 flex items-end gap-2 ${m.isSystem || m.type === 'system'
               ? 'justify-center animate-fadeIn'
               : m.type === 'out'
                 ? 'justify-end animate-slideInFromRight'
@@ -216,15 +217,13 @@ const MessageList: React.FC<MessageListProps> = ({
               }`}
           >
             {m.type === 'in' && !m.isSystem && hasAvatar && (
-              <div className="mr-2">
-                <img
-                  src={m.avatarUrl || inboundAvatarUrl}
-                  alt="avatar"
-                  className="w-6 h-6 rounded-full object-cover border border-white shadow"
-                />
-              </div>
+              <img
+                src={m.avatarUrl || inboundAvatarUrl}
+                alt=""
+                className="mb-5 size-6 shrink-0 rounded-full object-cover ring-1 ring-border"
+              />
             )}
-            <div className={`max-w-[82%] ${m.isSystem || m.type === 'system' ? 'mx-auto' : ''}`}>
+            <div className={`flex min-w-0 max-w-[82%] flex-col ${m.isSystem || m.type === 'system' ? 'mx-auto items-center' : m.type === 'out' ? 'items-end' : 'items-start'}`}>
               {/* Reply-to chip */}
               {m.replyTo && m.type !== 'system' && m.replyTo.type && (
                 <ReplyToMessage
@@ -233,13 +232,13 @@ const MessageList: React.FC<MessageListProps> = ({
                 />
               )}
               <div
-                className={`text-[13px] leading-tight rounded-[10px] shadow-sm transition-all duration-200 ${m.status === 'sending' ? 'animate-pulse opacity-70' : ''
+                className={`max-w-full text-[13px] leading-snug transition-opacity duration-200 ${m.status === 'sending' ? 'opacity-70' : ''
                   } ${m.type === 'out'
-                    ? 'text-white rounded-tr-[2px]'
+                    ? 'rounded-2xl rounded-br-md text-white shadow-xs/5'
                     : m.isSystem || m.type === 'system'
-                      ? 'bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-center italic'
-                      : 'bg-white text-slate-900 border border-slate-200 rounded-tl-[2px]'
-                  } ${m.attachments?.length ? 'p-2' : 'px-3 py-2'}`}
+                      ? 'rounded-xl bg-muted px-3 py-1.5 text-center text-muted-foreground text-xs'
+                      : 'rounded-2xl rounded-bl-md border bg-card text-card-foreground shadow-xs/5'
+                  } ${m.isSystem || m.type === 'system' ? '' : m.attachments?.length ? 'p-1.5' : 'px-3 py-2'}`}
                 style={m.type === 'out' ? { backgroundColor: widgetColor } : undefined}
               >
                 {/* Attachments */}
@@ -337,7 +336,7 @@ const MessageList: React.FC<MessageListProps> = ({
                           wordBreak: 'break-word',
                           fontSize: '13px',
                           lineHeight: '1.4',
-                          color: m.type === 'out' ? '#ffffff' : '#1e293b',
+                          color: m.type === 'out' ? '#ffffff' : 'inherit',
                         }}
                       />
                     ) : (
@@ -354,55 +353,56 @@ const MessageList: React.FC<MessageListProps> = ({
                 )}
 
                 {isSelect && (
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {m.items?.map((item, idx) => {
                       const title = (item?.title || '').trim();
                       if (!title) return null;
 
                       return (
-                        <button
+                        <Button
                           key={`${m.id}-opt-${idx}`}
-                          type="button"
+                          variant="outline"
+                          size="sm"
                           disabled={selectDisabled || !onSelectOption}
                           onClick={() => onSelectOption?.(m, item)}
-                          className={`px-3 py-2 rounded-md border text-[13px] leading-tight transition-colors ${
-                            selectDisabled || !onSelectOption
-                              ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
-                              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                          }`}
+                          className="h-auto min-h-8 whitespace-normal py-1.5 text-left text-[13px]"
                         >
                           {title}
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>
                 )}
               </div>
               <div
-                className={`mt-0.5 flex items-center gap-2 ${m.type === 'out' ? 'justify-end' : 'justify-start'
+                className={`mt-1 flex items-center gap-2 px-1 ${m.type === 'out' ? 'justify-end' : 'justify-start'
                   }`}
               >
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-muted-foreground">
                   {m.ts
                     ? formatDistanceToNow(new Date(m.ts), { addSuffix: true, locale: dateLocale })
                     : ''}
                 </span>
                 {m.type === 'out' && m.status === 'sending' && (
-                  <span className="text-[10px] text-sky-500">{t('messageList.sending')}</span>
+                  <span className="text-[10px] text-muted-foreground">{t('messageList.sending')}</span>
                 )}
                 {m.type === 'out' && m.status === 'failed' && (
                   <button
-                    className="text-[10px] text-red-500 underline"
+                    type="button"
+                    className="inline-flex items-center gap-0.5 font-medium text-[10px] text-destructive-foreground hover:underline"
                     onClick={() => onRetry?.(m.id, m.text)}
                   >
+                    <RotateCcw className="size-2.5" aria-hidden="true" />
                     {t('messageList.retry')}
                   </button>
                 )}
                 {m.type === 'in' && !m.isSystem && onReply && (
                   <button
-                    className="text-[10px] text-slate-500 underline hover:text-slate-700"
+                    type="button"
+                    className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:underline"
                     onClick={() => onReply(m)}
                   >
+                    <Reply className="size-2.5" aria-hidden="true" />
                     {t('messageList.reply')}
                   </button>
                 )}

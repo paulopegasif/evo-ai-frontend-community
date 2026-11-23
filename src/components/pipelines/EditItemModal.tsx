@@ -1,31 +1,27 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAccountUsers } from '@/hooks/useAccountUsers';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPopup,
   DialogTitle,
-  Button,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Tabs,
-  TabsContent,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@evoapi/design-system';
+} from '@/components/ui/dialog';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { Command, CommandGroup, CommandGroupLabel, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { initials } from '@/lib/initials';
 import {
   Plus,
   Trash2,
@@ -225,332 +221,303 @@ export default function EditItemModal({
   const displayName = getItemDisplayName();
   const currentStage = stages.find(s => String(s.id) === String(selectedStageId));
 
-  // Tab pill: active = primary-tinted; inactive = subtle muted.
-  const tabPill = (key: TabKey) =>
-    cn(
-      'flex items-center gap-1.5 px-[15px] py-[9px] rounded-lg text-[13.5px] font-semibold cursor-pointer transition-colors',
-      activeTab === key
-        ? 'bg-primary/10 border border-primary/30 text-primary'
-        : 'border border-transparent text-muted-foreground hover:bg-muted',
-    );
-
-  const sectionCard = 'rounded-2xl border border-border p-5';
+  const currencyItems = [
+    { value: 'BRL', label: t('editItem.currencies.brl') },
+    { value: 'USD', label: t('editItem.currencies.usd') },
+    { value: 'EUR', label: t('editItem.currencies.eur') },
+  ];
+  const stageItems = stages.map(stage => ({ value: String(stage.id), label: stage.name }));
+  const taskBadgeCount = pendingCount + overdueCount;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[620px] w-full max-h-[92vh] p-0 gap-0 rounded-[18px] overflow-hidden">
-        <DialogTitle className="sr-only">{t('editItem.title')}</DialogTitle>
-
-        {/* Custom header */}
-        <div className="flex items-start gap-3 px-6 py-5 border-b border-border">
-          <div
-            className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-sm"
-            style={{ backgroundColor: getContactColor(displayName) }}
-          >
-            {displayName?.[0]?.toUpperCase() || 'U'}
-          </div>
+      <DialogPopup className="max-h-[92vh] max-w-2xl" showCloseButton={false}>
+        {/* Header: contact identity + current stage */}
+        <DialogHeader className="flex-row items-start gap-3 border-b pb-4">
+          <Avatar className="size-11 text-base">
+            <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(displayName) }}>
+              {initials(displayName)}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-foreground truncate">{displayName}</h2>
-              <span className="text-[13px] text-muted-foreground shrink-0">#{getItemDisplayId()}</span>
+            <div className="flex items-baseline gap-2">
+              <DialogTitle className="truncate">{displayName}</DialogTitle>
+              <span className="shrink-0 text-muted-foreground text-sm tabular-nums">#{getItemDisplayId()}</span>
             </div>
-            {currentStage && (
-              <div className="flex items-center gap-1.5 mt-1">
-                <span
-                  className="w-[9px] h-[9px] rounded-full shrink-0"
-                  style={{ backgroundColor: currentStage.color }}
-                />
-                <span className="text-[12.5px] text-muted-foreground truncate">
-                  {t('editItem.stageLabel')} {currentStage.name}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {onSchedule && (
-              <button
-                type="button"
-                onClick={() => onSchedule(item)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-muted text-[13px] font-semibold text-foreground hover:bg-muted/80 transition-colors"
-              >
-                <Clock className="w-3.5 h-3.5" />
-                {t('editItem.scheduleAction')}
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              aria-label={t('editItem.cancel')}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <Tabs value={activeTab} onValueChange={v => setActiveTab(v as TabKey)} className="w-full">
-          {/* Tab pills */}
-          <div className="flex items-center gap-2 px-6 pt-4">
-            <button type="button" className={tabPill('details')} onClick={() => setActiveTab('details')}>
-              <FileText className="w-[15px] h-[15px]" />
-              {t('editItem.tabs.details')}
-            </button>
-            <button type="button" className={tabPill('services')} onClick={() => setActiveTab('services')}>
-              <Briefcase className="w-[15px] h-[15px]" />
-              {t('editItem.tabs.services')}
-            </button>
-            <button type="button" className={tabPill('attributes')} onClick={() => setActiveTab('attributes')}>
-              <Boxes className="w-[15px] h-[15px]" />
-              {t('editItem.tabs.attributes')}
-            </button>
-            <button type="button" className={tabPill('tasks')} onClick={() => setActiveTab('tasks')}>
-              <CheckSquare className="w-[15px] h-[15px]" />
-              {t('editItem.tabs.tasks')}
-              {(pendingCount > 0 || overdueCount > 0) && (
-                <span className="ml-1 px-1.5 py-0.5 text-xs font-medium rounded-full bg-primary text-primary-foreground">
-                  {pendingCount + overdueCount}
-                </span>
+            <DialogDescription className="mt-1 flex items-center gap-1.5">
+              {currentStage ? (
+                <>
+                  <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: currentStage.color }} />
+                  <span className="truncate">
+                    {t('editItem.stageLabel')} {currentStage.name}
+                  </span>
+                </>
+              ) : (
+                t('editItem.title')
               )}
-            </button>
+            </DialogDescription>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            {onSchedule && (
+              <Button variant="outline" size="sm" onClick={() => onSchedule(item)}>
+                <Clock />
+                {t('editItem.scheduleAction')}
+              </Button>
+            )}
+            <DialogClose render={<Button variant="ghost" size="icon-sm" aria-label={t('editItem.cancel')} />}>
+              <X />
+            </DialogClose>
+          </div>
+        </DialogHeader>
+
+        <Tabs value={activeTab} onValueChange={v => setActiveTab(v as TabKey)} className="min-h-0 flex-1 gap-0">
+          <div className="px-6 pt-4">
+            <TabsList className="w-full">
+              <TabsTab value="details">
+                <FileText />
+                {t('editItem.tabs.details')}
+              </TabsTab>
+              <TabsTab value="services">
+                <Briefcase />
+                {t('editItem.tabs.services')}
+              </TabsTab>
+              <TabsTab value="attributes">
+                <Boxes />
+                {t('editItem.tabs.attributes')}
+              </TabsTab>
+              <TabsTab value="tasks">
+                <CheckSquare />
+                {t('editItem.tabs.tasks')}
+                {taskBadgeCount > 0 && (
+                  <Badge variant={overdueCount > 0 ? 'error' : 'secondary'} size="sm" className="tabular-nums">
+                    {taskBadgeCount}
+                  </Badge>
+                )}
+              </TabsTab>
+            </TabsList>
           </div>
 
-          {/* Fixed-height body — keeps the panel a stable size across tabs */}
-          <div className="px-6 pt-4 pb-2 h-[470px]">
-            <div className="h-full overflow-y-auto pr-1">
-              {/* Details */}
-              <TabsContent value="details" className="mt-0">
-                <div className={cn(sectionCard, 'space-y-5')}>
-                  <div className="grid gap-2">
-                    <Label className="text-[12.5px] font-bold uppercase tracking-wide text-muted-foreground">
-                      {t('editItem.currentStage')}
-                    </Label>
-                    <Select value={selectedStageId?.toString()} onValueChange={value => setSelectedStageId(value)}>
-                      <SelectTrigger className="max-w-[280px]">
-                        <SelectValue placeholder={t('editItem.chooseStage')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {stages.map(stage => (
-                          <SelectItem key={stage.id} value={stage.id.toString()}>
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-                              {stage.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+          {/* Fixed-height body keeps the dialog a stable size across tabs */}
+          <div className="h-[460px] max-h-[60vh] overflow-y-auto px-6 py-4">
+            <TabsPanel value="details" className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel>{t('editItem.currentStage')}</FieldLabel>
+                <Select
+                  items={stageItems}
+                  value={selectedStageId != null ? String(selectedStageId) : null}
+                  onValueChange={value => value && setSelectedStageId(String(value))}
+                >
+                  <SelectTrigger className="w-full sm:max-w-72">
+                    <SelectValue placeholder={t('editItem.chooseStage')} />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {stages.map(stage => (
+                      <SelectItem key={stage.id} value={String(stage.id)}>
+                        <span className="flex items-center gap-2">
+                          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
+                          {stage.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
 
-                  <div className="h-px bg-border/70" />
+              <Field>
+                <FieldLabel>{t('editItem.currency')}</FieldLabel>
+                <Select items={currencyItems} value={currency} onValueChange={v => v && setCurrency(String(v))}>
+                  <SelectTrigger className="w-full sm:max-w-72">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {currencyItems.map(c => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+              </Field>
 
-                  <div className="grid gap-2">
-                    <Label className="text-[12.5px] font-bold uppercase tracking-wide text-muted-foreground">
-                      {t('editItem.currency')}
-                    </Label>
-                    <Select value={currency} onValueChange={setCurrency}>
-                      <SelectTrigger className="max-w-[280px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="BRL">{t('editItem.currencies.brl')}</SelectItem>
-                        <SelectItem value="USD">{t('editItem.currencies.usd')}</SelectItem>
-                        <SelectItem value="EUR">{t('editItem.currencies.eur')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <Field>
+                <FieldLabel>{t('editItem.notes')}</FieldLabel>
+                <Textarea
+                  placeholder={t('editItem.notesPlaceholder')}
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  className="min-h-28"
+                />
+              </Field>
+            </TabsPanel>
 
-                  <div className="h-px bg-border/70" />
+            <TabsPanel value="services" className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm">{t('editItem.services')}</h3>
+                <Button type="button" size="sm" variant="outline" onClick={addService}>
+                  <Plus />
+                  {t('editItem.addService')}
+                </Button>
+              </div>
 
-                  <div className="grid gap-2">
-                    <Label className="text-[12.5px] font-bold uppercase tracking-wide text-muted-foreground">
-                      {t('editItem.notes')}
-                    </Label>
-                    <Textarea
-                      placeholder={t('editItem.notesPlaceholder')}
-                      value={notes}
-                      onChange={e => setNotes(e.target.value)}
-                      className="min-h-24 focus:border-primary"
-                    />
-                  </div>
-                </div>
-              </TabsContent>
-
-              {/* Services */}
-              <TabsContent value="services" className="mt-0">
-                <div className={cn(sectionCard, 'space-y-4')}>
-                  <div className="flex items-center justify-between">
-                    <h3 className="flex items-center gap-2 text-[15px] font-bold text-foreground">
-                      <Briefcase className="w-4 h-4 text-primary" />
-                      {t('editItem.services')}
-                    </h3>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={addService}
-                      className="h-8 bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      {t('editItem.addService')}
-                    </Button>
-                  </div>
-
-                  {services.length === 0 ? (
-                    <div className="text-sm text-muted-foreground py-10 text-center border border-dashed border-border rounded-xl">
-                      {t('editItem.noServices')}
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {services.map((service, index) => (
-                        <div key={index} className="border border-border rounded-lg p-3">
-                          <div className="flex gap-2 mb-2">
-                            <Popover
-                              open={openServicePopover === index}
-                              onOpenChange={isOpen => setOpenServicePopover(isOpen ? index : null)}
-                            >
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  aria-expanded={openServicePopover === index}
-                                  className="flex-1 justify-between font-normal"
-                                >
-                                  <span className={service.name ? '' : 'text-muted-foreground'}>
-                                    {service.name || t('editItem.serviceName')}
-                                  </span>
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-[300px] p-0" align="start">
-                                <Command
-                                  filter={(value, search) => {
-                                    const it = catalogServices.find(cs => cs.id === value);
-                                    if (!it) return 0;
-                                    return it.name.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
-                                  }}
-                                >
-                                  <CommandInput
-                                    placeholder={t('editItem.searchService') || 'Buscar ou digitar serviço...'}
-                                    value={service.name}
-                                    onValueChange={value => updateService(index, 'name', value)}
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>
-                                      {service.name ? (
-                                        <button
-                                          type="button"
-                                          className="w-full px-2 py-1.5 text-sm text-left hover:bg-accent rounded cursor-pointer"
-                                          onClick={() => setOpenServicePopover(null)}
-                                        >
-                                          {t('editItem.useCustomService', { name: service.name })}
-                                        </button>
-                                      ) : (
-                                        <span>{t('editItem.noServicesFound') || 'Nenhum serviço encontrado'}</span>
-                                      )}
-                                    </CommandEmpty>
-                                    {catalogServices.length > 0 && (
-                                      <CommandGroup heading={t('editItem.catalogServices') || 'Catálogo de serviços'}>
-                                        {catalogServices.map(cs => (
-                                          <CommandItem key={cs.id} value={cs.id} onSelect={() => selectCatalogService(index, cs)}>
-                                            <Check
-                                              className={`mr-2 h-4 w-4 ${service.name === cs.name ? 'opacity-100' : 'opacity-0'}`}
-                                            />
-                                            <div className="flex flex-col">
-                                              <span>{cs.name}</span>
-                                              <span className="text-xs text-muted-foreground">
-                                                {cs.currency} {cs.formatted_default_value}
-                                              </span>
-                                            </div>
-                                          </CommandItem>
-                                        ))}
-                                      </CommandGroup>
-                                    )}
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
+              {services.length === 0 ? (
+                <Empty className="rounded-xl border border-dashed py-10">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Briefcase />
+                    </EmptyMedia>
+                    <EmptyDescription>{t('editItem.noServices')}</EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {services.map((service, index) => (
+                    <div key={index} className="flex items-center gap-2 rounded-lg border bg-muted/24 p-2">
+                      <Popover
+                        open={openServicePopover === index}
+                        onOpenChange={isOpen => setOpenServicePopover(isOpen ? index : null)}
+                      >
+                        <PopoverTrigger
+                          render={
                             <Button
-                              type="button"
                               variant="outline"
-                              size="sm"
-                              onClick={() => removeService(index)}
-                              className="px-2 text-muted-foreground hover:text-destructive"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          <Input
-                            type="number"
-                            placeholder={t('editItem.serviceValue')}
-                            value={service.value}
-                            onChange={e => updateService(index, 'value', e.target.value)}
-                            step="0.01"
-                            min="0"
-                          />
-                        </div>
-                      ))}
-
-                      <div className="pt-3 border-t border-border">
-                        <div className="flex justify-between items-center text-sm font-medium">
-                          <span className="text-muted-foreground">{t('editItem.totalValue')}</span>
-                          <span className="font-bold text-primary">
-                            {currency} {formatCurrency(calculateTotalValue())}
+                              role="combobox"
+                              aria-expanded={openServicePopover === index}
+                              className="min-w-0 flex-1 justify-between font-normal"
+                            />
+                          }
+                        >
+                          <span className={cn('truncate', !service.name && 'text-muted-foreground')}>
+                            {service.name || t('editItem.serviceName')}
                           </span>
-                        </div>
-                      </div>
+                          <ChevronsUpDown className="opacity-64" />
+                        </PopoverTrigger>
+                        <PopoverPopup className="w-[300px] [--viewport-inline-padding:0] **:data-[slot=popover-viewport]:py-0" align="start">
+                          <Command
+                            // The list is filtered here; picking an item must not write its value into the field.
+                            filter={null}
+                            value={service.name}
+                            onValueChange={(value, details) => {
+                              if (details.reason === 'item-press') return;
+                              updateService(index, 'name', value);
+                            }}
+                          >
+                            <CommandInput placeholder={t('editItem.searchService') || 'Buscar ou digitar serviço...'} />
+                            {(() => {
+                              const query = service.name.trim().toLowerCase();
+                              const matches = catalogServices.filter(cs => cs.name.toLowerCase().includes(query));
+                              if (matches.length === 0) {
+                                return (
+                                  <div className="border-t p-1.5 text-sm">
+                                    {service.name ? (
+                                      <button
+                                        type="button"
+                                        className="w-full cursor-pointer rounded-md px-2 py-1.5 text-left hover:bg-accent"
+                                        onClick={() => setOpenServicePopover(null)}
+                                      >
+                                        {t('editItem.useCustomService', { name: service.name })}
+                                      </button>
+                                    ) : (
+                                      <p className="px-2 py-4 text-center text-muted-foreground">
+                                        {t('editItem.noServicesFound') || 'Nenhum serviço encontrado'}
+                                      </p>
+                                    )}
+                                  </div>
+                                );
+                              }
+                              return (
+                                <CommandList className="max-h-64 border-t">
+                                  <CommandGroup>
+                                    <CommandGroupLabel>{t('editItem.catalogServices') || 'Catálogo de serviços'}</CommandGroupLabel>
+                                    {matches.map(cs => (
+                                      <CommandItem key={cs.id} value={cs.id} onClick={() => selectCatalogService(index, cs)}>
+                                        <Check className={cn('size-4', service.name === cs.name ? 'opacity-100' : 'opacity-0')} />
+                                        <div className="flex flex-col">
+                                          <span>{cs.name}</span>
+                                          <span className="text-muted-foreground text-xs tabular-nums">
+                                            {cs.currency} {cs.formatted_default_value}
+                                          </span>
+                                        </div>
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              );
+                            })()}
+                          </Command>
+                        </PopoverPopup>
+                      </Popover>
+                      <InputGroup className="w-40 shrink-0">
+                        <InputGroupAddon>
+                          <InputGroupText>{currency}</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput
+                          type="number"
+                          aria-label={t('editItem.serviceValue')}
+                          placeholder={t('editItem.serviceValue')}
+                          value={service.value}
+                          onChange={e => updateService(index, 'value', e.target.value)}
+                          step="0.01"
+                          min="0"
+                          className="tabular-nums"
+                        />
+                      </InputGroup>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => removeService(index)}
+                        aria-label={t('editItem.removeService')}
+                      >
+                        <Trash2 />
+                      </Button>
                     </div>
-                  )}
-                </div>
-              </TabsContent>
+                  ))}
 
-              {/* Attributes */}
-              <TabsContent value="attributes" className="mt-0">
-                <div className={sectionCard}>
-                  <h3 className="flex items-center gap-2 text-[15px] font-bold text-foreground mb-4">
-                    <Boxes className="w-4 h-4 text-primary" />
-                    {t('editItem.customAttributes')}
-                  </h3>
-                  <PipelineItemCustomAttributes
-                    attributes={customAttributes}
-                    onAttributesChange={setCustomAttributes}
-                    disabled={loading}
-                    pipelineId={item.pipeline_id}
-                    stageId={item.stage_id}
-                    itemId={item.id}
-                    pipelineCustomFields={pipeline?.custom_fields}
-                    stageCustomFields={stages.find(s => s.id === item.stage_id)?.custom_fields}
-                  />
+                  <div className="mt-1 flex items-center justify-between border-t pt-3 text-sm">
+                    <span className="text-muted-foreground">{t('editItem.totalValue')}</span>
+                    <span className="font-semibold text-base tabular-nums">
+                      {currency} {formatCurrency(calculateTotalValue())}
+                    </span>
+                  </div>
                 </div>
-              </TabsContent>
+              )}
+            </TabsPanel>
 
-              {/* Tasks */}
-              <TabsContent value="tasks" className="mt-0">
-                <div className={sectionCard}>
-                  <PipelineTasksList
-                    ref={tasksListRef}
-                    pipelineId={item.pipeline_id}
-                    pipelineItemId={item.id}
-                    onCreateClick={() => setShowCreateTaskModal(true)}
-                    onEditClick={handleEditTaskClick}
-                    onAddSubtask={handleAddSubtaskClick}
-                  />
-                </div>
-              </TabsContent>
-            </div>
+            <TabsPanel value="attributes">
+              <h3 className="mb-4 font-semibold text-sm">{t('editItem.customAttributes')}</h3>
+              <PipelineItemCustomAttributes
+                attributes={customAttributes}
+                onAttributesChange={setCustomAttributes}
+                disabled={loading}
+                pipelineId={item.pipeline_id}
+                stageId={item.stage_id}
+                itemId={item.id}
+                pipelineCustomFields={pipeline?.custom_fields}
+                stageCustomFields={stages.find(s => s.id === item.stage_id)?.custom_fields}
+              />
+            </TabsPanel>
+
+            <TabsPanel value="tasks">
+              <PipelineTasksList
+                ref={tasksListRef}
+                pipelineId={item.pipeline_id}
+                pipelineItemId={item.id}
+                onCreateClick={() => setShowCreateTaskModal(true)}
+                onEditClick={handleEditTaskClick}
+                onAddSubtask={handleAddSubtaskClick}
+              />
+            </TabsPanel>
           </div>
         </Tabs>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-border">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            {t('editItem.cancel')}
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost" disabled={loading} />}>{t('editItem.cancel')}</DialogClose>
+          <Button onClick={handleSubmit} disabled={!canSubmit} loading={loading}>
+            <Save />
+            {t('editItem.save')}
           </Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit || loading}>
-            <Save className="w-4 h-4 mr-2" />
-            {loading ? t('editItem.saving') : t('editItem.save')}
-          </Button>
-        </div>
-      </DialogContent>
+        </DialogFooter>
+      </DialogPopup>
 
       {/* Task Modals */}
       <CreateTaskModal

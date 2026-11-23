@@ -109,7 +109,8 @@
       "label": "Equipes",
       "placeholder": "Selecione as equipes...",
       "required": "Selecione pelo menos uma equipe",
-      "noTeams": "Nenhuma equipe disponível"
+      "noTeams": "Nenhuma equipe disponível",
+      "remove": "Remover {{name}}"
     },
     "stages": "Etapas do Pipeline",
     "stagesCount": "{{count}} etapas",
@@ -193,7 +194,8 @@
     },
     "pageTitle": "Criando um novo Pipeline",
     "back": "Voltar",
-    "newStageColor": "Cor da etapa"
+    "newStageColor": "Cor da etapa",
+    "removeStage": "Remover etapa {{name}}"
   },
   "createStage": {
     "title": "Criar Nova Etapa",
@@ -323,7 +325,8 @@
     "saving": "Salvando...",
     "save": "Salvar Alterações",
     "scheduleAction": "Agendar ação",
-    "stageLabel": "Etapa:"
+    "stageLabel": "Etapa:",
+    "removeService": "Remover serviço"
   },
   "editConversation": {
     "title": "Editar Item no Pipeline",
@@ -379,7 +382,8 @@
       "label": "Equipes",
       "placeholder": "Selecione as equipes...",
       "required": "Selecione pelo menos uma equipe",
-      "noTeams": "Nenhuma equipe disponível"
+      "noTeams": "Nenhuma equipe disponível",
+      "remove": "Remover {{name}}"
     },
     "pipelineActive": "Pipeline ativo",
     "cancel": "Cancelar",
@@ -437,7 +441,8 @@
       "send_direct_message": "Mensagem direta",
       "send_template": "Enviar template",
       "finalize": "Finalizar atendimento"
-    }
+    },
+    "removeRule": "Remover regra"
   },
   "editStage": {
     "title": "Editar Etapa",
@@ -475,7 +480,9 @@
     "stageName": "Nome da etapa",
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "save": "Salvar Alterações"
+    "save": "Salvar Alterações",
+    "countsAsQualified": "Conta como lead qualificado",
+    "countsAsQualifiedHint": "No Tracking de Leads, quem chega a esta etapa entra em “qualificados”, mesmo sem avaliação marcada."
   },
   "pipelineCard": {
     "active": "Ativo",
@@ -604,7 +611,9 @@
     "noStages": "Nenhuma etapa encontrada para reordenar.",
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "save": "Salvar Ordem"
+    "save": "Salvar Ordem",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo"
   },
   "kanban": {
     "search": {
@@ -703,7 +712,9 @@
         "snoozed": "Adiado"
       },
       "valueLabel": "Valor Total:",
-      "system": "Sistema"
+      "system": "Sistema",
+      "incoming": "Entrada",
+      "outgoing": "Saída"
     },
     "messages": {
       "itemMoved": "Item movido com sucesso",
@@ -730,7 +741,9 @@
       "conversationUpdated": "Item atualizado com sucesso",
       "conversationUpdateError": "Erro ao atualizar item",
       "itemHiddenByFilter": "Card movido — pode estar oculto pelos filtros ativos",
-      "newItemMayBeHidden": "Card adicionado — pode estar oculto pelos filtros ativos"
+      "newItemMayBeHidden": "Card adicionado — pode estar oculto pelos filtros ativos",
+      "notInPipeline": "Este contato não está em nenhum pipeline",
+      "conversationNotInPipeline": "Esta conversa não está em nenhum pipeline"
     },
     "tasks": {
       "pending": "pendentes",
@@ -844,7 +857,16 @@
       "moveSuccess": "Tarefa movida com sucesso",
       "moveError": "Erro ao mover tarefa",
       "addSubtaskSuccess": "Subtarefa adicionada com sucesso",
-      "addSubtaskError": "Erro ao adicionar subtarefa"
+      "addSubtaskError": "Erro ao adicionar subtarefa",
+      "deleteWithSubtasksConfirm": "Esta tarefa tem {{count}} subtarefa(s). Excluir todas?"
+    },
+    "edit": "Editar tarefa",
+    "delete": "Excluir tarefa",
+    "confirm": {
+      "completeTitle": "Concluir tarefa",
+      "reopenTitle": "Reabrir tarefa",
+      "complete": "Concluir",
+      "reopen": "Reabrir"
     }
   },
   "dialog": {
@@ -875,5 +897,8 @@
     "loadError": "Falha ao carregar formulários",
     "saveError": "Falha ao salvar formulário",
     "deleteError": "Falha ao excluir formulário"
+  },
+  "attributes": {
+    "remove": "Remover {{name}}"
   }
 }

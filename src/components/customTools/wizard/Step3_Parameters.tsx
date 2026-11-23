@@ -1,4 +1,4 @@
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { KeyValueEditor } from '@/components/ai_agents/shared';
@@ -20,8 +20,7 @@ interface Step3Props {
 export default function Step3_Parameters({ data, onChange, onNext, onBack }: Step3Props) {
   const { t } = useLanguage('customTools');
 
-  const showBody =
-    data.method === 'POST' || data.method === 'PUT' || data.method === 'PATCH';
+  const showBody = data.method === 'POST' || data.method === 'PUT' || data.method === 'PATCH';
 
   return (
     <div className="flex flex-col h-full min-h-0 max-w-4xl mx-auto py-2 px-4">

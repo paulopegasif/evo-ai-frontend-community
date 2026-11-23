@@ -52,7 +52,11 @@
         "message_updated": "Message Mis à Jour",
         "message_deleted": "Message Supprimé",
         "channel_message": "Nouveau message via {{channel}}"
-      }
+      },
+      "settings": "Préférences de notification",
+      "close": "Fermer",
+      "previousPage": "Page précédente",
+      "nextPage": "Page suivante"
     }
   },
   "organizationSwitcher": {

@@ -160,7 +160,9 @@
       "title": "Equipo no encontrado",
       "description": "El equipo que está buscando no fue encontrado.",
       "action": "Volver a equipos"
-    }
+    },
+    "pendingChanges": "{{added}} por agregar · {{removed}} por quitar",
+    "noPendingChanges": "Sin cambios pendientes"
   },
   "dialog": {
     "delete": {
@@ -185,5 +187,9 @@
     "saving": "Guardando...",
     "save": "Guardar",
     "addUsers": "Agregar Usuarios"
+  },
+  "viewMode": {
+    "cards": "Vista de tarjetas",
+    "table": "Vista de tabla"
   }
 }

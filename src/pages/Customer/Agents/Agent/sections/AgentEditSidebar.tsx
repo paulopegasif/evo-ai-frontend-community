@@ -1,5 +1,8 @@
 import { User, Wrench, Plug, Server, Users, ListChecks, Settings, Package } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
+import { AgentAvatar } from '@/components/agents/AgentCard';
+import { cn } from '@/lib/utils';
 import { Agent } from '@/types/agents';
 
 type SidebarMenu =
@@ -100,103 +103,51 @@ const AgentEditSidebar = ({
 
   const agentTypeLabel = getAgentTypeLabel(agent.type || 'llm', t);
 
-  // Get agent type styles (same as AgentCard)
-  const typeStyles: Record<string, { badge: string; ring: string; accent: string }> = {
-    llm: {
-      badge: 'border-green-500 text-green-400 bg-green-500/10',
-      ring: 'ring-1 ring-green-500/40',
-      accent: 'from-green-500/10 to-transparent',
-    },
-    a2a: {
-      badge: 'border-blue-500 text-blue-400 bg-blue-500/10',
-      ring: 'ring-1 ring-blue-500/40',
-      accent: 'from-blue-500/10 to-transparent',
-    },
-    sequential: {
-      badge: 'border-amber-500 text-amber-400 bg-amber-500/10',
-      ring: 'ring-1 ring-amber-500/40',
-      accent: 'from-amber-500/10 to-transparent',
-    },
-    parallel: {
-      badge: 'border-violet-500 text-violet-400 bg-violet-500/10',
-      ring: 'ring-1 ring-violet-500/40',
-      accent: 'from-violet-500/10 to-transparent',
-    },
-    loop: {
-      badge: 'border-indigo-500 text-indigo-400 bg-indigo-500/10',
-      ring: 'ring-1 ring-indigo-500/40',
-      accent: 'from-indigo-500/10 to-transparent',
-    },
-    external: {
-      badge: 'border-purple-500 text-purple-400 bg-purple-500/10',
-      ring: 'ring-1 ring-purple-500/40',
-      accent: 'from-purple-500/10 to-transparent',
-    },
-    default: {
-      badge: 'border-slate-500 text-slate-300 bg-slate-500/10',
-      ring: 'ring-1 ring-slate-500/40',
-      accent: 'from-slate-500/10 to-transparent',
-    },
-  };
-
-  const style = typeStyles[agent.type as keyof typeof typeStyles] || typeStyles.default;
-
   return (
-    <div className="w-64 border-r border-sidebar-border bg-sidebar text-sidebar-foreground flex flex-col">
-      {/* Agent Header */}
-      <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center bg-sidebar-accent/50 ${style.ring} relative overflow-hidden flex-shrink-0`}
-          >
-            <span className="text-sm font-semibold z-10 text-sidebar-foreground">
-              {agentName?.charAt(0).toUpperCase()}
-            </span>
-            <span className={`absolute inset-0 bg-gradient-to-br ${style.accent}`} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold truncate text-sidebar-foreground">{agentName}</p>
-            <p className="text-xs text-sidebar-foreground/60 truncate">{agentTypeLabel}</p>
-          </div>
+    <aside className="flex shrink-0 flex-col border-b bg-sidebar text-sidebar-foreground md:w-60 md:border-e md:border-b-0">
+      <div className="hidden items-center gap-3 border-b p-4 md:flex">
+        <AgentAvatar agent={{ name: agentName, type: agent.type }} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold text-sm">{agentName}</p>
+          <p className="truncate text-muted-foreground text-xs">{agentTypeLabel}</p>
         </div>
       </div>
 
-      {/* Menu Items */}
-      <div className="flex-1 overflow-y-auto px-2 py-4">
-        <nav className="space-y-1.5">
-          {menuItems.map(item => {
-            const Icon = item.icon;
-            const isActive = activeMenu === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onMenuChange(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all ${
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                }`}
-              >
-                <Icon className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-primary' : ''}`} />
-                <span className="font-medium">{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      </div>
+      <nav
+        aria-label={agentName}
+        className="flex gap-1 overflow-x-auto px-2 py-2 md:flex-1 md:flex-col md:overflow-y-auto md:py-3"
+      >
+        {menuItems.map(item => {
+          const Icon = item.icon;
+          const isActive = activeMenu === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              aria-current={isActive ? 'page' : undefined}
+              onClick={() => onMenuChange(item.id)}
+              className={cn(
+                'flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-3 py-2 font-medium text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-sidebar-foreground/72 hover:bg-sidebar-accent hover:text-sidebar-foreground',
+              )}
+            >
+              <Icon className="size-4 shrink-0" />
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
 
-      {/* Test Button */}
       {onTestAI && (
-        <div className="p-4 border-t">
-          <button
-            onClick={onTestAI}
-            className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
+        <div className="hidden border-t p-4 md:block">
+          <Button className="w-full" onClick={onTestAI}>
             {t('edit.testAI') || 'Teste sua IA'}
-          </button>
+          </Button>
         </div>
       )}
-    </div>
+    </aside>
   );
 };
 

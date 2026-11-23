@@ -42,8 +42,8 @@ export const EvolutionGoForm = ({ form, onFormChange, hasEvolutionGoConfig }: Ev
       )}
 
       <div data-tour="whatsapp-credentials">
-        <label className="text-sm font-medium text-sidebar-foreground/80 block mb-1">
-          {t('evolutionGoForm.fields.phoneNumber.label')} <span className="text-destructive">*</span>
+        <label className="mb-2 block font-medium text-sm">
+          {t('evolutionGoForm.fields.phoneNumber.label')} <span className="text-destructive-foreground">*</span>
         </label>
         <PhoneInput
           value={getStr('phone_number')}
@@ -78,7 +78,6 @@ export const EvolutionGoForm = ({ form, onFormChange, hasEvolutionGoConfig }: Ev
       {/* Advanced Settings - Evolution Go */}
       <FormSection
         title={t('evolutionGoForm.sections.instance.title')}
-        className="bg-gray-50/10 border-gray-200/20"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Always Online */}
@@ -123,10 +122,10 @@ export const EvolutionGoForm = ({ form, onFormChange, hasEvolutionGoConfig }: Ev
       {/* Help Section */}
       <FormSection
         title={t('evolutionGoForm.help.title')}
-        className="bg-green-50/10 border-green-200/20"
+        className="bg-success/8 border-success/24"
         data-tour="whatsapp-help"
       >
-        <div className="text-sm text-sidebar-foreground/70 space-y-2">
+        <div className="text-sm text-muted-foreground space-y-2">
           <p><strong>{t('evolutionGoForm.help.performance.title')}:</strong> {t('evolutionGoForm.help.performance.description')}</p>
           <p><strong>{t('evolutionGoForm.help.stability.title')}:</strong> {t('evolutionGoForm.help.stability.description')}</p>
           <p><strong>{t('evolutionGoForm.help.features.title')}:</strong> {t('evolutionGoForm.help.features.description')}</p>

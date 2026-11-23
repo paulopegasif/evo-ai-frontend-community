@@ -52,7 +52,11 @@
         "message_updated": "Messaggio Aggiornato",
         "message_deleted": "Messaggio Eliminato",
         "channel_message": "Nuovo messaggio via {{channel}}"
-      }
+      },
+      "settings": "Preferenze notifiche",
+      "close": "Chiudi",
+      "previousPage": "Pagina precedente",
+      "nextPage": "Pagina successiva"
     }
   },
   "organizationSwitcher": {

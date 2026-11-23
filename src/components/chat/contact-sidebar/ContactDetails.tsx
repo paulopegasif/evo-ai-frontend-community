@@ -7,7 +7,7 @@ import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
 import { contactsService } from '@/services/contacts/contactsService';
 import { unixTimestampToIso } from '@/utils/chat/contactTimestamp';
 
-import { Button } from '@evoapi/design-system/button';
+import { Button } from '@/components/ui/button';
 import {
   User,
   Phone,
@@ -283,7 +283,7 @@ const InfoField: React.FC<InfoFieldProps> = ({
         </span>
 
         {copyable && value && (
-          <Button aria-label={t('a11y.copy', 'Copiar')} title={t('a11y.copy', 'Copiar')} variant="ghost" size="sm" onClick={handleCopy} className="h-6 w-6 p-0">
+          <Button aria-label={t("a11y.copy", "Copiar")} title={t("a11y.copy", "Copiar")} variant="ghost" size="icon-xs" onClick={handleCopy}>
             <Copy className="h-3 w-3" />
           </Button>
         )}

@@ -72,7 +72,9 @@
         "required": true,
         "errors": {
           "required": "L'elenco deve avere almeno un valore"
-        }
+        },
+        "add": "Aggiungi valore",
+        "remove": "Rimuovi {{value}}"
       },
       "regexEnabled": {
         "label": "Validazione con Regex",

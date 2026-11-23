@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
 import { Download, Upload, Package } from 'lucide-react';
 import EmptyState from '@/components/base/EmptyState';
 import ExportWizard from './components/ExportWizard/ExportWizard';
@@ -19,28 +19,28 @@ export default function Templates() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-start justify-between p-6 border-b">
+      <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-start sm:justify-between md:p-6">
         <div>
-          <h1 className="text-2xl font-semibold">{t('page.title')}</h1>
+          <h1 className="font-semibold text-xl md:text-2xl">{t('page.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('page.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           {canExport && (
             <Button onClick={() => setExportOpen(true)} variant="outline">
-              <Download className="w-4 h-4 mr-2" />
+              <Download />
               {t('page.actions.export')}
             </Button>
           )}
           {canImport && (
             <Button onClick={() => setImportOpen(true)}>
-              <Upload className="w-4 h-4 mr-2" />
+              <Upload />
               {t('page.actions.import')}
             </Button>
           )}
         </div>
       </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4 md:p-6">
         <EmptyState
           icon={Package}
           title={t('page.title')}

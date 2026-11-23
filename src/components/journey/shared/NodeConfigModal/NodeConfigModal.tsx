@@ -1,21 +1,17 @@
 import { type ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
-  Button,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
   Dialog,
-  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@evoapi/design-system';
-import { ChevronDown, Loader2 } from 'lucide-react';
+} from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type NodeConfigModalTab = {
@@ -125,14 +121,12 @@ export function NodeConfigModal(props: NodeConfigModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
-        className={cn(
-          'bg-flow-panel-bg p-0 overflow-hidden max-w-2xl',
-          contentClassName,
-        )}
+      <DialogPopup
+        bottomStickOnMobile={false}
+        className={cn('max-w-2xl overflow-hidden bg-flow-panel-bg', contentClassName)}
         {...(description ? {} : { 'aria-describedby': undefined })}
       >
-        <DialogHeader className="bg-flow-panel-header-bg border-b border-flow-panel-divider px-6 py-4 space-y-1">
+        <DialogHeader className="gap-1 border-flow-panel-divider border-b bg-flow-panel-header-bg px-6 py-4 pe-12">
           <div className="flex items-center gap-3">
             {icon ? (
               <span className="shrink-0" aria-hidden="true">
@@ -140,13 +134,13 @@ export function NodeConfigModal(props: NodeConfigModalProps) {
               </span>
             ) : null}
             <div className="min-w-0 flex-1 text-left">
-              <DialogTitle>{title}</DialogTitle>
-              {description ? <DialogDescription>{description}</DialogDescription> : null}
+              <DialogTitle className="text-lg leading-tight">{title}</DialogTitle>
+              {description ? <DialogDescription className="mt-1">{description}</DialogDescription> : null}
             </div>
           </div>
         </DialogHeader>
 
-        <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+        <DialogPanel className="max-h-[70vh] px-6 py-4 in-[[data-slot=dialog-popup]:has([data-slot=dialog-header])]:pt-4">
           {props.variant === 'simple' ? props.children : null}
 
           {props.variant === 'tabs' ? (
@@ -154,33 +148,29 @@ export function NodeConfigModal(props: NodeConfigModalProps) {
               {...(props.value !== undefined
                 ? { value: props.value }
                 : { defaultValue: props.defaultTab ?? props.tabs[0]?.value })}
-              onValueChange={props.onTabChange}
+              onValueChange={value => props.onTabChange?.(String(value))}
             >
               {props.header ? <div className="mb-4">{props.header}</div> : null}
               <TabsList className="mb-4">
                 {props.tabs.map((tab) => (
-                  <TabsTrigger key={tab.value} value={tab.value}>
+                  <TabsTab key={tab.value} value={tab.value}>
                     {tab.label}
                     {tab.badge ? (
                       <span className="ml-1.5 inline-flex items-center">{tab.badge}</span>
                     ) : null}
-                  </TabsTrigger>
+                  </TabsTab>
                 ))}
               </TabsList>
               {props.tabs.map((tab) => (
-                <TabsContent
+                <TabsPanel
                   key={tab.value}
                   value={tab.value}
-                  // Radix only unmounts inactive panels when NOT force-mounted.
-                  // A force-mounted panel stays in the DOM with hidden=false, so
-                  // its content leaks into other tabs — hide it with Tailwind
-                  // (the design-system TabsContent has no inactive-hide rule). See EVO-1276.
-                  {...(tab.forceMount
-                    ? { forceMount: true, className: 'data-[state=inactive]:hidden' }
-                    : {})}
+                  // Inactive panels unmount unless kept mounted; a kept-mounted panel
+                  // stays in the DOM, so hide it while inactive. See EVO-1276.
+                  {...(tab.forceMount ? { keepMounted: true, className: 'data-hidden:hidden' } : {})}
                 >
                   {tab.content}
-                </TabsContent>
+                </TabsPanel>
               ))}
             </Tabs>
           ) : null}
@@ -190,44 +180,28 @@ export function NodeConfigModal(props: NodeConfigModalProps) {
               {props.children}
               <Collapsible
                 defaultOpen={props.defaultAdvancedOpen}
-                className="mt-4 border-t border-flow-panel-divider pt-3"
+                className="mt-4 border-flow-panel-divider border-t pt-3"
               >
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="-ml-3 gap-2 group">
-                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                    {props.advancedLabel ?? 'Advanced settings'}
-                  </Button>
+                <CollapsibleTrigger render={<Button variant="ghost" size="sm" className="group -ml-3" />}>
+                  <ChevronDown className="transition-transform group-data-panel-open:rotate-180" />
+                  {props.advancedLabel ?? 'Advanced settings'}
                 </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3">{props.advanced}</CollapsibleContent>
+                <CollapsiblePanel className="pt-3">{props.advanced}</CollapsiblePanel>
               </Collapsible>
             </>
           ) : null}
-        </div>
+        </DialogPanel>
 
-        <DialogFooter className="bg-flow-panel-header-bg border-t border-flow-panel-divider px-6 py-4 sm:flex-row sm:justify-end gap-2">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={loading}
-            className="flex-1 sm:flex-initial h-10"
-          >
+        <DialogFooter className="border-flow-panel-divider bg-flow-panel-header-bg">
+          <Button variant="ghost" onClick={onCancel} disabled={loading}>
             {cancelLabel}
           </Button>
-          <Button
-            onClick={onSave}
-            disabled={!dirty || loading || saveDisabled}
-            className="flex-1 sm:flex-initial h-10"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                <span className="sr-only">{savingAriaLabel}</span>
-              </>
-            ) : null}
+          <Button onClick={onSave} disabled={!dirty || loading || saveDisabled} loading={loading}>
+            {loading ? <span className="sr-only">{savingAriaLabel}</span> : null}
             {saveLabel}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

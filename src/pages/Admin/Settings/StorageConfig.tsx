@@ -1,23 +1,15 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { type ChangeEvent, useState, useEffect, useCallback, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@evoapi/design-system';
 import { toast } from 'sonner';
-import { Loader2, Lock, LockOpen, X } from 'lucide-react';
+import { AlertTriangle, PlugZap } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SecretField, SettingsHeader, SettingsSaveBar, SettingsSkeleton, TextField } from './components/SettingsUI';
 import { useLanguage } from '@/hooks/useLanguage';
 import { adminConfigService } from '@/services/admin/adminConfigService';
 import { extractError } from '@/utils/apiHelpers';
@@ -137,7 +129,7 @@ export default function StorageConfig() {
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<StorageFormData>({
     resolver: zodResolver(storageSchema),
     defaultValues: LOCAL_DEFAULTS,
@@ -246,178 +238,144 @@ export default function StorageConfig() {
     setSecretModified((prev) => ({ ...prev, [fieldName]: true }));
   };
 
-  const renderSecretField = (fieldName: string, label: string, placeholder: string) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={fieldName}>{label}</Label>
-        {!secretModified[fieldName] && (
-          secretConfigured[fieldName] ? (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600">
-              <Lock className="h-3 w-3" />
-              {t('storage.secretConfigured')}
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-xs text-sidebar-foreground/50">
-              <LockOpen className="h-3 w-3" />
-              {t('storage.secretNotConfigured')}
-            </span>
-          )
-        )}
-      </div>
-      <div className="relative">
-        <Input
-          id={fieldName}
-          type="password"
-          placeholder={placeholder}
-          {...register(fieldName as StorageFieldKey, {
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleSecretChange(fieldName, e.target.value),
-          })}
-        />
-        {secretConfigured[fieldName] && !secretModified[fieldName] && (
-          <button
-            type="button"
-            onClick={() => handleClearSecret(fieldName)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground/50 hover:text-sidebar-foreground"
-            title={t('storage.clearSecret')}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-    </div>
-  );
+  const fieldErrors = errors as Record<string, { message?: string } | undefined>;
+  const providerItems = [
+    { value: 'local', label: t('storage.provider.local') },
+    { value: 'amazon', label: t('storage.provider.amazon') },
+    { value: 's3_compatible', label: t('storage.provider.s3Compatible') },
+  ];
+  const providerLabel = providerItems.find(i => i.value === storageService)?.label;
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <SettingsSkeleton cards={2} fields={3} />;
   }
 
   return (
-    <div className="max-w-2xl">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-sidebar-foreground">{t('storage.title')}</h2>
-        <p className="text-sm text-sidebar-foreground/70 mt-1">{t('storage.description')}</p>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex max-w-3xl flex-col gap-6">
+      <SettingsHeader
+        title={t('storage.title')}
+        description={t('storage.description')}
+        status={providerLabel ? { label: providerLabel, variant: isCloud ? 'info' : 'secondary' } : null}
+      />
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">{t('storage.provider.label')}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Provider selector */}
-            <div className="space-y-2">
-              <Controller
-                name="ACTIVE_STORAGE_SERVICE"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(v) => handleProviderChange(v as StorageServiceType)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="local">{t('storage.provider.local')}</SelectItem>
-                      <SelectItem value="amazon">{t('storage.provider.amazon')}</SelectItem>
-                      <SelectItem value="s3_compatible">{t('storage.provider.s3Compatible')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+        <CardPanel className="flex flex-col gap-5">
+          <Controller
+            name="ACTIVE_STORAGE_SERVICE"
+            control={control}
+            render={({ field }) => (
+              <Field>
+                <Select
+                  items={providerItems}
+                  value={field.value}
+                  onValueChange={(v) => v && handleProviderChange(v as StorageServiceType)}
+                >
+                  <SelectTrigger aria-label={t('storage.provider.label')}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {providerItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+                {storageService !== 'local' && (
+                  <FieldDescription>
+                    {storageService === 'amazon'
+                      ? t('storage.provider.amazonHelp')
+                      : t('storage.provider.s3CompatibleHelp')}
+                  </FieldDescription>
                 )}
-              />
-              {storageService !== 'local' && (
-                <p className="text-xs text-sidebar-foreground/60">
-                  {storageService === 'amazon'
-                    ? t('storage.provider.amazonHelp')
-                    : t('storage.provider.s3CompatibleHelp')}
-                </p>
-              )}
-            </div>
-
-            {/* Cloud storage fields */}
-            {isCloud && (
-              <>
-                <div role="alert" className="rounded-md border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-                  <strong className="font-semibold">{t('storage.cloudWarning.title')}</strong>{' '}
-                  {t('storage.cloudWarning.body')}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="STORAGE_BUCKET_NAME">{t('storage.fields.bucketName')}</Label>
-                  <Input
-                    id="STORAGE_BUCKET_NAME"
-                    placeholder={t('storage.placeholders.bucketName')}
-                    {...register('STORAGE_BUCKET_NAME' as StorageFieldKey)}
-                  />
-                  {(errors as Record<string, { message?: string }>).STORAGE_BUCKET_NAME && (
-                    <p className="text-xs text-destructive">{(errors as Record<string, { message?: string }>).STORAGE_BUCKET_NAME?.message}</p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="STORAGE_ACCESS_KEY_ID">{t('storage.fields.accessKeyId')}</Label>
-                    <Input
-                      id="STORAGE_ACCESS_KEY_ID"
-                      placeholder={t('storage.placeholders.accessKeyId')}
-                      {...register('STORAGE_ACCESS_KEY_ID' as StorageFieldKey)}
-                    />
-                    {(errors as Record<string, { message?: string }>).STORAGE_ACCESS_KEY_ID && (
-                      <p className="text-xs text-destructive">{(errors as Record<string, { message?: string }>).STORAGE_ACCESS_KEY_ID?.message}</p>
-                    )}
-                  </div>
-                  {renderSecretField('STORAGE_ACCESS_SECRET', t('storage.fields.accessSecret'), t('storage.placeholders.accessSecret'))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="STORAGE_REGION">{t('storage.fields.region')}</Label>
-                    <Input
-                      id="STORAGE_REGION"
-                      placeholder={t('storage.placeholders.region')}
-                      {...register('STORAGE_REGION' as StorageFieldKey)}
-                    />
-                    {(errors as Record<string, { message?: string }>).STORAGE_REGION && (
-                      <p className="text-xs text-destructive">{(errors as Record<string, { message?: string }>).STORAGE_REGION?.message}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="STORAGE_ENDPOINT">{t('storage.fields.endpoint')}</Label>
-                    <Input
-                      id="STORAGE_ENDPOINT"
-                      placeholder={t('storage.placeholders.endpoint')}
-                      {...register('STORAGE_ENDPOINT' as StorageFieldKey)}
-                    />
-                    <p className="text-xs text-sidebar-foreground/60">{t('storage.fields.endpointHelp')}</p>
-                    {storageService === 's3_compatible' && (errors as Record<string, { message?: string }>).STORAGE_ENDPOINT && (
-                      <p className="text-xs text-destructive">{(errors as Record<string, { message?: string }>).STORAGE_ENDPOINT?.message}</p>
-                    )}
-                  </div>
-                </div>
-              </>
+              </Field>
             )}
+          />
 
-            {/* Actions */}
-            <div className="pt-2 flex gap-3">
-              <Button type="submit" disabled={saving}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {saving ? t('storage.saving') : t('storage.save')}
-              </Button>
-              {isCloud && (
-                <Button type="button" variant="outline" onClick={handleTestConnection} disabled={testing}>
-                  {testing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {testing ? t('storage.testing') : t('storage.testConnection')}
-                </Button>
-              )}
-              <ClearConfigButton configType="storage" configLabel="Storage" onCleared={() => { reset(); loadConfig(); }} />
-            </div>
-          </form>
-        </CardContent>
+          {isCloud && (
+            <Alert variant="warning">
+              <AlertTriangle />
+              <AlertTitle>{t('storage.cloudWarning.title')}</AlertTitle>
+              <AlertDescription>{t('storage.cloudWarning.body')}</AlertDescription>
+            </Alert>
+          )}
+        </CardPanel>
       </Card>
-    </div>
+
+      {isCloud && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{providerLabel}</CardTitle>
+          </CardHeader>
+          <CardPanel className="flex flex-col gap-5">
+            <TextField
+              id="STORAGE_BUCKET_NAME"
+              label={t('storage.fields.bucketName')}
+              placeholder={t('storage.placeholders.bucketName')}
+              registration={register('STORAGE_BUCKET_NAME' as StorageFieldKey)}
+              error={fieldErrors.STORAGE_BUCKET_NAME?.message}
+            />
+            <div className="grid gap-5 md:grid-cols-2">
+              <TextField
+                id="STORAGE_ACCESS_KEY_ID"
+                label={t('storage.fields.accessKeyId')}
+                placeholder={t('storage.placeholders.accessKeyId')}
+                registration={register('STORAGE_ACCESS_KEY_ID' as StorageFieldKey)}
+                error={fieldErrors.STORAGE_ACCESS_KEY_ID?.message}
+              />
+              <SecretField
+                id="STORAGE_ACCESS_SECRET"
+                label={t('storage.fields.accessSecret')}
+                placeholder={t('storage.placeholders.accessSecret')}
+                registration={register('STORAGE_ACCESS_SECRET' as StorageFieldKey, {
+                  onChange: (e: ChangeEvent<HTMLInputElement>) => handleSecretChange('STORAGE_ACCESS_SECRET', e.target.value),
+                })}
+                configured={Boolean(secretConfigured.STORAGE_ACCESS_SECRET)}
+                modified={Boolean(secretModified.STORAGE_ACCESS_SECRET)}
+                onClear={() => handleClearSecret('STORAGE_ACCESS_SECRET')}
+                configuredLabel={t('storage.secretConfigured')}
+                notConfiguredLabel={t('storage.secretNotConfigured')}
+                clearLabel={t('storage.clearSecret')}
+              />
+            </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <TextField
+                id="STORAGE_REGION"
+                label={t('storage.fields.region')}
+                placeholder={t('storage.placeholders.region')}
+                registration={register('STORAGE_REGION' as StorageFieldKey)}
+                error={fieldErrors.STORAGE_REGION?.message}
+              />
+              <TextField
+                id="STORAGE_ENDPOINT"
+                label={t('storage.fields.endpoint')}
+                placeholder={t('storage.placeholders.endpoint')}
+                registration={register('STORAGE_ENDPOINT' as StorageFieldKey)}
+                error={storageService === 's3_compatible' ? fieldErrors.STORAGE_ENDPOINT?.message : undefined}
+                description={t('storage.fields.endpointHelp')}
+              />
+            </div>
+          </CardPanel>
+        </Card>
+      )}
+
+      <SettingsSaveBar
+        dirty={isDirty || Object.values(secretModified).some(Boolean)}
+        saving={saving}
+        saveLabel={t('storage.save')}
+        savingLabel={t('storage.saving')}
+      >
+        <ClearConfigButton configType="storage" configLabel="Storage" onCleared={() => { reset(); loadConfig(); }} />
+        {isCloud && (
+          <Button type="button" variant="outline" onClick={handleTestConnection} loading={testing}>
+            <PlugZap />
+            {testing ? t('storage.testing') : t('storage.testConnection')}
+          </Button>
+        )}
+      </SettingsSaveBar>
+    </form>
   );
 }

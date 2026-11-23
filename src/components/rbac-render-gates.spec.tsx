@@ -124,14 +124,14 @@ describe('write-control render gates', () => {
     renderTeamsTable();
 
     // Every row action is write-gated, so BaseTable drops the whole menu.
-    expect(document.querySelector('[data-slot="dropdown-menu-trigger"]')).toBeNull();
+    expect(document.querySelector('[data-slot="menu-trigger"]')).toBeNull();
   });
 
   it('TeamsTable renders the row-actions menu when permissions grant', () => {
     allowed = true;
     renderTeamsTable();
 
-    expect(document.querySelector('[data-slot="dropdown-menu-trigger"]')).not.toBeNull();
+    expect(document.querySelector('[data-slot="menu-trigger"]')).not.toBeNull();
   });
 
   it('MacrosTable keeps the read action but hides execute/edit/delete without permission', async () => {
@@ -150,11 +150,11 @@ describe('write-control render gates', () => {
       />,
     );
 
-    const trigger = document.querySelector('[data-slot="dropdown-menu-trigger"]');
+    const trigger = document.querySelector('[data-slot="menu-trigger"]');
     expect(trigger).not.toBeNull();
     await userEvent.click(trigger as HTMLElement);
 
-    expect(screen.getByText('table.actions.view')).toBeTruthy();
+    expect(await screen.findByText('table.actions.view')).toBeTruthy();
     expect(screen.queryByText('table.actions.execute')).toBeNull();
     expect(screen.queryByText('table.actions.edit')).toBeNull();
     expect(screen.queryByText('table.actions.delete')).toBeNull();
@@ -176,7 +176,7 @@ describe('write-control render gates', () => {
       />,
     );
 
-    expect(document.querySelector('[data-slot="dropdown-menu-trigger"]')).toBeNull();
+    expect(document.querySelector('[data-slot="menu-trigger"]')).toBeNull();
   });
 
   it('MacrosHeader hides the create and bulk-delete controls without permission', () => {
@@ -231,16 +231,16 @@ describe('write-control render gates', () => {
 
   it('PipelinesTable hides the edit row-action without pipelines.update', async () => {
     renderPipelinesTable();
-    await userEvent.click(document.querySelector('[data-slot="dropdown-menu-trigger"]') as HTMLElement);
-    expect(screen.getByText('pipelinesTable.actions.view')).toBeTruthy();
+    await userEvent.click(document.querySelector('[data-slot="menu-trigger"]') as HTMLElement);
+    expect(await screen.findByText('pipelinesTable.actions.view')).toBeTruthy();
     expect(screen.queryByText('pipelinesTable.actions.edit')).toBeNull();
   });
 
   it('PipelinesTable shows the edit row-action with pipelines.update', async () => {
     allowed = true;
     renderPipelinesTable();
-    await userEvent.click(document.querySelector('[data-slot="dropdown-menu-trigger"]') as HTMLElement);
-    expect(screen.getByText('pipelinesTable.actions.edit')).toBeTruthy();
+    await userEvent.click(document.querySelector('[data-slot="menu-trigger"]') as HTMLElement);
+    expect(await screen.findByText('pipelinesTable.actions.edit')).toBeTruthy();
   });
 
   const renderAgentActions = () =>
@@ -256,7 +256,7 @@ describe('write-control render gates', () => {
   it('AgentActionsDropdown hides edit/delete without ai_agents write permissions', async () => {
     renderAgentActions();
     await userEvent.click(screen.getByText('open'));
-    expect(screen.getByText('dropdown.copyId')).toBeTruthy();
+    expect(await screen.findByText('dropdown.copyId')).toBeTruthy();
     expect(screen.queryByText('dropdown.edit')).toBeNull();
     expect(screen.queryByText('dropdown.delete')).toBeNull();
   });
@@ -265,7 +265,7 @@ describe('write-control render gates', () => {
     allowed = true;
     renderAgentActions();
     await userEvent.click(screen.getByText('open'));
-    expect(screen.getByText('dropdown.edit')).toBeTruthy();
+    expect(await screen.findByText('dropdown.edit')).toBeTruthy();
     expect(screen.getByText('dropdown.delete')).toBeTruthy();
   });
 

@@ -1,8 +1,6 @@
 import React from 'react';
-import {
-  Button,
-  Badge,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface CollapsibleHeaderProps {
   title: string;
@@ -34,12 +32,7 @@ const CollapsibleHeader = ({
         </Badge>
       )}
     </div>
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={onToggle}
-      className="p-1"
-    >
+    <Button variant="ghost" size="sm" onClick={onToggle} className="p-1">
       <div className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}>↓</div>
     </Button>
   </div>

@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
+  DialogClose,
+  DialogFooter,
   DialogHeader,
+  DialogPanel,
+  DialogPopup,
   DialogTitle,
-  ScrollArea,
-  Button,
-  Input,
-  Textarea,
-  Label,
-  Switch,
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@evoapi/design-system';
+} from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import OptionSelect from '@/components/segments/ui/OptionSelect';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { ChatPage, ChatPagePayload, WebWidgetOption } from '@/types/chatPages';
 
@@ -75,81 +75,91 @@ const ChatPageModal = ({ open, onClose, onSave, saving, initial, widgets }: Chat
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">{initial ? t('modal.editTitle') : t('modal.createTitle')}</DialogTitle>
+      <DialogPopup className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{initial ? t('modal.editTitle') : t('modal.createTitle')}</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-80px)] px-6 py-4">
-          <div className="space-y-6">
-            {/* Básico */}
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.basic')}</h3>
-              <div className="space-y-2">
-                <Label>{t('modal.basic.title')}</Label>
-                <Input value={title} onChange={e => setTitle(e.target.value)} placeholder={t('modal.basic.titlePlaceholder')} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('modal.basic.description')}</Label>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} />
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={published} onCheckedChange={setPublished} id="published" />
-                <Label htmlFor="published">{t('modal.basic.published')}</Label>
-              </div>
-            </section>
+        <DialogPanel className="flex flex-col gap-8">
+          <section className="flex flex-col gap-5">
+            <h3 className="font-semibold text-sm">{t('modal.sections.basic')}</h3>
+            <Field>
+              <FieldLabel htmlFor="chat-page-title">{t('modal.basic.title')}</FieldLabel>
+              <Input
+                id="chat-page-title"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder={t('modal.basic.titlePlaceholder')}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="chat-page-description">{t('modal.basic.description')}</FieldLabel>
+              <Textarea id="chat-page-description" value={description} onChange={e => setDescription(e.target.value)} />
+            </Field>
+            <Label>
+              <Switch checked={published} onCheckedChange={setPublished} />
+              {t('modal.basic.published')}
+            </Label>
+          </section>
 
-            {/* Widget */}
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.widget')}</h3>
-              <div className="space-y-2">
-                <Label>{t('modal.widget.label')}</Label>
-                <Select value={websiteToken || undefined} onValueChange={setWebsiteToken}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('modal.widget.placeholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {widgetOptions.map(w => (
-                      <SelectItem key={w.website_token} value={w.website_token}>
-                        {w.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {widgets.length === 0 && (
-                  <p className="text-xs text-muted-foreground">{t('modal.widget.empty')}</p>
-                )}
-              </div>
-            </section>
+          <section className="flex flex-col gap-5">
+            <h3 className="font-semibold text-sm">{t('modal.sections.widget')}</h3>
+            <Field>
+              <FieldLabel htmlFor="chat-page-widget">{t('modal.widget.label')}</FieldLabel>
+              <OptionSelect
+                id="chat-page-widget"
+                value={websiteToken}
+                onValueChange={setWebsiteToken}
+                placeholder={t('modal.widget.placeholder')}
+                aria-invalid={error === t('modal.errors.widget')}
+                options={widgetOptions.map(w => ({ value: w.website_token, label: w.name }))}
+              />
+              {widgets.length === 0 && <FieldDescription>{t('modal.widget.empty')}</FieldDescription>}
+            </Field>
+          </section>
 
-            {/* Aparência */}
-            <section className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">{t('modal.sections.appearance')}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t('modal.appearance.primaryColor')}</Label>
-                  <Input value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} placeholder="#1f93ff" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('modal.appearance.logoUrl')}</Label>
-                  <Input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://…" />
-                </div>
-              </div>
-            </section>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
-
-            <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={onClose} disabled={saving} className="flex-1">
-                {t('modal.cancel')}
-              </Button>
-              <Button onClick={handleSave} disabled={saving} className="flex-1">
-                {saving ? t('modal.saving') : t('modal.save')}
-              </Button>
+          <section className="flex flex-col gap-5">
+            <h3 className="font-semibold text-sm">{t('modal.sections.appearance')}</h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="chat-page-color">{t('modal.appearance.primaryColor')}</FieldLabel>
+                <Input
+                  id="chat-page-color"
+                  value={primaryColor}
+                  onChange={e => setPrimaryColor(e.target.value)}
+                  placeholder="#1f93ff"
+                  className="font-mono"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="chat-page-logo">{t('modal.appearance.logoUrl')}</FieldLabel>
+                <Input
+                  id="chat-page-logo"
+                  type="url"
+                  value={logoUrl}
+                  onChange={e => setLogoUrl(e.target.value)}
+                  placeholder="https://…"
+                />
+              </Field>
             </div>
-          </div>
-        </ScrollArea>
-      </DialogContent>
+          </section>
+
+          {error && (
+            <Alert variant="error">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </DialogPanel>
+
+        <DialogFooter>
+          <DialogClose render={<Button variant="ghost" />} disabled={saving}>
+            {t('modal.cancel')}
+          </DialogClose>
+          <Button onClick={handleSave} loading={saving}>
+            {saving ? t('modal.saving') : t('modal.save')}
+          </Button>
+        </DialogFooter>
+      </DialogPopup>
     </Dialog>
   );
 };

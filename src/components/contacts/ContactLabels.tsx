@@ -1,24 +1,11 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Badge,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@evoapi/design-system';
-import {
-  Plus,
-  X,
-  Check,
-  Tag,
-} from 'lucide-react';
+import { Check, Plus, Tag, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { ContactLabel } from '@/types/contacts';
 
 interface Label {
@@ -73,103 +60,74 @@ export default function ContactLabels({
     onLabelsChange(filteredLabels.map(getLabelName));
   };
 
-  const getColorClasses = (color: string) => {
-    // Convert hex color to Tailwind classes or use inline style
-    return {
-      backgroundColor: color,
-      borderColor: color,
-    };
-  };
+  const query = searchValue.trim().toLowerCase();
+  const matches = availableLabels.filter(label => label.title.toLowerCase().includes(query));
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 flex-wrap">
-        {labels.map((labelItem, index) => {
-          const labelTitle = getLabelName(labelItem);
-          const label = availableLabels.find(l => l.title === labelTitle);
-          return (
-            <Badge
-              key={`${labelTitle}-${index}`}
-              variant="secondary"
-              className="flex items-center gap-1 pr-1"
-              style={label ? getColorClasses(label.color) : undefined}
-            >
-              <Tag className="h-3 w-3" />
-              <span className="text-xs">{labelTitle}</span>
-              {!disabled && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => handleRemoveLabel(labelTitle)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
-            </Badge>
-          );
-        })}
-
-        {!disabled && (
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 border-dashed"
+    <div className="flex flex-wrap items-center gap-1.5">
+      {labels.map((labelItem, index) => {
+        const labelTitle = getLabelName(labelItem);
+        const label = availableLabels.find(l => l.title === labelTitle);
+        return (
+          <Badge key={`${labelTitle}-${index}`} variant="outline" className="gap-1.5 pe-0.5">
+            {label?.color ? (
+              <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: label.color }} />
+            ) : (
+              <Tag />
+            )}
+            <span>{labelTitle}</span>
+            {!disabled && (
+              <button
+                type="button"
+                className="inline-flex size-4 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                onClick={() => handleRemoveLabel(labelTitle)}
+                aria-label={`${t('labels.remove')} ${labelTitle}`}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                {t('labels.add')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="start">
-              <Command>
-                <CommandInput
-                  placeholder={t('labels.search')}
-                  value={searchValue}
-                  onValueChange={setSearchValue}
-                />
-                <CommandList>
-                  <CommandEmpty>{t('labels.empty')}</CommandEmpty>
-                  <CommandGroup>
-                    {availableLabels
-                      .filter(label =>
-                        label.title.toLowerCase().includes(searchValue.toLowerCase())
-                      )
-                      .map((label) => (
-                        <CommandItem
-                          key={label.id}
-                          value={label.title}
-                          onSelect={() => {
-                            handleLabelToggle(label.title);
-                          }}
-                        >
-                          <div className="flex items-center gap-2 flex-1">
-                            <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: label.color }}
-                            />
-                            <span>{label.title}</span>
-                            {label.description && (
-                              <span className="text-xs text-muted-foreground">
-                                {label.description}
-                              </span>
-                            )}
-                          </div>
-                          <Check
-                            className={`ml-auto h-4 w-4 ${
-                              hasLabel(label.title) ? 'opacity-100' : 'opacity-0'
-                            }`}
-                          />
-                        </CommandItem>
-                      ))}
-                  </CommandGroup>
+                <X className="size-3" />
+              </button>
+            )}
+          </Badge>
+        );
+      })}
+
+      {!disabled && (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger render={<Button variant="outline" size="sm" className="border-dashed" />}>
+            <Plus />
+            {t('labels.add')}
+          </PopoverTrigger>
+          <PopoverPopup className="w-80 [--viewport-inline-padding:0] **:data-[slot=popover-viewport]:py-0" align="start">
+            <Command
+              filter={null}
+              value={searchValue}
+              onValueChange={(value, details) => {
+                if (details.reason === 'item-press') return;
+                setSearchValue(value);
+              }}
+            >
+              <CommandInput placeholder={t('labels.search')} />
+              {matches.length === 0 ? (
+                <p className="border-t px-3 py-6 text-center text-muted-foreground text-sm">{t('labels.empty')}</p>
+              ) : (
+                <CommandList className="max-h-64 border-t">
+                  {matches.map(label => (
+                    <CommandItem key={label.id} value={label.title} onClick={() => handleLabelToggle(label.title)}>
+                      <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: label.color }} />
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="truncate">{label.title}</span>
+                        {label.description && (
+                          <span className="truncate text-muted-foreground text-xs">{label.description}</span>
+                        )}
+                      </span>
+                      <Check className={cn('size-4', hasLabel(label.title) ? 'opacity-100' : 'opacity-0')} />
+                    </CommandItem>
+                  ))}
                 </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
+              )}
+            </Command>
+          </PopoverPopup>
+        </Popover>
+      )}
     </div>
   );
 }

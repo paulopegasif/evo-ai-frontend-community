@@ -1,8 +1,13 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePipelineTasks } from '@/hooks/usePipelineTasks';
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@evoapi/design-system';
-import { Plus, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ListTodo, Plus } from 'lucide-react';
+import { ConfirmDialog } from '@/components/base';
+import { Badge } from '@/components/ui/badge';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { Skeleton } from '@/components/ui/skeleton';
 import HierarchicalTaskItem from './HierarchicalTaskItem';
 import type { PipelineTask } from '@/types/analytics';
 
@@ -33,6 +38,7 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
 }, ref) => {
   const { t } = useLanguage('pipelines');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const {
     tasks,
@@ -77,7 +83,6 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
     }
   }, [pendingCount, overdueCount, ref]);
 
-  console.log('tasks', tasks);
   // Filter tasks - only root tasks (hierarchy handled by HierarchicalTaskItem)
   const filteredTasks = tasks
     .filter(task => !task.parent_task_id) // Only root tasks
@@ -86,7 +91,10 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
       return task.status === filterStatus;
     });
 
-  const handleDelete = async (taskId: string) => {
+  // Deleting a task confirms through ConfirmDialog (was window.confirm).
+  const handleDelete = (taskId: string) => setDeleteId(taskId);
+
+  const deleteConfirmMessage = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     const hasSubtasks = task?.has_subtasks || false;
     
@@ -97,9 +105,7 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
       }) || `Esta tarefa tem ${task?.subtask_count} subtarefa(s). Deletar todas?`;
     }
     
-    if (confirm(confirmMessage)) {
-      await deleteTask(taskId);
-    }
+    return confirmMessage;
   };
 
   const handleAddSubtask = (parentTask: PipelineTask) => {
@@ -130,43 +136,43 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h3 className="text-lg font-semibold">
-            {t('tasks.title')}
-          </h3>
-          <span className="text-sm text-muted-foreground">
-            ({filteredTasks.length})
-          </span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold text-base">{t('tasks.title')}</h3>
+          <span className="text-muted-foreground text-sm tabular-nums">({filteredTasks.length})</span>
           {pendingCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+            <Badge variant="info" size="sm">
               {pendingCount} {t('tasks.pending')}
-            </span>
+            </Badge>
           )}
           {overdueCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+            <Badge variant="error" size="sm">
               {overdueCount} {t('tasks.overdue')}
-            </span>
+            </Badge>
           )}
         </div>
 
         <div className="flex items-center gap-2">
           {/* Filter */}
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[150px] h-9">
+          <Select
+            items={['all', 'pending', 'overdue', 'completed'].map(v => ({ value: v, label: t(`tasks.filters.${v}`) }))}
+            value={filterStatus}
+            onValueChange={value => value != null && setFilterStatus(value)}
+          >
+            <SelectTrigger size="sm" className="w-40">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectPopup>
               <SelectItem value="all">{t('tasks.filters.all')}</SelectItem>
               <SelectItem value="pending">{t('tasks.filters.pending')}</SelectItem>
               <SelectItem value="overdue">{t('tasks.filters.overdue')}</SelectItem>
               <SelectItem value="completed">{t('tasks.filters.completed')}</SelectItem>
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {/* Create button */}
-          <Button onClick={onCreateClick} size="sm" className="h-9">
-            <Plus className="w-4 h-4 mr-1" />
+          <Button onClick={onCreateClick} size="sm">
+            <Plus />
             {t('tasks.newTask')}
           </Button>
         </div>
@@ -174,20 +180,35 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
 
       {/* Loading state */}
       {loading && (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        <div className="flex flex-col gap-2" aria-busy="true">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
+              <Skeleton className="size-4 rounded" />
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Skeleton className="h-3.5 w-48" />
+                <Skeleton className="h-3 w-28" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
       {/* Empty state */}
       {!loading && filteredTasks.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">{t('tasks.noTasks')}</p>
-          <Button onClick={onCreateClick} variant="outline" size="sm">
-            <Plus className="w-4 h-4 mr-1" />
-            {t('tasks.createFirstTask')}
-          </Button>
-        </div>
+        <Empty className="rounded-xl border border-dashed p-8 md:p-8">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ListTodo />
+            </EmptyMedia>
+            <EmptyDescription>{t('tasks.noTasks')}</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={onCreateClick} variant="outline" size="sm">
+              <Plus />
+              {t('tasks.createFirstTask')}
+            </Button>
+          </EmptyContent>
+        </Empty>
       )}
 
       {/* Tasks list with hierarchy */}
@@ -210,6 +231,21 @@ const PipelineTasksList = forwardRef<PipelineTasksListRef, PipelineTasksListProp
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={open => !open && !deleting && setDeleteId(null)}
+        title={t('tasks.delete')}
+        description={deleteId ? deleteConfirmMessage(deleteId) : undefined}
+        cancelLabel={t('tasks.form.cancel')}
+        confirmLabel={t('tasks.delete')}
+        onConfirm={async () => {
+          if (deleteId) await deleteTask(deleteId);
+          setDeleteId(null);
+        }}
+        loading={deleting}
+        variant="destructive"
+      />
     </div>
   );
 });

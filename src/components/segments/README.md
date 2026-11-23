@@ -21,7 +21,6 @@ segments/
 │   └── index.ts
 │
 └── [componentes principais]
-    ├── SegmentModal.tsx           # Modal de criação/edição
     ├── SegmentConditionEditor.tsx # Editor principal de condições
     ├── SegmentsHeader.tsx         # Cabeçalho da lista
     ├── SegmentsPagination.tsx     # Paginação
@@ -32,7 +31,7 @@ segments/
 
 ### Importação dos componentes principais
 ```tsx
-import { SegmentModal, SegmentsTable } from '@/components/segments';
+import { SegmentsTable } from '@/components/segments';
 ```
 
 ### Importação dos editores especializados

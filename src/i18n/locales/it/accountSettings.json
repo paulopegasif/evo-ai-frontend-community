@@ -68,7 +68,8 @@
     "saving": "Salvataggio...",
     "updateAutoResolve": "Aggiorna risoluzione automatica",
     "deleteAccount": "Elimina account",
-    "cancelDeletion": "Annulla eliminazione"
+    "cancelDeletion": "Annulla eliminazione",
+    "copyAccountId": "Copia ID account"
   },
   "messages": {
     "permissionDenied": {

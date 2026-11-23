@@ -386,6 +386,8 @@
       "description": "Faça upload de um arquivo CSV com os IDs dos usuários",
       "uploadButton": "📁 Upload CSV",
       "format": "Formato: Uma coluna com user_id"
-    }
+    },
+    "removeCondition": "Remover condição",
+    "removeProperty": "Remover propriedade"
   }
 }

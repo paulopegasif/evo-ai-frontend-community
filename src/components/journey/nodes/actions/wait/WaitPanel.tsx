@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Clock, Zap, GitBranch } from 'lucide-react';
 import { WaitNodeData } from './WaitNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
@@ -193,23 +187,29 @@ export function WaitPanel({ nodeId, data, onUpdate, onClose, journeyId }: WaitPa
       cancelLabel={t('panels.actions.cancel')}
     >
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">{t('panels.wait.waitType')}</Label>
-          <Select value={formData.waitType} onValueChange={handleWaitTypeChange}>
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+        <Field>
+          <FieldLabel>{t('panels.wait.waitType')}</FieldLabel>
+          <Select
+            items={WAIT_TYPE_OPTIONS.map(option => ({ value: option.value, label: option.label }))}
+            value={formData.waitType}
+            onValueChange={value =>
+              value != null &&
+              handleWaitTypeChange(value as 'time' | 'event' | 'condition' | 'time_or_condition')
+            }
+          >
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {WAIT_TYPE_OPTIONS.map(option => {
                 const OptionIcon = option.icon;
                 return (
                   <SelectItem
                     key={option.value}
                     value={option.value}
-                    className="text-sidebar-foreground"
                   >
                     <div className="flex items-center gap-2">
-                      <OptionIcon className="w-4 h-4" />
+                      <OptionIcon className="size-4" />
                       <div>
                         <div className="font-medium">{option.label}</div>
                         <div className="text-xs text-muted-foreground">{option.description}</div>
@@ -218,16 +218,16 @@ export function WaitPanel({ nodeId, data, onUpdate, onClose, journeyId }: WaitPa
                   </SelectItem>
                 );
               })}
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
-        <div className="space-y-4">
-          <Label className="text-sidebar-foreground font-medium">
+        <section className="flex flex-col gap-4 rounded-xl border bg-muted/24 p-4">
+          <h3 className="font-medium text-sm">
             {t('panels.wait.configuration')} - {currentOption.label}
-          </Label>
+          </h3>
           {renderConfigurationSection()}
-        </div>
+        </section>
       </div>
     </NodeConfigModal>
   );

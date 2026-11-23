@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Label,
-} from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users } from 'lucide-react';
 import { AssignTeamNodeData } from './AssignTeamNode';
 import { automationService } from '@/services/automation/automationService';
@@ -81,52 +75,56 @@ export function AssignTeamPanel({ nodeId, data, onUpdate, onClose }: AssignTeamP
       cancelLabel={t('panels.actions.cancel')}
     >
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.assignTeam.team')}
-          </Label>
-          <Select value={teamId} onValueChange={setTeamId} disabled={loading}>
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+          </FieldLabel>
+          <Select
+            items={formDataOptions.teams.map(team => ({ value: team.id.toString(), label: team.name }))}
+            value={teamId || null}
+            onValueChange={value => setTeamId(String(value ?? ''))}
+            disabled={loading}
+          >
+            <SelectTrigger className="w-full">
               <SelectValue
                 placeholder={
                   loading ? t('panels.assignTeam.loadingTeams') : t('panels.assignTeam.selectTeam')
                 }
               />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
+            <SelectPopup alignItemWithTrigger={false}>
               {formDataOptions.teams.map(team => (
                 <SelectItem
                   key={team.id}
                   value={team.id.toString()}
-                  className="text-sidebar-foreground"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-flow-node-action-pipeline-bg text-flow-node-action-pipeline-fg flex items-center justify-center text-xs font-medium">
-                      <Users className="w-4 h-4" />
+                    <div className="size-8 rounded-full bg-flow-node-action-pipeline-bg text-flow-node-action-pipeline-fg flex items-center justify-center text-xs font-medium">
+                      <Users className="size-4" />
                     </div>
                     <div>
                       <div className="font-medium">{team.name}</div>
-                      <div className="text-xs text-sidebar-foreground/60">
+                      <div className="text-xs text-muted-foreground">
                         {team.description || t('panels.assignTeam.defaultDescription')}
                       </div>
                     </div>
                   </div>
                 </SelectItem>
               ))}
-            </SelectContent>
+            </SelectPopup>
           </Select>
 
           {!loading && formDataOptions.teams.length === 0 && (
-            <p className="text-sm text-sidebar-foreground/60">
+            <FieldDescription className="text-sm">
               {t('panels.assignTeam.noTeamsFound')}
-            </p>
+            </FieldDescription>
           )}
-        </div>
+        </Field>
 
         {teamId && (
           <FlowFeedbackBanner variant="info">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
+              <Users className="size-4" />
               <span>
                 {t('panels.assignTeam.conversationWillBeAssigned')}{' '}
                 <strong>

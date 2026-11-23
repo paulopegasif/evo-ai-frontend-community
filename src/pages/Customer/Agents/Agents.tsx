@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@evoapi/design-system';
 import { AgentsTable, AgentsHeader, AgentsPagination, AgentWizardModal, AgentsFilter } from '@/components/agents';
+import AgentCard from '@/components/agents/AgentCard';
+import ListSkeleton from '@/components/base/ListSkeleton';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { EmptyState } from '@/components/base';
-import { Bot, Search } from 'lucide-react';
+import { Bot, LayoutGrid, List, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { getAccessibleAgents, deleteAgent } from '@/services/agents';
@@ -16,6 +20,7 @@ import { AgentsTour } from '@/tours';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import type { PaginationMeta } from '@/types/core';
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
 
 interface AgentsState {
   agents: Agent[];
@@ -39,6 +44,32 @@ const INITIAL_STATE: AgentsState = {
   },
   loading: false,
 };
+
+type AgentsView = 'grid' | 'table';
+const VIEW_STORAGE_KEY = 'agents:view';
+
+function AgentGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" aria-busy="true">
+      {Array.from({ length: 8 }, (_, i) => (
+        <Card key={i} className="flex flex-col gap-4 p-4">
+          <div className="flex items-start gap-3">
+            <Skeleton className="size-10 rounded-lg" />
+            <div className="flex flex-1 flex-col gap-2">
+              <Skeleton className="h-4 w-2/3" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          </div>
+          <div className="flex gap-1.5">
+            <Skeleton className="h-4.5 w-16 rounded-sm" />
+            <Skeleton className="h-4.5 w-24 rounded-sm" />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
 const Agentes = () => {
   const navigate = useNavigate();
@@ -67,6 +98,14 @@ const Agentes = () => {
   const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const isWizardOpen = location.pathname === '/agents/new';
+  const [view, setView] = useState<AgentsView>(() =>
+    localStorage.getItem(VIEW_STORAGE_KEY) === 'table' ? 'table' : 'grid',
+  );
+  const changeView = (next: AgentsView) => {
+    setView(next);
+    localStorage.setItem(VIEW_STORAGE_KEY, next);
+    setState(prev => ({ ...prev, selectedAgents: [] }));
+  };
 
   const loadAgents = useCallback(
     async (params?: { page?: number; per_page?: number }, filtersOverride?: BaseFilter[]) => {
@@ -295,7 +334,7 @@ const Agentes = () => {
       ) : (
         <div className="animate-fadeIn h-full flex flex-col">
           <AgentsTour />
-          <div className="flex-1 space-y-6 p-6">
+          <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
             <div data-tour="agents-header">
             <AgentsHeader
               totalCount={state.meta.pagination.total}
@@ -309,7 +348,23 @@ const Agentes = () => {
               onFilter={handleOpenFilter}
               activeFilters={appliedFilters}
               showFilters={true}
-            />
+            >
+              <div className="flex justify-end">
+                <ToggleGroup
+                  variant="outline"
+                  size="sm"
+                  value={[view]}
+                  onValueChange={value => value[0] && changeView(value[0] as AgentsView)}
+                >
+                  <ToggleGroupItem value="grid" aria-label={t('view.grid')}>
+                    <LayoutGrid />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="table" aria-label={t('view.table')}>
+                    <List />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </AgentsHeader>
             </div>
 
             <AgentsFilter
@@ -323,9 +378,11 @@ const Agentes = () => {
 
             <div data-tour="agents-list">
             {state.loading ? (
-              <div className="flex items-center justify-center h-48">
-                <Bot className="h-8 w-8 animate-pulse" />
-              </div>
+              view === 'grid' ? (
+                <AgentGridSkeleton />
+              ) : (
+                <ListSkeleton rows={6} />
+              )
             ) : state.agents.length === 0 ? (
               <EmptyState
                 icon={Bot}
@@ -347,6 +404,17 @@ const Agentes = () => {
                   variant: 'outline',
                 }}
               />
+            ) : view === 'grid' ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                {filteredAgents.map(agent => (
+                  <AgentCard
+                    key={agent.id}
+                    agent={agent}
+                    onEdit={a => handleEditAgent(a.id)}
+                    onDelete={handleDeleteAgent}
+                  />
+                ))}
+              </div>
             ) : (
               <AgentsTable
                 agents={filteredAgents}
@@ -363,7 +431,7 @@ const Agentes = () => {
             </div>
           </div>
 
-          <div className="p-6 pt-0">
+          <div className="px-4 pb-4 md:px-6 md:pb-6">
             <AgentsPagination
               currentPage={state.meta.pagination.page}
               totalPages={state.meta.pagination.total_pages}
@@ -379,28 +447,16 @@ const Agentes = () => {
 
       <ApiKeysModal open={isApiKeysModalOpen} onOpenChange={setIsApiKeysModalOpen} />
 
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('deleteDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('deleteDialog.description', { name: agentToDelete?.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={isDeleting}
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={confirmDeleteAgent} disabled={isDeleting}>
-              {isDeleting ? t('deleteDialog.deleting') : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: agentToDelete?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={t('deleteDialog.confirm')}
+        onConfirm={confirmDeleteAgent}
+        loading={isDeleting}
+      />
     </div>
   );
 };

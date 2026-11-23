@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Dialog, DialogContent } from '@evoapi/design-system';
-import { X } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 import { createAgent, listApiKeys } from '@/services/agents';
 import integrationService from '@/services/agents/integrationService';
 import { ApiKey, AgentCreate } from '@/types/agents';
@@ -9,7 +8,7 @@ import { toast } from 'sonner';
 import { extractBackendErrorMessage } from '@/utils/agentUtils';
 
 // Wizard components - novo fluxo
-import WizardProgress from '@/pages/Customer/Agents/Agent/wizard/WizardProgress';
+import WizardShell from '@/components/agents/wizard/WizardShell';
 import Step1_Name from '@/pages/Customer/Agents/Agent/wizard/Step1_Name';
 import Step2_Type from '@/pages/Customer/Agents/Agent/wizard/Step2_Type';
 import WizardStep3_SubAgents from '@/pages/Customer/Agents/Agent/wizard/WizardStep3_SubAgents';
@@ -19,7 +18,9 @@ import Step5_Instructions from '@/pages/Customer/Agents/Agent/wizard/Step5_Instr
 import Step6_ApiKeyModel from '@/pages/Customer/Agents/Agent/wizard/Step6_ApiKeyModel';
 import WizardStep4_Success from '@/pages/Customer/Agents/Agent/wizard/WizardStep4_Success';
 import { ProviderSelector } from '@/components/agents/ProviderSelector';
-import ExternalAgentConfig, { ExternalAgentConfigData } from '@/components/agents/ExternalAgentConfig';
+import ExternalAgentConfig, {
+  ExternalAgentConfigData,
+} from '@/components/agents/ExternalAgentConfig';
 
 // Types
 interface WizardData {
@@ -34,7 +35,12 @@ interface WizardData {
   sub_agents: string[];
 
   // Step 3: Task config (task type only)
-  tasks: { agent_id: string; description: string; expected_output: string; enabled_tools: string[] }[];
+  tasks: {
+    agent_id: string;
+    description: string;
+    expected_output: string;
+    enabled_tools: string[];
+  }[];
 
   // Step 4: Role e Goal (LLM only)
   role: string;
@@ -59,7 +65,12 @@ interface AgentWizardModalProps {
   embedded?: boolean;
 }
 
-const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false }: AgentWizardModalProps) => {
+const AgentWizardModal = ({
+  open,
+  onOpenChange,
+  onAgentCreated,
+  embedded = false,
+}: AgentWizardModalProps) => {
   const { t } = useLanguage('aiAgents');
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -149,26 +160,26 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         { id: 3, label: t('wizard.progress.role') },
         { id: 4, label: t('wizard.progress.instructions') },
         { id: 5, label: t('wizard.progress.model') },
-        { id: 6, label: t('wizard.progress.completed') }
+        { id: 6, label: t('wizard.progress.completed') },
       );
     } else if (wizardData.type === 'task') {
       // Fluxo Task: Nome → Tipo → Task Config → Sucesso
       steps.push(
         { id: 3, label: t('wizard.progress.taskConfig') },
-        { id: 4, label: t('wizard.progress.completed') }
+        { id: 4, label: t('wizard.progress.completed') },
       );
     } else if (wizardData.type === 'external') {
       // Fluxo External: Nome → Tipo → Provider → Configuração → Sucesso
       steps.push(
         { id: 3, label: t('wizard.progress.provider') },
         { id: 4, label: t('wizard.progress.configuration') },
-        { id: 5, label: t('wizard.progress.completed') }
+        { id: 5, label: t('wizard.progress.completed') },
       );
     } else if (typesWithSubAgents.includes(wizardData.type)) {
       // Fluxo com sub-agentes: Nome → Tipo → Sub-agentes → Sucesso
       steps.push(
         { id: 3, label: t('wizard.progress.subAgents') },
-        { id: 4, label: t('wizard.progress.completed') }
+        { id: 4, label: t('wizard.progress.completed') },
       );
     } else {
       // Outros tipos: Nome → Tipo → Sucesso
@@ -450,7 +461,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
       return (
         <Step1_Name
           data={{ name: wizardData.name, description: wizardData.description }}
-          onChange={(data) => setWizardData({ ...wizardData, ...data })}
+          onChange={data => setWizardData({ ...wizardData, ...data })}
           onNext={handleNext}
         />
       );
@@ -461,7 +472,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
       return (
         <Step2_Type
           data={{ type: wizardData.type }}
-          onChange={(data) => setWizardData({ ...wizardData, ...data })}
+          onChange={data => setWizardData({ ...wizardData, ...data })}
           onNext={handleNext}
           onBack={handleBack}
         />
@@ -475,7 +486,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <Step4_RoleGoal
             data={{ role: wizardData.role, goal: wizardData.goal }}
-            onChange={(data) => setWizardData({ ...wizardData, ...data })}
+            onChange={data => setWizardData({ ...wizardData, ...data })}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -488,28 +499,28 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
           <div className="space-y-6">
             <ProviderSelector
               value={wizardData.provider as any}
-              onChange={(provider) => {
+              onChange={provider => {
                 setWizardData({
                   ...wizardData,
                   provider,
                   externalConfig: {
                     ...wizardData.externalConfig,
                     provider,
-                  } as ExternalAgentConfigData
+                  } as ExternalAgentConfigData,
                 });
               }}
             />
             <div className="flex justify-between">
               <button
                 onClick={handleBack}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-accent"
               >
                 {t('wizardActions.back')}
               </button>
               <button
                 onClick={handleNext}
                 disabled={!wizardData.provider}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-white bg-info border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('wizardActions.next')}
               </button>
@@ -523,7 +534,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <WizardStep3_TaskConfig
             data={{ tasks: wizardData.tasks }}
-            onChange={(data) => setWizardData({ ...wizardData, tasks: data.tasks })}
+            onChange={data => setWizardData({ ...wizardData, tasks: data.tasks })}
             onNext={handleNext}
             onBack={handleBack}
             folderId={undefined}
@@ -536,7 +547,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <WizardStep3_SubAgents
             data={{ sub_agents: wizardData.sub_agents }}
-            onChange={(data) => setWizardData({ ...wizardData, sub_agents: data.sub_agents })}
+            onChange={data => setWizardData({ ...wizardData, sub_agents: data.sub_agents })}
             onNext={handleNext}
             onBack={handleBack}
             agentType={wizardData.type}
@@ -563,7 +574,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
         return (
           <Step5_Instructions
             data={{ instruction: wizardData.instruction }}
-            onChange={(data) => setWizardData({ ...wizardData, ...data })}
+            onChange={data => setWizardData({ ...wizardData, ...data })}
             onNext={handleNext}
             onBack={handleBack}
           />
@@ -587,7 +598,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             <ExternalAgentConfig
               mode="create"
               data={externalConfigData}
-              onChange={(data) => setWizardData({ ...wizardData, externalConfig: data })}
+              onChange={data => setWizardData({ ...wizardData, externalConfig: data })}
               onValidationChange={() => {
                 // Validação será verificada no handleNext
               }}
@@ -595,13 +606,13 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             <div className="flex justify-between pt-4 border-t">
               <button
                 onClick={handleBack}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-accent"
               >
                 {t('edit.configuration.sections.externalIntegration.wizard.back')}
               </button>
               <button
                 onClick={handleNext}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-info border border-transparent rounded-md hover:bg-blue-700"
               >
                 {t('edit.configuration.sections.externalIntegration.wizard.createAgent')}
               </button>
@@ -612,8 +623,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
 
       // Para Task ou tipos com sub-agentes: Sucesso
       if (
-        (wizardData.type === 'task' ||
-          typesWithSubAgents.includes(wizardData.type)) &&
+        (wizardData.type === 'task' || typesWithSubAgents.includes(wizardData.type)) &&
         createdAgentId
       ) {
         return (
@@ -634,7 +644,7 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
             api_key_id: wizardData.api_key_id,
             model: wizardData.model,
           }}
-          onChange={(data) => setWizardData({ ...wizardData, ...data })}
+          onChange={data => setWizardData({ ...wizardData, ...data })}
           onNext={handleNext}
           onBack={handleBack}
           apiKeys={apiKeys}
@@ -668,67 +678,29 @@ const AgentWizardModal = ({ open, onOpenChange, onAgentCreated, embedded = false
     return null;
   };
 
-  const wizardContent = (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="flex items-center justify-end px-3 pt-3 pb-0 flex-shrink-0">
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Close wizard"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-      <div className="flex flex-col flex-1 min-h-0">
-        {/* Header */}
-        <div className="border-b bg-transparent p-3 pt-1.5 flex-shrink-0">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold leading-tight">{currentStepHeader.title}</h2>
-            {currentStepHeader.subtitle ? (
-              <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">{currentStepHeader.subtitle}</p>
-            ) : null}
-          </div>
-        </div>
-
-        {/* Progress */}
-        {currentStep < totalSteps && (
-          <div className="py-2 px-4 flex-shrink-0 bg-transparent">
-            <WizardProgress currentStep={currentStep} totalSteps={totalSteps} steps={steps} />
-          </div>
-        )}
-
-        {/* Content - Scrollable apenas quando necessário */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto px-3 min-h-0">
-          {isCreating ? (
-            <div className="flex items-center justify-center h-96">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-lg font-medium">Criando agente...</p>
-              </div>
-            </div>
-          ) : (
-            renderCurrentStep()
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  if (embedded) {
-    return (
-      <div className="w-full h-full min-h-0 bg-background overflow-hidden">
-        {wizardContent}
-      </div>
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!w-[72vw] !max-w-[72vw] h-[94vh] max-h-[94vh] overflow-hidden p-0 sm:!max-w-[72vw]">
-        {wizardContent}
-      </DialogContent>
-    </Dialog>
+    <WizardShell
+      open={open}
+      onOpenChange={onOpenChange}
+      embedded={embedded}
+      title={currentStepHeader.title}
+      subtitle={currentStepHeader.subtitle || undefined}
+      dialogTitle={currentStepHeader.title}
+      steps={steps}
+      currentStep={currentStep}
+      totalSteps={totalSteps}
+      showProgress={currentStep < totalSteps}
+      contentRef={contentRef}
+    >
+      {isCreating ? (
+        <div className="flex h-96 flex-col items-center justify-center gap-4" aria-busy="true">
+          <Spinner className="size-8 text-primary" />
+          <p className="font-medium text-lg">{t('wizard.creating')}</p>
+        </div>
+      ) : (
+        renderCurrentStep()
+      )}
+    </WizardShell>
   );
 };
 
