@@ -12,14 +12,6 @@
   --primary-foreground: #ffffff;
   --ring: #967ab4;
 
-  /* Sidebar */
-  --sidebar: #fbf9fd;
-  --sidebar-foreground: #2a152f;
-  --sidebar-primary: #7d54a2;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f3ebf8;
-  --sidebar-accent-foreground: #2a152f;
-  --sidebar-border: #e9deef;
 
   /* Charts: categorical order, validated for CVD separation and contrast */
   --chart-1: #7d54a2;
@@ -34,14 +26,6 @@
   --primary-foreground: #1f0f23;
   --ring: #967ab4;
 
-  /* Sidebar */
-  --sidebar: #1f0f23;
-  --sidebar-foreground: #f3ebf8;
-  --sidebar-primary: #967ab4;
-  --sidebar-primary-foreground: #1f0f23;
-  --sidebar-accent: #2e1734;
-  --sidebar-accent-foreground: #f3ebf8;
-  --sidebar-border: #3b1e42;
 
   --chart-1: #9d74d6;
   --chart-2: #1fa577;
