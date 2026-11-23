@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Plus, X } from 'lucide-react';
+import { Plus, X } from '@/components/icons';
 import { BaseHeader, HeaderAction } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';
 

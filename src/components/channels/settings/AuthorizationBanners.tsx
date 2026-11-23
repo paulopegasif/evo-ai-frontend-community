@@ -10,7 +10,7 @@ import {
   Mail,
   MessageSquare,
   CheckCircle,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';

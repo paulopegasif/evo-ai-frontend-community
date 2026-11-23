@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Play } from 'lucide-react';
+import { Play } from '@/components/icons';
 import { JourneyTriggerNodeData } from './JourneyTriggerNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { JourneyVariable } from '@/components/journey/environment-manager';

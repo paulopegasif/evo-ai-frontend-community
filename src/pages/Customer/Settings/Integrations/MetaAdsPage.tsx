@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, ArrowRight, BarChart3, Clock, PlugZap, Power, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, BarChart3, Clock, PlugZap, Power, RefreshCw } from '@/components/icons';
 import { format, parseISO } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';

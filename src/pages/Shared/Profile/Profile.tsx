@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, BellRing, Check, Keyboard, Mail, Play, Volume2, X } from 'lucide-react';
+import { AlertTriangle, BellRing, Check, Keyboard, Mail, Play, Volume2, X } from '@/components/icons';
 import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';

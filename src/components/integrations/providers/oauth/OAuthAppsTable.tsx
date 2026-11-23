@@ -1,4 +1,4 @@
-import { Key, Edit, Trash2, Copy, Eye, EyeOff, Shield } from 'lucide-react';
+import { Key, Edit, Trash2, Copy, Eye, EyeOff, Shield } from '@/components/icons';
 import { OAuthApplication } from '@/types/integrations';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { Badge } from '@/components/ui/badge';

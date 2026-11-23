@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
-import { Server, Eye, Wrench } from 'lucide-react';
+import { Server, Eye, Wrench } from '@/components/icons';
 import { MCPServer } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 

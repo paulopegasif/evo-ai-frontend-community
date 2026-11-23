@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { Check, Power, Settings, MessageSquare } from 'lucide-react';
+import { Check, Power, Settings, MessageSquare } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';

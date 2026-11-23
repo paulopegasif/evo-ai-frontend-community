@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ChatMessage } from '@/types';
-import { Bot, User, ChevronDown, ChevronRight } from 'lucide-react';
+import { Bot, User, ChevronDown, ChevronRight } from '@/components/icons';
 import { isImageFile, type FileData } from '@/utils/fileUtils';
-import { Image, FileText, File } from 'lucide-react';
+import { Image, FileText, File } from '@/components/icons';
 
 interface AgentChatMessageProps {
   message: ChatMessage;

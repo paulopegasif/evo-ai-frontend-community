@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Wand2 } from 'lucide-react';
+import { Sparkles, Wand2 } from '@/components/icons';
 import { toast } from 'sonner';
 import { openaiService } from '@/services/integrations/openaiService';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -1,4 +1,4 @@
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle } from '@/components/icons';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TooltipInfoProps {

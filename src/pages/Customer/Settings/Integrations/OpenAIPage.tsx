@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
-import { Brain } from 'lucide-react';
+import { Brain } from '@/components/icons';
 import GenericIntegrationSettings from '@/components/integrations/providers/GenericIntegrationSettings';
 import OpenAIModal from '@/components/integrations/providers/openai/OpenAIModal';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';

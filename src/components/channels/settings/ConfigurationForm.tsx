@@ -34,7 +34,7 @@ import {
   Smartphone,
   QrCode,
   Info,
-} from 'lucide-react';
+} from '@/components/icons';
 import { EvolutionApiService, ZapiService } from '@/services/channels/channelConfigurationService';
 import InboxesService from '@/services/channels/inboxesService';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';

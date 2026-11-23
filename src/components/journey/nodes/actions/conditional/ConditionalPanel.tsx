@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
-import { GitBranch, Plus, Trash2, Copy } from 'lucide-react';
+import { GitBranch, Plus, Trash2, Copy } from '@/components/icons';
 import {
   ConditionalNodeData,
   ConditionalPath,

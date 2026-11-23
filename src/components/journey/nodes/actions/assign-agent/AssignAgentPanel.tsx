@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User } from 'lucide-react';
+import { User } from '@/components/icons';
 import { AssignAgentNodeData } from './AssignAgentNode';
 import { automationService } from '@/services/automation/automationService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Edit, Trash2, Play, Pause, RefreshCw, List } from 'lucide-react';
+import { Edit, Trash2, Play, Pause, RefreshCw, List } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import BaseTable from '@/components/base/BaseTable';
 import { Segment } from '@/types/analytics';

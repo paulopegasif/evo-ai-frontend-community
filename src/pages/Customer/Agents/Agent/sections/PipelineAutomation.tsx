@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Info, Trash2, Plus, CheckSquare, Calendar } from 'lucide-react';
+import { Info, Trash2, Plus, CheckSquare, Calendar } from '@/components/icons';
 import { useState } from 'react';
 
 export interface PipelineTask {

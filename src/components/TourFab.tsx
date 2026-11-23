@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CircleHelp } from 'lucide-react';
+import { CircleHelp } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { tourRegistry, matchTourRoute } from '@/tours/tourRegistry';

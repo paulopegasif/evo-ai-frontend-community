@@ -1,4 +1,4 @@
-import { VolumeX, Settings } from 'lucide-react';
+import { VolumeX, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

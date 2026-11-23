@@ -23,7 +23,7 @@ import {
   Ban,
   Send,
   Filter,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 

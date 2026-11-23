@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { Wrench, Eye } from 'lucide-react';
+import { Wrench, Eye } from '@/components/icons';
 import { Tool } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';

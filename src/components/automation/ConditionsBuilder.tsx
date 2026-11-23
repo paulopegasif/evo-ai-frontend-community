@@ -9,7 +9,7 @@ import {
   CardPanel,
   CardTitle,
 } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/components/icons';
 import type { AutomationRuleFormData } from '@/pages/Customer/Automation/registries';
 import type { AutomationFormData } from '@/hooks/automation/useAutomationFormData';
 import ConditionRow from './ConditionRow';

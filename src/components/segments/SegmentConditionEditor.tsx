@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import OptionSelect from './ui/OptionSelect';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Trash2, Settings, Clock, Plus, X } from 'lucide-react';
+import { Trash2, Settings, Clock, Plus, X } from '@/components/icons';
 import {
   EVENT_CATEGORIES,
   getEventsByCategory,

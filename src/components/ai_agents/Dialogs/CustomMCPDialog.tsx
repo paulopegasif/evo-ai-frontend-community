@@ -12,7 +12,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Search, Server, Tag, Clock, RotateCcw, Plus, Wand } from 'lucide-react';
+import { Search, Server, Tag, Clock, RotateCcw, Plus, Wand } from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 import { listCustomMcpServers } from '@/services/agents';
 import { CustomMcpServer } from '@/types/ai';

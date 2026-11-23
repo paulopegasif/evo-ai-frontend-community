@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
-import { ArrowLeft, Save, X, Edit3, Copy, MoreHorizontal, Bot, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Save, X, Edit3, Copy, MoreHorizontal, Bot, ChevronRight } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 

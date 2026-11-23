@@ -11,7 +11,7 @@ import {
   Layers,
   MousePointerClick,
   Smartphone,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useRelativeTime } from '@/lib/useRelativeTime';
 import { formatRelativeTime } from '@/lib/relativeTime';

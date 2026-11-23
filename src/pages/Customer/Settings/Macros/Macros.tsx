@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsMacrosTour } from '@/tours';
 import { toast } from 'sonner';
-import { Settings } from 'lucide-react';
+import { Settings } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Copy, Edit, ExternalLink, FileText, Plus, Trash2 } from 'lucide-react';
+import { Copy, Edit, ExternalLink, FileText, Plus, Trash2 } from '@/components/icons';
 import { ConfirmDialog } from '@/components/base';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

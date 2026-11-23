@@ -5,7 +5,7 @@ import type { Inbox } from '@/types/channels/inbox';
 import InboxesService from '@/services/channels/inboxesService';
 import { ScheduleActionModal } from './ScheduleActionModal';
 
-vi.mock('lucide-react', () => ({
+vi.mock('@/components/icons', () => ({
   Search: () => null,
   XIcon: () => null,
   Loader2Icon: () => null,

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ArrowLeft, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, type LucideIcon } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

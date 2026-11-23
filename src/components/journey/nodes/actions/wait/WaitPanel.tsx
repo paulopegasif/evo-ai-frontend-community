@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, Zap, GitBranch } from 'lucide-react';
+import { Clock, Zap, GitBranch } from '@/components/icons';
 import { WaitNodeData } from './WaitNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import {

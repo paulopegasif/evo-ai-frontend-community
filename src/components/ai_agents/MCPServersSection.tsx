@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Server, Plus, X, Settings } from 'lucide-react';
+import { Server, Plus, X, Settings } from '@/components/icons';
 import { MCPServer, MCPServerConfig } from '@/types/ai';
 import MCPServersDialog from './Dialogs/MCPServersDialog';
 import MCPConfigDialog from './Dialogs/MCPConfigDialog';

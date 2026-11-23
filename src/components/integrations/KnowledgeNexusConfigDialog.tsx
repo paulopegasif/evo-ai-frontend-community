@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Library, RefreshCw } from 'lucide-react';
+import { Library, RefreshCw } from '@/components/icons';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';

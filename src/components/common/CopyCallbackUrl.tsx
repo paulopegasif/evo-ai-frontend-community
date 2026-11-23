@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check } from '@/components/icons';
 import { toast } from 'sonner';
 
 interface CopyCallbackUrlProps {

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
-import { ArrowRight, Settings, Wrench, MessageSquare } from 'lucide-react';
+import { ArrowRight, Settings, Wrench, MessageSquare } from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 

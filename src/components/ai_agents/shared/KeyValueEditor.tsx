@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, X } from 'lucide-react';
+import { Plus, X } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 /** Shared between Custom Tools (EVO-1790) and Custom MCP (EVO-1791) UIs. */

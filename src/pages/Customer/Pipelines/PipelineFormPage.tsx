@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Globe, GripVertical, Lock, Plus, Trash2, Users, X } from 'lucide-react';
+import { ArrowLeft, Globe, GripVertical, Lock, Plus, Trash2, Users, X } from '@/components/icons';
 import PipelineTeamPicker from '@/components/pipelines/PipelineTeamPicker';
 import { cn } from '@/lib/utils';
 import { usePermissions } from '@/contexts/PermissionsContext';

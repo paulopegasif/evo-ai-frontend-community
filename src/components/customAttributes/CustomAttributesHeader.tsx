@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/components/icons';
 import BaseHeader from '@/components/base/BaseHeader';
 import { AttributeModel, ATTRIBUTE_TABS } from '@/types/settings';
 

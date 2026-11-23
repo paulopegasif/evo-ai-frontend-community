@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Server, Edit, Wrench, Settings, FileText } from 'lucide-react';
+import { Server, Edit, Wrench, Settings, FileText } from '@/components/icons';
 import { MCPServer } from '@/types/ai';
 
 interface MCPServerDetailsProps {

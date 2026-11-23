@@ -2,7 +2,7 @@ import { useState, useRef, KeyboardEvent } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 /** Shared between Custom Tools (EVO-1790) and Custom MCP (EVO-1791) UIs. */

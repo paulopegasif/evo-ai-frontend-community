@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Shield, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
+import { Shield, CheckCircle2, XCircle, RefreshCw } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import FacebookModerationService from '@/services/channels/facebookModerationService';

@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from '@/components/icons';
 import OAuthIntegrationSettings from '@/components/integrations/providers/OAuthIntegrationSettings';
 
 export default function ShopifyPage() {

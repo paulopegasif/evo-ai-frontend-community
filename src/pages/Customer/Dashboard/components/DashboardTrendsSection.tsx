@@ -1,4 +1,4 @@
-import { BarChart3, Layers, TrendingUp } from 'lucide-react';
+import { BarChart3, Layers, TrendingUp } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { AreaChartCard, BarChartCard, DonutChartCard } from '@/components/charts';

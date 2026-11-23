@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { Contact } from '@/types/contacts';
 import { contactsService } from '@/services/contacts/contactsService';
-import { Building2, Check, Mail, MessageSquare, Phone, Search, SearchX, User } from 'lucide-react';
+import { Building2, Check, Mail, MessageSquare, Phone, Search, SearchX, User } from '@/components/icons';
 import { formatContactPhone } from '@/utils/contact/formatContactPhone';
 import { toast } from 'sonner';
 

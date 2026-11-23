@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getContactColor } from '@/utils/avatar';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { Check, Mail, MessageSquare, Phone, Search, User } from 'lucide-react';
+import { Check, Mail, MessageSquare, Phone, Search, User } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { initials } from '@/lib/initials';
 import { ConversationForModal, PipelineStage } from '@/types/analytics';
@@ -314,7 +313,7 @@ export default function AddItemModal({
                         )}
                       >
                         <Avatar className="size-8 text-xs">
-                          <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(name) }}>
+                          <AvatarFallback className="bg-muted font-semibold text-foreground/80">
                             {initials(name)}
                           </AvatarFallback>
                         </Avatar>

@@ -1,4 +1,4 @@
-import { ArrowLeft, GitBranch, Mail, MessageSquare, Phone, Users } from 'lucide-react';
+import { ArrowLeft, GitBranch, Mail, MessageSquare, Phone, Users } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactPiiMasking } from '@/hooks/useContactPiiMasking';
 import { Button } from '@/components/ui/button';

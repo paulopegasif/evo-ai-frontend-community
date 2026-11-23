@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Minus } from 'lucide-react';
+import { Minus } from '@/components/icons';
 import { TimeSlot, generateTimeSlots, validateTimeSlot, calculateTotalHours } from './helpers/businessHours';
 import { useLanguage } from '@/hooks/useLanguage';
 

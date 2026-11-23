@@ -9,7 +9,7 @@ import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/c
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, X, Settings } from 'lucide-react';
+import { Plus, X, Settings } from '@/components/icons';
 import { customAttributesService } from '@/services/customAttributes/customAttributesService';
 import {
   PipelineAttributeDefinition,

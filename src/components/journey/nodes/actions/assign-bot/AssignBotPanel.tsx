@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Bot, Inbox } from 'lucide-react';
+import { Bot, Inbox } from '@/components/icons';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { useLanguage } from '@/hooks/useLanguage';

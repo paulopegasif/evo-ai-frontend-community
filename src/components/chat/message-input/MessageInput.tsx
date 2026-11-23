@@ -11,7 +11,7 @@ import {
   X,
   Reply,
   PenLine,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 
 import { AudioRecordingData } from '@/hooks/chat/useAudioRecorder';

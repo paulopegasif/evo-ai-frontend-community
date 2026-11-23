@@ -12,7 +12,7 @@ import {
   User,
   Video,
   Zap,
-} from 'lucide-react';
+} from '@/components/icons';
 import BrandIcon from '@/components/BrandIcon';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Button } from '@/components/ui/button';

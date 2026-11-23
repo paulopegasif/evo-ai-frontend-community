@@ -19,7 +19,7 @@ import { twoFactorService } from '@/services/profile/twoFactorService';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, ArrowLeft, Eye, EyeOff, Globe } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Eye, EyeOff, Globe } from '@/components/icons';
 
 import { ApiError } from '@/types/auth';
 import { getApiErrorMessage } from '@/utils/apiHelpers';

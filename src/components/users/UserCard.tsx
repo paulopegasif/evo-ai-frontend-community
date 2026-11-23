@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Edit, MessageSquare, Trash2 } from 'lucide-react';
+import { Edit, MessageSquare, Trash2 } from '@/components/icons';
 import { User } from '@/types/users';
 import UserStatusBadge from './UserStatusBadge';
 import { useLanguage } from '@/hooks/useLanguage';

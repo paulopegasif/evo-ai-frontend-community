@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Server, Settings, Wrench } from 'lucide-react';
+import { Server, Settings, Wrench } from '@/components/icons';
 import { MCPServer, MCPServerFormData } from '@/types/ai';
 
 interface MCPServerFormProps {

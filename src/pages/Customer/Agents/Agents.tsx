@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { EmptyState } from '@/components/base';
-import { Bot, LayoutGrid, List, Search } from 'lucide-react';
+import { Bot, LayoutGrid, List, Search } from '@/components/icons';
 import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { getAccessibleAgents, deleteAgent } from '@/services/agents';

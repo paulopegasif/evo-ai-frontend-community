@@ -20,7 +20,7 @@ import {
   CannedResponseAttachment
 } from '@/types/knowledge';
 import { cannedResponsesService } from '@/services/cannedResponses/cannedResponsesService';
-import { Paperclip, X, FileText, Image as ImageIcon, Film, Music } from 'lucide-react';
+import { Paperclip, X, FileText, Image as ImageIcon, Film, Music } from '@/components/icons';
 import { toast } from 'sonner';
 
 interface CannedResponseModalProps {

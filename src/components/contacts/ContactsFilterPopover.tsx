@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ListFilter, Tag, UserCheck } from 'lucide-react';
+import { ListFilter, Tag, UserCheck } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

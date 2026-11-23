@@ -1,4 +1,4 @@
-import { Split, Settings } from 'lucide-react';
+import { Split, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { Handle, Position, useEdges } from '@xyflow/react';
 import { cn } from '@/lib/utils';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from '@/components/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface PostData {

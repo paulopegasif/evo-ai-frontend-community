@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { BellOff, ChevronLeft, ChevronRight, ListCheck, Settings, X } from 'lucide-react';
+import { BellOff, ChevronLeft, ChevronRight, ListCheck, Settings, X } from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

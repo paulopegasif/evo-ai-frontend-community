@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { Upload, Trash2, Globe, Copy } from 'lucide-react';
+import { Upload, Trash2, Globe, Copy } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import  { sanitizeInboxName } from '@/utils/sanitizeName';

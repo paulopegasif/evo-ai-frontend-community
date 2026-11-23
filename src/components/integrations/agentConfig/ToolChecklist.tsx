@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Wrench } from 'lucide-react';
+import { Wrench } from '@/components/icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 
