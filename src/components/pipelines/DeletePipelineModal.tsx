@@ -1,4 +1,4 @@
-import { TriangleAlert } from 'lucide-react';
+import { TriangleAlert } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import ConfirmDialog from '@/components/base/ConfirmDialog';

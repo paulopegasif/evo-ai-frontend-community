@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { ListChecks } from 'lucide-react';
+import { ListChecks } from '@/components/icons';
 import SectionHeader from './SectionHeader';
 import TaskConfigForm, { TaskConfigData } from '@/components/ai_agents/Forms/TaskConfigForm';
 

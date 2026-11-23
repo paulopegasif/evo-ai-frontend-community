@@ -1,4 +1,4 @@
-import { BarChart3, Megaphone, MessageCircle } from 'lucide-react';
+import { BarChart3, Megaphone, MessageCircle } from '@/components/icons';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';

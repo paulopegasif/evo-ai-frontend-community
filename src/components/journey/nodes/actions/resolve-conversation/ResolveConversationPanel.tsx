@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle } from '@/components/icons';
 import { ResolveConversationNodeData } from './ResolveConversationNode';
 import { automationService } from '@/services/automation/automationService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

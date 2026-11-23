@@ -1,4 +1,4 @@
-import { Copy, Trash2, Settings, type LucideIcon } from "lucide-react";
+import { Copy, Trash2, Settings, type LucideIcon } from "@/components/icons";
 import { useCallback } from "react";
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from "@/lib/utils";

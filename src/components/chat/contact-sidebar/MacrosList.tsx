@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Spinner } from '@/components/ui/spinner';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
-import { Play, Zap } from 'lucide-react';
+import { Play, Zap } from '@/components/icons';
 import { toast } from 'sonner';
 import { macrosService } from '@/services/macros/macrosService';
 import type { Macro } from '@/types/automation';

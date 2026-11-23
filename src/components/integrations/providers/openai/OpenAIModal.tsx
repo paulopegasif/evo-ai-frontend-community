@@ -1,6 +1,6 @@
 import { useState, useEffect, useId } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Brain, Check, ExternalLink } from 'lucide-react';
+import { Brain, Check, ExternalLink } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';

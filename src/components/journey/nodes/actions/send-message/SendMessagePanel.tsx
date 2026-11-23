@@ -19,7 +19,7 @@ import {
   Mail,
   Phone,
   Send,
-} from 'lucide-react';
+} from '@/components/icons';
 import {
   SendMessageNodeData,
   TemplateVariableMapping,

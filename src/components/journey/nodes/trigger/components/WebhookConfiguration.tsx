@@ -5,7 +5,7 @@ import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Copy, X } from 'lucide-react';
+import { Copy, X } from '@/components/icons';
 import {
   VariableInput,
   JourneyVariable,

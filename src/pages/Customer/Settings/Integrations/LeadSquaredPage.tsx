@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import { Building2 } from '@/components/icons';
 import GenericIntegrationSettings from '@/components/integrations/providers/GenericIntegrationSettings';
 import LeadSquaredModal from '@/components/integrations/providers/leadsquared/LeadSquaredModal';
 

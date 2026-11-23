@@ -1,9 +1,9 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-import { BookOpen, Code, Download, FileText, Info, Lightbulb, Search, Video } from 'lucide-react';
+import { BookOpen, Code, Download, FileText, Info, Lightbulb, Search, Video } from '@/components/icons';
 
 const NAV_SECTIONS: { key: string; icon: LucideIcon; items: string[] }[] = [
   { key: 'quickStart', icon: BookOpen, items: ['introduction', 'firstSteps', 'initialSetup', 'basicTutorial'] },

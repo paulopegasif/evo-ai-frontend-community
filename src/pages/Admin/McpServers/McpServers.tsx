@@ -17,7 +17,7 @@ import {
   Edit,
   Wrench,
   AlertTriangle,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 
 import { MCPServer } from '@/types/ai';

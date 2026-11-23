@@ -7,7 +7,7 @@ import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/c
 import { AgentIntegrationDialog } from '@/components/integrations/agentConfig/AgentIntegrationDialog';
 import { ToolChecklist } from '@/components/integrations/agentConfig/ToolChecklist';
 import { MCPServer, MCPServerConfig } from '@/types/ai';
-import { Server } from 'lucide-react';
+import { Server } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tool } from '@/types';
 

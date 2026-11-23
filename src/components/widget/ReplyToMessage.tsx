@@ -1,5 +1,5 @@
 import React from 'react';
-import { Reply } from 'lucide-react';
+import { Reply } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { stripHtml } from '@/utils/stripHtml';
 

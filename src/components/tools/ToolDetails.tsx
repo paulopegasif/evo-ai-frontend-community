@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Wrench, Tag, FileText, Settings } from 'lucide-react';
+import { Wrench, Tag, FileText, Settings } from '@/components/icons';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
 

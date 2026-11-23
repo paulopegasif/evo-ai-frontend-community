@@ -2,7 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import {
   Plus,
   Trash2,
-} from 'lucide-react';
+} from '@/components/icons';
 import { BaseHeader, HeaderAction } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { IntegrationBackButton } from '../../shared';

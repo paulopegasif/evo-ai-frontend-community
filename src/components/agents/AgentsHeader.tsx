@@ -2,7 +2,7 @@ import {
   Plus,
   Key,
   Trash2,
-} from 'lucide-react';
+} from '@/components/icons';
 import { BaseHeader, HeaderAction, HeaderFilter } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';

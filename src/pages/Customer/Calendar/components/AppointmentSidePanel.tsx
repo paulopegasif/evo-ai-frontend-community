@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarClock, Edit2, Info, Megaphone, MessageCircle, MessageSquare, Phone, Route, Stethoscope, User } from 'lucide-react';
+import { CalendarClock, Edit2, Info, Megaphone, MessageCircle, MessageSquare, Phone, Route, Stethoscope, User } from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

@@ -3,7 +3,7 @@ import React from "react";
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from "@/lib/utils";
 import { useDnD } from "@/contexts/DnDContext";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@/components/icons";
 import { NodeValidationBadge } from '@/components/journey/_ui/NodeValidationBadge';
 
 // Tipos para configuração do node - COMPATÍVEL COM BaseNode ATUAL

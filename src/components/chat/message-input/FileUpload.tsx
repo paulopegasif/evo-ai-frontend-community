@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Paperclip, Upload } from 'lucide-react';
+import { Paperclip, Upload } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Download, ZoomIn, ZoomOut, X } from 'lucide-react';
+import { Download, ZoomIn, ZoomOut, X } from '@/components/icons';
 import { openAttachmentInNewTab } from '@/components/chat/messages/utils/openAttachmentInNewTab';
 
 export interface SharedAttachment {

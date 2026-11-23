@@ -5,7 +5,7 @@ import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/compo
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, X, Users, Plus, Check, Loader2 } from 'lucide-react';
+import { Search, X, Users, Plus, Check, Loader2 } from '@/components/icons';
 import { listAgents } from '@/services/agents';
 import { useLanguage } from '@/hooks/useLanguage';
 

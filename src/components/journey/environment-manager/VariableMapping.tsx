@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, X, ArrowRight } from 'lucide-react';
+import { Plus, X, ArrowRight } from '@/components/icons';
 import { useState, useEffect } from 'react';
 import { VariableSelect } from './VariableSelect';
 import { useLanguage } from '@/hooks/useLanguage';

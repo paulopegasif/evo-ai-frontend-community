@@ -1,4 +1,4 @@
-import { User } from 'lucide-react';
+import { User } from '@/components/icons';
 import type { SearchContactResult } from '@/types/chat/search';
 import { highlightMatch } from './searchHighlight';
 import SearchResultItem from './SearchResultItem';

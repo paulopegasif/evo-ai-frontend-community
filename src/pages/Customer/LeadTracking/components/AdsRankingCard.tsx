@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { BaseTable, type TableColumn } from '@/components/base';

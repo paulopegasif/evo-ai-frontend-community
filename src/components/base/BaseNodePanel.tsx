@@ -12,7 +12,7 @@ import {
   Layers,
   Grid3X3,
   type LucideIcon
-} from 'lucide-react';
+} from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useDnD } from '@/contexts/DnDContext';
 

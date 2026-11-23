@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';
 import { useLanguage } from '@/hooks/useLanguage';

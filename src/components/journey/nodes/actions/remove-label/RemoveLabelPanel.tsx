@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tag, X } from 'lucide-react';
+import { Tag, X } from '@/components/icons';
 import { RemoveLabelNodeData } from './RemoveLabelNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';

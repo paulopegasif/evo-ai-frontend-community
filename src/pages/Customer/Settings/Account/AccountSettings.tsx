@@ -20,7 +20,7 @@ import SettingsSection from '@/components/base/SettingsSection';
 import { accountService } from '@/services/account/accountService';
 import { useAppDataStore } from '@/store/appDataStore';
 import type { Account, FormDataOptions } from '@/types/settings';
-import { Copy } from 'lucide-react';
+import { Copy } from '@/components/icons';
 
 import { SettingsTour } from '@/tours';
 

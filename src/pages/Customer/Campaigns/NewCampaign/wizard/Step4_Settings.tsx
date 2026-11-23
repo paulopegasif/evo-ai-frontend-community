@@ -20,7 +20,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import WizardStepLayout from './WizardStepLayout';
 import { useLanguage } from '@/hooks/useLanguage';
-import { ArrowRight, ArrowLeft, Clock, Zap, RotateCcw, Timer } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Clock, Zap, RotateCcw, Timer } from '@/components/icons';
 
 interface Step4Props {
   data: {

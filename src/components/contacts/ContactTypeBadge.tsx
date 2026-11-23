@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { User, Building2, Users, LucideIcon } from 'lucide-react';
+import { User, Building2, Users, LucideIcon } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface ContactTypeBadgeProps {

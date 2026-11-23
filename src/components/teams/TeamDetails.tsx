@@ -13,7 +13,7 @@ import {
   Settings,
   History,
   StickyNote,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Team } from '@/types/users';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

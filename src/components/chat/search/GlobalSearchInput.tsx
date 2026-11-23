@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 import { AutocompleteInput } from '@/components/ui/autocomplete';
 
 type Props = Omit<React.ComponentProps<typeof AutocompleteInput>, 'startAddon' | 'value' | 'onChange'>;

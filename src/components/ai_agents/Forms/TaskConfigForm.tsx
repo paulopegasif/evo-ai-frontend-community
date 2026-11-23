@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Maximize2, Save, X, ArrowDown, List, Search, Edit, PenTool, Loader2 } from 'lucide-react';
+import { Maximize2, Save, X, ArrowDown, List, Search, Edit, PenTool, Loader2 } from '@/components/icons';
 import { listAgents } from '@/services/agents';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Agent } from '@/types/agents';

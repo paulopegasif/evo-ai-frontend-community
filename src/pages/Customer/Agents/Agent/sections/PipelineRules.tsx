@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { GitBranch, Trash2, Plus, Info, CheckSquare, Briefcase } from 'lucide-react';
+import { GitBranch, Trash2, Plus, Info, CheckSquare, Briefcase } from '@/components/icons';
 
 export interface StageRule {
   id: string;

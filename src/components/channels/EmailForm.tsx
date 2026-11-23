@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { Mail, AlertTriangle } from 'lucide-react';
+import { Mail, AlertTriangle } from '@/components/icons';
 import EmailOauthService from '@/services/channels/emailOauthService';
 import { EmailChannelPayload } from '@/types/channels/inbox';
 import { useLanguage } from '@/hooks/useLanguage';

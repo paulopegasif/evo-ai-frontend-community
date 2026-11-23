@@ -1,4 +1,4 @@
-import { ArrowRight, Settings } from 'lucide-react';
+import { ArrowRight, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

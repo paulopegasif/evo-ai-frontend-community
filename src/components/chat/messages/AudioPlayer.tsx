@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, Volume2 } from 'lucide-react';
+import { Play, Pause, Volume2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface AudioPlayerProps {

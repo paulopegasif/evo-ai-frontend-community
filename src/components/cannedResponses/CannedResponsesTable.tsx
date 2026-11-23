@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Edit, Paperclip, Trash2 } from 'lucide-react';
+import { Edit, Paperclip, Trash2 } from '@/components/icons';
 import BaseTable from '@/components/base/BaseTable';
 import { CannedResponse } from '@/types/knowledge';
 

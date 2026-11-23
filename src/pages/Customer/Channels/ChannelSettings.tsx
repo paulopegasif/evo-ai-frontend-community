@@ -18,7 +18,7 @@ import {
   Bot,
   Shield,
   Mail,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 

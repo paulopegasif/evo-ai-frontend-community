@@ -12,7 +12,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Upload, CheckCircle2, AlertTriangle, FileArchive } from 'lucide-react';
+import { Upload, CheckCircle2, AlertTriangle, FileArchive } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { templatesService } from '@/services/templates/templatesService';

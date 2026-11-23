@@ -4,7 +4,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { OTPField, OTPFieldInput, OTPFieldSeparator } from '@/components/ui/otp-field';
-import { Shield, Smartphone, Mail, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Shield, Smartphone, Mail, RefreshCw, ArrowLeft } from '@/components/icons';
 import { toast } from 'sonner';
 
 import { AppLogo } from '@/components/AppLogo';

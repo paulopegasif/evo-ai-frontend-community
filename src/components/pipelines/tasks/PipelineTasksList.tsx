@@ -3,7 +3,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { usePipelineTasks } from '@/hooks/usePipelineTasks';
 import { Button } from '@/components/ui/button';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ListTodo, Plus } from 'lucide-react';
+import { ListTodo, Plus } from '@/components/icons';
 import { ConfirmDialog } from '@/components/base';
 import { Badge } from '@/components/ui/badge';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';

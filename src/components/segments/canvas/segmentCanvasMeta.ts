@@ -1,4 +1,4 @@
-import { Activity, Filter, Hash, Mail, MessageSquare, Percent, Tag, User, Users, type LucideIcon } from 'lucide-react';
+import { Activity, Filter, Hash, Mail, MessageSquare, Percent, Tag, User, Users, type LucideIcon } from '@/components/icons';
 import type { NodeBorderColor } from '@/components/base/BaseFlowNode';
 import type { SegmentNodeUnion } from '@/types/analytics/segments';
 

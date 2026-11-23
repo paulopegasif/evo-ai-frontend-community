@@ -1,7 +1,7 @@
 import {
   Plus,
   Trash2,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BaseHeader, HeaderAction } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';

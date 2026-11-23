@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/components/icons';
 import BaseHeader from '@/components/base/BaseHeader';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useTranslation } from '@/hooks/useTranslation';

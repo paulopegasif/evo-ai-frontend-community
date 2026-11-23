@@ -6,7 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { AgentsCustomMCPsTour } from '@/tours';
 import { ResourceGridSkeleton, ResourceViewToggle, type ResourceView } from '@/components/agents/resourceCard';
 import ListSkeleton from '@/components/base/ListSkeleton';
-import { TestTube } from 'lucide-react';
+import { TestTube } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import {
   CustomMcpServer,

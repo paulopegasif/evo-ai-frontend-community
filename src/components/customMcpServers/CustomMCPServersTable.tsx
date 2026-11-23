@@ -1,7 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, TestTube, Loader2, ExternalLink } from 'lucide-react';
+import { Edit, Trash2, TestTube, Loader2, ExternalLink } from '@/components/icons';
 import { CustomMcpServer } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';

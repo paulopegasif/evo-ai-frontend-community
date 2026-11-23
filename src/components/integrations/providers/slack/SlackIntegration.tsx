@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { AlertCircle, AlertTriangle, Bell, ExternalLink, Hash, Power, RefreshCw, Users } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Bell, ExternalLink, Hash, Power, RefreshCw, Users } from '@/components/icons';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {

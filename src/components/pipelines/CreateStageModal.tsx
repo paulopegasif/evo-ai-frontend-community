@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Check } from 'lucide-react';
+import { Check } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

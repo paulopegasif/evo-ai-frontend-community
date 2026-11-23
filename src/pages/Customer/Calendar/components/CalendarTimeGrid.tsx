@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/components/icons';
 import type { Appointment } from '@/types/appointments';
 import { appointmentDayKey, dateFromKey, todayKey, zonedMinutes, zonedTime } from '@/utils/accountTime';
 import { cn } from '@/lib/utils';

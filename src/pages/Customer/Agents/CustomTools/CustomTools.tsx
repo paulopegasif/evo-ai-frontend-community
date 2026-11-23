@@ -6,7 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { AgentsCustomToolsTour } from '@/tours';
 import { ResourceGridSkeleton, ResourceViewToggle, type ResourceView } from '@/components/agents/resourceCard';
 import ListSkeleton from '@/components/base/ListSkeleton';
-import { Wand } from 'lucide-react';
+import { Wand } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import { CustomTool, CustomToolsState, CustomToolFormData, CustomToolsListParams, CustomToolTestResponse } from '@/types/ai';
 import { BaseFilter, AppliedFilter, CUSTOM_TOOL_FILTER_TYPES } from '@/types/core';

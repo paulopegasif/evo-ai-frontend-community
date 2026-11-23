@@ -1,6 +1,8 @@
 import { createRoot } from 'react-dom/client';
 // React Flow CSS imported here so it is processed BEFORE globals.css and
 // our theming overrides in globals.css can win the cascade (EVO-1270).
+import '@fontsource-variable/inter';
+import '@fontsource/cal-sans';
 import '@xyflow/react/dist/style.css';
 import './styles/globals.css';
 import './brand/theme.css'; // White-label palette overrides (must load after globals.css)

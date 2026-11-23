@@ -1,4 +1,4 @@
-import { Check, Plus, Settings, Server } from 'lucide-react';
+import { Check, Plus, Settings, Server } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

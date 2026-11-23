@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Route as RouteIcon } from 'lucide-react';
+import { Route as RouteIcon } from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogClose,
@@ -126,7 +126,7 @@ import {
   Bot,
   Workflow,
   ClipboardList,
-} from 'lucide-react';
+} from '@/components/icons';
 
 /**
  * Map common save-failure error shapes to translation keys so the banner

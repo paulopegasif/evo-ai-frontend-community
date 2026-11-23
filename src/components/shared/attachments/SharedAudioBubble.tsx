@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Download, Volume2 } from 'lucide-react';
+import { Download, Volume2 } from '@/components/icons';
 import type { SharedAttachment } from './SharedImageBubble';
 
 // Ícones preenchidos customizados

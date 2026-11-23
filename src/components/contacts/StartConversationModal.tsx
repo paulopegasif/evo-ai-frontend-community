@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Mail, MessageSquare, Phone, Send, TriangleAlert } from 'lucide-react';
+import { Mail, MessageSquare, Phone, Send, TriangleAlert } from '@/components/icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';

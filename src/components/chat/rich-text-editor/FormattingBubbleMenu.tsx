@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { EditorView } from 'prosemirror-view';
 import { toggleMark } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
-import { Bold, Italic, Code, List } from 'lucide-react';
+import { Bold, Italic, Code, List } from '@/components/icons';
 
 import { messageSchema } from './schema';
 import { cn } from '@/lib/utils';

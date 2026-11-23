@@ -19,7 +19,7 @@ import {
   RefreshCw,
   ListChecks,
   Plug,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ProviderSelector } from '@/components/agents/ProviderSelector';
 

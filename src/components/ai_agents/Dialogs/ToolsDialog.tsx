@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Wrench, Loader2, AlertTriangle, Settings, ArrowRight } from 'lucide-react';
+import { Search, Wrench, Loader2, AlertTriangle, Settings, ArrowRight } from '@/components/icons';
 import { listTools, listToolCategories } from '@/services/agents';
 import type { Tool, ToolCategory } from '@/types/ai';
 import { isValidUUID } from '@/utils/agentUtils';

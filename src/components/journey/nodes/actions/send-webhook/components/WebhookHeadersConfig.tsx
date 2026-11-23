@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
-import { Plus, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, X, Eye, EyeOff } from '@/components/icons';
 import { SendWebhookNodeData, WebhookHeader } from '../SendWebhookNode';
 import { VariableInput } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

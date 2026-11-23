@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/icons';
 import { cn } from '@/utils/cn';
 
 import { AppLogo } from '@/components/AppLogo';

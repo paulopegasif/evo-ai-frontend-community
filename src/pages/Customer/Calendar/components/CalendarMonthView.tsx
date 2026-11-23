@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Appointment } from '@/types/appointments';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/components/icons';
 import { appointmentDayKey, appointmentTimeLabel, cellDayKey, todayKey } from '@/utils/accountTime';
 import { cn } from '@/lib/utils';
 import { statusStyle } from './statusStyles';

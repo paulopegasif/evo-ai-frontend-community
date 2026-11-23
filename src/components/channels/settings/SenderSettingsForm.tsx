@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { User, Building } from 'lucide-react';
+import { User, Building } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface SenderNamePreviewProps {

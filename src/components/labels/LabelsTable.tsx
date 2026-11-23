@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from '@/components/icons';
 import BaseTable from '@/components/base/BaseTable';
 import { Label } from '@/types/settings';
 import { usePermissions } from '@/contexts/PermissionsContext';
