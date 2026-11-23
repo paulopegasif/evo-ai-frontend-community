@@ -3,7 +3,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Play, ChevronDown, Loader2 } from 'lucide-react';
+import { Play, ChevronDown, Loader2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { testCustomTool } from '@/services/agents/customToolsService';
 import type { CustomToolTestResponse } from '@/types/ai';

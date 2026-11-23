@@ -6,7 +6,7 @@ import {
   Receipt,
   CalendarDays,
   Info,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

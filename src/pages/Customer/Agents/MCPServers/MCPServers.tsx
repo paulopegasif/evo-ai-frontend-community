@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
-import { Server } from 'lucide-react';
+import { Server } from '@/components/icons';
 import {
   ResourceGridSkeleton,
   ResourceViewToggle,

@@ -3,7 +3,7 @@ import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Settings as SettingsIcon } from 'lucide-react';
+import { Settings as SettingsIcon } from '@/components/icons';
 import { UpdateCustomAttributeNodeData } from './UpdateCustomAttributeNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';

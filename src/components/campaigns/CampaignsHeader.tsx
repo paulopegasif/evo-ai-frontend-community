@@ -5,7 +5,7 @@ import {
   Play,
   Trash2,
   Copy,
-} from 'lucide-react';
+} from '@/components/icons';
 import { BaseHeader, HeaderAction, HeaderFilter } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';
 

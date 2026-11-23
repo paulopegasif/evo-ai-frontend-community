@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/label';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/useLanguage';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/icons';
 
 interface DefaultStatusFormData {
   default_conversation_status?: string | null;

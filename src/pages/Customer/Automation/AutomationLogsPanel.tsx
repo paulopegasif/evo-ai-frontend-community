@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import OptionSelect from '@/components/automation/OptionSelect';
-import { RefreshCw, ChevronDown, ChevronRight, ScrollText } from 'lucide-react';
+import { RefreshCw, ChevronDown, ChevronRight, ScrollText } from '@/components/icons';
 import { automationService } from '@/services/automation/automationService';
 import type {
   AutomationRuleRun,

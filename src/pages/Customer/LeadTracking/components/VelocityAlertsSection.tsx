@@ -1,4 +1,4 @@
-import { AlertTriangle, CalendarX2, Clock, Timer, UserX } from 'lucide-react';
+import { AlertTriangle, CalendarX2, Clock, Timer, UserX } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import type { FunnelVelocity, TrackingAlerts } from '@/types/leadTracking';

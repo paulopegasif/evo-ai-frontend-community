@@ -1,4 +1,4 @@
-import { User, Wrench, Plug, Server, Users, ListChecks, Settings, Package } from 'lucide-react';
+import { User, Wrench, Plug, Server, Users, ListChecks, Settings, Package } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { AgentAvatar } from '@/components/agents/AgentCard';

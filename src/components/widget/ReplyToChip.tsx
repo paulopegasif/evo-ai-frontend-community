@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface ReplyToChipProps {

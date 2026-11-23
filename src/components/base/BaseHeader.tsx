@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Filter, MoreVertical, Search, X } from 'lucide-react';
+import { Filter, MoreVertical, Search, X } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

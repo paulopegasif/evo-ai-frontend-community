@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CircleCheck } from 'lucide-react';
+import { CircleCheck } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/hooks/useLanguage';

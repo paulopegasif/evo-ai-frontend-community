@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Home, MapPinOff } from 'lucide-react';
+import { Home, MapPinOff } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/components/icons';
 import type { DashboardApp } from '@/types/integrations';
 import { useLanguage } from '@/hooks/useLanguage';
 

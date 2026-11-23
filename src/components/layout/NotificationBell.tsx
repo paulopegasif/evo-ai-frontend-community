@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Bell } from 'lucide-react';
+import { Bell } from '@/components/icons';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';

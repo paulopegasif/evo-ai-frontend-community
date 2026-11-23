@@ -1,4 +1,4 @@
-import { GitBranch } from 'lucide-react';
+import { GitBranch } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { Contact, ContactPipelineInfo } from '@/types/contacts';

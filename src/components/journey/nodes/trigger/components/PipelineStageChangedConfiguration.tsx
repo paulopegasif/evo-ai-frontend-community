@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Workflow } from 'lucide-react';
+import { Workflow } from '@/components/icons';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';
 import { pipelinesService } from '@/services/pipelines/pipelinesService';
 import { useLanguage } from '@/hooks/useLanguage';

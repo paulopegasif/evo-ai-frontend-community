@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { ArrowLeft, ChevronDown, Lock, Pencil, Save, Search, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Lock, Pencil, Save, Search, ShieldCheck } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';

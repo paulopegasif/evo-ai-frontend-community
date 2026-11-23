@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import SectionHeader from './SectionHeader';
-import { Package, Cloud, Search } from 'lucide-react';
+import { Package, Cloud, Search } from '@/components/icons';
 import { productsService } from '@/services/products/productsService';
 import type { Agent } from '@/types/agents';
 import type { Product } from '@/types/products';

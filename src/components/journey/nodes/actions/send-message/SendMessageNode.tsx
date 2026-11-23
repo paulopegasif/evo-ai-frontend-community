@@ -1,4 +1,4 @@
-import { MessageSquare, Settings, Paperclip } from 'lucide-react';
+import { MessageSquare, Settings, Paperclip } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

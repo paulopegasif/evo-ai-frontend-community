@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, UserRound, Wand2 } from 'lucide-react';
+import { Sparkles, UserRound, Wand2 } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   Card,

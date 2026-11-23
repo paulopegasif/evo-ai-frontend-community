@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useUnreadConversationsStore } from '@/store/unreadConversationsStore';
 import { Link } from 'react-router-dom';
-import { Menu, PanelRightClose, PanelRightOpen, ChevronDown, ChevronRight } from 'lucide-react';
+import { Menu, PanelRightClose, PanelRightOpen, ChevronDown, ChevronRight } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetHeader, SheetPopup, SheetTitle, SheetTrigger } from '@/components/ui/sheet';

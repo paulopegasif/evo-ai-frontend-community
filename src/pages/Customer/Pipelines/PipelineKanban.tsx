@@ -19,7 +19,7 @@ import {
   Star,
   Trash2,
   X,
-} from 'lucide-react';
+} from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';

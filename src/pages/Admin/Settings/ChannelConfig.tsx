@@ -3,7 +3,7 @@ import { useForm, Controller, UseFormRegister, Path } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle, X } from '@/components/icons';
 import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardPanel } from '@/components/ui/card';

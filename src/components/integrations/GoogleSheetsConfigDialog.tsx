@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CheckSquare, Edit3, FilePlus, Settings, Sheet } from 'lucide-react';
+import { CheckSquare, Edit3, FilePlus, Settings, Sheet } from '@/components/icons';
 import BrandIcon from '@/components/BrandIcon';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 import { Button } from '@/components/ui/button';

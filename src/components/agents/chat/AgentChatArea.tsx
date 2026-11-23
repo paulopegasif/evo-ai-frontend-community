@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Loader2 } from 'lucide-react';
+import { MessageSquare, Loader2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAgentChat } from '@/contexts/agents/AgentChatContext';
 import { AgentChatMessageList } from './AgentChatMessageList';

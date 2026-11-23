@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardPanel } from '@/components/ui/card';
-import { Wrench, Plus, Settings, X } from 'lucide-react';
+import { Wrench, Plus, Settings, X } from '@/components/icons';
 import { Tool } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
 import ToolsDialog from './Dialogs/ToolsDialog';

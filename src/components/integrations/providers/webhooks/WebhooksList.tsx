@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Globe } from 'lucide-react';
+import { Globe } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ListSkeleton from '@/components/base/ListSkeleton';
 import ConfirmDialog from '@/components/base/ConfirmDialog';

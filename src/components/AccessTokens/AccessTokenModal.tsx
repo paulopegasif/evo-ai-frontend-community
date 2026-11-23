@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search } from 'lucide-react';
+import { Search } from '@/components/icons';
 import type { AccessToken, AccessTokenFormData } from '@/types/auth';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { useTranslation } from '@/hooks/useTranslation';

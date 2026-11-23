@@ -12,7 +12,7 @@ import {
   Power,
   Send,
   XCircle,
-} from 'lucide-react';
+} from '@/components/icons';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';

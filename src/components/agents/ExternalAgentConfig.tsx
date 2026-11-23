@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
-import { Settings, Save, Loader2, AlertCircle } from 'lucide-react';
+import { Settings, Save, Loader2, AlertCircle } from '@/components/icons';
 import integrationService from '@/services/agents/integrationService';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ProviderType } from './ProviderSelector';

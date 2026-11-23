@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Inbox, Link2, Search, UserPlus, X } from 'lucide-react';
+import { Inbox, Link2, Search, UserPlus, X } from '@/components/icons';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';

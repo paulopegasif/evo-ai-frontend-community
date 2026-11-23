@@ -4,7 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import OptionSelect from './OptionSelect';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/components/icons';
 import {
   type AutomationRuleFormData,
   conditionAttributeRegistry,

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Card, CardPanel } from '@/components/ui/card';
 import { Kbd } from '@/components/ui/kbd';
 import { Spinner } from '@/components/ui/spinner';
-import { Hash, Search, Paperclip } from 'lucide-react';
+import { Hash, Search, Paperclip } from '@/components/icons';
 import type { CannedResponse } from '@/types/knowledge';
 import { useLanguage } from '@/hooks/useLanguage';
 

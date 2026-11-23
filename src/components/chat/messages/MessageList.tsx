@@ -9,7 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Spinner } from '@/components/ui/spinner';
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/components/icons';
 
 import MessageBubble from '@/components/chat/messages/MessageBubble';
 import PostPreview from '@/components/chat/messages/PostPreview';

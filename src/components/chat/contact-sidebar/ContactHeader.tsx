@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin } from '@/components/icons';
 import { Contact } from '@/types/chat/api';
 import ContactAvatar from '@/components/chat/contact/ContactAvatar';
 import { isPresenceCapableChannel } from '@/utils/channelUtils';

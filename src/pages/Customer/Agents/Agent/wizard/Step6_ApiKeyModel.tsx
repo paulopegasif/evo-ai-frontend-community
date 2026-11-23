@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowRight, ArrowLeft, Key, Bot, Settings } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Key, Bot, Settings } from '@/components/icons';
 import { ApiKey } from '@/types/agents';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ApiKeysModal } from '@/components/ApiKeysModal';

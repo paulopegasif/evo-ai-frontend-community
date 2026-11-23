@@ -8,7 +8,7 @@ import {
   CalendarClock,
   LayoutTemplate,
   Plus,
-} from 'lucide-react';
+} from '@/components/icons';
 
 import { Button } from '@/components/ui/button';
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from '@/components/ui/menu';

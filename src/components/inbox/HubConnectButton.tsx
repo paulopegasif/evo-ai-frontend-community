@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { ExternalLink, CheckCircle2, Link2 } from 'lucide-react';
+import { ExternalLink, CheckCircle2, Link2 } from '@/components/icons';
 import { api } from '@/services/core';
 import { useGlobalConfig } from '@/contexts/GlobalConfigContext';
 import { evolutionHubService, type HubChannel } from '@/services/integrations';

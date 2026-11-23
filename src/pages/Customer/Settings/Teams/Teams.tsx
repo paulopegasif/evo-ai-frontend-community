@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SettingsTeamsTour } from '@/tours';
 import { toast } from 'sonner';
-import { Users } from 'lucide-react';
+import { Users } from '@/components/icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import ListSkeleton from '@/components/base/ListSkeleton';
 import ViewModeToggle from '@/components/users/ViewModeToggle';

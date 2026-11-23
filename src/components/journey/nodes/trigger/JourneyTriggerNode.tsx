@@ -1,4 +1,4 @@
-import { Play, Settings } from 'lucide-react';
+import { Play, Settings } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { type DataMapping } from '@/components/journey/environment-manager';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -10,7 +10,7 @@ import ScheduledActionsHeader from '@/components/scheduledActions/ScheduledActio
 import ScheduledActionsTable from '@/components/scheduledActions/ScheduledActionsTable';
 import EmptyState from '@/components/base/EmptyState';
 import { ConfirmDialog } from '@/components/base';
-import { CalendarClock } from 'lucide-react';
+import { CalendarClock } from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 
 interface ScheduledActionsState {

@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Edit, Trash2, Megaphone, Eye, Pause, Play, Copy, Square } from 'lucide-react';
+import { Edit, Trash2, Megaphone, Eye, Pause, Play, Copy, Square } from '@/components/icons';
 import { Campaign, CampaignStatus } from '@/types/campaigns';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import CampaignStatusBadge from './CampaignStatusBadge';

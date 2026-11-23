@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from '@/components/icons';
 import SubAgentsForm from '@/components/ai_agents/Forms/SubAgentsForm';
 import { SubAgentsData } from '@/components/ai_agents/Forms/SubAgentsForm';
 import { useLanguage } from '@/hooks/useLanguage';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, DialogDescription, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
-import { Sparkles, FileText, Type, Minimize2, Maximize2, Smile, Briefcase, Lightbulb, Shield } from 'lucide-react';
+import { Sparkles, FileText, Type, Minimize2, Maximize2, Smile, Briefcase, Lightbulb, Shield } from '@/components/icons';
 import { AIAction, AIActionType } from '@/types/chat/ai-assistance';
 import { useLanguage } from '@/hooks/useLanguage';
 

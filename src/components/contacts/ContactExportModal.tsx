@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
-import { Download, FileSpreadsheet } from 'lucide-react';
+import { Download, FileSpreadsheet } from '@/components/icons';
 import { BaseFilter as ContactFilter } from '@/types/core';
 
 interface ContactExportModalProps {

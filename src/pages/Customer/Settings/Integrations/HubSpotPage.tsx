@@ -1,6 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
-import { Package } from 'lucide-react';
+import { Package } from '@/components/icons';
 import OAuthIntegrationSettings from '@/components/integrations/providers/OAuthIntegrationSettings';
 
 export default function HubSpotPage() {

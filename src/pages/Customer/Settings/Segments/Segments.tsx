@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import ListSkeleton from '@/components/base/ListSkeleton';
-import { Copy, Target } from 'lucide-react';
+import { Copy, Target } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 

@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from 'react';
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

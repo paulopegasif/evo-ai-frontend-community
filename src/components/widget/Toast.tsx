@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircleAlert, CircleCheck, Info, X } from 'lucide-react';
+import { CircleAlert, CircleCheck, Info, X } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 interface ToastProps {

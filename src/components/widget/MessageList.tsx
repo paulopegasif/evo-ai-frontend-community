@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import { History, Reply, RotateCcw } from 'lucide-react';
+import { History, Reply, RotateCcw } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { formatDistanceToNow } from 'date-fns';

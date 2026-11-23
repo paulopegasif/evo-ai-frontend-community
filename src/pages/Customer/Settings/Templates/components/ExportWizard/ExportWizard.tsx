@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
-import { AlertTriangle, ArrowRight, Check } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Check } from '@/components/icons';
 import { templatesService } from '@/services/templates/templatesService';
 import type {
   ExportableInventory,

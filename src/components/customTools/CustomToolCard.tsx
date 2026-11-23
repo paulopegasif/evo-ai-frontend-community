@@ -1,4 +1,4 @@
-import { Globe, Pencil, Trash2, Wand } from 'lucide-react';
+import { Globe, Pencil, Trash2, Wand } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { HttpMethodBadge, ResourceCard } from '@/components/agents/resourceCard';
 import { useLanguage } from '@/hooks/useLanguage';

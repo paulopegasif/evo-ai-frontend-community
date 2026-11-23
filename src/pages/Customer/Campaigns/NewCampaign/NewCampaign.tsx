@@ -4,7 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CampaignType, CampaignChannelType, CampaignStatus } from '@/types/campaigns';
 import { campaignsService } from '@/services/campaigns';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
