@@ -1,5 +1,5 @@
 import { useId, useMemo, useState, useEffect } from 'react';
-import { Plus, X, AlertTriangle, ChevronsUpDown } from 'lucide-react';
+import { Plus, X, AlertTriangle, ChevronsUpDown } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command';

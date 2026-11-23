@@ -1,4 +1,4 @@
-import { Edit, Trash2, Eye, Key, Copy } from 'lucide-react';
+import { Edit, Trash2, Eye, Key, Copy } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import BaseTable from '@/components/base/BaseTable';
 import type { AccessToken } from '@/types/auth';

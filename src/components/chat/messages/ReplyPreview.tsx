@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Reply } from 'lucide-react';
+import { Reply } from '@/components/icons';
 import { Message } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import { stripHtml } from '@/utils/stripHtml';

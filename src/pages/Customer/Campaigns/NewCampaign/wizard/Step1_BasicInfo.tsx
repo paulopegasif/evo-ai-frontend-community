@@ -5,7 +5,7 @@ import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui
 import { Input } from '@/components/ui/input';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CampaignType } from '@/types/campaigns';
 import { CampaignTriggerConfig } from '../components/CampaignTriggerConfig';

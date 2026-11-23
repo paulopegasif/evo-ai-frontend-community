@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverPopup, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { Variable } from 'lucide-react';
+import { Variable } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { getSystemVariables, VariableOption } from './EnvironmentManager';
 import { useJourneyVariables } from '@/hooks/useJourneyVariables';

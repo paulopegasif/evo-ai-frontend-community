@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageSquare, Send } from 'lucide-react';
+import { MessageSquare, Send } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
   Empty,

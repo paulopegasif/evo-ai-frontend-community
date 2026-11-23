@@ -10,7 +10,7 @@ import {
   Lock,
   CheckCircle2,
   GitBranch,
-} from 'lucide-react';
+} from '@/components/icons';
 import { toast } from 'sonner';
 import { Pipeline } from '@/types/analytics';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';

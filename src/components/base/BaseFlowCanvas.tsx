@@ -24,7 +24,7 @@ import './BaseFlow.css';
 
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
-import { PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { PanelRightOpen, PanelRightClose } from '@/components/icons';
 import { useDnD } from '@/contexts/DnDContext';
 import { BaseFlowContextMenu } from './BaseFlowContextMenu';
 import { BaseFlowHelperLines } from './BaseFlowHelperLines';

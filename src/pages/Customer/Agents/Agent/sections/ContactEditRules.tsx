@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Info } from 'lucide-react';
+import { Info } from '@/components/icons';
 
 export interface ContactEditConfig {
   enabled: boolean;

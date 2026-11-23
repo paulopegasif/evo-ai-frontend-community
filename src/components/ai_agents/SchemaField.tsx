@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Trash2, Edit3 } from 'lucide-react';
+import { Save, Trash2, Edit3 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface SchemaFieldProps {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Download, FileText, Image, Video, Music, Archive } from 'lucide-react';
+import { Download, FileText, Image, Video, Music, Archive } from '@/components/icons';
 import type { SharedAttachment } from './SharedImageBubble';
 
 interface SharedFileBubbleProps {

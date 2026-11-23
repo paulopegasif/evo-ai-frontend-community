@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { AlertCircle, AlertTriangle, Inbox } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Inbox } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useContactEvents } from '@/hooks/useContactEvents';
 import { ContactEventsFilters } from './ContactEventsFilters';

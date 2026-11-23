@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageSquare, Mail, Send, ExternalLink, Phone } from 'lucide-react';
+import { MessageSquare, Mail, Send, ExternalLink, Phone } from '@/components/icons';
 import { usesStructuredComponents } from '@/services/channels/messageTemplatesService';
 import { TemplateFormData } from '@/types';
 

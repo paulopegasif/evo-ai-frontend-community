@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useUnreadConversationsStore } from '@/store/unreadConversationsStore';
 import { Link } from 'react-router-dom';
-import { Menu, PanelRightClose, PanelRightOpen, ChevronDown, ChevronRight } from 'lucide-react';
+import { Menu, PanelRightClose, PanelRightOpen, ChevronDown, ChevronRight } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetHeader, SheetPopup, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -71,7 +71,7 @@ export default function Header({
   );
 
   return (
-    <header className="flex h-14 shrink-0 items-center border-b border-sidebar-border bg-sidebar">
+    <header className="flex h-14 shrink-0 items-center bg-sidebar max-md:border-b max-md:border-sidebar-border">
       {/* Mobile Layout */}
       <div className="md:hidden flex items-center w-full px-4">
         {/* Left: Menu Button */}

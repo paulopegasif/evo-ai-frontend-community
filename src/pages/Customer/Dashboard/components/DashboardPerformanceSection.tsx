@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
-import { Bot, Layers, TrendingUp, Users } from 'lucide-react';
+import { Bot, Layers, TrendingUp, Users } from '@/components/icons';
 import { OperationHeatmapCard } from '@/components/charts';
 import type { CustomerDashboardResponse } from '@/types/analytics/dashboard';
 import { formatCurrency, formatSeconds, formatInteger } from './dashboardUtils';

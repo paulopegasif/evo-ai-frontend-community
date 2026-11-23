@@ -1,6 +1,6 @@
 import { useId } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react';
+import type { LucideIcon } from '@/components/icons';
+import { ArrowDownRight, ArrowUpRight, Minus } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

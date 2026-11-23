@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { VolumeX } from 'lucide-react';
+import { VolumeX } from '@/components/icons';
 import { MuteConversationNodeData } from './MuteConversationNode';
 import { automationService } from '@/services/automation/automationService';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';

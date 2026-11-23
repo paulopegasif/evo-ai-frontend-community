@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Plus, SearchX } from 'lucide-react';
+import { MessageCircle, Plus, SearchX } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   Empty,

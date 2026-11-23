@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
-import { Pencil, StickyNote, Trash, X, Check } from 'lucide-react';
+import { Pencil, StickyNote, Trash, X, Check } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { contactsService } from '@/services/contacts';

@@ -31,7 +31,7 @@ import {
   User as UserIcon,
   Inbox as InboxIcon,
   MessagesSquare,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useNavigate } from 'react-router-dom';
 import { useChatContext } from '@/contexts/chat/ChatContext';
 import { usePermissions } from '@/contexts/PermissionsContext';

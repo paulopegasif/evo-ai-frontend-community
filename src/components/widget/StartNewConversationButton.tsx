@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquarePlus } from 'lucide-react';
+import { MessageSquarePlus } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 

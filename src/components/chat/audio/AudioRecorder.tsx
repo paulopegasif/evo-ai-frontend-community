@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Trash2, Send, Mic } from 'lucide-react';
+import { Trash2, Send, Mic } from '@/components/icons';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAudioRecorder, AudioRecordingData } from '@/hooks/chat/useAudioRecorder';

@@ -13,9 +13,9 @@ import {
   Plug,
   ChevronDown,
   Check,
-} from 'lucide-react';
+} from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '@/components/icons';
 
 interface Step2Props {
   data: { type: string };

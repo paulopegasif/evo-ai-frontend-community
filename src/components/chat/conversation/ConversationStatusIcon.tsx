@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Clock, MessageCircle, Pause } from 'lucide-react';
+import { CheckCircle, Clock, MessageCircle, Pause } from '@/components/icons';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getStatusConfig } from '@/utils/chat/conversationStatus';

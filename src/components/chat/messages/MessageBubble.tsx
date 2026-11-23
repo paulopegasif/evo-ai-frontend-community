@@ -8,7 +8,7 @@ import {
   ContextMenuSeparator,
 } from '@/components/ui/context-menu';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
-import { LockIcon, Reply, Copy, Trash2, Shield, Ban, Pencil } from 'lucide-react';
+import { LockIcon, Reply, Copy, Trash2, Shield, Ban, Pencil } from '@/components/icons';
 import { Message, MESSAGE_TYPE } from '@/types/chat/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import MessageText from '@/components/chat/messages/MessageText';

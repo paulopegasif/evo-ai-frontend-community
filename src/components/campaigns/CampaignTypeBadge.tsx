@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { CampaignType } from '@/types/campaigns';
-import { Layers, RefreshCw } from 'lucide-react';
+import { Layers, RefreshCw } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface CampaignTypeBadgeProps {

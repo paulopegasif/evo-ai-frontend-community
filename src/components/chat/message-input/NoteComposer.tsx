@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/components/icons';
 
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/icons';
 import { PipelineItem, PipelineStage, Pipeline } from '@/types/analytics';
 import { pipelinesService } from '@/services/pipelines';
 import PipelineItemCard from './PipelineItemCard';

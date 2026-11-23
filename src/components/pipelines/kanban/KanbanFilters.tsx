@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { ListFilter } from 'lucide-react';
+import { ListFilter } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { getContactColor } from '@/utils/avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -111,7 +110,7 @@ export default function KanbanFilters({
                     <span className="flex items-center gap-2">
                       <Avatar className="size-5 text-[0.625rem]">
                         {a.avatar_url && <AvatarImage src={a.avatar_url} alt="" />}
-                        <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(a.name) }}>
+                        <AvatarFallback className="bg-muted font-semibold text-foreground/80">
                           {initials(a.name)}
                         </AvatarFallback>
                       </Avatar>

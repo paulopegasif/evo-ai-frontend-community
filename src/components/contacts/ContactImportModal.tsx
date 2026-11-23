@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
-import { Download, FileText, Info, Trash2, Upload } from 'lucide-react';
+import { Download, FileText, Info, Trash2, Upload } from '@/components/icons';
 
 interface ContactImportModalProps {
   open: boolean;

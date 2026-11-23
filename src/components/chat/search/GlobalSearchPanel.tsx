@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { SearchX } from 'lucide-react';
+import { SearchX } from '@/components/icons';
 import { Command, CommandGroup, CommandGroupLabel, CommandList } from '@/components/ui/command';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';

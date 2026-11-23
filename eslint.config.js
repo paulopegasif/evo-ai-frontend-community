@@ -35,10 +35,25 @@ export default tseslint.config(
               message:
                 'useUserPermissions was removed. Use usePermissions from @/contexts/PermissionsContext.',
             },
+            {
+              name: 'lucide-react',
+              message: 'Icons come from @/components/icons (Hugeicons, the coss ui set).',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@hugeicons/*'],
+              message: 'Map the icon in src/components/icons.tsx and import it from @/components/icons.',
+            },
           ],
         },
       ],
     },
+  },
+  // The icon module is the one place allowed to import the icon packages.
+  {
+    files: ['src/components/icons.tsx'],
+    rules: { 'no-restricted-imports': 'off' },
   },
   // Flow Builder discipline (EVO-1253): all interactive buttons must come
   // from the coss ui <Button> (@/components/ui/button), not raw <button>. Existing

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings } from '@/components/icons';
 
 vi.mock('../../hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string) => key }),

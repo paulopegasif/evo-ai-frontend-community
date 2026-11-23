@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { widgetService } from '@/services/widget/widgetService';
-import { Mail } from 'lucide-react';
+import { Mail } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 

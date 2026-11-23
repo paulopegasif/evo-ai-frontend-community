@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { ArrowRight, Smile, Send } from 'lucide-react';
+import { ArrowRight, Smile, Send } from '@/components/icons';
 import { WidgetConfig } from '../helpers/widgetHelpers';
 import { getReplyTimeDisplayText } from '../helpers/widgetHelpers';
 import { useLanguage } from '@/hooks/useLanguage';

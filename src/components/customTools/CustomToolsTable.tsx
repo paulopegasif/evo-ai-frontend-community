@@ -2,7 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { HttpMethodBadge } from '@/components/agents/resourceCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Wand, Loader2, Globe } from 'lucide-react';
+import { Edit, Trash2, Wand, Loader2, Globe } from '@/components/icons';
 import { CustomTool } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { usePermissions } from '@/contexts/PermissionsContext';

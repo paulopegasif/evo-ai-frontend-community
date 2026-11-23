@@ -19,9 +19,8 @@ import {
   Phone,
   Trash2,
   User,
-} from 'lucide-react';
+} from '@/components/icons';
 import { PipelineItem, Pipeline, PipelineStage } from '@/types/analytics';
-import { getContactColor } from '@/utils/avatar';
 import { initials } from '@/lib/initials';
 
 interface PipelineItemCardProps {
@@ -100,7 +99,7 @@ export default function PipelineItemCard({
       <div className="mb-3 flex items-start gap-3 pe-8">
         <Avatar className="size-9 text-xs">
           {item.contact?.avatar_url && <AvatarImage src={item.contact.avatar_url} alt="" />}
-          <AvatarFallback className="font-semibold text-white" style={{ backgroundColor: getContactColor(item.contact?.name) }}>
+          <AvatarFallback className="bg-muted font-semibold text-foreground/80">
             {initials(item.contact?.name)}
           </AvatarFallback>
         </Avatar>

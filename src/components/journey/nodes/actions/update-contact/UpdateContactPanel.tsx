@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VariableInput } from '@/components/journey/environment-manager';
-import { UserCog } from 'lucide-react';
+import { UserCog } from '@/components/icons';
 import { UpdateContactNodeData } from './UpdateContactNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';

@@ -4,7 +4,7 @@ import { SettingsCustomAttributesTour } from '@/tours';
 import { toast } from 'sonner';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import ListSkeleton from '@/components/base/ListSkeleton';
-import { Search, Settings } from 'lucide-react';
+import { Search, Settings } from '@/components/icons';
 import EmptyState from '@/components/base/EmptyState';
 import ConfirmDialog from '@/components/base/ConfirmDialog';
 

@@ -14,7 +14,7 @@ import {
   Tag,
   GitBranch,
   Check,
-} from 'lucide-react';
+} from '@/components/icons';
 import {
   Menu,
   MenuGroup,

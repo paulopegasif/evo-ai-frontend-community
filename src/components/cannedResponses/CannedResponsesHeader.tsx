@@ -2,7 +2,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
-import { Plus, Search, Trash2, X } from 'lucide-react';
+import { Plus, Search, Trash2, X } from '@/components/icons';
 import BaseHeader from '@/components/base/BaseHeader';
 import { usePermissions } from '@/contexts/PermissionsContext';
 

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Users, Edit, Trash2 } from 'lucide-react';
+import { Users, Edit, Trash2 } from '@/components/icons';
 import { Team } from '@/types/users';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';

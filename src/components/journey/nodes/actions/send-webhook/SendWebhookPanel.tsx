@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Send, Play, ArrowRight } from 'lucide-react';
+import { Send, Play, ArrowRight } from '@/components/icons';
 import { SendWebhookNodeData, WebhookResponseMapping } from './SendWebhookNode';
 import { NodeConfigModal } from '@/components/journey/shared/NodeConfigModal';
 import { FlowFeedbackBanner } from '@/components/journey/_ui';

@@ -5,7 +5,7 @@ import {
   getSmoothStepPath,
   useReactFlow,
 } from "@xyflow/react";
-import { Trash2 } from "lucide-react";
+import { Trash2 } from "@/components/icons";
 
 export default function BaseDefaultEdge({
   id,

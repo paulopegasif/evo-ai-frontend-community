@@ -6,7 +6,7 @@ vi.mock('@/hooks/useLanguage', () => ({
   useLanguage: () => ({ t: (key: string, fallback?: string) => fallback || key }),
 }));
 
-vi.mock('lucide-react', () => ({
+vi.mock('@/components/icons', () => ({
   Edit: () => <span data-testid="icon-edit" />,
   Trash2: () => <span data-testid="icon-trash" />,
   MoreHorizontal: () => <span data-testid="icon-more" />,

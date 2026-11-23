@@ -1,4 +1,4 @@
-import { Users, X } from 'lucide-react';
+import { Users, X } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';

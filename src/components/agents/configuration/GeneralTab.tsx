@@ -35,7 +35,7 @@ import {
   Tag,
   ShoppingCart,
   ChevronDown,
-} from 'lucide-react';
+} from '@/components/icons';
 import { ApiKeysModal } from '@/components/ApiKeysModal';
 import ModelSelector from '@/components/ai_agents/ModelSelector';
 import ExternalAgentConfig from '@/components/agents/ExternalAgentConfig';

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ReactElement, ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings } from '@/components/icons';
 import MenuItem from './MenuItem';
 import type { MenuItem as MenuItemType } from '../config/menuItems';
 

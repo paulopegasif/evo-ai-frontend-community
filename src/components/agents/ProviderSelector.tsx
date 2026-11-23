@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plug } from 'lucide-react';
+import { Plug } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 export type ProviderType = 'flowise' | 'n8n' | 'typebot' | 'dify' | 'openai';

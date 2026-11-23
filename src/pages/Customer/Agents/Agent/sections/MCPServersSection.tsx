@@ -1,7 +1,7 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Server, Network, Plus } from 'lucide-react';
+import { Server, Network, Plus } from '@/components/icons';
 import { MCPServerConfig } from '@/types/ai';
 import { useState } from 'react';
 import CustomMCPServersSection from '@/components/ai_agents/CustomMCPServersSection';

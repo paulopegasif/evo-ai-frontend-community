@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { CheckCircle2, AlertTriangle, PlugZap, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, PlugZap, RefreshCw } from '@/components/icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

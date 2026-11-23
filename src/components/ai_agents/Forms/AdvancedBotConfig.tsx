@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Zap, Clock } from 'lucide-react';
+import { Zap, Clock } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 export interface AdvancedBotConfigData {

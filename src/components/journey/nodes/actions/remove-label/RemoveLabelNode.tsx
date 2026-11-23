@@ -1,4 +1,4 @@
-import { Tag, Settings, X } from 'lucide-react';
+import { Tag, Settings, X } from '@/components/icons';
 import { BaseFlowNode } from '@/components/base';
 import { useLanguage } from '@/hooks/useLanguage';
 

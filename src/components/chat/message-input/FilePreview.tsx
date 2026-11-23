@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { X, Send, File, FileText, Image, Music, Video, Loader2 } from 'lucide-react';
+import { X, Send, File, FileText, Image, Music, Video, Loader2 } from '@/components/icons';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface FilePreviewProps {

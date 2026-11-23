@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Smile, Braces } from 'lucide-react';
+import { Plus, Trash2, Smile, Braces } from '@/components/icons';
 import EmojiPickerReact, { Theme } from 'emoji-picker-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useIsDarkClass } from '@/hooks/chat/useIsDarkClass';

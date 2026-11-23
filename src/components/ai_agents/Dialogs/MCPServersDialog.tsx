@@ -11,7 +11,7 @@ import {
   DialogPopup,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Search, Server, CheckCircle } from 'lucide-react';
+import { Search, Server, CheckCircle } from '@/components/icons';
 import { MCPServer, MCPServerConfig } from '@/types/ai';
 import { useLanguage } from '@/hooks/useLanguage';
 
