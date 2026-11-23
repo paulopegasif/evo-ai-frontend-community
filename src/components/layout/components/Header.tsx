@@ -71,7 +71,7 @@ export default function Header({
   );
 
   return (
-    <header className="flex h-14 shrink-0 items-center border-b border-sidebar-border bg-sidebar">
+    <header className="flex h-14 shrink-0 items-center bg-sidebar max-md:border-b max-md:border-sidebar-border">
       {/* Mobile Layout */}
       <div className="md:hidden flex items-center w-full px-4">
         {/* Left: Menu Button */}

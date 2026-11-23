@@ -147,7 +147,7 @@ export default function Sidebar({
     });
 
   const submenuHeader = (item: MenuItemType) => (
-    <div className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4">
+    <div className="flex h-12 items-center gap-2.5 px-4">
       <item.icon className="size-4.5 text-primary" />
       <div className="min-w-0 flex-1">
         <h3 id="flyout-title" className="truncate font-semibold text-sidebar-foreground text-sm">
@@ -184,7 +184,7 @@ export default function Sidebar({
       {/* Desktop Sidebar */}
       <div
         className={cn(
-          'hidden md:flex bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border',
+          'hidden md:flex bg-sidebar text-sidebar-foreground flex-col',
           isCollapsed ? 'w-16' : 'w-60',
         )}
       >
@@ -218,43 +218,29 @@ export default function Sidebar({
           )}
 
           {/* Sidebar Footer */}
-          <div className="border-t border-sidebar-border px-4 py-3">
+          <div className="px-4 py-3">
             {isCollapsed ? (
               <div className="flex flex-col items-center">
                 <div className="text-center text-muted-foreground text-xs">© {currentYear}</div>
               </div>
             ) : (
-              <>
-                <div className="font-medium text-sidebar-foreground text-sm">{companyName}</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {t('sidebar.footer.copyright', { year: currentYear })}
-                </div>
-                {__APP_VERSION__ !== 'dev' && (
-                  <div className="text-xs text-muted-foreground/70 mt-1">{__APP_VERSION__}</div>
-                )}
-                <div className="mt-2 flex flex-col gap-1 text-xs">
+              <div className="flex flex-col gap-1 text-[11px] text-muted-foreground leading-snug">
+                <span className="font-medium text-sidebar-foreground/80 text-xs">{companyName}</span>
+                <span className="line-clamp-2">{t('sidebar.footer.copyright', { year: currentYear })}</span>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   {BRAND.links.docs && (
-                    <a
-                      href={BRAND.links.docs}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
+                    <a href={BRAND.links.docs} target="_blank" rel="noreferrer" className="transition-colors hover:text-foreground">
                       {t('sidebar.footer.documentation')}
                     </a>
                   )}
                   {supportUrl && (
-                    <a
-                      href={supportUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
+                    <a href={supportUrl} target="_blank" rel="noreferrer" className="transition-colors hover:text-foreground">
                       {t('sidebar.footer.support')}
                     </a>
                   )}
+                  {__APP_VERSION__ !== 'dev' && <span className="tabular-nums opacity-70">{__APP_VERSION__}</span>}
                 </div>
-              </>
+              </div>
             )}
           </div>
         </TooltipProvider>
@@ -272,7 +258,7 @@ export default function Sidebar({
           aria-labelledby="flyout-title"
           aria-hidden={activeSubmenu ? undefined : 'true'}
           className={cn(
-            'hidden md:flex bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border',
+            'hidden md:flex bg-sidebar text-sidebar-foreground flex-col',
             'transition-all duration-150 ease-in-out overflow-hidden',
             activeSubmenu ? 'w-64 opacity-100' : 'w-0 opacity-0 pointer-events-none',
           )}
@@ -290,7 +276,7 @@ export default function Sidebar({
 
       {/* Expanded mode submenu panel — standard in-flow panel, no animation needed */}
       {!isCollapsed && activeSubmenu && (
-        <div className="hidden md:flex w-64 bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border">
+        <div className="hidden md:flex w-64 bg-sidebar text-sidebar-foreground flex-col">
           {submenuHeader(activeSubmenu)}
           <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
             {submenuItems(activeSubmenu)}
