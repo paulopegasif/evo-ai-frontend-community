@@ -78,7 +78,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onEmojiSelect, onClose, isOpe
         maxWidth: '350px',
       }}
     >
-      <div className="bg-background border-2 border-border rounded-lg shadow-2xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl border bg-popover shadow-lg">
         <EmojiPickerReact
           onEmojiClick={handleEmojiClick}
           theme={emojiTheme}

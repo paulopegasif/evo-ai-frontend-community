@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
+import { AlertCircle, Play } from 'lucide-react';
+import BrandIcon from '@/components/BrandIcon';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Label,
-  Button,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Slider,
-} from '@evoapi/design-system';
-import { Play, Loader2 } from 'lucide-react';
+} from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Spinner } from '@/components/ui/spinner';
+import { AgentIntegrationDialog } from './agentConfig/AgentIntegrationDialog';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface ElevenLabsConfig {
@@ -46,6 +47,7 @@ const ElevenLabsConfigDialog = ({
   initialConfig,
 }: ElevenLabsConfigDialogProps) => {
   const { t } = useLanguage('aiAgents');
+  const [confirmDeactivate, setConfirmDeactivate] = useState(false);
 
   const [config, setConfig] = useState<ElevenLabsConfig>({
     apiKey: initialConfig?.apiKey || '',
@@ -104,7 +106,7 @@ const ElevenLabsConfigDialog = ({
 
         // Se não há voz selecionada e temos vozes disponíveis, seleciona a primeira
         if (!config.voice && voices.length > 0) {
-          setConfig((prev) => ({ ...prev, voice: voices[0].voice_id }));
+          setConfig(prev => ({ ...prev, voice: voices[0].voice_id }));
         }
       } catch (error) {
         console.error('Error fetching ElevenLabs voices:', error);
@@ -130,182 +132,205 @@ const ElevenLabsConfigDialog = ({
     onOpenChange(false);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
-            {t('edit.integrations.elevenlabs.configTitle') || 'Configurar integração'}
-          </DialogTitle>
-        </DialogHeader>
+  const set = <K extends keyof ElevenLabsConfig>(key: K, value: ElevenLabsConfig[K]) =>
+    setConfig(prev => ({ ...prev, [key]: value }));
 
-        <div className="space-y-6">
-          {/* API Key */}
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">
-              {t('edit.integrations.elevenlabs.apiKey') || 'API Key'}
-            </Label>
+  const respondItems = [
+    {
+      value: 'when_client_asks',
+      label:
+        t('edit.integrations.elevenlabs.whenClientAsksInAudio') ||
+        'Quando a pergunta do cliente for em áudio',
+    },
+    {
+      value: 'always',
+      label: t('edit.integrations.elevenlabs.alwaysRespondInAudio') || 'Responder sempre em áudio',
+    },
+  ];
+  const voiceItems = availableVoices.map(voice => ({ value: voice.voice_id, label: voice.name }));
+  const showVoiceSettings = Boolean(config.apiKey) && !voicesError;
+
+  return (
+    <>
+      <AgentIntegrationDialog
+        open={open}
+        onOpenChange={onOpenChange}
+        icon={<BrandIcon id="elevenlabs" size={20} color="currentColor" />}
+        title={t('edit.integrations.elevenlabs.configTitle') || 'Configurar integração'}
+        footerStart={
+          onDeactivate ? (
+            <Button variant="destructive-outline" onClick={() => setConfirmDeactivate(true)}>
+              {t('edit.integrations.elevenlabs.deactivate') || 'Desativar integração'}
+            </Button>
+          ) : undefined
+        }
+        footer={
+          <Button onClick={handleSave} disabled={!config.apiKey}>
+            {t('edit.integrations.elevenlabs.applyConfig') || 'APLICAR CONFIGURAÇÕES'}
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-5">
+          <Field>
+            <FieldLabel>{t('edit.integrations.elevenlabs.apiKey') || 'API Key'}</FieldLabel>
             <Input
               id="apiKey"
               type="password"
-              placeholder={t('edit.integrations.elevenlabs.apiKeyPlaceholder') || 'Insira sua API Key do ElevenLabs'}
+              autoComplete="off"
+              placeholder={
+                t('edit.integrations.elevenlabs.apiKeyPlaceholder') ||
+                'Insira sua API Key do ElevenLabs'
+              }
               value={config.apiKey}
-              onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
+              onChange={e => set('apiKey', e.target.value)}
             />
-          </div>
-
-          {/* Quando responder em áudio */}
-          {config.apiKey && !voicesError && (
-            <div className="space-y-3">
-              <Label>
-                {t('edit.integrations.elevenlabs.whenToRespond') || 'Quando responder em áudio:'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('edit.integrations.elevenlabs.whenToRespondDescription') || 'Defina em quais momentos o agente vai mandar em áudio a resposta.'}
-              </p>
-
-              <Select
-                value={config.respondInAudio}
-                onValueChange={(value: 'when_client_asks' | 'always' | 'never') =>
-                  setConfig({ ...config, respondInAudio: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="when_client_asks">
-                    {t('edit.integrations.elevenlabs.whenClientAsksInAudio') || 'Quando a pergunta do cliente for em áudio'}
-                  </SelectItem>
-                  <SelectItem value="always">
-                    {t('edit.integrations.elevenlabs.alwaysRespondInAudio') || 'Responder sempre em áudio'}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Qual voz deseja usar */}
-          {config.apiKey && !voicesError && (
-            <div className="space-y-3">
-              <Label>
-                {t('edit.integrations.elevenlabs.voiceSelection') || 'Qual voz deseja usar:'}
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                {t('edit.integrations.elevenlabs.voiceSelectionDescription') || 'Escolha a voz que deseja usar nas respostas do agente.'}
-              </p>
-
-              <div className="flex gap-2">
-                <Select
-                  value={config.voice}
-                  onValueChange={(value) => setConfig({ ...config, voice: value })}
-                  disabled={loadingVoices || availableVoices.length === 0}
-                >
-                  <SelectTrigger className="flex-1">
-                    {loadingVoices ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        {t('edit.integrations.elevenlabs.loadingVoices') || 'Carregando vozes...'}
-                      </span>
-                    ) : (
-                      <SelectValue placeholder={t('edit.integrations.elevenlabs.selectVoice') || 'Selecione uma voz'} />
-                    )}
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableVoices.map((voice) => (
-                      <SelectItem key={voice.voice_id} value={voice.voice_id}>
-                        {voice.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    // TODO: Implementar preview da voz
-                    console.log('Preview voice:', config.voice);
-                  }}
-                  disabled={!config.voice || loadingVoices}
-                >
-                  <Play className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
+          </Field>
 
           {config.apiKey && voicesError && (
-            <div className="p-4 border border-destructive/50 rounded-lg bg-destructive/10">
-              <p className="text-sm text-destructive">
-                {t('edit.integrations.elevenlabs.errorLoadingVoices') || 'Erro ao carregar vozes'} - Verifique se a API Key está correta.
-              </p>
-            </div>
+            <Alert variant="error">
+              <AlertCircle />
+              <AlertDescription>
+                {t('edit.integrations.elevenlabs.errorLoadingVoices') || 'Erro ao carregar vozes'} -
+                Verifique se a API Key está correta.
+              </AlertDescription>
+            </Alert>
           )}
 
-          {/* Estabilidade */}
-          {config.apiKey && !voicesError && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>
-                  {t('edit.integrations.elevenlabs.stability') || 'Estabilidade:'}
-                </Label>
-                <span className="text-sm font-medium">{config.stability}%</span>
+          {showVoiceSettings && (
+            <>
+              <Field>
+                <FieldLabel>
+                  {t('edit.integrations.elevenlabs.whenToRespond') || 'Quando responder em áudio:'}
+                </FieldLabel>
+                <Select
+                  items={respondItems}
+                  value={config.respondInAudio}
+                  onValueChange={value =>
+                    value && set('respondInAudio', value as ElevenLabsConfig['respondInAudio'])
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectPopup>
+                    {respondItems.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectPopup>
+                </Select>
+                <FieldDescription>
+                  {t('edit.integrations.elevenlabs.whenToRespondDescription') ||
+                    'Defina em quais momentos o agente vai mandar em áudio a resposta.'}
+                </FieldDescription>
+              </Field>
+
+              <Field>
+                <FieldLabel>
+                  {t('edit.integrations.elevenlabs.voiceSelection') || 'Qual voz deseja usar:'}
+                </FieldLabel>
+                <div className="flex w-full gap-2">
+                  <Select
+                    items={voiceItems}
+                    value={config.voice || null}
+                    onValueChange={value => set('voice', (value as string) || '')}
+                    disabled={loadingVoices || availableVoices.length === 0}
+                  >
+                    <SelectTrigger className="flex-1">
+                      {loadingVoices ? (
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <Spinner className="size-4" />
+                          {t('edit.integrations.elevenlabs.loadingVoices') || 'Carregando vozes...'}
+                        </span>
+                      ) : (
+                        <SelectValue
+                          placeholder={
+                            t('edit.integrations.elevenlabs.selectVoice') || 'Selecione uma voz'
+                          }
+                        />
+                      )}
+                    </SelectTrigger>
+                    <SelectPopup>
+                      {voiceItems.map(item => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectPopup>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Preview"
+                    onClick={() => {
+                      // TODO: Implementar preview da voz
+                      console.log('Preview voice:', config.voice);
+                    }}
+                    disabled={!config.voice || loadingVoices}
+                  >
+                    <Play />
+                  </Button>
+                </div>
+                <FieldDescription>
+                  {t('edit.integrations.elevenlabs.voiceSelectionDescription') ||
+                    'Escolha a voz que deseja usar nas respostas do agente.'}
+                </FieldDescription>
+              </Field>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field>
+                  <div className="flex w-full items-center justify-between">
+                    <FieldLabel>
+                      {t('edit.integrations.elevenlabs.stability') || 'Estabilidade:'}
+                    </FieldLabel>
+                    <span className="font-medium text-sm tabular-nums">{config.stability}%</span>
+                  </div>
+                  <Slider
+                    value={config.stability}
+                    onValueChange={value =>
+                      set('stability', Array.isArray(value) ? value[0] : (value as number))
+                    }
+                    min={0}
+                    max={100}
+                    step={1}
+                  />
+                </Field>
+                <Field>
+                  <div className="flex w-full items-center justify-between">
+                    <FieldLabel>
+                      {t('edit.integrations.elevenlabs.similarity') || 'Similaridade:'}
+                    </FieldLabel>
+                    <span className="font-medium text-sm tabular-nums">{config.similarity}%</span>
+                  </div>
+                  <Slider
+                    value={config.similarity}
+                    onValueChange={value =>
+                      set('similarity', Array.isArray(value) ? value[0] : (value as number))
+                    }
+                    min={0}
+                    max={100}
+                    step={1}
+                  />
+                </Field>
               </div>
-              <Slider
-                value={[config.stability]}
-                onValueChange={(value) => setConfig({ ...config, stability: value[0] })}
-                min={0}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-            </div>
+            </>
           )}
-
-          {/* Similaridade */}
-          {config.apiKey && !voicesError && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>
-                  {t('edit.integrations.elevenlabs.similarity') || 'Similaridade:'}
-                </Label>
-                <span className="text-sm font-medium">{config.similarity}%</span>
-              </div>
-              <Slider
-                value={[config.similarity]}
-                onValueChange={(value) => setConfig({ ...config, similarity: value[0] })}
-                min={0}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-            </div>
-          )}
-
-          {/* Botões de ação */}
-          <div className="flex flex-col gap-3 pt-4">
-            <Button
-              onClick={handleSave}
-              disabled={!config.apiKey}
-              className="w-full"
-            >
-              {t('edit.integrations.elevenlabs.applyConfig') || 'APLICAR CONFIGURAÇÕES'}
-            </Button>
-
-            {onDeactivate && (
-              <Button
-                variant="ghost"
-                onClick={handleDeactivate}
-                className="w-full text-destructive hover:text-destructive/80"
-              >
-                {t('edit.integrations.elevenlabs.deactivate') || 'Desativar integração'}
-              </Button>
-            )}
-          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </AgentIntegrationDialog>
+      <ConfirmDialog
+        open={confirmDeactivate}
+        onOpenChange={setConfirmDeactivate}
+        title={t('edit.integrations.disconnectConfirm.title', { name: 'ElevenLabs' })}
+        description={t('edit.integrations.disconnectConfirm.description', { name: 'ElevenLabs' })}
+        cancelLabel={t('edit.integrations.disconnectConfirm.cancel')}
+        confirmLabel={t('edit.integrations.elevenlabs.deactivate') || 'Desativar integração'}
+        onConfirm={() => {
+          setConfirmDeactivate(false);
+          handleDeactivate();
+        }}
+      />
+    </>
   );
 };
 

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@evoapi/design-system/dialog';
+import { Dialog, DialogDescription, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 import MessageTemplateService from '@/services/channels/messageTemplatesService';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
@@ -152,16 +147,16 @@ const MessageTemplateModal: React.FC<MessageTemplateModalProps> = ({
         }
       }}
     >
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogPopup className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t('messageTemplates.modal.title')}</DialogTitle>
           <DialogDescription>{modalTitle}</DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <DialogPanel>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <Spinner className="size-6 text-muted-foreground" />
             </div>
           ) : selectedTemplate ? (
             <TemplateParser
@@ -178,8 +173,8 @@ const MessageTemplateModal: React.FC<MessageTemplateModalProps> = ({
               onSelect={handleSelectTemplate}
             />
           )}
-        </div>
-      </DialogContent>
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 };

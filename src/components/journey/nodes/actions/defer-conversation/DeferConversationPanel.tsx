@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Label,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Clock } from 'lucide-react';
 import { DeferConversationNodeData } from './DeferConversationNode';
 import { automationService } from '@/services/automation/automationService';
@@ -129,70 +123,68 @@ export function DeferConversationPanel({
       cancelLabel={t('actions.cancel')}
     >
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sidebar-foreground font-medium">
+        <Field>
+          <FieldLabel>
             {t('panels.deferConversation.defermentType')}
-          </Label>
+          </FieldLabel>
           <Select
+            items={[
+              { value: 'duration', label: t('panels.deferConversation.types.duration') },
+              { value: 'until_date', label: t('panels.deferConversation.types.until_date') },
+            ]}
             value={snoozeType}
-            onValueChange={(value: 'duration' | 'until_date') => setSnoozeType(value)}
+            onValueChange={value => value != null && setSnoozeType(value as 'duration' | 'until_date')}
             disabled={loading}
           >
-            <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-sidebar border-sidebar-border">
-              <SelectItem value="duration" className="text-sidebar-foreground">
+            <SelectPopup alignItemWithTrigger={false}>
+              <SelectItem value="duration">
                 {t('panels.deferConversation.types.duration')}
               </SelectItem>
-              <SelectItem value="until_date" className="text-sidebar-foreground">
+              <SelectItem value="until_date">
                 {t('panels.deferConversation.types.until_date')}
               </SelectItem>
-            </SelectContent>
+            </SelectPopup>
           </Select>
-        </div>
+        </Field>
 
         {snoozeType === 'duration' && (
-          <div className="space-y-2">
-            <Label className="text-sidebar-foreground font-medium">
+          <Field>
+            <FieldLabel>
               {t('panels.deferConversation.duration.label')}
-            </Label>
+            </FieldLabel>
             <Input
               type="number"
               value={snoozeDuration}
               onChange={e => setSnoozeDuration(Math.max(1, parseInt(e.target.value) || 1))}
               min="1"
               max="8760"
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground"
               disabled={loading}
             />
-            <p className="text-xs text-sidebar-foreground/60">
-              {t('panels.deferConversation.duration.min')}
-            </p>
-          </div>
+            <FieldDescription>{t('panels.deferConversation.duration.min')}</FieldDescription>
+          </Field>
         )}
 
         {snoozeType === 'until_date' && (
-          <div className="space-y-2">
-            <Label className="text-sidebar-foreground font-medium">
+          <Field>
+            <FieldLabel>
               {t('panels.deferConversation.dateTime.label')}
-            </Label>
+            </FieldLabel>
             <Input
               type="datetime-local"
               value={snoozeUntil}
               onChange={e => setSnoozeUntil(e.target.value)}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground"
               disabled={loading}
             />
             {snoozeUntil && !isValidDateTime(snoozeUntil) && (
-              <FlowFeedbackBanner variant="error">
+              <FlowFeedbackBanner variant="error" className="w-full">
                 <p className="text-xs">{t('panels.deferConversation.dateTime.futureError')}</p>
               </FlowFeedbackBanner>
             )}
-            <p className="text-xs text-sidebar-foreground/60">
-              {t('panels.deferConversation.dateTime.description')}
-            </p>
-          </div>
+            <FieldDescription>{t('panels.deferConversation.dateTime.description')}</FieldDescription>
+          </Field>
         )}
 
         {((snoozeType === 'duration' && snoozeDuration > 0) ||

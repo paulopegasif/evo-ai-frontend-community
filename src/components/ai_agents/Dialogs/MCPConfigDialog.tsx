@@ -1,26 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Badge,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  ScrollArea,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AgentIntegrationDialog } from '@/components/integrations/agentConfig/AgentIntegrationDialog';
+import { ToolChecklist } from '@/components/integrations/agentConfig/ToolChecklist';
 import { MCPServer, MCPServerConfig } from '@/types/ai';
-import { Server, Settings, CheckCircle2 } from 'lucide-react';
+import { Server } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tool } from '@/types';
+
+/** MCP server tools carry an optional id; the name is the fallback key. */
+type ServerTool = { id?: string; name: string; description?: string };
 
 interface MCPConfigDialogProps {
   open: boolean;
@@ -76,12 +68,13 @@ const MCPConfigDialog = ({
       } else {
         // Modo criação - limpar tudo sempre
         setSelectedServer(null);
-        setMcpEnvironments({});
+        setMcpEnvironments(prev => (Object.keys(prev).length ? {} : prev));
       }
     } else {
       // Quando fecha o dialog, sempre limpar o estado para evitar persistência
+      // (bail out when already empty so unstable props can't loop renders)
       setSelectedServer(null);
-      setMcpEnvironments({});
+      setMcpEnvironments(prev => (Object.keys(prev).length ? {} : prev));
     }
   }, [open, initialConfig, availableServers, currentStep, mcpServers]);
 
@@ -145,7 +138,7 @@ const MCPConfigDialog = ({
   const handleSave = useCallback(() => {
     if (!selectedServer) return;
 
-    const selectedTools = selectedServer.tools.filter((tool: any) =>
+    const selectedTools = selectedServer.tools.filter((tool: ServerTool) =>
       toolIds[selectedServer.id]?.includes(tool.id || tool.name),
     );
 
@@ -161,247 +154,198 @@ const MCPConfigDialog = ({
     onSave(config);
   }, [selectedServer, mcpEnvironments, toolIds, onSave]);
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'oauth':
-        return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
-      case 'webhook':
-        return 'bg-green-500/10 text-green-600 border-green-500/30';
-      case 'basic_auth':
-        return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'credentials':
-        return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
-      default:
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
-    }
-  };
-
   const isFormValid =
     selectedServer &&
     Object.entries(selectedServer.environments || {}).every(
       ([key]) => mcpEnvironments[key]?.toString().trim() !== '',
     );
 
+  const serverItems = availableServers.map(server => ({ value: server.id, label: server.name }));
+  const selectedIds = selectedServer ? toolIds[selectedServer.id] || [] : [];
+  const envEntries = Object.entries(selectedServer?.environments || {});
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            {initialConfig ? t('dialogs.mcpConfig.title') : t('tools.mcpServers.add')}
-            {totalSteps > 1 && (
-              <Badge variant="secondary" className="ml-auto">
-                {currentStep} {t('dialogs.mcpConfig.of')} {totalSteps}
-              </Badge>
-            )}
-          </DialogTitle>
-          <DialogDescription>{t('tools.mcpServers.subtitle')}</DialogDescription>
-        </DialogHeader>
-
-        <ScrollArea className="max-h-[60vh] pr-4">
-          <div className="space-y-6">
-            {/* Seleção do servidor */}
-            <div className="space-y-3">
-              <Label htmlFor="server-select" className="text-sm font-medium">
-                {t('dialogs.mcpConfig.serverName')}{' '}
-                {!!initialConfig && t('dialogs.mcpConfig.notEditable')}
-              </Label>
-              <Select
-                value={selectedServer?.id || ''}
-                onValueChange={handleSelectServer}
-                disabled={!!initialConfig}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('tools.mcpServers.add')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableServers.map(server => (
-                    <SelectItem key={server.id} value={server.id}>
-                      <div className="flex items-center gap-2">
-                        <Server className="h-4 w-4 text-orange-500" />
-                        <span>{server.name}</span>
-                        <Badge variant="outline" className={`text-xs ${getTypeColor(server.type)}`}>
-                          {server.type}
-                        </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Informações do servidor selecionado */}
-            {selectedServer && (
-              <>
-                <div className="p-4 border rounded-lg bg-muted/30">
-                  <div className="flex items-start gap-3">
-                    <Server className="h-5 w-5 text-orange-500 mt-0.5" />
-                    <div>
-                      <h4 className="font-medium mb-1">{selectedServer.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {selectedServer.description}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs">
-                        <Badge variant="outline">{selectedServer.type}</Badge>
-                        <span>
-                          {selectedServer.tools.length} {t('tools.title')}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Variáveis de ambiente */}
-                {selectedServer.environments &&
-                  Object.keys(selectedServer.environments).length > 0 && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-medium">
-                          {t('dialogs.mcpConfig.requiredConfig')}
-                        </h3>
-                        <Badge variant="secondary" className="text-xs">
-                          {Object.keys(selectedServer.environments).length}{' '}
-                          {t('dialogs.mcpConfig.variables')}
-                        </Badge>
-                      </div>
-
-                      <div className="space-y-4">
-                        {Object.entries(selectedServer.environments).map(([key, value]) => (
-                          <div key={key} className="space-y-2">
-                            <Label htmlFor={`env-${key}`} className="text-sm">
-                              {key}
-                              <span className="text-destructive ml-1">*</span>
-                            </Label>
-                            <Input
-                              id={`env-${key}`}
-                              value={mcpEnvironments[key]?.toString() || ''}
-                              onChange={e => handleEnvChange(key, e.target.value)}
-                              placeholder={t('dialogs.mcpConfig.enterValue', { key })}
-                              type={
-                                key.toLowerCase().includes('password') ||
-                                key.toLowerCase().includes('token') ||
-                                key.toLowerCase().includes('secret')
-                                  ? 'password'
-                                  : 'text'
-                              }
-                            />
-                            {typeof value === 'string' && value !== 'required' && (
-                              <p className="text-xs text-muted-foreground">{value}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                {/* Seleção de ferramentas */}
-                {selectedServer.tools && selectedServer.tools.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-xs font-medium">
-                          {t('dialogs.mcpConfig.availableTools')}
-                        </h3>
-                        <Badge variant="secondary" className="text-xs">
-                          {toolIds[selectedServer.id]?.length || 0} {t('dialogs.mcpConfig.of')}{' '}
-                          {selectedServer.tools.length} {t('tools.systemTools.selected')}
-                        </Badge>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            if (selectedServer) {
-                              setToolIds(prev => ({
-                                ...prev,
-                                [selectedServer.id]: selectedServer.tools.map(
-                                  (tool: any) => tool.id || tool.name,
-                                ),
-                              }));
-                            }
-                          }}
-                        >
-                          {t('tools.systemTools.selectAll')}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            if (selectedServer) {
-                              setToolIds(prev => ({
-                                ...prev,
-                                [selectedServer.id]: [],
-                              }));
-                            }
-                          }}
-                        >
-                          {t('tools.systemTools.deselectAll')}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 max-h-60 overflow-y-auto">
-                      {selectedServer.tools.map((tool: any) => (
-                        <div
-                          key={tool.id}
-                          className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                            toolIds[selectedServer.id]?.includes(tool.id || tool.name)
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                          onClick={() => handleToolToggle(tool)}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-medium text-sm">{tool.name}</span>
-                                {toolIds[selectedServer.id]?.includes(tool.id || tool.name) && (
-                                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                                )}
-                              </div>
-                              {tool.description && (
-                                <p className="text-xs text-muted-foreground">{tool.description}</p>
-                              )}
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={toolIds[selectedServer.id]?.includes(tool.id || tool.name)}
-                              onChange={() => handleToolToggle(tool)}
-                              className="h-4 w-4"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </ScrollArea>
-
-        <DialogFooter>
+    <AgentIntegrationDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      className="sm:max-w-2xl"
+      icon={<Server className="text-muted-foreground" />}
+      title={
+        <span className="flex items-center gap-2">
+          {initialConfig ? t('dialogs.mcpConfig.title') : t('tools.mcpServers.add')}
+          {totalSteps > 1 && (
+            <Badge variant="secondary">
+              {currentStep} {t('dialogs.mcpConfig.of')} {totalSteps}
+            </Badge>
+          )}
+        </span>
+      }
+      description={t('tools.mcpServers.subtitle')}
+      footerStart={
+        onSkip ? (
+          <Button variant="ghost" onClick={onSkip}>
+            {t('dialogs.mcpConfig.skip')}
+          </Button>
+        ) : undefined
+      }
+      footer={
+        <>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('actions.cancel')}
           </Button>
-          {onSkip && (
-            <Button variant="ghost" onClick={onSkip}>
-              {t('dialogs.mcpConfig.skip')}
-            </Button>
-          )}
           <Button onClick={handleSave} disabled={!isFormValid}>
             {totalSteps > 1 && currentStep < totalSteps
               ? t('actions.next')
               : initialConfig
-              ? t('dialogs.mcpConfig.save')
-              : t('tools.mcpServers.add')}
+                ? t('dialogs.mcpConfig.save')
+                : t('tools.mcpServers.add')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-5">
+        <Field disabled={!!initialConfig}>
+          <FieldLabel>
+            {t('dialogs.mcpConfig.serverName')}{' '}
+            {!!initialConfig && (
+              <span className="font-normal text-muted-foreground">
+                {t('dialogs.mcpConfig.notEditable')}
+              </span>
+            )}
+          </FieldLabel>
+          <Select
+            items={serverItems}
+            value={selectedServer?.id || null}
+            onValueChange={value => value && handleSelectServer(value as string)}
+            disabled={!!initialConfig}
+          >
+            <SelectTrigger id="server-select">
+              <SelectValue placeholder={t('tools.mcpServers.add')} />
+            </SelectTrigger>
+            <SelectPopup>
+              {availableServers.map(server => (
+                <SelectItem key={server.id} value={server.id}>
+                  <span className="flex items-center gap-2">
+                    {server.name}
+                    <Badge variant="outline" size="sm">
+                      {server.type}
+                    </Badge>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectPopup>
+          </Select>
+        </Field>
+
+        {selectedServer && (
+          <>
+            <div className="flex items-start gap-3 rounded-xl border bg-muted/40 px-3.5 py-3">
+              <Server className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <h4 className="font-medium text-sm">{selectedServer.name}</h4>
+                {selectedServer.description && (
+                  <p className="text-muted-foreground text-sm">{selectedServer.description}</p>
+                )}
+                <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                  <Badge variant="outline">{selectedServer.type}</Badge>
+                  <span>
+                    {selectedServer.tools.length} {t('tools.title')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {envEntries.length > 0 && (
+              <section className="flex flex-col gap-3">
+                <h3 className="flex items-center gap-2 font-medium text-sm">
+                  {t('dialogs.mcpConfig.requiredConfig')}
+                  <Badge variant="secondary">
+                    {envEntries.length} {t('dialogs.mcpConfig.variables')}
+                  </Badge>
+                </h3>
+                {envEntries.map(([key, value]) => (
+                  <Field key={key}>
+                    <FieldLabel className="font-mono text-xs">
+                      {key}
+                      <span className="text-destructive-foreground">*</span>
+                    </FieldLabel>
+                    <Input
+                      id={`env-${key}`}
+                      value={mcpEnvironments[key]?.toString() || ''}
+                      onChange={e => handleEnvChange(key, e.target.value)}
+                      placeholder={t('dialogs.mcpConfig.enterValue', { key })}
+                      autoComplete="off"
+                      type={
+                        key.toLowerCase().includes('password') ||
+                        key.toLowerCase().includes('token') ||
+                        key.toLowerCase().includes('secret')
+                          ? 'password'
+                          : 'text'
+                      }
+                    />
+                    {typeof value === 'string' && value !== 'required' && (
+                      <FieldDescription>{value}</FieldDescription>
+                    )}
+                  </Field>
+                ))}
+              </section>
+            )}
+
+            {selectedServer.tools && selectedServer.tools.length > 0 && (
+              <section className="flex flex-col gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="flex items-center gap-2 font-medium text-sm">
+                    {t('dialogs.mcpConfig.availableTools')}
+                    <Badge variant="secondary">
+                      {selectedIds.length}/{selectedServer.tools.length}
+                    </Badge>
+                  </h3>
+                  <div className="flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="xs"
+                      onClick={() =>
+                        setToolIds(prev => ({
+                          ...prev,
+                          [selectedServer.id]: (selectedServer.tools as ServerTool[]).map(
+                            tool => tool.id || tool.name,
+                          ),
+                        }))
+                      }
+                    >
+                      {t('tools.systemTools.selectAll')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="xs"
+                      onClick={() => setToolIds(prev => ({ ...prev, [selectedServer.id]: [] }))}
+                    >
+                      {t('tools.systemTools.deselectAll')}
+                    </Button>
+                  </div>
+                </div>
+                <ToolChecklist
+                  tools={(selectedServer.tools as ServerTool[]).map(tool => ({
+                    key: tool.id || tool.name,
+                    name: tool.name,
+                    description: tool.description,
+                  }))}
+                  isSelected={key => selectedIds.includes(key)}
+                  onToggle={key => {
+                    const tool = (selectedServer.tools as ServerTool[]).find(
+                      item => (item.id || item.name) === key,
+                    );
+                    if (tool) handleToolToggle(tool as unknown as Tool);
+                  }}
+                />
+              </section>
+            )}
+          </>
+        )}
+      </div>
+    </AgentIntegrationDialog>
   );
 };
 

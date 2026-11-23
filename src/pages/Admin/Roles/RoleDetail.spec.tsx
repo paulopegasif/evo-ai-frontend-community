@@ -201,7 +201,11 @@ beforeEach(() => {
   rolePermissions = { labels: ['create'] };
 });
 
-const cb = (key: string) => document.getElementById(key) as HTMLButtonElement | null;
+// Base UI puts the id on the hidden input; the visible checkbox is its sibling.
+const cb = (key: string) => {
+  const input = document.getElementById(key);
+  return (input?.parentElement?.querySelector('[data-slot="checkbox"]') ?? input) as HTMLElement | null;
+};
 
 describe('RoleDetail — locked basic/implied permissions', () => {
   // A locked permission is held regardless of the role, so the editor offers no
@@ -215,7 +219,7 @@ describe('RoleDetail — locked basic/implied permissions', () => {
     expect(cb('labels.read')).toBeNull();
     expect(cb('group-labels-read')).toBeNull();
     // The role already holds labels.create, so the Write group is checked.
-    expect(cb('group-labels-write')).toHaveAttribute('data-state', 'checked');
+    expect(cb('group-labels-write')).toHaveAttribute('data-checked');
 
     await userEvent.click(screen.getByText('savePermissions'));
     await waitFor(() => expect(bulkUpdateMock).toHaveBeenCalled());
@@ -314,8 +318,8 @@ describe('RoleDetail — action groups', () => {
     await waitFor(() => expect(cb('group-conversations-write')).not.toBeNull());
 
     const group = cb('group-conversations-write') as HTMLElement;
-    expect(group).toHaveAttribute('data-indeterminate', 'true');
-    expect(group).toHaveAttribute('data-state', 'unchecked');
+    expect(group).toHaveAttribute('data-indeterminate');
+    expect(group).not.toHaveAttribute('data-checked');
 
     await userEvent.click(screen.getByText('savePermissions'));
     await waitFor(() => expect(bulkUpdateMock).toHaveBeenCalled());
@@ -332,7 +336,7 @@ describe('RoleDetail — action groups', () => {
     };
     render(<RoleDetail />);
     await waitFor(() => expect(cb('group-conversations-write')).not.toBeNull());
-    expect(cb('group-conversations-write')).toHaveAttribute('data-state', 'checked');
+    expect(cb('group-conversations-write')).toHaveAttribute('data-checked');
 
     await userEvent.click(cb('group-conversations-write') as HTMLElement);
     await userEvent.click(screen.getByText('savePermissions'));

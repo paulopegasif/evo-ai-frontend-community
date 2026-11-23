@@ -1,5 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Play, Eye, Globe, Lock } from 'lucide-react';
 import { Macro } from '@/types/automation';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -50,11 +50,7 @@ export default function MacrosTable({
   };
 
   const getVisibilityIcon = (visibility: string) => {
-    return visibility === 'global' ? <Globe className="h-4 w-4" /> : <Lock className="h-4 w-4" />;
-  };
-
-  const getVisibilityColor = (visibility: string) => {
-    return visibility === 'global' ? 'text-green-600' : 'text-blue-600';
+    return visibility === 'global' ? <Globe /> : <Lock />;
   };
 
   const columns: TableColumn<Macro>[] = [
@@ -81,17 +77,10 @@ export default function MacrosTable({
       label: t('table.columns.visibility'),
       width: '150px',
       render: (macro) => (
-        <div className="flex items-center gap-2">
-          <div className={getVisibilityColor(macro.visibility)}>
-            {getVisibilityIcon(macro.visibility)}
-          </div>
-          <Badge
-            variant={macro.visibility === 'global' ? 'secondary' : 'outline'}
-            className={`text-xs ${getVisibilityColor(macro.visibility)}`}
-          >
-            {getVisibilityLabel(macro.visibility)}
-          </Badge>
-        </div>
+        <Badge variant={macro.visibility === 'global' ? 'success' : 'info'}>
+          {getVisibilityIcon(macro.visibility)}
+          {getVisibilityLabel(macro.visibility)}
+        </Badge>
       ),
     },
     {

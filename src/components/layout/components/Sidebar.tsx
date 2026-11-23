@@ -3,13 +3,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useUnreadConversationsStore } from '@/store/unreadConversationsStore';
 import { Link, useLocation } from 'react-router-dom';
 import { X } from 'lucide-react';
-import {
-  Button,
-  TooltipProvider,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import MenuItem from './MenuItem';
 import { MenuItem as MenuItemType } from '../config/menuItems';
 import { cn } from '@/utils/cn';
@@ -47,14 +42,12 @@ export default function Sidebar({
   const companyName = t('sidebar.footer.brand');
   const supportUrl = BRAND.links.support;
 
-  const totalUnread = useUnreadConversationsStore((state) => state.totalUnread);
+  const totalUnread = useUnreadConversationsStore(state => state.totalUnread);
 
   const enrichedMenuItems = useMemo(
     () =>
-      menuItems.map((item) =>
-        item.href === '/conversations' && totalUnread > 0
-          ? { ...item, badge: totalUnread }
-          : item,
+      menuItems.map(item =>
+        item.href === '/conversations' && totalUnread > 0 ? { ...item, badge: totalUnread } : item,
       ),
     [menuItems, totalUnread],
   );
@@ -137,42 +130,47 @@ export default function Sidebar({
         <Link
           key={subItem.href}
           to={subItem.href}
+          aria-current={isSubActive ? 'page' : undefined}
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 rounded-md transition-all text-sm',
+            'flex h-8 items-center gap-2.5 rounded-lg px-2.5 font-medium text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
             isSubActive
-              ? 'bg-primary/10 text-primary'
-              : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+              ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+              : 'text-sidebar-foreground/72 hover:bg-sidebar-accent/64 hover:text-sidebar-foreground',
           )}
         >
-          <subItem.icon className={cn('flex-shrink-0 h-4 w-4', isSubActive && 'text-primary')} />
-          <div className="flex items-center gap-2 flex-1">
-            <span className="font-medium">{subItem.name}</span>
-          </div>
+          <subItem.icon
+            className={cn('size-4 shrink-0', isSubActive ? 'text-primary' : 'opacity-80')}
+          />
+          <span className="flex-1 truncate">{subItem.name}</span>
         </Link>
       );
     });
 
   const submenuHeader = (item: MenuItemType) => (
-    <div className="flex items-center gap-3 p-4 border-b border-sidebar-border">
-      <item.icon className="h-5 w-5 text-primary" />
-      <div className="flex-1">
-        <h3 id="flyout-title" className="font-semibold text-sidebar-foreground">{item.name}</h3>
+    <div className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4">
+      <item.icon className="size-4.5 text-primary" />
+      <div className="min-w-0 flex-1">
+        <h3 id="flyout-title" className="truncate font-semibold text-sidebar-foreground text-sm">
+          {item.name}
+        </h3>
       </div>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label={t('sidebar.closeSubmenu')}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setActiveSubmenu(null);
-            }}
-            className="h-8 w-8 p-0 hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-foreground"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={t('sidebar.closeSubmenu')}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveSubmenu(null);
+              }}
+              className="size-7 p-0 text-sidebar-foreground/72 hover:text-sidebar-foreground"
+            />
+          }
+        >
+          <X className="size-4" />
         </TooltipTrigger>
         <TooltipContent side="left">
           <p>{t('sidebar.closeSubmenu')}</p>
@@ -187,12 +185,12 @@ export default function Sidebar({
       <div
         className={cn(
           'hidden md:flex bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border',
-          isCollapsed ? 'w-16' : 'w-56',
+          isCollapsed ? 'w-16' : 'w-60',
         )}
       >
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider delay={300}>
           {/* Navigation Menu */}
-          <nav className="space-y-1.5 flex-1 px-2 py-4">
+          <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
             {mainMenuItems.map(item => (
               <MenuItem
                 key={item.id || item.href}
@@ -200,7 +198,7 @@ export default function Sidebar({
                 isCollapsed={isCollapsed}
                 isActive={isMenuWithSubItemsActive(item)}
                 activeMenu={activeMenu}
-                onClick={(e) => handleMenuClick(item, e)}
+                onClick={e => handleMenuClick(item, e)}
               />
             ))}
             <PluginSlot id="sidebar.afterMain" />
@@ -214,27 +212,25 @@ export default function Sidebar({
                 isCollapsed={isCollapsed}
                 isActive={pathname === tutorialsItem.href}
                 activeMenu={activeMenu}
-                onClick={(e) => handleMenuClick(tutorialsItem, e)}
+                onClick={e => handleMenuClick(tutorialsItem, e)}
               />
             </div>
           )}
 
           {/* Sidebar Footer */}
-          <div className="p-4 border-t border-sidebar-border">
+          <div className="border-t border-sidebar-border px-4 py-3">
             {isCollapsed ? (
               <div className="flex flex-col items-center">
-                <div className="text-xs text-muted-foreground text-center">© {currentYear}</div>
+                <div className="text-center text-muted-foreground text-xs">© {currentYear}</div>
               </div>
             ) : (
               <>
-                <div className="text-sm text-primary font-medium">{companyName}</div>
+                <div className="font-medium text-sidebar-foreground text-sm">{companyName}</div>
                 <div className="text-xs text-muted-foreground mt-1">
                   {t('sidebar.footer.copyright', { year: currentYear })}
                 </div>
                 {__APP_VERSION__ !== 'dev' && (
-                  <div className="text-xs text-muted-foreground/70 mt-1">
-                    {__APP_VERSION__}
-                  </div>
+                  <div className="text-xs text-muted-foreground/70 mt-1">{__APP_VERSION__}</div>
                 )}
                 <div className="mt-2 flex flex-col gap-1 text-xs">
                   {BRAND.links.docs && (
@@ -278,15 +274,13 @@ export default function Sidebar({
           className={cn(
             'hidden md:flex bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border',
             'transition-all duration-150 ease-in-out overflow-hidden',
-            activeSubmenu
-              ? 'w-64 opacity-100'
-              : 'w-0 opacity-0 pointer-events-none',
+            activeSubmenu ? 'w-64 opacity-100' : 'w-0 opacity-0 pointer-events-none',
           )}
         >
           {activeSubmenu && (
             <>
               {submenuHeader(activeSubmenu)}
-              <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+              <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
                 {submenuItems(activeSubmenu)}
               </nav>
             </>
@@ -298,7 +292,7 @@ export default function Sidebar({
       {!isCollapsed && activeSubmenu && (
         <div className="hidden md:flex w-64 bg-sidebar text-sidebar-foreground flex-col border-r border-sidebar-border">
           {submenuHeader(activeSubmenu)}
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
             {submenuItems(activeSubmenu)}
           </nav>
         </div>

@@ -637,5 +637,11 @@
     "clearing": "Clearing...",
     "success": "Configuration cleared successfully",
     "error": "Failed to clear configuration"
+  },
+  "common": {
+    "unsavedChanges": "Unsaved changes",
+    "noChanges": "No pending changes",
+    "configured": "Configured",
+    "notConfigured": "Not configured"
   }
 }

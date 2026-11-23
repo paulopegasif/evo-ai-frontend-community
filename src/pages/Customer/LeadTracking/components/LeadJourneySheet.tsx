@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { CalendarCheck, DollarSign, ExternalLink, Megaphone, MessageSquare, MoveRight, UserPlus } from 'lucide-react';
-import { Badge, Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, Skeleton } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetDescription, SheetHeader, SheetPanel, SheetPopup, SheetTitle } from '@/components/ui/sheet';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
 import { leadTrackingService } from '@/services/dashboard/leadTrackingService';
 import type { JourneyConversation, JourneyEvent, LeadJourney } from '@/types/leadTracking';
 import { DASH, currencyOrDash, formatCurrency } from './format';
@@ -98,25 +101,31 @@ const LeadJourneySheet = ({ contactId, onClose }: LeadJourneySheetProps) => {
 
   return (
     <Sheet open={Boolean(contactId)} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+      <SheetPopup side="right" className="sm:max-w-xl">
         <SheetHeader>
-          <SheetTitle>{journey?.contact.name ?? 'Jornada do lead'}</SheetTitle>
+          <SheetTitle className="pe-8 font-semibold text-lg">{journey?.contact.name ?? 'Jornada do lead'}</SheetTitle>
           <SheetDescription>
             {journey ? `${journey.contact.phone_number ?? 'Sem telefone'} · entrou em ${formatDate(journey.contact.created_at, true)}` : ' '}
           </SheetDescription>
         </SheetHeader>
 
-        {error && <p className="text-sm text-destructive mt-4 px-4">Não foi possível carregar a jornada deste lead.</p>}
+        <SheetPanel>
+        {error && (
+          <Alert variant="error">
+            <AlertDescription>Não foi possível carregar a jornada deste lead.</AlertDescription>
+          </Alert>
+        )}
         {!journey && !error && (
-          <div className="space-y-3 mt-4 px-4">
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-40 w-full" />
+          <div className="flex flex-col gap-3">
+            <Skeleton className="h-20 w-full rounded-lg" />
+            <Skeleton className="h-32 w-full rounded-lg" />
+            <Skeleton className="h-48 w-full rounded-lg" />
           </div>
         )}
 
         {journey && origin && (
-          <div className="space-y-5 mt-2 px-4 pb-6">
-            <div className="grid grid-cols-3 gap-3 rounded-lg border border-border p-3">
+          <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-muted/32 p-3">
               <Field
                 label="Custo estimado"
                 value={
@@ -165,7 +174,7 @@ const LeadJourneySheet = ({ contactId, onClose }: LeadJourneySheetProps) => {
                 </a>
               )}
               {journey.summary.sale_match && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="info">
                   Venda do {journey.summary.sale_match.source} ligada{' '}
                   {journey.summary.sale_match.match === 'manual' ? 'manualmente' : 'automaticamente'}
                 </Badge>
@@ -179,7 +188,7 @@ const LeadJourneySheet = ({ contactId, onClose }: LeadJourneySheetProps) => {
                   const Icon = eventIcon(event.type);
                   return (
                     <li key={`${event.type}-${index}`} className="ml-4">
-                      <span className="absolute -left-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-background border border-border">
+                      <span className="absolute -left-2.5 flex size-5 items-center justify-center rounded-full border bg-background">
                         <Icon className="h-3 w-3 text-primary" />
                       </span>
                       <p className="text-sm">{eventText(event)}</p>
@@ -202,7 +211,8 @@ const LeadJourneySheet = ({ contactId, onClose }: LeadJourneySheetProps) => {
             </section>
           </div>
         )}
-      </SheetContent>
+        </SheetPanel>
+      </SheetPopup>
     </Sheet>
   );
 };

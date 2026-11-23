@@ -27,7 +27,9 @@
       "provider": "Select a provider",
       "keyNew": "Enter your API key here",
       "keyEdit": "Enter new key (leave blank to keep current)"
-    }
+    },
+    "showKey": "Show key",
+    "hideKey": "Hide key"
   },
   "actions": {
     "add": "New Key",

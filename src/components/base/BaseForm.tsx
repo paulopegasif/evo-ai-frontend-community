@@ -1,21 +1,14 @@
 import React, { ReactNode } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import {
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-  Checkbox,
-  RadioGroup,
-  RadioGroupItem,
-  Separator,
-} from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
 
 
 export type FormFieldType =
@@ -164,7 +157,7 @@ export default function BaseForm({
     const fieldProps = {
       id: field.key,
       disabled: field.disabled || loading,
-      className: error ? 'border-destructive' : '',
+      'aria-invalid': error ? true : undefined,
     };
 
     const renderFieldInput = () => {
@@ -183,14 +176,18 @@ export default function BaseForm({
         case 'select':
           return (
             <Select
-              value={stringValue}
-              onValueChange={(v) => onChange(field.key, v)}
+              items={(field.options ?? []).map(option => ({
+                value: option.value.toString(),
+                label: option.label,
+              }))}
+              value={stringValue || null}
+              onValueChange={(v) => onChange(field.key, v == null ? '' : String(v))}
               disabled={field.disabled || loading}
             >
-              <SelectTrigger className={error ? 'border-destructive' : ''}>
+              <SelectTrigger id={field.key} aria-invalid={error ? true : undefined}>
                 <SelectValue placeholder={field.placeholder} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectPopup alignItemWithTrigger={false}>
                 {field.options?.map(option => (
                   <SelectItem
                     key={option.value}
@@ -200,13 +197,14 @@ export default function BaseForm({
                     {option.label}
                   </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectPopup>
             </Select>
           );
 
         case 'switch':
           return (
             <Switch
+              id={field.key}
               checked={!!value}
               onCheckedChange={(checked) => onChange(field.key, checked)}
               disabled={field.disabled || loading}
@@ -216,8 +214,9 @@ export default function BaseForm({
         case 'checkbox':
           return (
             <Checkbox
+              id={field.key}
               checked={!!value}
-              onCheckedChange={(checked) => onChange(field.key, checked)}
+              onCheckedChange={(checked: boolean) => onChange(field.key, checked)}
               disabled={field.disabled || loading}
             />
           );
@@ -226,11 +225,11 @@ export default function BaseForm({
           return (
             <RadioGroup
               value={stringValue}
-              onValueChange={(v) => onChange(field.key, v)}
+              onValueChange={(v: unknown) => onChange(field.key, v == null ? '' : String(v))}
               disabled={field.disabled || loading}
             >
               {field.options?.map(option => (
-                <div key={option.value} className="flex items-center space-x-2">
+                <div key={option.value} className="flex items-center gap-2">
                   <RadioGroupItem
                     value={option.value.toString()}
                     id={`${field.key}-${option.value}`}
@@ -274,14 +273,14 @@ export default function BaseForm({
       <div key={field.key} className={`space-y-2 ${widthClass}`}>
         <Label htmlFor={field.key}>
           {field.label}
-          {field.required && <span className="text-destructive ml-1">{t('base.form.requiredMark')}</span>}
+          {field.required && <span className="text-destructive-foreground ms-1">{t('base.form.requiredMark')}</span>}
         </Label>
         {renderFieldInput()}
         {field.description && (
           <p className="text-sm text-muted-foreground">{field.description}</p>
         )}
         {error && (
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-sm text-destructive-foreground">{error}</p>
         )}
       </div>
     );
@@ -369,11 +368,7 @@ export default function BaseForm({
               {finalCancelLabel}
             </Button>
           )}
-          <Button
-            type="submit"
-            disabled={loading}
-            className="bg-primary hover:bg-primary/85 text-primary-foreground border-0 font-semibold flex-1"
-          >
+          <Button type="submit" disabled={loading} className="flex-1 font-semibold">
             {loading ? t('base.form.saving') : finalSubmitLabel}
           </Button>
         </div>

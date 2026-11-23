@@ -1,13 +1,13 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import {
-  Label,
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Button,
-} from '@evoapi/design-system';
+} from '@/components/ui/select';
 import { Code, Copy, Check, Table, FileText } from 'lucide-react';
 import { SendWebhookNodeData } from '../SendWebhookNode';
 import { VariableTextarea } from '@/components/journey/environment-manager';
@@ -26,7 +26,6 @@ interface WebhookBodyConfigProps {
   onChange: (updates: Partial<SendWebhookNodeData>) => void;
   journeyId: string;
 }
-
 
 const JSON_TEMPLATES = {
   contact: `{
@@ -71,14 +70,26 @@ export function WebhookBodyConfig({ data, onChange, journeyId }: WebhookBodyConf
   const [showNestedHint, setShowNestedHint] = useState(false);
 
   const BODY_TYPES = [
-    { value: 'json', label: t('panels.sendWebhook.body.types.json.label'), description: t('panels.sendWebhook.body.types.json.description') },
+    {
+      value: 'json',
+      label: t('panels.sendWebhook.body.types.json.label'),
+      description: t('panels.sendWebhook.body.types.json.description'),
+    },
     {
       value: 'form',
       label: t('panels.sendWebhook.body.types.form.label'),
       description: t('panels.sendWebhook.body.types.form.description'),
     },
-    { value: 'text', label: t('panels.sendWebhook.body.types.text.label'), description: t('panels.sendWebhook.body.types.text.description') },
-    { value: 'xml', label: t('panels.sendWebhook.body.types.xml.label'), description: t('panels.sendWebhook.body.types.xml.description') },
+    {
+      value: 'text',
+      label: t('panels.sendWebhook.body.types.text.label'),
+      description: t('panels.sendWebhook.body.types.text.description'),
+    },
+    {
+      value: 'xml',
+      label: t('panels.sendWebhook.body.types.xml.label'),
+      description: t('panels.sendWebhook.body.types.xml.description'),
+    },
   ];
 
   const bodyType = data.bodyType || 'json';
@@ -163,9 +174,9 @@ export function WebhookBodyConfig({ data, onChange, journeyId }: WebhookBodyConf
 
   if (!shouldShowBody()) {
     return (
-      <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-800/30 text-center">
-        <Code className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="rounded-xl border bg-muted/24 p-4 text-center">
+        <Code className="mx-auto mb-2 size-6 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
           {t('panels.sendWebhook.body.methodNotSupported', { method: data.method || 'GET' })}
         </p>
       </div>
@@ -173,56 +184,54 @@ export function WebhookBodyConfig({ data, onChange, journeyId }: WebhookBodyConf
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       {/* Tipo do Body */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">{t('panels.sendWebhook.body.contentType')}</Label>
-        <Select value={data.bodyType || 'json'} onValueChange={handleBodyTypeChange}>
-          <SelectTrigger className="w-full bg-sidebar border-sidebar-border text-sidebar-foreground">
+      <Field>
+        <FieldLabel>{t('panels.sendWebhook.body.contentType')}</FieldLabel>
+        <Select
+          items={BODY_TYPES.map(type => ({ value: type.value, label: type.label }))}
+          value={data.bodyType || 'json'}
+          onValueChange={v =>
+            v != null && handleBodyTypeChange(v as 'json' | 'form' | 'text' | 'xml')
+          }
+        >
+          <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-sidebar border-sidebar-border">
+          <SelectPopup alignItemWithTrigger={false}>
             {BODY_TYPES.map(type => (
-              <SelectItem key={type.value} value={type.value} className="text-sidebar-foreground">
+              <SelectItem key={type.value} value={type.value}>
                 <div>
                   <div className="font-medium">{type.label}</div>
                   <div className="text-xs text-muted-foreground">{type.description}</div>
                 </div>
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
-      </div>
+      </Field>
 
       {/* Toggle Estruturado / Bruto (apenas json/form) */}
       {structuredCapable && (
         <div className="flex items-center gap-2">
           <Button
-            type="button"
             variant={mode === 'structured' ? 'default' : 'outline'}
             size="sm"
             onClick={switchToStructured}
-            className="flex items-center gap-1"
           >
-            <Table className="w-3.5 h-3.5" />
+            <Table />
             {t('panels.sendWebhook.body.modeStructured')}
           </Button>
-          <Button
-            type="button"
-            variant={mode === 'raw' ? 'default' : 'outline'}
-            size="sm"
-            onClick={switchToRaw}
-            className="flex items-center gap-1"
-          >
-            <FileText className="w-3.5 h-3.5" />
+          <Button variant={mode === 'raw' ? 'default' : 'outline'} size="sm" onClick={switchToRaw}>
+            <FileText />
             {t('panels.sendWebhook.body.modeRaw')}
           </Button>
         </div>
       )}
 
       {showNestedHint && (
-        <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800/30">
-          <p className="text-xs text-yellow-700 dark:text-yellow-300">
+        <div className="rounded-xl border border-warning/24 bg-warning/8 p-3">
+          <p className="text-warning-foreground text-xs">
             ⚠️ {t('panels.sendWebhook.body.nestedRawOnlyHint')}
           </p>
         </div>
@@ -240,70 +249,61 @@ export function WebhookBodyConfig({ data, onChange, journeyId }: WebhookBodyConf
         <>
           {/* Templates para JSON (apenas modo bruto) */}
           {bodyType === 'json' && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">{t('panels.sendWebhook.body.jsonTemplates')}</Label>
-              <div className="flex gap-2 flex-wrap">
+            <Field>
+              <FieldLabel>{t('panels.sendWebhook.body.jsonTemplates')}</FieldLabel>
+              <div className="flex flex-wrap gap-2">
                 {Object.entries(JSON_TEMPLATES).map(([name, template]) => (
                   <Button
                     key={name}
                     variant="outline"
                     size="sm"
                     onClick={() => copyTemplate(template, name)}
-                    className="text-xs"
                   >
-                    {copiedTemplate === name ? (
-                      <Check className="w-3 h-3 mr-1" />
-                    ) : (
-                      <Copy className="w-3 h-3 mr-1" />
-                    )}
+                    {copiedTemplate === name ? <Check /> : <Copy />}
                     {name === 'contact'
                       ? t('panels.sendWebhook.body.templateContact')
                       : name === 'event'
-                      ? t('panels.sendWebhook.body.templateEvent')
-                      : t('panels.sendWebhook.body.templateCustom')}
+                        ? t('panels.sendWebhook.body.templateEvent')
+                        : t('panels.sendWebhook.body.templateCustom')}
                   </Button>
                 ))}
               </div>
-            </div>
+            </Field>
           )}
 
           {/* Editor do Body (bruto) */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('panels.sendWebhook.body.bodyContent')}</Label>
-            <div className="relative">
-              <VariableTextarea
-                value={data.body || ''}
-                onChange={e => handleBodyChange(e.target.value)}
-                placeholder={
-                  bodyType === 'json'
-                    ? t('panels.sendWebhook.body.jsonPlaceholder')
-                    : bodyType === 'form'
+          <Field className="items-stretch">
+            <FieldLabel>{t('panels.sendWebhook.body.bodyContent')}</FieldLabel>
+            <VariableTextarea
+              value={data.body || ''}
+              onChange={e => handleBodyChange(e.target.value)}
+              placeholder={
+                bodyType === 'json'
+                  ? t('panels.sendWebhook.body.jsonPlaceholder')
+                  : bodyType === 'form'
                     ? t('panels.sendWebhook.body.formPlaceholder')
                     : bodyType === 'xml'
-                    ? t('panels.sendWebhook.body.xmlPlaceholder')
-                    : t('panels.sendWebhook.body.textPlaceholder')
-                }
-                className="w-full h-32 p-3 text-sm bg-sidebar border-sidebar-border text-sidebar-foreground rounded-md font-mono resize-y"
-                style={{ minHeight: '120px' }}
-                journeyId={journeyId}
-              />
-            </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
-              {t('panels.sendWebhook.body.useVariables')}
-            </div>
-          </div>
+                      ? t('panels.sendWebhook.body.xmlPlaceholder')
+                      : t('panels.sendWebhook.body.textPlaceholder')
+              }
+              className="font-mono"
+              style={{ minHeight: '120px' }}
+              journeyId={journeyId}
+            />
+            <FieldDescription>{t('panels.sendWebhook.body.useVariables')}</FieldDescription>
+          </Field>
         </>
       )}
 
       {/* Variáveis disponíveis */}
-      <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/30">
-        <Label className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2 block">
+      <div className="rounded-xl border border-info/24 bg-info/8 p-4">
+        <p className="mb-2 font-medium text-info-foreground text-sm">
           {t('panels.sendWebhook.body.availableVariables')}
-        </Label>
-        <div className="grid grid-cols-2 gap-2 text-xs">
+        </p>
+        <div className="grid grid-cols-2 gap-2 text-foreground text-xs">
           <div>
             <strong>{t('panels.sendWebhook.body.contact')}</strong>
-            <div className="font-mono text-blue-700 dark:text-blue-300">
+            <div className="font-mono text-info-foreground">
               {'{{contact.id}}'}
               <br />
               {'{{contact.name}}'}
@@ -315,7 +315,7 @@ export function WebhookBodyConfig({ data, onChange, journeyId }: WebhookBodyConf
           </div>
           <div>
             <strong>{t('panels.sendWebhook.body.system')}</strong>
-            <div className="font-mono text-blue-700 dark:text-blue-300">
+            <div className="font-mono text-info-foreground">
               {'{{journey.id}}'}
               <br />
               {'{{journey.name}}'}
@@ -330,11 +330,11 @@ export function WebhookBodyConfig({ data, onChange, journeyId }: WebhookBodyConf
 
       {/* Preview do body */}
       {data.body && (
-        <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/30">
-          <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
+        <div className="rounded-xl border bg-muted/24 p-4">
+          <p className="mb-2 text-foreground text-sm">
             <strong>{t('panels.sendWebhook.body.bodyPreview')}</strong>
           </p>
-          <pre className="text-xs text-purple-700 dark:text-purple-300 whitespace-pre-wrap break-words max-h-32 overflow-y-auto">
+          <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap break-words font-mono text-muted-foreground text-xs">
             {data.body}
           </pre>
         </div>

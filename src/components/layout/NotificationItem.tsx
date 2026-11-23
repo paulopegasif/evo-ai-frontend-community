@@ -1,6 +1,8 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useRelativeTime } from '@/lib/useRelativeTime';
-import { Avatar, AvatarFallback, AvatarImage, Button } from '@evoapi/design-system';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR, pt, enUS, es, fr, it } from 'date-fns/locale';
 import type { Locale as DateFnsLocale } from 'date-fns';
@@ -89,55 +91,35 @@ export default function NotificationItem({
   const preview = notification.push_message_body || notification.push_message_title || t('notifications.item.noContent');
 
   return (
-    <div className="w-full">
-      <Button
-        variant="ghost"
-        onClick={() => onOpen(notification)}
-        className="w-full h-auto p-0 justify-start hover:bg-muted/50"
-      >
-        <div className="flex items-start p-4 w-full border-b border-border hover:bg-muted/30 hover:rounded-md transition-colors">
-          {/* Unread indicator */}
-          <div className="flex-shrink-0 mt-1">
-            {isUnread ? (
-              <div className="w-2 h-2 rounded-full bg-primary" />
-            ) : (
-              <div className="w-2" />
-            )}
-          </div>
-
-          {/* Sender avatar */}
-          <div className="flex-shrink-0 ml-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={senderAvatarUrl} alt={senderName} />
-              <AvatarFallback className="text-xs bg-primary/20 text-primary">
-                {getInitials(sender?.name ?? contact?.name ?? '')}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 ml-3 overflow-hidden">
-            <div className="flex justify-between items-center gap-2">
-              <span className="font-semibold text-foreground truncate text-sm">
-                {senderName}
-              </span>
-              <span className="text-xs text-muted-foreground flex-shrink-0">
-                {timeLabel}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-xs px-1.5 py-0.5 bg-muted text-muted-foreground rounded flex-shrink-0">
-                {badgeLabel}
-              </span>
-            </div>
-
-            <p className="text-sm text-muted-foreground truncate mt-1 font-normal text-left">
-              {preview}
-            </p>
-          </div>
-        </div>
-      </Button>
-    </div>
+    <button
+      type="button"
+      onClick={() => onOpen(notification)}
+      className={cn(
+        'flex w-full items-start gap-3 rounded-lg p-3 text-left outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
+        isUnread && 'bg-primary/4',
+      )}
+    >
+      <span className="relative shrink-0">
+        <Avatar className="size-8">
+          <AvatarImage src={senderAvatarUrl} alt={senderName} />
+          <AvatarFallback className="bg-primary/12 text-primary text-xs">
+            {getInitials(sender?.name ?? contact?.name ?? '')}
+          </AvatarFallback>
+        </Avatar>
+        {isUnread && (
+          <span className="absolute -top-0.5 -left-0.5 size-2.5 rounded-full bg-primary ring-2 ring-popover" />
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center justify-between gap-2">
+          <span className={cn('truncate text-sm', isUnread ? 'font-semibold' : 'font-medium')}>{senderName}</span>
+          <span className="shrink-0 text-muted-foreground text-xs">{timeLabel}</span>
+        </span>
+        <Badge variant="secondary" className="mt-1 max-w-full truncate">
+          {badgeLabel}
+        </Badge>
+        <span className="mt-1 block truncate text-muted-foreground text-sm">{preview}</span>
+      </span>
+    </button>
   );
 }

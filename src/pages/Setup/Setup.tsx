@@ -6,18 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AlertCircle, Globe } from 'lucide-react';
 
-import {
-  Button,
-  Input,
-  Label,
-  Alert,
-  AlertDescription,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@evoapi/design-system';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { useLanguage } from '@/hooks/useLanguage';
 import { type Locale } from '@/i18n/config';
@@ -209,40 +202,56 @@ const Setup: React.FC = () => {
     },
   };
 
+  const languages = [
+    { value: 'pt-BR', label: t('language.portuguese') },
+    { value: 'en', label: t('language.english') },
+    { value: 'es', label: t('language.spanish') },
+    { value: 'fr', label: t('language.french') },
+    { value: 'it', label: t('language.italian') },
+  ];
+
   const languageSelector = (
     <div className="absolute top-4 right-4">
-      <Select value={currentLanguage} onValueChange={handleLanguageChange}>
-        <SelectTrigger>
-          <Globe className="h-4 w-4 text-primary" />
+      <Select
+        items={languages}
+        value={currentLanguage}
+        onValueChange={value => value && handleLanguageChange(value as string)}
+      >
+        <SelectTrigger size="sm" className="w-auto min-w-36 bg-background" aria-label={t('language.selector')}>
+          <Globe className="text-muted-foreground" />
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="pt-BR">{t('language.portuguese')}</SelectItem>
-          <SelectItem value="en">{t('language.english')}</SelectItem>
-          <SelectItem value="es">{t('language.spanish')}</SelectItem>
-          <SelectItem value="fr">{t('language.french')}</SelectItem>
-          <SelectItem value="it">{t('language.italian')}</SelectItem>
-        </SelectContent>
+        <SelectPopup>
+          {languages.map(language => (
+            <SelectItem key={language.value} value={language.value}>
+              {language.label}
+            </SelectItem>
+          ))}
+        </SelectPopup>
       </Select>
     </div>
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-t from-primary/20 via-background/95 to-background">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-muted/40 p-4">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-primary)_16%,transparent),transparent_70%)]"
+      />
       {languageSelector}
 
-      <div className="w-full max-w-md space-y-6">
+      <div className="relative w-full max-w-md space-y-6">
         <div className="flex flex-col items-center space-y-4">
-          <AppLogo className="h-10" />
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold">{t('title')}</h1>
-            <p className="text-muted-foreground">{t('subtitle')}</p>
+          <AppLogo className="h-9" />
+          <div className="text-center space-y-1.5">
+            <h1 className="font-semibold text-2xl">{t('title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
           </div>
         </div>
 
-        <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-6 shadow-lg">
+        <div className="rounded-2xl border bg-card p-6 shadow-xs/5 sm:p-8">
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="error" className="mb-4">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
@@ -261,7 +270,7 @@ const Setup: React.FC = () => {
                     {...register('first_name')}
                   />
                   {errors.first_name && (
-                    <p className="text-destructive text-sm">{errors.first_name.message}</p>
+                    <p className="text-destructive-foreground text-xs">{errors.first_name.message}</p>
                   )}
                 </div>
 
@@ -275,7 +284,7 @@ const Setup: React.FC = () => {
                     {...register('last_name')}
                   />
                   {errors.last_name && (
-                    <p className="text-destructive text-sm">{errors.last_name.message}</p>
+                    <p className="text-destructive-foreground text-xs">{errors.last_name.message}</p>
                   )}
                 </div>
               </div>
@@ -290,7 +299,7 @@ const Setup: React.FC = () => {
                   {...register('email')}
                 />
                 {errors.email && (
-                  <p className="text-destructive text-sm">{errors.email.message}</p>
+                  <p className="text-destructive-foreground text-xs">{errors.email.message}</p>
                 )}
               </div>
 
@@ -304,7 +313,7 @@ const Setup: React.FC = () => {
                   {...register('password')}
                 />
                 {errors.password && (
-                  <p className="text-destructive text-sm">{errors.password.message}</p>
+                  <p className="text-destructive-foreground text-xs">{errors.password.message}</p>
                 )}
               </div>
 
@@ -318,11 +327,11 @@ const Setup: React.FC = () => {
                   {...register('password_confirmation')}
                 />
                 {errors.password_confirmation && (
-                  <p className="text-destructive text-sm">{errors.password_confirmation.message}</p>
+                  <p className="text-destructive-foreground text-xs">{errors.password_confirmation.message}</p>
                 )}
               </div>
 
-              <Button type="submit" disabled={isLoading} className="w-full">
+              <Button type="submit" size="lg" loading={isLoading} className="w-full">
                 {isLoading
                   ? t('form.submit.loading')
                   : hasExtraSteps

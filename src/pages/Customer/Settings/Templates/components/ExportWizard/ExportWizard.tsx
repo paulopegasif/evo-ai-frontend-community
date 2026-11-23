@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Button,
-  Input,
-  Label,
-  Textarea,
-  Checkbox,
-} from '@evoapi/design-system';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogFooter, DialogHeader, DialogPanel, DialogPopup, DialogTitle } from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { AlertTriangle, ArrowRight, Check } from 'lucide-react';
@@ -118,150 +116,156 @@ export default function ExportWizard({ open, onClose }: Props) {
   };
 
   const renderStepper = () => (
-    <div className="flex items-center justify-center gap-2 py-3">
+    <ol className="flex items-center justify-center gap-2">
       {([1, 2, 3] as Step[]).map((s, idx) => {
         const isActive = s === step;
         const isDone = s < step;
         return (
-          <div key={s} className="flex items-center gap-2">
-            <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors ${
+          <li key={s} className="flex items-center gap-2" aria-current={isActive ? 'step' : undefined}>
+            <span
+              className={`flex items-center gap-2 rounded-full border px-2.5 py-1 text-sm transition-colors ${
                 isActive
-                  ? 'bg-primary text-primary-foreground font-medium'
+                  ? 'border-primary/48 bg-primary/4 font-medium text-foreground'
                   : isDone
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-muted text-muted-foreground'
+                    ? 'border-success/24 bg-success/8 text-success-foreground'
+                    : 'text-muted-foreground'
               }`}
             >
               <span
-                className={`flex items-center justify-center w-5 h-5 rounded-full text-xs ${
-                  isActive
-                    ? 'bg-primary-foreground/20'
-                    : isDone
-                      ? 'bg-emerald-500/30'
-                      : 'bg-background'
+                className={`flex size-5 items-center justify-center rounded-full text-xs ${
+                  isActive ? 'bg-primary text-primary-foreground' : isDone ? 'bg-success/16' : 'bg-muted'
                 }`}
               >
-                {isDone ? <Check className="w-3 h-3" /> : s}
+                {isDone ? <Check className="size-3" /> : s}
               </span>
               <span className="hidden sm:inline">{STEP_LABELS[s]}</span>
-            </div>
-            {idx < 2 && (
-              <div
-                className={`w-6 h-px ${
-                  s < step ? 'bg-emerald-500/50' : 'bg-border'
-                }`}
-              />
-            )}
-          </div>
+            </span>
+            {idx < 2 && <span aria-hidden="true" className={`h-px w-6 ${s < step ? 'bg-success/48' : 'bg-border'}`} />}
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={o => !o && onClose()}>
+      <DialogPopup className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t('export.title')}</DialogTitle>
+          <div className="mt-3 flex flex-col items-center gap-2">
+            {renderStepper()}
+            <div className="text-center">
+              <p className="font-medium text-sm">{t(`export.step${step}.title`)}</p>
+              <p className="text-muted-foreground text-xs">
+                {t('export.stepProgress', { current: step, total: 3 })}
+              </p>
+            </div>
+          </div>
         </DialogHeader>
-        {renderStepper()}
-        <div className="text-center -mt-2 mb-2">
-          <p className="text-sm font-medium">{t(`export.step${step}.title`)}</p>
-          <p className="text-xs text-muted-foreground">
-            {t('export.stepProgress', { current: step, total: 3 })}
-          </p>
-        </div>
 
-        {step === 1 && (
-          <div className="space-y-4 py-2">
-            <div>
-              <Label htmlFor="tpl-name">{t('export.step1.name')}</Label>
-              <Input
-                id="tpl-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t('export.step1.namePlaceholder')}
-              />
+        <DialogPanel>
+          {step === 1 && (
+            <div className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel htmlFor="tpl-name">{t('export.step1.name')}</FieldLabel>
+                <Input
+                  id="tpl-name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder={t('export.step1.namePlaceholder')}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="tpl-desc">{t('export.step1.description')}</FieldLabel>
+                <Textarea
+                  id="tpl-desc"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder={t('export.step1.descriptionPlaceholder')}
+                  rows={3}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="tpl-author">{t('export.step1.author')}</FieldLabel>
+                <Input id="tpl-author" value={author} onChange={e => setAuthor(e.target.value)} />
+              </Field>
             </div>
-            <div>
-              <Label htmlFor="tpl-desc">{t('export.step1.description')}</Label>
-              <Textarea
-                id="tpl-desc"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t('export.step1.descriptionPlaceholder')}
-                rows={3}
-              />
-            </div>
-            <div>
-              <Label htmlFor="tpl-author">{t('export.step1.author')}</Label>
-              <Input id="tpl-author" value={author} onChange={(e) => setAuthor(e.target.value)} />
-            </div>
-          </div>
-        )}
+          )}
 
-        {step === 2 && (
-          <div className="space-y-4 py-2">
-            <p className="text-sm text-muted-foreground">{t('export.step2.subtitle')}</p>
-            {loadingInventory && <p className="text-sm">...</p>}
-            {!loadingInventory &&
-              inventory &&
-              TEMPLATE_CATEGORIES.map((cat) => {
-                const items = inventory[cat] ?? [];
-                const entry = selection[cat] ?? {};
-                const allChecked = !!entry.all;
-                return (
-                  <div key={cat} className="border rounded-md p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{t(`categories.${cat}`)} ({items.length})</span>
-                      <label className="flex items-center gap-2 text-sm">
-                        <Checkbox
-                          checked={allChecked}
-                          onCheckedChange={(v) => toggleAll(cat, v === true)}
-                        />
-                        {t('export.step2.selectAll')}
-                      </label>
-                    </div>
-                    {!allChecked && items.length > 0 && (
-                      <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
-                        {items.map((item) => (
-                          <label key={item.id} className="flex items-center gap-2 text-sm">
-                            <Checkbox
-                              checked={(entry.ids ?? []).includes(item.id)}
-                              onCheckedChange={() => toggleItem(cat, item.id)}
-                            />
-                            {item.name}
-                          </label>
-                        ))}
+          {step === 2 && (
+            <div className="flex flex-col gap-3">
+              <p className="text-muted-foreground text-sm">{t('export.step2.subtitle')}</p>
+              {loadingInventory && (
+                <div className="flex flex-col gap-2" aria-busy="true">
+                  {[0, 1, 2].map(i => (
+                    <Skeleton key={i} className="h-14 w-full rounded-xl" />
+                  ))}
+                </div>
+              )}
+              {!loadingInventory &&
+                inventory &&
+                TEMPLATE_CATEGORIES.map(cat => {
+                  const items = inventory[cat] ?? [];
+                  const entry = selection[cat] ?? {};
+                  const allChecked = !!entry.all;
+                  const pickedCount = entry.ids?.length ?? 0;
+                  return (
+                    <div key={cat} className="rounded-xl border">
+                      <div className="flex items-center justify-between gap-3 px-4 py-3">
+                        <span className="flex items-center gap-2 font-medium text-sm">
+                          {t(`categories.${cat}`)}
+                          <Badge variant="secondary" className="tabular-nums">
+                            {allChecked || pickedCount === 0 ? items.length : `${pickedCount}/${items.length}`}
+                          </Badge>
+                        </span>
+                        <Label className="font-normal">
+                          <Checkbox
+                            checked={allChecked}
+                            indeterminate={!allChecked && pickedCount > 0}
+                            onCheckedChange={v => toggleAll(cat, v === true)}
+                            disabled={items.length === 0}
+                          />
+                          {t('export.step2.selectAll')}
+                        </Label>
                       </div>
-                    )}
-                    {items.length === 0 && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {t('export.step2.noItems')}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-4 py-2">
-            <p className="text-sm">
-              {t('export.step3.summary', { count: totalSelected, categoryCount: selectedCategoryCount })}
-            </p>
-            <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <p className="text-sm">{t('export.step3.credentialsWarning')}</p>
+                      {!allChecked && items.length > 0 && (
+                        <div className="flex max-h-40 flex-col gap-2 overflow-y-auto border-t bg-muted/24 px-4 py-3">
+                          {items.map(item => (
+                            <Label key={item.id} className="font-normal">
+                              <Checkbox
+                                checked={(entry.ids ?? []).includes(item.id)}
+                                onCheckedChange={() => toggleItem(cat, item.id)}
+                              />
+                              {item.name}
+                            </Label>
+                          ))}
+                        </div>
+                      )}
+                      {items.length === 0 && (
+                        <p className="border-t px-4 py-2 text-muted-foreground text-xs">{t('export.step2.noItems')}</p>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
-          </div>
-        )}
+          )}
 
-        <DialogFooter className="flex-col sm:flex-row sm:items-center gap-2">
+          {step === 3 && (
+            <div className="flex flex-col gap-4">
+              <p className="text-sm">
+                {t('export.step3.summary', { count: totalSelected, categoryCount: selectedCategoryCount })}
+              </p>
+              <Alert variant="warning">
+                <AlertTriangle />
+                <AlertDescription>{t('export.step3.credentialsWarning')}</AlertDescription>
+              </Alert>
+            </div>
+          )}
+        </DialogPanel>
+
+        <DialogFooter className="sm:items-center">
           {step < 3 && (
-            <p className="text-xs text-muted-foreground sm:mr-auto">
+            <p className="text-muted-foreground text-xs sm:me-auto">
               {t('export.stepHint', {
                 nextStep: STEP_LABELS[(step + 1) as Step],
                 remaining: 3 - step,
@@ -274,21 +278,18 @@ export default function ExportWizard({ open, onClose }: Props) {
             </Button>
           )}
           {step < 3 && (
-            <Button
-              onClick={() => setStep((step + 1) as Step)}
-              disabled={step === 1 && !name.trim()}
-            >
+            <Button onClick={() => setStep((step + 1) as Step)} disabled={step === 1 && !name.trim()}>
               {t('export.step1.next')}
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight />
             </Button>
           )}
           {step === 3 && (
-            <Button onClick={handleDownload} disabled={downloading || totalSelected === 0}>
+            <Button onClick={handleDownload} disabled={totalSelected === 0} loading={downloading}>
               {downloading ? t('export.step3.downloading') : t('export.step3.download')}
             </Button>
           )}
         </DialogFooter>
-      </DialogContent>
+      </DialogPopup>
     </Dialog>
   );
 }

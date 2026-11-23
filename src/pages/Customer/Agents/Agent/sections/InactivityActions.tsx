@@ -1,15 +1,14 @@
 import { useLanguage } from '@/hooks/useLanguage';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
   Select,
-  SelectContent,
   SelectItem,
+  SelectPopup,
   SelectTrigger,
   SelectValue,
-  Textarea,
-  Button,
-  Card,
-  CardContent,
-} from '@evoapi/design-system';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Clock, Trash2, Plus, Info } from 'lucide-react';
 
 export interface InactivityAction {
@@ -74,9 +73,9 @@ const InactivityActions = ({ actions, onChange }: InactivityActionsProps) => {
 
       {/* Actions List */}
       <div className="space-y-4">
-        {actions.map((action) => (
+        {actions.map(action => (
           <Card key={action.id} className="bg-card">
-            <CardContent className="p-4">
+            <CardPanel className="p-4">
               <div className="space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -88,29 +87,49 @@ const InactivityActions = ({ actions, onChange }: InactivityActionsProps) => {
                           'Se não responder em'}
                       </span>
                       <Select
+                        items={minuteOptions.map(min => ({
+                          value: min.toString(),
+                          label: formatMinuteLabel(min),
+                        }))}
                         value={action.minutes.toString()}
                         onValueChange={value =>
+                          value !== null &&
                           handleUpdateAction(action.id, { minutes: parseInt(value) })
                         }
                       >
                         <SelectTrigger className="w-32">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           {minuteOptions.map(min => (
                             <SelectItem key={min} value={min.toString()}>
                               {formatMinuteLabel(min)}
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                       <span className="text-sm text-muted-foreground">
                         {t('edit.configuration.inactivityActions.theAgentShould') ||
                           'o agente deve'}
                       </span>
                       <Select
+                        items={[
+                          {
+                            value: 'interact',
+                            label:
+                              t('edit.configuration.inactivityActions.interactWithClient') ||
+                              'Interagir com cliente',
+                          },
+                          {
+                            value: 'finalize',
+                            label:
+                              t('edit.configuration.inactivityActions.finalizeService') ||
+                              'Finalizar atendimento',
+                          },
+                        ]}
                         value={action.action}
                         onValueChange={value =>
+                          value !== null &&
                           handleUpdateAction(action.id, {
                             action: value as 'interact' | 'finalize',
                           })
@@ -119,7 +138,7 @@ const InactivityActions = ({ actions, onChange }: InactivityActionsProps) => {
                         <SelectTrigger className="w-48">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectPopup>
                           <SelectItem value="interact">
                             {t('edit.configuration.inactivityActions.interactWithClient') ||
                               'Interagir com cliente'}
@@ -128,7 +147,7 @@ const InactivityActions = ({ actions, onChange }: InactivityActionsProps) => {
                             {t('edit.configuration.inactivityActions.finalizeService') ||
                               'Finalizar atendimento'}
                           </SelectItem>
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </div>
                   </div>
@@ -169,7 +188,7 @@ const InactivityActions = ({ actions, onChange }: InactivityActionsProps) => {
                   </div>
                 )}
               </div>
-            </CardContent>
+            </CardPanel>
           </Card>
         ))}
       </div>

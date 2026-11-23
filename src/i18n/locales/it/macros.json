@@ -61,7 +61,9 @@
     "fileSelectButton": "Seleziona File",
     "fileUploading": "Caricamento...",
     "fileSelected": "File selezionato: {{filename}}",
-    "noConfig": "Questa azione non richiede configurazione aggiuntiva."
+    "noConfig": "Questa azione non richiede configurazione aggiuntiva.",
+    "removeAction": "Rimuovi azione",
+    "removeValue": "Rimuovi {{value}}"
   },
   "table": {
     "columns": {

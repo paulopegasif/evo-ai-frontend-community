@@ -1,4 +1,15 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { CheckCircle2, Settings2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -10,6 +21,7 @@ import {
 } from '@/components/channels';
 import ProviderSelection from '@/components/channels/ProviderSelection';
 import ChannelBreadcrumb, { BreadcrumbItem } from '@/components/channels/ChannelBreadcrumb';
+import NewChannelStepper from '@/components/channels/NewChannelStepper';
 
 // Import hooks
 import { useChannelForm, useChannelSubmission, ChannelType } from '@/hooks/channels';
@@ -73,6 +85,8 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
   const preselectedChannelId =
     initialChannelId ?? (location.state as { channelId?: string } | null)?.channelId;
   const preselectAppliedRef = useRef(false);
+  // Standalone success step: the created inbox (id may be missing for some flows).
+  const [created, setCreated] = useState<{ id?: string } | null>(null);
 
   // Use hooks
   const {
@@ -171,13 +185,12 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
   // settings. Embedded (onExit provided), navigate would not resolve inside the
   // MemoryRouter without <Routes>, so we just close the host (the channel was
   // already created); the host screen can reopen the settings if it wants to.
+  // Standalone, the flow ends on a success step that leads to the inbox settings.
   const handleCreated = (createdId?: string) => {
     if (onExit) {
       onExit();
-    } else if (createdId) {
-      navigate(`/channels/${createdId}/settings`);
     } else {
-      navigate('/channels');
+      setCreated({ id: createdId });
     }
   };
 
@@ -285,6 +298,23 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
 
   const pageContainer = embedded ? 'px-4 md:px-6' : 'mx-auto w-full max-w-6xl px-4 md:px-6';
 
+  // Guided-flow progress: channel → provider (when the channel has providers) → configure → done.
+  const hasProviderStep = !selectedChannel || !!selectedChannel.providers;
+  const stepLabels = [
+    t('newChannel.stepper.selectType'),
+    ...(hasProviderStep ? [t('newChannel.stepper.selectProvider')] : []),
+    t('newChannel.stepper.configure'),
+    t('newChannel.stepper.done'),
+  ];
+  const currentStep = created
+    ? stepLabels.length - 1
+    : !selectedChannel
+      ? 0
+      : !selectedProvider && selectedChannel.providers
+        ? 1
+        : stepLabels.length - 2;
+  const stepper = <NewChannelStepper steps={stepLabels} current={currentStep} />;
+
   const renderForm = () => {
     if (!selectedChannel) return null;
 
@@ -320,7 +350,7 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
       case 'email':
         if (!selectedProvider) {
           return (
-            <p className="text-sidebar-foreground/70">
+            <p className="text-muted-foreground text-sm">
               {t('newChannel.messages.selectEmailProvider')}
             </p>
           );
@@ -344,7 +374,7 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
       case 'sms':
         if (!selectedProvider) {
           return (
-            <p className="text-sidebar-foreground/70">
+            <p className="text-muted-foreground text-sm">
               {t('newChannel.messages.selectSmsProvider')}
             </p>
           );
@@ -360,7 +390,7 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
       case 'whatsapp':
         if (!selectedProvider) {
           return (
-            <p className="text-sidebar-foreground/70">{t('newChannel.messages.selectProvider')}</p>
+            <p className="text-muted-foreground text-sm">{t('newChannel.messages.selectProvider')}</p>
           );
         }
         return (
@@ -451,13 +481,48 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
   return (
     <div className="h-full flex flex-col">
       <div className="flex-1 overflow-auto pb-8">
-        {!selectedChannel ? (
+        {created ? (
+          <div className={pageContainer}>
+            <div className="mx-auto flex max-w-2xl flex-col gap-6 pt-6">
+              {stepper}
+              <Card>
+                <Empty className="py-12">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon" className="bg-success/8 text-success">
+                      <CheckCircle2 />
+                    </EmptyMedia>
+                    <EmptyTitle>{t('newChannel.successState.title')}</EmptyTitle>
+                    <EmptyDescription>
+                      {t('newChannel.successState.description', {
+                        name: (typeof form.display_name === 'string' && form.display_name) || selectedChannel?.name || '',
+                      })}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <div className="flex flex-col-reverse gap-2 sm:flex-row">
+                      <Button variant="outline" onClick={() => navigate('/channels')}>
+                        {t('newChannel.successState.backToChannels')}
+                      </Button>
+                      {created.id && (
+                        <Button onClick={() => navigate(`/channels/${created.id}/settings`)}>
+                          <Settings2 />
+                          {t('newChannel.successState.openSettings')}
+                        </Button>
+                      )}
+                    </div>
+                  </EmptyContent>
+                </Empty>
+              </Card>
+            </div>
+          </div>
+        ) : !selectedChannel ? (
           <>
             <NewChannelTour />
             <div className={pageContainer}>
               <ChannelBreadcrumb items={getBreadcrumbs()} onBack={handleGoBack} />
             </div>
             <ChannelGrid
+              stepper={stepper}
               channels={channelTypes}
               onChannelSelect={handleChannelSelectWithValidation}
               canFB={canFB}
@@ -501,23 +566,27 @@ export default function NewChannel({ initialChannelId, onExit }: NewChannelProps
               onProviderSelect={handleProviderSelectWithValidation}
               onBack={handleGoBack}
               onChannelListClick={exitToChannels}
+              stepper={stepper}
             />
           </>
 
           // Channel and provider selected: show the standardized config screen
         ) : (
           <>
-            <div className={pageContainer} >
-              <ChannelBreadcrumb items={getBreadcrumbs()} onBack={handleGoBack} />
+            <div className={pageContainer}>
+              <div className={embedded ? '' : 'mx-auto max-w-4xl'}>
+                <ChannelBreadcrumb items={getBreadcrumbs()} onBack={handleGoBack} />
+              </div>
             </div>
             <div className={pageContainer}>
-              <div className={embedded ? '' : 'max-w-4xl mx-auto'}>
+              <div className={embedded ? '' : 'mx-auto max-w-4xl'}>
                 {!embedded && (
-                  <div className="mb-6 md:mb-8">
-                    <h1 className="text-2xl font-bold tracking-tight text-sidebar-foreground mb-2">
-                      {t('newChannel.configureTitle')}
-                    </h1>
-                    <p className="text-sidebar-foreground/70">{t('newChannel.description')}</p>
+                  <div className="mb-6 flex flex-col gap-4">
+                    <div>
+                      <h1 className="font-semibold text-xl md:text-2xl">{t('newChannel.configureTitle')}</h1>
+                      <p className="mt-1 text-muted-foreground text-sm">{t('newChannel.description')}</p>
+                    </div>
+                    {stepper}
                   </div>
                 )}
 

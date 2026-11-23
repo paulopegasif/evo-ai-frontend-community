@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChannelIcon } from '@/components/channels';
 import { ChannelType, FormData } from '@/hooks/channels/useChannelForm';
 import { Provider as ProviderType } from '@/components/channels/ProviderGrid';
@@ -44,32 +45,24 @@ export const FormContainer = ({
   const renderNameFields = showNameFields && !!form && !!onFormChange;
 
   return (
-    <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-      {/* Form header */}
-      <div className="border-b border-border bg-muted/30 px-6 py-4">
+    <Card className="overflow-hidden">
+      <CardHeader className="border-b">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <ChannelIcon
-              channelType={selectedChannel?.type || 'web_widget'}
-              size="sm"
-            />
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground">
+          <ChannelIcon channelType={selectedChannel?.type || 'web_widget'} size="md" brandTile />
+          <div className="min-w-0">
+            <CardTitle className="text-base">
               {selectedChannel?.name}
-              {selectedProvider && ` - ${selectedProvider.name}`}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {selectedChannel?.description}
-            </p>
+              {selectedProvider && <span className="text-muted-foreground"> · {selectedProvider.name}</span>}
+            </CardTitle>
+            <CardDescription>{selectedChannel?.description}</CardDescription>
           </div>
         </div>
-      </div>
+      </CardHeader>
 
       {/* Standardized Display Name / Channel Name header */}
       {renderNameFields && (
-        <div className="border-b border-border px-6 py-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="border-b px-6 py-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormField
               label={t('newChannel.fields.displayName.label')}
               value={getStr('display_name')}
@@ -96,6 +89,6 @@ export const FormContainer = ({
 
       {/* Footer */}
       {footer}
-    </div>
+    </Card>
   );
 };

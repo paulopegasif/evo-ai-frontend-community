@@ -19,7 +19,8 @@
       "until": "Hasta",
       "period": "Período",
       "apply": "Aplicar filtros",
-      "clear": "Limpiar filtros"
+      "clear": "Limpiar filtros",
+      "days": "días"
     },
     "stats": {
       "totalPipeline": "Total en el Embudo",
@@ -146,6 +147,7 @@
       "agents": "Sin datos de agentes para el período seleccionado.",
       "channels": "Sin datos de canales para el período seleccionado.",
       "pipelineInactive": "Embudo inactivo en el período seleccionado."
-    }
+    },
+    "retry": "Reintentar"
   }
 }

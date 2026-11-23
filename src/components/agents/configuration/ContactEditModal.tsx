@@ -1,5 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@evoapi/design-system';
-import ContactEditRules, { ContactEditConfig } from '@/pages/Customer/Agents/Agent/sections/ContactEditRules';
+import {
+  Dialog,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { useLanguage } from '@/hooks/useLanguage';
+import ContactEditRules, {
+  ContactEditConfig,
+} from '@/pages/Customer/Agents/Agent/sections/ContactEditRules';
 
 interface ContactEditModalProps {
   open: boolean;
@@ -9,14 +18,17 @@ interface ContactEditModalProps {
 }
 
 const ContactEditModal = ({ open, onOpenChange, config, onChange }: ContactEditModalProps) => {
+  const { t } = useLanguage('aiAgents');
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+      <DialogPopup className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Edição de Contatos</DialogTitle>
+          <DialogTitle>{t('edit.configuration.contactEdit.modalTitle')}</DialogTitle>
         </DialogHeader>
-        <ContactEditRules config={config} onChange={onChange} />
-      </DialogContent>
+        <DialogPanel>
+          <ContactEditRules config={config} onChange={onChange} />
+        </DialogPanel>
+      </DialogPopup>
     </Dialog>
   );
 };

@@ -1,5 +1,7 @@
 import { Fragment } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Button } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { TooltipInfo } from '@/components/base/TooltipInfo';
 
@@ -80,7 +82,7 @@ const OperationHeatmapCard = ({
         </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardPanel className="space-y-4">
         <div className="overflow-x-auto">
           <div
             className="grid gap-1 min-w-[760px]"
@@ -146,7 +148,7 @@ const OperationHeatmapCard = ({
             {labels?.timezone || 'Timezone'}: {data.timezone}
           </Badge>
         </div>
-      </CardContent>
+      </CardPanel>
     </Card>
   );
 };

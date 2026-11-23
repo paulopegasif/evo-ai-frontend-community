@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
-} from '@evoapi/design-system';
 import { Trash2 } from 'lucide-react';
+import ConfirmDialog from '@/components/base/ConfirmDialog';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -155,7 +148,7 @@ export default function Channels() {
   const isDeleteConfirmationValid = deleteModal.confirmationText === deleteModal.channel?.name;
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col gap-6 p-4 md:p-6">
       <ChannelsTour />
       <div data-tour="channels-header">
         <ChannelsHeader
@@ -168,7 +161,7 @@ export default function Channels() {
         />
       </div>
 
-      <div className="flex-1 overflow-auto" data-tour="channels-list">
+      <div className="flex-1" data-tour="channels-list">
         <ChannelTypeHub
           inboxes={filteredInboxes}
           isLoading={isLoadingInboxes}
@@ -178,59 +171,42 @@ export default function Channels() {
         />
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <Dialog open={deleteModal.isOpen} onOpenChange={closeDeleteModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-400">
-              <Trash2 className="h-5 w-5" />
-              {t('deleteDialog.title')}
-            </DialogTitle>
-            <DialogDescription className="text-sidebar-foreground/70">
-              {t('deleteDialog.description', { name: deleteModal.channel?.name })}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-sidebar-foreground">
-                {t('deleteDialog.confirmLabel')}
-              </label>
-              <Input
-                placeholder={deleteModal.channel?.name || t('deleteDialog.placeholder')}
-                value={deleteModal.confirmationText}
-                onChange={e =>
-                  setDeleteModal(prev => ({
-                    ...prev,
-                    confirmationText: e.target.value,
-                  }))
-                }
-                className="mt-2 bg-sidebar border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50"
-              />
-            </div>
-          </div>
-
-          <DialogFooter className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={closeDeleteModal}
-              className="bg-sidebar border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              {t('deleteDialog.cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleConfirmDelete}
-              disabled={!isDeleteConfirmationValid || isDeleting === deleteModal.channel?.id}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              {isDeleting === deleteModal.channel?.id
-                ? t('deleteDialog.deleting')
-                : t('deleteDialog.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Delete confirmation: typing the channel name unlocks the destructive action. */}
+      <ConfirmDialog
+        open={deleteModal.isOpen}
+        onOpenChange={open => {
+          if (!open && !isDeleting) closeDeleteModal();
+        }}
+        icon={<Trash2 />}
+        title={t('deleteDialog.title')}
+        description={t('deleteDialog.description', { name: deleteModal.channel?.name })}
+        cancelLabel={t('deleteDialog.cancel')}
+        confirmLabel={
+          isDeleting === deleteModal.channel?.id ? t('deleteDialog.deleting') : t('deleteDialog.confirm')
+        }
+        onConfirm={handleConfirmDelete}
+        loading={isDeleting === deleteModal.channel?.id}
+        confirmDisabled={!isDeleteConfirmationValid}
+      >
+        <Field>
+          <FieldLabel>{t('deleteDialog.confirmLabel')}</FieldLabel>
+          <Input
+            autoFocus
+            autoComplete="off"
+            placeholder={deleteModal.channel?.name || t('deleteDialog.placeholder')}
+            value={deleteModal.confirmationText}
+            onChange={e =>
+              setDeleteModal(prev => ({
+                ...prev,
+                confirmationText: e.target.value,
+              }))
+            }
+            onKeyDown={e => {
+              if (e.key === 'Enter' && isDeleteConfirmationValid && !isDeleting) void handleConfirmDelete();
+            }}
+          />
+        </Field>
+      </ConfirmDialog>
     </div>
   );
 }

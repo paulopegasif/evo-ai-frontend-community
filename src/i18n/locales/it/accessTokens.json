@@ -86,7 +86,10 @@
     },
     "copyToken": "Copia Token",
     "close": "Chiudi",
-    "tokenCopied": "Token copiato!"
+    "tokenCopied": "Token copiato!",
+    "copyValue": "Copia {{label}}",
+    "showToken": "Mostra token",
+    "hideToken": "Nascondi token"
   },
   "empty": {
     "title": "Nessun token trovato",

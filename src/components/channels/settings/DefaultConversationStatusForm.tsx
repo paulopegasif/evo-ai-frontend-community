@@ -1,4 +1,5 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@evoapi/design-system';
+import { Label } from '@/components/ui/label';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/useLanguage';
 import { MessageCircle } from 'lucide-react';
 
@@ -48,19 +49,20 @@ export default function DefaultConversationStatusForm({
           </p>
         </div>
         <Select
-          value={formData.default_conversation_status || undefined}
-          onValueChange={(value) => onFormChange({ default_conversation_status: value || null })}
+          items={CONVERSATION_STATUS_OPTIONS.map(option => ({ value: option.value, label: t(option.labelKey) }))}
+          value={formData.default_conversation_status || null}
+          onValueChange={value => onFormChange({ default_conversation_status: value ? String(value) : null })}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder={t('settings.defaultConversationStatus.placeholder')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectPopup alignItemWithTrigger={false}>
             {CONVERSATION_STATUS_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {t(option.labelKey)}
               </SelectItem>
             ))}
-          </SelectContent>
+          </SelectPopup>
         </Select>
       </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Button } from '@evoapi/design-system/button';
-import { Input } from '@evoapi/design-system/input';
+import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { MessageTemplate } from '@/types/channels/inbox';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
@@ -140,48 +141,50 @@ const TemplateParser: React.FC<TemplateParserProps> = ({ template, channelType, 
       {/* Campos de variáveis */}
       {variables.length > 0 && (
         <div className="mb-4 space-y-3">
-          <p className="text-sm font-semibold">
+          <p className="font-semibold text-sm">
             {t('messageTemplates.parser.variablesLabel')}
           </p>
 
           {variables.map(variable => (
-            <div key={variable.name} className="flex items-center gap-2">
-              <span className="bg-muted text-muted-foreground inline-block rounded-md text-xs py-2 px-4 min-w-[60px] text-center font-medium">
-                {variable.label || variable.name}
-              </span>
-              <Input
+            <InputGroup key={variable.name}>
+              <InputGroupAddon>
+                <InputGroupText className="min-w-14 font-medium font-mono text-xs">
+                  {variable.label || variable.name}
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
                 type="text"
                 value={params[variable.name] ?? ''}
                 onChange={e => handleParamChange(variable.name, e.target.value)}
+                aria-label={variable.label || variable.name}
+                aria-invalid={!!errors[variable.name] || undefined}
                 placeholder={
                   variable.example ||
                   variable.default_value ||
                   t('messageTemplates.parser.variablePlaceholder', { variable: variable.name })
                 }
-                className={`flex-1 ${errors[variable.name] ? 'border-destructive' : ''}`}
               />
-            </div>
+            </InputGroup>
           ))}
 
           {touched && !isValid && (
-            <p className="bg-destructive/10 rounded-md text-destructive p-3 text-center text-sm">
-              {t('messageTemplates.parser.formErrorMessage')}
-            </p>
+            <Alert variant="error">
+              <AlertDescription>{t('messageTemplates.parser.formErrorMessage')}</AlertDescription>
+            </Alert>
           )}
         </div>
       )}
 
       {/* Botões de ação */}
       <footer className="flex justify-end gap-2">
-        <Button
-          variant="ghost"
-          onClick={onReset}
-          className="text-muted-foreground hover:text-foreground"
-          disabled={loading}
-        >
+        <Button variant="ghost" onClick={onReset} disabled={loading}>
           {t('messageTemplates.parser.goBackLabel')}
         </Button>
-        <Button onClick={handleSend} disabled={(variables.length > 0 && touched && !isValid) || loading}>
+        <Button
+          onClick={handleSend}
+          disabled={(variables.length > 0 && touched && !isValid) || loading}
+          loading={loading}
+        >
           {t('messageTemplates.parser.sendMessageLabel')}
         </Button>
       </footer>

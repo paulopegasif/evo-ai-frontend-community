@@ -1,5 +1,6 @@
 import { useLanguage } from '@/hooks/useLanguage';
-import { Badge, Button } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Edit, Trash2, TestTube, Loader2, ExternalLink } from 'lucide-react';
 import { CustomMcpServer } from '@/types/ai';
 import { BaseTable, TableColumn, TableAction } from '@/components/base';
@@ -48,9 +49,11 @@ export default function CustomMCPServersTable({
             <TestTube className="h-5 w-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-sm truncate mb-1">{server.name || t('table.noName')}</div>
+            <div className="font-medium text-sm truncate mb-1">
+              {server.name || t('table.noName')}
+            </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-500 border-blue-500/30">
+              <Badge variant="outline" className="text-xs bg-info/10 text-info border-info/30">
                 {t('card.custom')}
               </Badge>
             </div>
@@ -78,9 +81,7 @@ export default function CustomMCPServersTable({
         <div className="max-w-[200px]">
           <div className="flex items-center gap-1">
             <ExternalLink className="h-3 w-3 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground truncate">
-              {server.url}
-            </span>
+            <span className="text-sm text-muted-foreground truncate">{server.url}</span>
           </div>
         </div>
       ),
@@ -91,10 +92,8 @@ export default function CustomMCPServersTable({
       sortable: false,
       render: server => (
         <div className="flex items-center gap-2">
-          <TestTube className="h-4 w-4 text-emerald-400" />
-          <span className="text-sm text-muted-foreground">
-            {server.tools?.length || 0}
-          </span>
+          <TestTube className="h-4 w-4 text-success" />
+          <span className="text-sm text-muted-foreground">{server.tools?.length || 0}</span>
         </div>
       ),
     },
@@ -102,11 +101,7 @@ export default function CustomMCPServersTable({
       key: 'timeout',
       label: t('table.columns.timeout'),
       sortable: false,
-      render: server => (
-        <span className="text-sm text-muted-foreground">
-          {server.timeout}s
-        </span>
-      ),
+      render: server => <span className="text-sm text-muted-foreground">{server.timeout}s</span>,
     },
     {
       key: 'created_at',
@@ -126,7 +121,7 @@ export default function CustomMCPServersTable({
         <Button
           variant="outline"
           size="sm"
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation();
             onTestServer(server);
           }}
@@ -182,7 +177,6 @@ export default function CustomMCPServersTable({
           : undefined
       }
       getRowKey={server => String(server.id)}
-      className="border-0 shadow-none"
     />
   );
 }

@@ -1,4 +1,5 @@
-import { Label, Switch } from '@evoapi/design-system';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 interface FormSwitchProps {
   id: string;
@@ -8,23 +9,14 @@ interface FormSwitchProps {
   description?: string;
 }
 
-export function FormSwitch({
-  id,
-  label,
-  checked,
-  onCheckedChange,
-  description,
-}: FormSwitchProps) {
+export function FormSwitch({ id, label, checked, onCheckedChange, description }: FormSwitchProps) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center space-x-2">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2">
         <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
         <Label htmlFor={id}>{label}</Label>
       </div>
-      {description && (
-        <p className="text-sm text-muted-foreground">{description}</p>
-      )}
+      {description && <p className="text-muted-foreground text-xs">{description}</p>}
     </div>
   );
 }
-

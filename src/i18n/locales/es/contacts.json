@@ -117,7 +117,8 @@
       "errors": {
         "invalidType": "Por favor, seleccione un archivo de imagen.",
         "tooLarge": "Archivo demasiado grande. Máximo 5MB."
-      }
+      },
+      "remove": "Quitar foto"
     },
     "sections": {
       "basicInfo": "Información Básica",
@@ -340,7 +341,12 @@
       "info4": "Los contactos duplicados serán eliminados permanentemente",
       "cancel": "Cancelar",
       "confirm": "Fusionar Contactos",
-      "merging": "Fusionando..."
+      "merging": "Fusionando...",
+      "primary": "Principal",
+      "createdAt": "Creado el {{date}}",
+      "conversations_one": "{{count}} conversación",
+      "conversations_other": "{{count}} conversaciones",
+      "company": "Empresa:"
     },
     "selectContactToMerge": {
       "title": "Seleccionar Contacto para Fusionar",
@@ -429,7 +435,8 @@
       "cancel": "Cancelar",
       "import": "Importar",
       "importing": "Importando..."
-    }
+    },
+    "removeFile": "Quitar archivo"
   },
   "pagination": {
     "showing": "Mostrando {{from}} a {{to}} de {{total}} contactos",
@@ -440,7 +447,8 @@
   "labels": {
     "add": "Añadir Etiqueta",
     "search": "Buscar etiquetas...",
-    "empty": "Ninguna etiqueta encontrada."
+    "empty": "Ninguna etiqueta encontrada.",
+    "remove": "Quitar"
   },
   "modal": {
     "title": {
@@ -528,7 +536,14 @@
         "paused": "Pausada",
         "inactive": "Inactiva",
         "unknown": "Desconocido"
-      }
+      },
+      "select": "Selecciona una plantilla",
+      "selected": "Plantilla: {{name}}",
+      "change": "Cambiar plantilla",
+      "fillVariables": "Completa las variables",
+      "preview": "Vista previa",
+      "valueFor": "Valor para {{key}}",
+      "visualEmail": "Plantilla de email visual. El HTML se generará automáticamente."
     },
     "toggle": {
       "label": "Usar Plantilla",
@@ -579,7 +594,9 @@
     "emptyDescription": "Crea una nueva acción programada para comenzar",
     "pagination": "Página {{page}} de {{totalPages}} ({{total}} total)",
     "messages": {
-      "noChannelsConfigured": "No hay canales de mensajería configurados. Por favor, configure primero un canal de WhatsApp, SMS, Email o Telegram en la configuración de Canales."
+      "noChannelsConfigured": "No hay canales de mensajería configurados. Por favor, configure primero un canal de WhatsApp, SMS, Email o Telegram en la configuración de Canales.",
+      "cancelled": "Acción programada cancelada",
+      "bulkCancelled": "{{count}} acciones canceladas"
     },
     "errors": {
       "loadFailed": "Error al cargar acciones programadas",
@@ -633,7 +650,24 @@
     },
     "contact": "Contacto",
     "contactPlaceholder": "Buscar un contacto...",
-    "noContactsFound": "No se encontraron contactos"
+    "noContactsFound": "No se encontraron contactos",
+    "clearContact": "Borrar contacto",
+    "loadingChannels": "Cargando canales...",
+    "selectChannel": "Selecciona un canal",
+    "cancelConfirm": {
+      "title": "¿Cancelar acción programada?",
+      "titleBulk": "¿Cancelar {{count}} acciones programadas?",
+      "description": "La acción no se ejecutará. Esta operación no se puede deshacer.",
+      "confirm": "Cancelar acción",
+      "keep": "Mantener"
+    },
+    "statusLabels": {
+      "scheduled": "Programada",
+      "executing": "En ejecución",
+      "completed": "Completada",
+      "failed": "Fallida",
+      "cancelled": "Cancelada"
+    }
   },
   "events": {
     "timeline": {
@@ -760,6 +794,10 @@
       "updateError": "Error al actualizar la nota",
       "deleteSuccess": "Nota eliminada",
       "deleteError": "Error al eliminar la nota"
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar nota?",
+      "description": "Esta nota se eliminará de forma permanente."
     }
   }
 }

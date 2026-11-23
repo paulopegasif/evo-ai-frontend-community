@@ -1,8 +1,6 @@
-'use client';
-
 import { useLanguage } from '@/hooks/useLanguage';
-import { Button } from '@evoapi/design-system';
-import { UserX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Eye, UserX } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 export default function ImpersonationBar() {
@@ -24,20 +22,22 @@ export default function ImpersonationBar() {
   if (!impersonation) return null;
 
   return (
-    <div className="bg-green-400 text-black py-2 px-4 sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center">
-        <p>
-          {t('base.impersonation.viewing')} <span className="font-bold">{impersonation.impersonatedClient}</span>
-        </p>
-        <Button
-          onClick={handleExitImpersonation}
-          className="bg-black text-white hover:bg-gray-800 flex items-center gap-2"
-          size="sm"
-        >
-          <UserX className="h-4 w-4" />
-          {t('base.impersonation.exit')}
-        </Button>
-      </div>
+    <div
+      role="status"
+      className="sticky top-0 z-50 flex items-center justify-center gap-3 bg-success px-4 py-1.5 text-black text-sm"
+    >
+      <Eye className="size-4 shrink-0" aria-hidden="true" />
+      <p className="min-w-0 truncate">
+        {t('base.impersonation.viewing')} <span className="font-semibold">{impersonation.impersonatedClient}</span>
+      </p>
+      <Button
+        onClick={handleExitImpersonation}
+        size="xs"
+        className="shrink-0 bg-black text-white hover:bg-black/80"
+      >
+        <UserX />
+        {t('base.impersonation.exit')}
+      </Button>
     </div>
   );
 }

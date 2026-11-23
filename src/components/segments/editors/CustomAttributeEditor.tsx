@@ -1,12 +1,6 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Input,
-  Label,
-} from '@evoapi/design-system';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import OptionSelect from '../ui/OptionSelect';
 import { CustomAttributeNode } from '@/types/analytics';
 import { CustomAttributeDefinition } from '@/types/settings';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -82,64 +76,52 @@ export default function CustomAttributeEditor({
     onUpdate(updatedCondition);
   };
 
+  const showValue = customAttributeOperatorType !== 'Exists' && customAttributeOperatorType !== 'NotExists';
+
   return (
-    <div className="space-y-4">
-      <div>
-        <Label>{t('customAttributeEditor.attribute')}</Label>
-        <Select
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Field>
+        <FieldLabel htmlFor={`ca-attr-${condition.id}`}>{t('customAttributeEditor.attribute')}</FieldLabel>
+        <OptionSelect
+          id={`ca-attr-${condition.id}`}
           value={customAttributeName}
           onValueChange={handleAttributeNameChange}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (open && availableCustomAttributes.length === 0) {
               onLoadCustomAttributes();
             }
           }}
-        >
-          <SelectTrigger>
-            <SelectValue 
-              placeholder={loadingCustomAttributes ? t('customAttributeEditor.loading') : t('customAttributeEditor.selectAttribute')}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {availableCustomAttributes.length === 0 && !loadingCustomAttributes && (
-              <div className="p-2 text-sm text-gray-500">
-                {t('customAttributeEditor.noAttributes')}
-              </div>
-            )}
-            {availableCustomAttributes.map((attr) => (
-              <SelectItem key={attr.attribute_key} value={attr.attribute_key}>
-                {attr.attribute_display_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          placeholder={
+            loadingCustomAttributes ? t('customAttributeEditor.loading') : t('customAttributeEditor.selectAttribute')
+          }
+          empty={!loadingCustomAttributes ? t('customAttributeEditor.noAttributes') : undefined}
+          options={availableCustomAttributes.map(attr => ({
+            value: attr.attribute_key,
+            label: attr.attribute_display_name,
+          }))}
+        />
+      </Field>
 
-      <div>
-        <Label>{t('customAttributeEditor.operator')}</Label>
-        <Select value={customAttributeOperatorType} onValueChange={handleOperatorTypeChange}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {operators.map((op) => (
-              <SelectItem key={op.value} value={op.value}>
-                {op.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <Field>
+        <FieldLabel htmlFor={`ca-op-${condition.id}`}>{t('customAttributeEditor.operator')}</FieldLabel>
+        <OptionSelect
+          id={`ca-op-${condition.id}`}
+          value={customAttributeOperatorType}
+          onValueChange={handleOperatorTypeChange}
+          options={operators}
+        />
+      </Field>
 
-      {customAttributeOperatorType !== 'Exists' && customAttributeOperatorType !== 'NotExists' && (
-        <div>
-          <Label>{t('customAttributeEditor.value')}</Label>
+      {showValue && (
+        <Field className="sm:col-span-2">
+          <FieldLabel htmlFor={`ca-val-${condition.id}`}>{t('customAttributeEditor.value')}</FieldLabel>
           <Input
+            id={`ca-val-${condition.id}`}
             value={customAttributeValue}
-            onChange={(e) => handleValueChange(e.target.value)}
+            onChange={e => handleValueChange(e.target.value)}
             placeholder={t('customAttributeEditor.valuePlaceholder')}
           />
-        </div>
+        </Field>
       )}
     </div>
   );

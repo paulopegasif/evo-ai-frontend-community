@@ -12,7 +12,7 @@ export interface MetricComparison {
 export const deltaToneClass = (delta: number | null, direction: MetricDirection) => {
   if (delta == null || delta === 0 || direction === 'neutral') return 'text-muted-foreground';
   const improved = direction === 'higher_is_better' ? delta > 0 : delta < 0;
-  return improved ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400';
+  return improved ? 'text-success-foreground' : 'text-destructive-foreground';
 };
 
 export const formatDelta = (delta: number | null) => {

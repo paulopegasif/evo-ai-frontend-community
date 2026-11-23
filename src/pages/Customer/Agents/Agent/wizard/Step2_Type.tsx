@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent, Button, Badge } from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardPanel } from '@/components/ui/card';
 import {
   ArrowRight,
   ArrowLeft,
@@ -117,7 +119,7 @@ const Step2_Type = ({ data, onChange, onNext, onBack }: Step2Props) => {
         }`}
         onClick={() => handleTypeSelect(type.value)}
       >
-        <CardContent className="p-5 flex flex-col items-center justify-center text-center gap-3">
+        <CardPanel className="p-5 flex flex-col items-center justify-center text-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
             <IconComponent className="h-6 w-6 text-primary" />
           </div>
@@ -137,7 +139,7 @@ const Step2_Type = ({ data, onChange, onNext, onBack }: Step2Props) => {
               <Check className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
             </div>
           )}
-        </CardContent>
+        </CardPanel>
       </Card>
     );
   };
@@ -153,7 +155,7 @@ const Step2_Type = ({ data, onChange, onNext, onBack }: Step2Props) => {
         }`}
         onClick={() => handleTypeSelect(type.value)}
       >
-        <CardContent className="p-3 flex items-center gap-3">
+        <CardPanel className="p-3 flex items-center gap-3">
           <div className="w-9 h-9 shrink-0 rounded-lg bg-muted flex items-center justify-center">
             <IconComponent className="h-4 w-4 text-muted-foreground" />
           </div>
@@ -164,7 +166,7 @@ const Step2_Type = ({ data, onChange, onNext, onBack }: Step2Props) => {
             </p>
           </div>
           {isSelected && <Check className="w-4 h-4 text-primary shrink-0" strokeWidth={3} />}
-        </CardContent>
+        </CardPanel>
       </Card>
     );
   };
@@ -202,7 +204,11 @@ const Step2_Type = ({ data, onChange, onNext, onBack }: Step2Props) => {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-600 text-center mb-3 flex-shrink-0">{error}</p>}
+      {error && (
+        <p className="text-sm text-destructive-foreground text-center mb-3 flex-shrink-0">
+          {error}
+        </p>
+      )}
 
       <div className="flex justify-between flex-shrink-0 pt-3 border-t mt-3">
         <Button variant="outline" onClick={onBack} className="gap-2">

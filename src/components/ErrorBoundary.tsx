@@ -1,7 +1,8 @@
 import React from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from '@evoapi/design-system';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -54,34 +55,32 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, retr
   const { t } = useLanguage('common');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-      <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
-        <AlertTriangle className="w-8 h-8 text-destructive" />
-      </div>
-
-      <h2 className="text-xl font-semibold mb-2">{t('base.errorBoundary.title')}</h2>
-
-      <p className="text-muted-foreground mb-4 max-w-md">
-        {t('base.errorBoundary.description')}
-      </p>
-
-      {error && process.env.NODE_ENV === 'development' && (
-        <details className="mb-4 text-left max-w-md">
-          <summary className="cursor-pointer text-sm text-muted-foreground mb-2">
-            {t('base.errorBoundary.technicalDetails')}
-          </summary>
-          <pre className="text-xs bg-muted p-2 rounded overflow-auto">
-            {error.message}
-            {error.stack && '\n\n' + error.stack}
-          </pre>
-        </details>
-      )}
-
-      <Button onClick={retry} className="gap-2">
-        <RefreshCw className="w-4 h-4" />
-        {t('base.errorBoundary.retry')}
-      </Button>
-    </div>
+    <Empty className="min-h-[400px]">
+      <EmptyHeader>
+        <EmptyMedia variant="icon" className="text-destructive-foreground">
+          <AlertTriangle />
+        </EmptyMedia>
+        <EmptyTitle>{t('base.errorBoundary.title')}</EmptyTitle>
+        <EmptyDescription>{t('base.errorBoundary.description')}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        {error && process.env.NODE_ENV === 'development' && (
+          <details className="w-full max-w-md text-start">
+            <summary className="mb-2 cursor-pointer text-muted-foreground text-sm">
+              {t('base.errorBoundary.technicalDetails')}
+            </summary>
+            <pre className="max-h-64 overflow-auto rounded-lg bg-muted p-2 text-xs">
+              {error.message}
+              {error.stack && '\n\n' + error.stack}
+            </pre>
+          </details>
+        )}
+        <Button onClick={retry}>
+          <RefreshCw />
+          {t('base.errorBoundary.retry')}
+        </Button>
+      </EmptyContent>
+    </Empty>
   );
 };
 

@@ -2,19 +2,11 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import axios from 'axios';
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@evoapi/design-system';
-import { ArrowLeft, FileUp, Loader2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
+import { ArrowLeft, FileUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { usePermissions } from '@/contexts/PermissionsContext';
 import { productsService } from '@/services/products/productsService';
@@ -61,6 +53,17 @@ export default function ProductsImport() {
   const [dryRunLoading, setDryRunLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const fieldOptions = useMemo(
+    () => [
+      { value: 'ignore', label: t('import.mapping.ignore') },
+      ...BULK_FIELDS.map((f) => ({
+        value: f,
+        label: `${t(`import.fields.${f}`)}${REQUIRED_FIELDS.includes(f) ? ' *' : ''}`,
+      })),
+    ],
+    [t],
+  );
 
   const requiredMissing = useMemo(() => unmappedRequiredFields(mapping), [mapping]);
   const clientInvalidCount = useMemo(
@@ -214,38 +217,39 @@ export default function ProductsImport() {
 
   if (!canCreate) {
     return (
-      <div className="p-6 max-w-2xl mx-auto">
-        <div className="rounded border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
-          {t('import.forbidden')}
-        </div>
+      <div className="mx-auto max-w-2xl p-4 md:p-6">
+        <Alert variant="error">
+          <AlertTriangle />
+          <AlertDescription>{t('import.forbidden')}</AlertDescription>
+        </Alert>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl p-4 md:p-6">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t('import.title')}</h1>
+          <h1 className="font-semibold text-xl md:text-2xl">{t('import.title')}</h1>
           <p className="text-sm text-muted-foreground">{t('import.subtitle', { max: MAX_BULK_ROWS })}</p>
         </div>
         <Button variant="outline" onClick={() => navigate('/products')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft />
           {t('import.back')}
         </Button>
       </div>
 
       <Tabs value={stage}>
         <TabsList>
-          <TabsTrigger value="upload" disabled>{t('import.tabs.upload')}</TabsTrigger>
-          <TabsTrigger value="mapping" disabled>{t('import.tabs.mapping')}</TabsTrigger>
-          <TabsTrigger value="preview" disabled>{t('import.tabs.preview')}</TabsTrigger>
-          <TabsTrigger value="done" disabled>{t('import.tabs.done')}</TabsTrigger>
+          <TabsTab value="upload" disabled>{t('import.tabs.upload')}</TabsTab>
+          <TabsTab value="mapping" disabled>{t('import.tabs.mapping')}</TabsTab>
+          <TabsTab value="preview" disabled>{t('import.tabs.preview')}</TabsTab>
+          <TabsTab value="done" disabled>{t('import.tabs.done')}</TabsTab>
         </TabsList>
 
-        <TabsContent value="upload">
+        <TabsPanel value="upload">
           <div className="border border-dashed rounded-lg p-10 text-center">
-            <FileUp className="mx-auto h-10 w-10 text-muted-foreground" />
+            <FileUp className="mx-auto size-10 text-muted-foreground" />
             <p className="mt-3 text-sm">{t('import.upload.hint', { max: MAX_BULK_ROWS })}</p>
             <input
               ref={fileInputRef}
@@ -259,9 +263,9 @@ export default function ProductsImport() {
               {t('import.upload.selectFile')}
             </Button>
           </div>
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="mapping">
+        <TabsPanel value="mapping">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               {t('import.mapping.file', { name: fileName, count: rows.length })}
@@ -270,7 +274,7 @@ export default function ProductsImport() {
               {t('import.mapping.changeFile')}
             </Button>
           </div>
-          <div className="rounded border overflow-hidden">
+          <div className="overflow-hidden rounded-lg border">
             <table className="w-full text-sm">
               <thead className="bg-muted/40">
                 <tr>
@@ -288,23 +292,23 @@ export default function ProductsImport() {
                     </td>
                     <td className="p-2">
                       <Select
+                        items={fieldOptions}
                         value={mapping[header] || 'ignore'}
-                        onValueChange={(v) =>
-                          setMapping((m) => ({ ...m, [header]: v === 'ignore' ? '' : (v as BulkField) }))
-                        }
+                        onValueChange={(next) => {
+                          const v = next == null ? '' : String(next);
+                          setMapping((m) => ({ ...m, [header]: v === 'ignore' ? '' : (v as BulkField) }));
+                        }}
                       >
-                        <SelectTrigger className="w-[220px]">
+                        <SelectTrigger className="w-[220px]" aria-label={header}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ignore">{t('import.mapping.ignore')}</SelectItem>
-                          {BULK_FIELDS.map((f) => (
-                            <SelectItem key={f} value={f}>
-                              {t(`import.fields.${f}`)}
-                              {REQUIRED_FIELDS.includes(f) ? ' *' : ''}
+                        <SelectPopup alignItemWithTrigger={false}>
+                          {fieldOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectPopup>
                       </Select>
                     </td>
                   </tr>
@@ -313,7 +317,7 @@ export default function ProductsImport() {
             </table>
           </div>
           {requiredMissing.length > 0 && (
-            <p className="mt-3 text-sm text-destructive">
+            <p className="mt-3 text-sm text-destructive-foreground">
               {t('import.mapping.missingRequired', {
                 fields: requiredMissing.map((f) => t(`import.fields.${f}`)).join(', '),
               })}
@@ -325,9 +329,9 @@ export default function ProductsImport() {
               {t('import.mapping.next')}
             </Button>
           </div>
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="preview">
+        <TabsPanel value="preview">
           <div className="grid grid-cols-3 gap-3 mb-4">
             <SummaryCard
               tone={clientInvalidCount === 0 ? 'ok' : 'error'}
@@ -347,12 +351,10 @@ export default function ProductsImport() {
           </div>
 
           <div className="mb-4 flex items-center gap-2">
-            <Button onClick={runDryRun} disabled={dryRunLoading || clientInvalidCount > 0}>
-              {dryRunLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            <Button onClick={runDryRun} loading={dryRunLoading} disabled={dryRunLoading || clientInvalidCount > 0}>
               {t('import.preview.runDryRun')}
             </Button>
-            <Button onClick={handleSubmit} disabled={!canSubmit}>
-              {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            <Button onClick={handleSubmit} loading={submitting} disabled={!canSubmit}>
               {t('import.preview.import')}
             </Button>
             <Button variant="outline" onClick={() => setStage('mapping')}>
@@ -361,9 +363,9 @@ export default function ProductsImport() {
           </div>
 
           {allErrors.length > 0 && (
-            <div className="rounded border border-destructive/40">
-              <div className="bg-destructive/5 px-3 py-2 text-sm font-medium flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-destructive" />
+            <div className="overflow-hidden rounded-lg border border-destructive/32">
+              <div className="flex items-center gap-2 bg-destructive/8 px-3 py-2 font-medium text-destructive-foreground text-sm">
+                <AlertTriangle className="size-4" />
                 {t('import.preview.errorsHeading', { count: allErrors.length })}
               </div>
               <table className="w-full text-sm">
@@ -402,11 +404,11 @@ export default function ProductsImport() {
               </table>
             </div>
           )}
-        </TabsContent>
+        </TabsPanel>
 
-        <TabsContent value="done">
-          <div className="rounded border border-emerald-500/40 bg-emerald-500/5 p-6 text-center">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
+        <TabsPanel value="done">
+          <div className="rounded-lg border border-success/32 bg-success/8 p-6 text-center">
+            <CheckCircle2 className="mx-auto size-10 text-success-foreground" />
             <h2 className="mt-2 text-lg font-medium">{t('import.done.title')}</h2>
             <p className="text-sm text-muted-foreground">{t('import.done.subtitle')}</p>
             <div className="mt-4 flex justify-center gap-2">
@@ -428,7 +430,7 @@ export default function ProductsImport() {
               </Button>
             </div>
           </div>
-        </TabsContent>
+        </TabsPanel>
       </Tabs>
     </div>
   );
@@ -443,12 +445,12 @@ export default function ProductsImport() {
 function SummaryCard({ tone, label, value }: { tone: 'ok' | 'warn' | 'error'; label: string; value: number | string }) {
   const palette =
     tone === 'ok'
-      ? 'border-emerald-500/40 bg-emerald-500/5'
+      ? 'border-success/32 bg-success/8'
       : tone === 'warn'
-        ? 'border-amber-500/40 bg-amber-500/5'
-        : 'border-destructive/40 bg-destructive/5';
+        ? 'border-warning/32 bg-warning/8'
+        : 'border-destructive/32 bg-destructive/8';
   return (
-    <div className={`rounded border ${palette} p-3`}>
+    <div className={`rounded-lg border ${palette} p-3`}>
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="text-2xl font-semibold">{value}</div>
     </div>

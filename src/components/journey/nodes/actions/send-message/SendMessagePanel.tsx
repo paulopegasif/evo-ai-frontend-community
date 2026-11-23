@@ -1,17 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Badge,
-  Card,
-  Label,
-  Checkbox,
-} from '@evoapi/design-system';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { VariableTextarea } from '@/components/journey/environment-manager';
 import {
   MessageSquare,
@@ -97,27 +92,27 @@ const ALLOWED_INBOX_TYPES = [
 const getInboxIcon = (channelType: string) => {
   switch (channelType) {
     case 'Channel::Email':
-      return <Mail className="w-4 h-4" />;
+      return <Mail className="size-4" />;
     case 'Channel::Whatsapp':
-      return <MessageSquare className="w-4 h-4" />;
+      return <MessageSquare className="size-4" />;
     case 'Channel::Sms':
     case 'Channel::TwilioSms':
     case 'Channel::Twilio':
-      return <Phone className="w-4 h-4" />;
+      return <Phone className="size-4" />;
     case 'Channel::Telegram':
-      return <Send className="w-4 h-4" />;
+      return <Send className="size-4" />;
     case 'Channel::FacebookPage':
-      return <MessageSquare className="w-4 h-4" />;
+      return <MessageSquare className="size-4" />;
     case 'Channel::Instagram':
-      return <MessageSquare className="w-4 h-4" />;
+      return <MessageSquare className="size-4" />;
     case 'Channel::Api':
-      return <Send className="w-4 h-4" />;
+      return <Send className="size-4" />;
     case 'Channel::WebWidget':
-      return <MessageSquare className="w-4 h-4" />;
+      return <MessageSquare className="size-4" />;
     case 'Channel::Line':
-      return <MessageSquare className="w-4 h-4" />;
+      return <MessageSquare className="size-4" />;
     default:
-      return <MessageSquare className="w-4 h-4" />;
+      return <MessageSquare className="size-4" />;
   }
 };
 
@@ -475,6 +470,19 @@ export function SendMessagePanel({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const inboxItems = (filteredInboxes as Array<{ id: string | number; name: string }>).map(inbox => ({
+    value: String(inbox.id),
+    label: inbox.name,
+  }));
+  const templateItems = templates.map(template => ({
+    value: String(template.id),
+    label: template.name,
+  }));
+  const variableSourceItems = VARIABLE_SOURCES.map(source => ({
+    value: source,
+    label: t(`panels.sendMessage.variableSources.${source}`),
+  }));
+
   const getCharacterCount = () => formData.message?.length || 0;
   const getCharacterCountColor = () => {
     const count = getCharacterCount();
@@ -545,7 +553,7 @@ export function SendMessagePanel({
       open
       variant="simple"
       title={t('panels.sendMessage.title')}
-      icon={<MessageSquare className="h-5 w-5 text-flow-node-action-message-fg" />}
+      icon={<MessageSquare className="size-5 text-flow-node-action-message-fg" />}
       onCancel={onClose}
       onSave={handleSave}
       dirty={dirty && isValid}
@@ -588,8 +596,8 @@ export function SendMessagePanel({
           </FlowFeedbackBanner>
         )}
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.sendMessage.mode')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.sendMessage.mode')}</FieldLabel>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -610,18 +618,15 @@ export function SendMessagePanel({
             </Button>
           </div>
           {isCloudInbox && (
-            <p className="text-xs text-muted-foreground">
-              {t('panels.sendMessage.templateRequiredForCloud')}
-            </p>
+            <FieldDescription>{t('panels.sendMessage.templateRequiredForCloud')}</FieldDescription>
           )}
-        </div>
+        </Field>
 
         {!isTemplateMode && (
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col gap-1.5">
+            <label className="flex cursor-pointer items-center gap-2 font-medium text-foreground text-sm">
               <Checkbox
-                id="useEventChannel"
-                checked={formData.useEventChannel}
+                checked={!!formData.useEventChannel}
                 onCheckedChange={checked => {
                   setFormData(prev => ({
                     ...prev,
@@ -631,44 +636,46 @@ export function SendMessagePanel({
                   }));
                 }}
               />
-              <Label htmlFor="useEventChannel" className="text-sm font-medium cursor-pointer">
-                {t('panels.sendMessage.useEventChannel')}
-              </Label>
-            </div>
-            <p className="text-xs text-muted-foreground">
+              {t('panels.sendMessage.useEventChannel')}
+            </label>
+            <p className="ps-6 text-muted-foreground text-xs">
               {t('panels.sendMessage.useEventChannelDescription')}
             </p>
           </div>
         )}
 
         {!formData.useEventChannel && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('panels.sendMessage.sendChannel')}</Label>
+          <Field>
+            <FieldLabel>{t('panels.sendMessage.sendChannel')}</FieldLabel>
 
             {loading ? (
-              <div className="flex items-center justify-center p-8 border-2 border-dashed border-border rounded-lg">
-                <div className="animate-spin w-6 h-6 border-2 border-flow-node-action-message-fg border-t-transparent rounded-full mr-2" />
-                <span className="text-sm text-muted-foreground">
-                  {t('panels.sendMessage.loadingChannels')}
-                </span>
+              <div className="w-full" aria-busy="true">
+                <Skeleton className="h-9 w-full rounded-lg sm:h-8" />
+                <span className="sr-only">{t('panels.sendMessage.loadingChannels')}</span>
               </div>
             ) : filteredInboxes.length === 0 ? (
-              <Card className="p-6 text-center">
-                <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm font-medium mb-1">
-                  {t('panels.sendMessage.noChannelsAvailable')}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t('panels.sendMessage.configureChannels')}
-                </p>
-              </Card>
+              <Empty className="w-full rounded-xl border border-dashed p-6">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <AlertCircle />
+                  </EmptyMedia>
+                  <EmptyTitle className="text-base">
+                    {t('panels.sendMessage.noChannelsAvailable')}
+                  </EmptyTitle>
+                  <EmptyDescription>{t('panels.sendMessage.configureChannels')}</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             ) : (
               <>
-                <Select value={formData.inboxId} onValueChange={handleInboxChange}>
+                <Select
+                  items={inboxItems}
+                  value={formData.inboxId || null}
+                  onValueChange={value => handleInboxChange(String(value ?? ''))}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('panels.sendMessage.chooseChannel')} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     {filteredInboxes.map((inbox: any) => (
                       <SelectItem key={inbox.id} value={String(inbox.id)}>
                         <div className="flex items-center gap-2">
@@ -680,44 +687,44 @@ export function SendMessagePanel({
                         </div>
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
-                <p className="text-xs text-muted-foreground">
-                  {t('panels.sendMessage.channelsDescription')}
-                </p>
+                <FieldDescription>{t('panels.sendMessage.channelsDescription')}</FieldDescription>
               </>
             )}
-          </div>
+          </Field>
         )}
 
         {isTemplateMode ? (
           <div className="space-y-3">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">{t('panels.sendMessage.template')}</Label>
+            <Field>
+              <FieldLabel>{t('panels.sendMessage.template')}</FieldLabel>
               {!formData.inboxId ? (
-                <p className="text-xs text-muted-foreground">
-                  {t('panels.sendMessage.selectChannelForTemplate')}
-                </p>
+                <FieldDescription>{t('panels.sendMessage.selectChannelForTemplate')}</FieldDescription>
               ) : loadingTemplates ? (
-                <div className="flex items-center gap-2 p-3 border border-dashed border-border rounded-lg">
-                  <div className="animate-spin w-4 h-4 border-2 border-flow-node-action-message-fg border-t-transparent rounded-full" />
-                  <span className="text-sm text-muted-foreground">
-                    {t('panels.sendMessage.loadingTemplates')}
-                  </span>
+                <div className="w-full" aria-busy="true">
+                  <Skeleton className="h-9 w-full rounded-lg sm:h-8" />
+                  <span className="sr-only">{t('panels.sendMessage.loadingTemplates')}</span>
                 </div>
               ) : templates.length === 0 ? (
-                <Card className="p-4 text-center">
-                  <AlertCircle className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">
-                    {t('panels.sendMessage.noTemplates')}
-                  </p>
-                </Card>
+                <Empty className="w-full rounded-xl border border-dashed p-4">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <AlertCircle />
+                    </EmptyMedia>
+                    <EmptyDescription>{t('panels.sendMessage.noTemplates')}</EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               ) : (
-                <Select value={formData.templateId} onValueChange={handleTemplateChange}>
+                <Select
+                  items={templateItems}
+                  value={formData.templateId || null}
+                  onValueChange={value => handleTemplateChange(String(value ?? ''))}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('panels.sendMessage.chooseTemplate')} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectPopup alignItemWithTrigger={false}>
                     {templates.map(template => (
                       <SelectItem key={template.id} value={String(template.id)}>
                         <div className="flex items-center gap-2">
@@ -735,17 +742,17 @@ export function SendMessagePanel({
                         </div>
                       </SelectItem>
                     ))}
-                  </SelectContent>
+                  </SelectPopup>
                 </Select>
               )}
-            </div>
+            </Field>
 
             {selectedTemplate && (
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">
+              <Field>
+                <FieldLabel>
                   {t('panels.sendMessage.templatePreview')}
-                </Label>
-                <Card className="p-3 space-y-2">
+                </FieldLabel>
+                <div className="flex w-full flex-col gap-2 rounded-xl border bg-muted/24 p-3">
                   {Array.isArray(selectedTemplate.components) &&
                   selectedTemplate.components.length > 0 ? (
                     selectedTemplate.components.map((component, index) =>
@@ -765,16 +772,16 @@ export function SendMessagePanel({
                   ) : (
                     <p className="text-sm whitespace-pre-wrap">{selectedTemplate.content}</p>
                   )}
-                </Card>
-              </div>
+                </div>
+              </Field>
             )}
 
             {selectedTemplate && (selectedTemplate.variables?.length ?? 0) > 0 && (
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">
+              <Field className="items-stretch">
+                <FieldLabel>
                   {t('panels.sendMessage.templateVariables')}
-                </Label>
-                <div className="space-y-3">
+                </FieldLabel>
+                <div className="flex flex-col gap-3">
                   {selectedTemplate.variables!.map(variable => {
                     if (!variable.name) return null;
                     const mapping = getVariableMapping(variable.name);
@@ -789,33 +796,37 @@ export function SendMessagePanel({
                     const exprErrorId = `send-message-expr-error-${variable.name}`;
 
                     return (
-                      <div key={variable.name} className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">
+                      <div
+                        key={variable.name}
+                        className="flex flex-col gap-1.5 rounded-xl border bg-muted/24 p-3"
+                      >
+                        <span className="font-medium text-muted-foreground text-xs">
                           {variable.label || variable.name}
                           {variable.required && (
                             <span className="text-flow-feedback-error-fg"> *</span>
                           )}
-                        </Label>
+                        </span>
                         <div className="flex gap-2">
                           <Select
-                            value={mapping.source}
+                            items={variableSourceItems}
+                            value={mapping.source || null}
                             onValueChange={source =>
                               handleVariableSourceChange(
                                 variable.name!,
-                                source as TemplateVariableSource,
+                                String(source ?? '') as TemplateVariableSource,
                               )
                             }
                           >
                             <SelectTrigger className="w-44 shrink-0">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectPopup alignItemWithTrigger={false}>
                               {VARIABLE_SOURCES.map(source => (
                                 <SelectItem key={source} value={source}>
                                   {t(`panels.sendMessage.variableSources.${source}`)}
                                 </SelectItem>
                               ))}
-                            </SelectContent>
+                            </SelectPopup>
                           </Select>
 
                           {mapping.source === 'fixed' && (
@@ -832,9 +843,19 @@ export function SendMessagePanel({
 
                           {isRootSource && (
                             <Select
-                              value={mapping.path ?? ''}
+                              items={SOURCE_FIELD_PATHS[
+                                mapping.source as keyof typeof SOURCE_FIELD_PATHS
+                              ].map(path => ({
+                                value: path,
+                                label: t(
+                                  `panels.sendMessage.variableFields.${mapping.source}.${path.replace(/\./g, '_')}`,
+                                ),
+                              }))}
+                              value={mapping.path || null}
                               onValueChange={path =>
-                                handleVariableMappingChange(variable.name!, { path })
+                                handleVariableMappingChange(variable.name!, {
+                                  path: String(path ?? ''),
+                                })
                               }
                             >
                               <SelectTrigger className="w-full">
@@ -842,7 +863,7 @@ export function SendMessagePanel({
                                   placeholder={t('panels.sendMessage.chooseField')}
                                 />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectPopup alignItemWithTrigger={false}>
                                 {SOURCE_FIELD_PATHS[
                                   mapping.source as keyof typeof SOURCE_FIELD_PATHS
                                 ].map(path => (
@@ -852,7 +873,7 @@ export function SendMessagePanel({
                                     )}
                                   </SelectItem>
                                 ))}
-                              </SelectContent>
+                              </SelectPopup>
                             </Select>
                           )}
 
@@ -891,22 +912,20 @@ export function SendMessagePanel({
                               })
                             }
                             placeholder={t('panels.sendMessage.fallbackPlaceholder')}
-                            className="text-xs"
+                            size="sm"
                           />
                         )}
                       </div>
                     );
                   })}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t('panels.sendMessage.variableSourcesHint')}
-                </p>
-              </div>
+                <FieldDescription>{t('panels.sendMessage.variableSourcesHint')}</FieldDescription>
+              </Field>
             )}
           </div>
         ) : (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('panels.sendMessage.message')}</Label>
+          <Field className="items-stretch">
+            <FieldLabel>{t('panels.sendMessage.message')}</FieldLabel>
             <VariableTextarea
               value={formData.message || ''}
               onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
@@ -916,19 +935,19 @@ export function SendMessagePanel({
               journeyId={journeyId}
             />
 
-            <div className="flex justify-between items-center text-xs">
+            <div className="flex items-center justify-between gap-2 text-xs">
               <span className="text-muted-foreground">{t('panels.sendMessage.useVariables')}</span>
               <span className={getCharacterCountColor()}>{getCharacterCount()}/1000</span>
             </div>
-          </div>
+          </Field>
         )}
 
         {!isTemplateMode && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">{t('panels.sendMessage.attachments')}</Label>
+        <Field>
+          <FieldLabel>{t('panels.sendMessage.attachments')}</FieldLabel>
 
           <div
-            className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+            className={`w-full rounded-xl border-2 border-dashed p-4 text-center transition-colors ${
               isDragOver
                 ? 'border-flow-node-action-message-fg bg-flow-node-action-message-bg'
                 : 'border-border hover:border-flow-node-action-message-border'
@@ -937,7 +956,7 @@ export function SendMessagePanel({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <Upload className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
+            <Upload className="mx-auto mb-2 size-6 text-muted-foreground" />
             <p className="text-sm text-foreground mb-1">{t('panels.sendMessage.dragFiles')}</p>
             <p className="text-xs text-muted-foreground mb-3">
               {t('panels.sendMessage.maxFileSize')}
@@ -948,7 +967,7 @@ export function SendMessagePanel({
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
             >
-              <Paperclip className="w-3 h-3 mr-1" />
+              <Paperclip />
               {t('panels.sendMessage.chooseFiles')}
             </Button>
             <input
@@ -960,33 +979,33 @@ export function SendMessagePanel({
               accept="*/*"
             />
           </div>
-        </div>
+        </Field>
         )}
 
         {!isTemplateMode && attachments.length > 0 && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
+          <Field>
+            <FieldLabel>
               {t('panels.sendMessage.attachmentsList', { count: attachments.length })}
-            </Label>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
+            </FieldLabel>
+            <div className="flex max-h-32 w-full flex-col gap-2 overflow-y-auto">
               {attachments.map(attachment => (
                 <div
                   key={attachment.id}
-                  className="flex items-center gap-3 p-2 rounded-md bg-muted/30 border border-border"
+                  className="flex items-center gap-3 rounded-lg border bg-muted/24 p-2"
                 >
                   <div className="flex-shrink-0">
                     {attachment.status === 'uploading' && (
-                      <div className="w-4 h-4 border-2 border-flow-node-action-message-fg border-t-transparent rounded-full animate-spin" />
+                      <div className="size-4 animate-spin rounded-full border-2 border-flow-node-action-message-fg border-t-transparent" />
                     )}
                     {attachment.status === 'uploaded' && (
-                      <CheckCircle className="w-4 h-4 text-flow-feedback-success-fg" />
+                      <CheckCircle className="size-4 text-flow-feedback-success-fg" />
                     )}
                     {attachment.status === 'error' && (
-                      <AlertCircle className="w-4 h-4 text-flow-feedback-error-fg" />
+                      <AlertCircle className="size-4 text-flow-feedback-error-fg" />
                     )}
                   </div>
 
-                  <File className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <File className="size-4 shrink-0 text-muted-foreground" />
 
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">{attachment.name}</div>
@@ -1002,23 +1021,23 @@ export function SendMessagePanel({
 
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="icon-sm"
                     onClick={() => removeAttachment(attachment.id)}
-                    className="flex-shrink-0 h-7 w-7 text-flow-feedback-error-fg hover:text-flow-feedback-error-fg"
+                    className="shrink-0 text-destructive-foreground hover:text-destructive-foreground"
                     aria-label={t('panels.sendMessage.removeAttachmentLabel') || 'Remove attachment'}
                   >
-                    <X className="w-3 h-3" />
+                    <X />
                   </Button>
                 </div>
               ))}
             </div>
-          </div>
+          </Field>
         )}
 
         {(isTemplateMode ? !!selectedTemplate : !!formData.message?.trim()) && (
           <FlowFeedbackBanner variant="info">
             <div className="flex items-start gap-3">
-              <MessageSquare className="w-4 h-4 mt-1 shrink-0" />
+              <MessageSquare className="mt-1 size-4 shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">
                   {isTemplateMode
@@ -1044,7 +1063,7 @@ export function SendMessagePanel({
 
                 {uploadedCount > 0 && (
                   <div className="mt-2 flex items-center gap-1 text-xs">
-                    <Paperclip className="w-3 h-3" />
+                    <Paperclip className="size-3" />
                     {uploadedCount === 1
                       ? t('panels.sendMessage.oneAttachment')
                       : t('panels.sendMessage.multipleAttachments', { count: uploadedCount })}

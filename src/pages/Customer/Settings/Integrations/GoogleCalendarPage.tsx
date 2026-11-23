@@ -1,22 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  Switch,
-} from '@evoapi/design-system';
-import { ArrowRight, Calendar, Clock, RefreshCw, Sparkles, UserCheck } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, RefreshCw, Sparkles, UserCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { toast } from 'sonner';
-import IntegrationBackButton from '@/components/integrations/shared/IntegrationBackButton';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from '@/components/ui/card';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import BrandIcon from '@/components/BrandIcon';
 import { integrationsService } from '@/services/integrations/integrationsService';
 import { useAppointmentMetadata } from '@/hooks/useAppointmentMetadata';
@@ -37,8 +33,6 @@ interface GoogleCalendarSettings {
 }
 
 const NOT_CONNECTED_HINT = 'Disponível após conectar a conta Google';
-
-const controlClassName = 'bg-sidebar border-sidebar-border text-sidebar-foreground';
 
 const initials = (name: string) =>
   name
@@ -133,99 +127,89 @@ export default function GoogleCalendarPage() {
     : 'Nunca sincronizado';
 
   return (
-    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 overflow-y-auto">
-      <div className="flex items-center justify-between gap-3">
-        <IntegrationBackButton onBack={() => navigate('/settings/integrations')} />
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate('/calendar')} className="gap-2">
-            <Calendar className="h-4 w-4" />
-            Abrir agenda
-            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+        {/* Top bar */}
+        <div className="flex items-center justify-between gap-3">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/settings/integrations')}>
+            <ArrowLeft />
+            Integrações
           </Button>
-          <span title={NOT_CONNECTED_HINT}>
-            <Button size="sm" disabled className="gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Sincronizar agora
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/calendar')}>
+              <Calendar />
+              Abrir agenda
+              <ArrowRight className="text-muted-foreground" />
             </Button>
-          </span>
-        </div>
-      </div>
-
-      {/* Header */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <div className="h-14 w-14 rounded-lg border border-border bg-card flex items-center justify-center shrink-0">
-                <BrandIcon id="google_calendar" className="h-8 w-8" />
-              </div>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Google Calendar</h1>
-                  {loading ? null : isConfigured ? (
-                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">
-                      Configurado
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="bg-muted text-muted-foreground border-border">
-                      Não configurado
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-                  Sincronize os agendamentos do CRM com as agendas Google dos profissionais.
-                </p>
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-3">
-                  <Clock className="h-4 w-4" />
-                  Última sincronização: <span className="font-medium text-foreground">{lastSync}</span>
-                </div>
-              </div>
-            </div>
-
-            <span title={NOT_CONNECTED_HINT} className="shrink-0">
-              <Button variant="outline" size="sm" disabled>
-                Reconectar conta
+            <span title={NOT_CONNECTED_HINT}>
+              <Button size="sm" disabled>
+                <RefreshCw />
+                Sincronizar agora
               </Button>
             </span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Left: account & preferences */}
-        <div className="space-y-4 lg:col-span-1">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Conta conectada</CardTitle>
-              <CardDescription>Conta Google usada para criar os eventos</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>E-mail da conta Google</Label>
-                <Input
-                  value={settings.account_email || ''}
-                  readOnly
-                  placeholder="Nenhuma conta conectada"
-                  className={controlClassName}
-                />
+        {/* Header */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-start gap-4">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-card shadow-xs/5">
+              <BrandIcon id="google_calendar" className="size-7" />
+            </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-semibold text-xl tracking-tight">Google Calendar</h1>
+                {loading ? (
+                  <Skeleton className="h-5 w-24" />
+                ) : (
+                  <Badge variant={isConfigured ? 'success' : 'outline'}>
+                    {isConfigured ? 'Configurado' : 'Não configurado'}
+                  </Badge>
+                )}
               </div>
+              <p className="mt-1 max-w-2xl text-muted-foreground text-sm">
+                Sincronize os agendamentos do CRM com as agendas Google dos profissionais.
+              </p>
+              <p className="mt-2 flex items-center gap-1.5 text-muted-foreground text-sm">
+                <Clock className="size-4" />
+                Última sincronização:
+                <span className="font-medium text-foreground">{lastSync}</span>
+              </p>
+            </div>
+          </div>
+          <span title={NOT_CONNECTED_HINT} className="shrink-0">
+            <Button variant="outline" size="sm" disabled>
+              Reconectar conta
+            </Button>
+          </span>
+        </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="gcal-calendar-id">ID da agenda principal</Label>
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+          {/* Left: account & preferences */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Conta e preferências</CardTitle>
+              <CardDescription>Conta Google usada para criar os eventos.</CardDescription>
+            </CardHeader>
+            <CardPanel className="flex flex-col gap-5">
+              <Field>
+                <FieldLabel>E-mail da conta Google</FieldLabel>
+                <Input value={settings.account_email || ''} readOnly placeholder="Nenhuma conta conectada" />
+              </Field>
+
+              <Field>
+                <FieldLabel>ID da agenda principal</FieldLabel>
                 <Input
                   id="gcal-calendar-id"
                   value={calendarId}
                   onChange={e => setCalendarId(e.target.value)}
                   placeholder="primary ou e-mail da agenda"
-                  className={controlClassName}
                 />
-                {settings.calendar_name && (
-                  <p className="text-xs text-muted-foreground">{settings.calendar_name}</p>
-                )}
-              </div>
+                {settings.calendar_name && <FieldDescription>{settings.calendar_name}</FieldDescription>}
+              </Field>
 
-              <div className="space-y-2">
-                <Label htmlFor="gcal-reminder">Lembrete padrão (minutos antes)</Label>
+              <Field>
+                <FieldLabel>Lembrete padrão (minutos antes)</FieldLabel>
                 <Input
                   id="gcal-reminder"
                   type="number"
@@ -233,112 +217,128 @@ export default function GoogleCalendarPage() {
                   value={reminderMinutes}
                   onChange={e => setReminderMinutes(e.target.value)}
                   placeholder="60"
-                  className={controlClassName}
+                />
+              </Field>
+
+              <div className="flex flex-col gap-2">
+                <ToggleRow
+                  id="gcal-two-way"
+                  title="Sincronização bidirecional"
+                  description="Consultas criadas no CRM vão para o Google, e eventos do Google refletem no CRM."
+                  checked={twoWaySync}
+                  onCheckedChange={setTwoWaySync}
+                />
+                <ToggleRow
+                  id="gcal-meet"
+                  title="Link do Google Meet automático"
+                  description="Gera link de videoconferência para teleconsultas e avaliações online."
+                  checked={autoMeet}
+                  onCheckedChange={setAutoMeet}
                 />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Preferências de sincronização</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <Label htmlFor="gcal-two-way">Sincronização bidirecional</Label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Consultas criadas no CRM vão para o Google, e eventos do Google refletem no CRM.
-                  </p>
-                </div>
-                <Switch id="gcal-two-way" checked={twoWaySync} onCheckedChange={setTwoWaySync} />
-              </div>
-
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <Label htmlFor="gcal-meet">Link do Google Meet automático</Label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Gera link de videoconferência para teleconsultas e avaliações online.
-                  </p>
-                </div>
-                <Switch id="gcal-meet" checked={autoMeet} onCheckedChange={setAutoMeet} />
-              </div>
-
-              <Button onClick={handleSaveSettings} disabled={isSaving || loading} className="w-full">
-                {isSaving ? 'Salvando...' : 'Salvar preferências'}
+            </CardPanel>
+            <CardFooter className="justify-end border-t">
+              <Button onClick={handleSaveSettings} disabled={loading} loading={isSaving}>
+                Salvar preferências
               </Button>
-            </CardContent>
+            </CardFooter>
           </Card>
-        </div>
 
-        {/* Right: professionals & categories */}
-        <div className="space-y-4 lg:col-span-2">
-          <Card>
-            <CardHeader className="pb-3 flex flex-row items-start justify-between gap-3">
-              <div>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-primary" />
+          {/* Right: professionals & categories */}
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UserCheck className="size-4 text-muted-foreground" />
                   Profissionais
                 </CardTitle>
-                <CardDescription>Usuários da conta que podem receber agendamentos</CardDescription>
-              </div>
-              <Badge variant="secondary">{professionals.length}</Badge>
-            </CardHeader>
-            <CardContent>
-              {professionals.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhum usuário encontrado.</p>
-              ) : (
-                <div className="divide-y divide-border border border-border rounded-md overflow-hidden">
-                  {professionals.map(prof => (
-                    <div key={prof.id} className="flex items-center justify-between gap-3 p-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-8 w-8 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
-                          {initials(prof.name)}
-                        </div>
-                        <span className="text-sm font-medium truncate">{prof.name}</span>
-                      </div>
-                      {prof.email && (
-                        <span className="text-sm text-muted-foreground truncate hidden sm:inline">{prof.email}</span>
-                      )}
+                <CardDescription>Usuários da conta que podem receber agendamentos.</CardDescription>
+                <CardAction>
+                  <Badge variant="secondary">{professionals.length}</Badge>
+                </CardAction>
+              </CardHeader>
+              <CardPanel>
+                {professionals.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">Nenhum usuário encontrado.</p>
+                ) : (
+                  <ul className="divide-y overflow-hidden rounded-lg border">
+                    {professionals.map(prof => (
+                      <li key={prof.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
+                        <span className="flex min-w-0 items-center gap-3">
+                          <Avatar className="size-8">
+                            <AvatarFallback className="bg-primary/12 font-semibold text-primary text-xs">
+                              {initials(prof.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="truncate font-medium text-sm">{prof.name}</span>
+                        </span>
+                        {prof.email && (
+                          <span className="hidden truncate text-muted-foreground text-sm sm:inline">{prof.email}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardPanel>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="size-4 text-muted-foreground" />
+                  Procedimentos
+                </CardTitle>
+                <CardDescription>Categorias de agendamento enviadas como eventos.</CardDescription>
+                <CardAction>
+                  <Badge variant="secondary">{categories.length}</Badge>
+                </CardAction>
+              </CardHeader>
+              <CardPanel>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {categories.map(cat => (
+                    <div
+                      key={cat.name}
+                      className="flex items-center justify-between gap-2 rounded-lg border bg-muted/32 px-3 py-2.5 text-sm"
+                    >
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: cat.color }} />
+                        <span className="truncate font-medium">{cat.name}</span>
+                      </span>
+                      <Badge variant="outline" className="shrink-0">
+                        {formatDuration(cat.duration)}
+                      </Badge>
                     </div>
                   ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3 flex flex-row items-start justify-between gap-3">
-              <div>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  Procedimentos
-                </CardTitle>
-                <CardDescription>Categorias de agendamento enviadas como eventos</CardDescription>
-              </div>
-              <Badge variant="secondary">{categories.length}</Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {categories.map(cat => (
-                  <div
-                    key={cat.name}
-                    className="flex items-center justify-between gap-2 p-2.5 rounded-md border border-sidebar-border bg-sidebar text-sm"
-                  >
-                    <span className="flex items-center gap-2 min-w-0">
-                      <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                      <span className="font-medium truncate">{cat.name}</span>
-                    </span>
-                    <Badge variant="outline" className="shrink-0">
-                      {formatDuration(cat.duration)}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardPanel>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function ToggleRow({
+  id,
+  title,
+  description,
+  checked,
+  onCheckedChange,
+}: {
+  id: string;
+  title: string;
+  description: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <Label className="flex items-start justify-between gap-4 rounded-lg border p-3 has-data-checked:border-primary/48 has-data-checked:bg-primary/4">
+      <span className="flex flex-col gap-1">
+        <span className="font-medium text-sm">{title}</span>
+        <span className="font-normal text-muted-foreground text-xs">{description}</span>
+      </span>
+      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+    </Label>
   );
 }
