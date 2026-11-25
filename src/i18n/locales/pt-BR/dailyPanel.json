@@ -31,6 +31,7 @@
   "sales": {
     "title": "Vendas de hoje",
     "summary_one": "{{count}} venda · {{amount}}",
+    "summary_zero": "{{count}} vendas · {{amount}}",
     "summary_other": "{{count}} vendas · {{amount}}",
     "vsYesterday": "Ontem",
     "vsLastWeek": "Mesmo dia da semana passada",
@@ -41,8 +42,10 @@
     "encourage": "O dia ainda não acabou. Uma boa conversa pode virar a primeira venda.",
     "encourageWithOpportunities": "O dia ainda não acabou. Que tal começar por estas oportunidades?",
     "stalled_one": "{{count}} proposta parada há 3+ dias",
+    "stalled_zero": "{{count}} propostas paradas há 3+ dias",
     "stalled_other": "{{count}} propostas paradas há 3+ dias",
     "awaiting_one": "{{count}} lead aguardando resposta",
+    "awaiting_zero": "{{count}} leads aguardando resposta",
     "awaiting_other": "{{count}} leads aguardando resposta"
   },
   "goal": {
@@ -50,6 +53,7 @@
     "titleMine": "Sua meta do mês",
     "monthTotal": "Vendido no mês",
     "salesCount_one": "{{count}} venda no mês",
+    "salesCount_zero": "{{count}} vendas no mês",
     "salesCount_other": "{{count}} vendas no mês",
     "setGoal": "Definir meta do mês",
     "soldOfGoal": "{{sold}} de {{goal}}",
@@ -58,6 +62,7 @@
     "surplus": "{{amount}} acima da meta",
     "remaining": "Faltam {{amount}}",
     "pace_one": "≈ {{amount}} por dia · {{count}} dia restante",
+    "pace_zero": "≈ {{amount}} por dia · {{count}} dias restantes",
     "pace_other": "≈ {{amount}} por dia · {{count}} dias restantes"
   },
   "todo": {
@@ -65,12 +70,16 @@
     "allClear": "Tudo em dia! Nenhuma pendência por enquanto.",
     "items": {
       "awaiting_reply_one": "lead aguardando resposta",
+      "awaiting_reply_zero": "leads aguardando resposta",
       "awaiting_reply_other": "leads aguardando resposta",
       "overdue_follow_ups_one": "follow-up vencido",
+      "overdue_follow_ups_zero": "follow-ups vencidos",
       "overdue_follow_ups_other": "follow-ups vencidos",
       "stalled_items_one": "proposta parada há 3+ dias",
+      "stalled_items_zero": "propostas paradas há 3+ dias",
       "stalled_items_other": "propostas paradas há 3+ dias",
       "sales_missing_amount_one": "venda sem valor informado",
+      "sales_missing_amount_zero": "vendas sem valor informado",
       "sales_missing_amount_other": "vendas sem valor informado"
     }
   },
@@ -111,6 +120,7 @@
     "saved": "Meta salva",
     "removed": "Meta removida",
     "sold_one": "{{amount}} vendidos · {{count}} venda",
+    "sold_zero": "{{amount}} vendidos · {{count}} vendas",
     "sold_other": "{{amount}} vendidos · {{count}} vendas",
     "reached": "Meta atingida",
     "errors": {
@@ -151,6 +161,7 @@
       "hint": "Envia agora o resumo com os números até este momento, marcado como teste.",
       "saveFirst": "Salve as alterações antes de enviar um teste.",
       "sent_one": "Teste enviado para {{count}} número",
+      "sent_zero": "Teste enviado para {{count}} números",
       "sent_other": "Teste enviado para {{count}} números",
       "failed": "{{phone}}: falhou ({{error}})",
       "error": "Não foi possível enviar o teste."

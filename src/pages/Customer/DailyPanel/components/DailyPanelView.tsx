@@ -142,7 +142,7 @@ function TodaySalesCard({ data }: { data: DailyPanelData }) {
         </CardTitle>
       </CardHeader>
       <CardPanel className="flex flex-col gap-4 pt-0">
-        <p className="font-semibold text-2xl tabular-nums md:text-3xl" data-testid="daily-panel-today-total">
+        <p className="font-semibold text-2xl tabular-nums xl:text-3xl" data-testid="daily-panel-today-total">
           {t('sales.summary', { count: today.count, amount: formatBRL(today.amount) })}
         </p>
         <div className="grid grid-cols-2 gap-3">
