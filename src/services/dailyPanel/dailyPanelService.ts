@@ -7,6 +7,7 @@ import type {
   DailySummarySettingsPayload,
   DailySummaryTestResult,
   GoalProgress,
+  NamedRef,
   QuoteCategory,
   QuotePreferences,
   Sale,
@@ -21,6 +22,12 @@ export const salesService = {
     const response = await api.get('/sales', { params });
     const { data, meta } = extractResponse<Sale>(response);
     return { data: data ?? [], pagination: meta?.pagination };
+  },
+
+  /** CRM users that can be picked as seller (admin only). */
+  async sellers(): Promise<NamedRef[]> {
+    const response = await api.get('/sales/sellers');
+    return extractData<NamedRef[]>(response) ?? [];
   },
 
   async create(sale: SalePayload): Promise<Sale> {

@@ -5,10 +5,11 @@ import i18n from '@/i18n/config';
 import RecordSaleDialog from './RecordSaleDialog';
 import { salesService } from '@/services/dailyPanel/dailyPanelService';
 import { useDailyPanelStore } from '@/store/dailyPanelStore';
+import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 
 vi.mock('@/services/dailyPanel/dailyPanelService', () => ({
-  salesService: { create: vi.fn() },
+  salesService: { create: vi.fn(), sellers: vi.fn().mockResolvedValue([{ id: 'crm-7', name: 'Ana' }]) },
   dailyPanelService: { get: vi.fn() },
 }));
 
@@ -20,9 +21,6 @@ vi.mock('@/services/products/productsService', () => ({
   },
 }));
 
-vi.mock('@/services/users', () => ({
-  usersService: { getUsers: vi.fn().mockResolvedValue({ data: [] }) },
-}));
 
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
@@ -44,7 +42,21 @@ describe('RecordSaleDialog', () => {
   beforeEach(() => {
     vi.mocked(salesService.create).mockReset();
     vi.mocked(toast.success).mockReset();
+    vi.mocked(salesService.sellers).mockClear();
     useDailyPanelStore.setState({ stale: false });
+    useAuthStore.setState({ currentUser: null });
+  });
+
+  it('does not load sellers for agents', async () => {
+    renderDialog();
+    await screen.findByLabelText('Valor da venda');
+    expect(salesService.sellers).not.toHaveBeenCalled();
+  });
+
+  it('loads CRM sellers from /sales/sellers for admins', async () => {
+    useAuthStore.setState({ currentUser: { id: 'u1', role: { key: 'administrator' } } as never });
+    renderDialog();
+    await waitFor(() => expect(salesService.sellers).toHaveBeenCalledTimes(1));
   });
 
   it('blocks submit when the amount is empty or zero', async () => {

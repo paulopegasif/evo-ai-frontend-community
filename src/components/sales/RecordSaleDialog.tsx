@@ -22,7 +22,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useIsAdmin } from '@/hooks/dailyPanel/useIsAdmin';
 import { salesService } from '@/services/dailyPanel/dailyPanelService';
 import { productsService } from '@/services/products/productsService';
-import { usersService } from '@/services/users';
 import { useDailyPanelStore } from '@/store/dailyPanelStore';
 import { getApiErrorMessage } from '@/utils/apiHelpers';
 import { fieldErrorsFrom } from '@/utils/dailyPanel/fieldErrors';
@@ -71,6 +70,7 @@ export default function RecordSaleDialog({
   const [sellerId, setSellerId] = useState('');
   const [notes, setNotes] = useState('');
   const [amountError, setAmountError] = useState<string | null>(null);
+  const [sellerError, setSellerError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [sellers, setSellers] = useState<{ id: string; name: string }[]>([]);
@@ -83,6 +83,7 @@ export default function RecordSaleDialog({
     setSellerId('');
     setNotes('');
     setAmountError(null);
+    setSellerError(null);
 
     let cancelled = false;
     productsService
@@ -90,9 +91,9 @@ export default function RecordSaleDialog({
       .then(res => !cancelled && setProducts(res.data ?? []))
       .catch(() => !cancelled && setProducts([]));
     if (isAdmin) {
-      usersService
-        .getUsers({ per_page: 100, sort: 'name', order: 'asc' })
-        .then(res => !cancelled && setSellers((res.data ?? []).map(u => ({ id: String(u.id), name: u.name }))))
+      salesService
+        .sellers()
+        .then(list => !cancelled && setSellers((list ?? []).map(u => ({ id: String(u.id), name: u.name }))))
         .catch(() => !cancelled && setSellers([]));
     }
     return () => {
@@ -133,10 +134,13 @@ export default function RecordSaleDialog({
       onSuccess?.(sale);
       onOpenChange(false);
     } catch (error) {
-      const amountMsgs = fieldErrorsFrom(error).amount;
+      const byField = fieldErrorsFrom(error);
+      const amountMsgs = byField.amount;
       if (amountMsgs?.length) {
         setAmountError(amountMsgs.join(' '));
         amountRef.current?.focus();
+      } else if (byField.seller_id?.length) {
+        setSellerError(byField.seller_id.join(' '));
       } else {
         toast.error(getApiErrorMessage(error, t('recordSale.errors.generic')));
       }
@@ -235,10 +239,19 @@ export default function RecordSaleDialog({
                         id={`${ids}-seller`}
                         className="w-full"
                         value={sellerId}
-                        onValueChange={setSellerId}
+                        onValueChange={value => {
+                          setSellerId(value);
+                          setSellerError(null);
+                        }}
                         placeholder={t('recordSale.sellerPlaceholder')}
+                        aria-invalid={!!sellerError}
                         options={sellers.map(s => ({ value: s.id, label: s.name }))}
                       />
+                      {sellerError && (
+                        <p role="alert" className="text-destructive-foreground text-xs">
+                          {sellerError}
+                        </p>
+                      )}
                     </Field>
                   )}
                   <Field>
