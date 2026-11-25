@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 import CustomerRoute from './CustomerRoute';
-import SmartRedirect from './SmartRedirect';
 import RouterGuard from '@/guards/RouterGuard';
 import PermissionRoute from './PermissionRoute';
 import { PluginRoutes, type PluginRoute as PluginRouteType } from '@/plugin-host';
@@ -32,6 +31,10 @@ import FormPage from '@/pages/Public/Form/FormPage';
 
 // Páginas customer
 import Dashboard from '@/pages/Customer/Dashboard';
+import DailyPanel from '@/pages/Customer/DailyPanel';
+import SalesGoals from '@/pages/Customer/Settings/SalesGoals';
+import DailySummary from '@/pages/Customer/Settings/DailySummary';
+import AdminOnlyRoute from '@/components/dailyPanel/AdminOnlyRoute';
 import Agents from '@/pages/Customer/Agents';
 import AgentEditPage from '@/pages/Customer/Agents/Agent/AgentEditPage';
 import MCPServers from '@/pages/Customer/Agents/MCPServers';
@@ -149,12 +152,16 @@ const AppRouter = () => {
     <BrowserRouter>
       <RouterGuard>
         <Routes>
-          {/* Redirecionamento inteligente da raiz baseado no tipo de usuário */}
+          {/* Painel do Dia: tela inicial após o login (o Dashboard segue em /dashboard) */}
           <Route
             path="/"
             element={
               <PrivateRoute>
-                <SmartRedirect />
+                <CustomerRoute>
+                  <MainLayout>
+                    <DailyPanel />
+                  </MainLayout>
+                </CustomerRoute>
               </PrivateRoute>
             }
           />
@@ -691,6 +698,36 @@ const AppRouter = () => {
                     <PermissionRoute resource="accounts" action="read">
                       <AccountSettings />
                     </PermissionRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/settings/sales-goals"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <AdminOnlyRoute>
+                      <SalesGoals />
+                    </AdminOnlyRoute>
+                  </MainLayout>
+                </CustomerRoute>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/settings/daily-summary"
+            element={
+              <PrivateRoute>
+                <CustomerRoute>
+                  <MainLayout>
+                    <AdminOnlyRoute>
+                      <DailySummary />
+                    </AdminOnlyRoute>
                   </MainLayout>
                 </CustomerRoute>
               </PrivateRoute>
@@ -1440,7 +1477,7 @@ const AppRouter = () => {
                   <MainLayout>
                     {/* No PermissionRoute: `dashboard.read` is a basic auth read,
                         not a catalog resource, so `can('dashboard','read')` denies
-                        for everyone. Dashboard is the landing page — always visible
+                        for everyone. Dashboard stays always visible
                         to authenticated users (EVO-2071 AC7). */}
                     <Dashboard />
                   </MainLayout>

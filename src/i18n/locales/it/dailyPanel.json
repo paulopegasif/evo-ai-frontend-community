@@ -1,0 +1,167 @@
+{
+  "loading": "Caricamento del pannello",
+  "loadError": "Impossibile caricare il pannello.",
+  "retry": "Riprova",
+  "common": {
+    "cancel": "Annulla"
+  },
+  "greeting": {
+    "morning": "Buongiorno, {{name}}",
+    "afternoon": "Buon pomeriggio, {{name}}",
+    "evening": "Buonasera, {{name}}"
+  },
+  "quote": {
+    "label": "Frase del giorno",
+    "categories": {
+      "motivacao": "Motivazione",
+      "negocios": "Affari",
+      "biblia": "Biblica",
+      "off": "Disattivata"
+    },
+    "preferenceTitle": "Frase del giorno",
+    "preferenceDescription": "Scegli il tipo di frase mostrata nel Pannello del giorno.",
+    "mine": "La mia frase del giorno",
+    "mineHint": "Vale solo per te.",
+    "useDefault": "Predefinita dell'installazione ({{category}})",
+    "installationDefault": "Predefinita dell'installazione",
+    "installationDefaultHint": "Usata da chi non ha scelto una categoria.",
+    "saved": "Preferenza salvata",
+    "saveError": "Impossibile salvare la preferenza."
+  },
+  "sales": {
+    "title": "Vendite di oggi",
+    "summary_one": "{{count}} vendita · {{amount}}",
+    "summary_other": "{{count}} vendite · {{amount}}",
+    "vsYesterday": "Ieri",
+    "vsLastWeek": "Stesso giorno della settimana scorsa",
+    "changeAria": "Variazione di {{value}}"
+  },
+  "noSales": {
+    "title": "Ancora nessuna vendita oggi",
+    "encourage": "La giornata non è finita. Una buona conversazione può diventare la prima vendita.",
+    "encourageWithOpportunities": "La giornata non è finita. Perché non iniziare da queste opportunità?",
+    "stalled_one": "{{count}} proposta ferma da 3+ giorni",
+    "stalled_other": "{{count}} proposte ferme da 3+ giorni",
+    "awaiting_one": "{{count}} lead in attesa di risposta",
+    "awaiting_other": "{{count}} lead in attesa di risposta"
+  },
+  "goal": {
+    "title": "Obiettivo del mese",
+    "titleMine": "Il tuo obiettivo del mese",
+    "monthTotal": "Venduto nel mese",
+    "salesCount_one": "{{count}} vendita nel mese",
+    "salesCount_other": "{{count}} vendite nel mese",
+    "setGoal": "Imposta l'obiettivo del mese",
+    "soldOfGoal": "{{sold}} su {{goal}}",
+    "progressAria": "{{percent}}% dell'obiettivo raggiunto",
+    "reached": "Obiettivo del mese raggiunto!",
+    "surplus": "{{amount}} oltre l'obiettivo",
+    "remaining": "Mancano {{amount}}",
+    "pace_one": "≈ {{amount}} al giorno · {{count}} giorno rimasto",
+    "pace_other": "≈ {{amount}} al giorno · {{count}} giorni rimasti"
+  },
+  "todo": {
+    "title": "Da fare ora",
+    "allClear": "Tutto in ordine! Nessuna attività in sospeso per ora.",
+    "items": {
+      "awaiting_reply_one": "lead in attesa di risposta",
+      "awaiting_reply_other": "lead in attesa di risposta",
+      "overdue_follow_ups_one": "follow-up scaduto",
+      "overdue_follow_ups_other": "follow-up scaduti",
+      "stalled_items_one": "proposta ferma da 3+ giorni",
+      "stalled_items_other": "proposte ferme da 3+ giorni",
+      "sales_missing_amount_one": "vendita senza importo",
+      "sales_missing_amount_other": "vendite senza importo"
+    }
+  },
+  "recordSale": {
+    "button": "Registra vendita",
+    "title": "Registra vendita",
+    "description": "La vendita viene collegata a questa conversazione e al contatto.",
+    "amount": "Importo della vendita",
+    "product": "Prodotto (facoltativo)",
+    "noProduct": "Nessun prodotto",
+    "productHint": "Scegliendo un prodotto, l'importo viene compilato con il prezzo predefinito.",
+    "moreOptions": "Altre opzioni",
+    "soldAt": "Data della vendita",
+    "seller": "Venditore",
+    "sellerPlaceholder": "Io stesso",
+    "notes": "Nota",
+    "submit": "Registra",
+    "success": "Vendita di {{amount}} registrata",
+    "errors": {
+      "amount": "L'importo deve essere maggiore di zero.",
+      "generic": "Impossibile registrare la vendita."
+    }
+  },
+  "goals": {
+    "title": "Obiettivi",
+    "subtitle": "Imposta l'obiettivo di fatturato del mese per l'azienda e per ogni venditore.",
+    "monthSelector": "Mese",
+    "prevMonth": "Mese precedente",
+    "nextMonth": "Mese successivo",
+    "general": "Obiettivo generale",
+    "generalHint": "Mostrato nel Pannello del giorno degli amministratori.",
+    "generalLabel": "Azienda",
+    "sellers": "Obiettivi per venditore",
+    "sellersHint": "Indipendenti dall'obiettivo generale; ogni venditore vede il proprio obiettivo.",
+    "noSellers": "Nessun venditore trovato.",
+    "save": "Salva",
+    "remove": "Rimuovi l'obiettivo di {{name}}",
+    "saved": "Obiettivo salvato",
+    "removed": "Obiettivo rimosso",
+    "sold_one": "{{amount}} venduti · {{count}} vendita",
+    "sold_other": "{{amount}} venduti · {{count}} vendite",
+    "reached": "Obiettivo raggiunto",
+    "errors": {
+      "amount": "L'obiettivo deve essere maggiore di zero.",
+      "save": "Impossibile salvare l'obiettivo.",
+      "load": "Impossibile caricare gli obiettivi."
+    }
+  },
+  "summary": {
+    "title": "Riepilogo giornaliero",
+    "subtitle": "Ricevi i numeri del giorno su WhatsApp senza aprire il CRM.",
+    "noInbox": "Per inviare il riepilogo è necessario collegare un WhatsApp.",
+    "connectWhatsapp": "Collega WhatsApp",
+    "settingsTitle": "Invio automatico",
+    "timezone": "Orario nel fuso {{timezone}}",
+    "enabled": "Invia riepilogo giornaliero",
+    "time": "Orario di invio",
+    "inbox": "Casella WhatsApp di invio",
+    "inboxPlaceholder": "Seleziona la casella",
+    "phones": "Numeri di destinazione",
+    "phonesHint": "Da 1 a {{count}} numeri in formato internazionale, ad esempio +5562999990000. Usa un numero diverso dal WhatsApp collegato.",
+    "phoneLabel": "Numero di destinazione {{index}}",
+    "removePhone": "Rimuovi numero {{index}}",
+    "addPhone": "Aggiungi numero",
+    "save": "Salva",
+    "saved": "Impostazioni salvate",
+    "lastRun": {
+      "title": "Ultimo invio",
+      "never": "Nessun invio finora.",
+      "status": {
+        "sent": "Inviato",
+        "failed": "Non riuscito",
+        "partial": "Parziale"
+      }
+    },
+    "test": {
+      "button": "Invia test",
+      "hint": "Invia ora il riepilogo con i numeri fino a questo momento, contrassegnato come test.",
+      "saveFirst": "Salva le modifiche prima di inviare un test.",
+      "sent_one": "Test inviato a {{count}} numero",
+      "sent_other": "Test inviato a {{count}} numeri",
+      "failed": "{{phone}}: non riuscito ({{error}})",
+      "error": "Impossibile inviare il test."
+    },
+    "errors": {
+      "load": "Impossibile caricare le impostazioni del riepilogo.",
+      "save": "Impossibile salvare le impostazioni.",
+      "phoneRequired": "Inserisci il numero o rimuovi il campo.",
+      "phoneInvalid": "{{phone}} non è in formato internazionale (es.: +5562999990000).",
+      "phonesMax": "Inserisci al massimo {{count}} numeri.",
+      "inboxRequired": "Scegli la casella WhatsApp che invierà il riepilogo."
+    }
+  }
+}

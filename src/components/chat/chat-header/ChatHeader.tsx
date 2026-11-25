@@ -41,6 +41,7 @@ import { pipelinesService } from '@/services/pipelines/pipelinesService';
 import chatService from '@/services/chat/chatService';
 import { toast } from 'sonner';
 import { findItemInPipeline } from '@/utils/chat/pipelineUtils';
+import RecordSaleButton from '@/components/sales/RecordSaleButton';
 
 interface ChatHeaderProps {
   conversation: Conversation;
@@ -494,6 +495,11 @@ const ChatHeader = ({
         </div>
         {/* Ações do chat */}
         <div className="flex shrink-0 items-center gap-1">
+          {/* Painel do Dia: registra uma venda ligada a esta conversa e ao contato */}
+          <span className="me-1">
+            <RecordSaleButton conversationId={conversation.id} contactId={conversation.contact?.id} />
+          </span>
+
           {/* Botão de status: cor + próxima ação mudam conforme o status atual */}
           <ConversationStatusButton
             status={currentStatus}

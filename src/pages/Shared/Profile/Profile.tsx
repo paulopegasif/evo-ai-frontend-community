@@ -27,6 +27,7 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip';
 import RadioCardGroup from '@/components/base/RadioCard';
+import QuotePreferenceCard from '@/components/dailyPanel/QuotePreferenceCard';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuthStore } from '@/store/authStore';
@@ -1233,6 +1234,7 @@ const Profile = () => {
 
           <TabsPanel value="interface" className="flex flex-col gap-6">
             {renderInterfaceSettings()}
+            <QuotePreferenceCard />
           </TabsPanel>
 
           <TabsPanel value="notificacoes" className="flex flex-col gap-6">

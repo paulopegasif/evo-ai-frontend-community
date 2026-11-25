@@ -30,7 +30,11 @@ import {
   FileText,
   Calendar,
   TrendingUp,
+  Home,
+  Target,
+  Send,
 } from '@/components/icons';
+import { isAdminRole } from '@/constants/roles';
 
 export interface MenuItem {
   id?: string;
@@ -43,6 +47,8 @@ export interface MenuItem {
   permissions?: string[];
   requireAll?: boolean;
   requiredRoleKey?: string;
+  /** Visible only to administrative roles (owner / administrator / super admin). */
+  adminOnly?: boolean;
   badge?: number;
 }
 
@@ -55,6 +61,7 @@ export interface SubMenuItem {
   permissions?: string[];
   requireAll?: boolean;
   requiredRoleKey?: string;
+  adminOnly?: boolean;
 }
 
 export interface ProfileMenuItem {
@@ -65,6 +72,12 @@ export interface ProfileMenuItem {
 }
 
 export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => [
+  {
+    id: 'customer-daily-panel',
+    name: t('menu.customer.dailyPanel'),
+    href: '/',
+    icon: Home,
+  },
   {
     name: t('menu.customer.dashboard'),
     href: '/dashboard',
@@ -200,6 +213,18 @@ export const getCustomerMenuItems = (t: (key: string) => string): MenuItem[] => 
         // route now agree instead of the menu linking into Não Autorizado.
         resource: 'accounts',
         action: 'read',
+      },
+      {
+        name: t('menu.settings.salesGoals'),
+        href: '/settings/sales-goals',
+        icon: Target,
+        adminOnly: true,
+      },
+      {
+        name: t('menu.settings.dailySummary'),
+        href: '/settings/daily-summary',
+        icon: Send,
+        adminOnly: true,
       },
       {
         name: t('menu.settings.users'),
@@ -344,6 +369,10 @@ export const shouldShowMenuItem = (
   canAllFunction: (permissions: string[]) => boolean,
   userRoleKey?: string
 ): boolean => {
+  if (item.adminOnly && !(userRoleKey && isAdminRole(userRoleKey))) {
+    return false;
+  }
+
   // Verificar role obrigatória
   if (item.requiredRoleKey) {
     return userRoleKey === item.requiredRoleKey;

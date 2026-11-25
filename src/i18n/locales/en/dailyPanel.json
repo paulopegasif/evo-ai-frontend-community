@@ -1,0 +1,167 @@
+{
+  "loading": "Loading the panel",
+  "loadError": "Could not load the panel.",
+  "retry": "Try again",
+  "common": {
+    "cancel": "Cancel"
+  },
+  "greeting": {
+    "morning": "Good morning, {{name}}",
+    "afternoon": "Good afternoon, {{name}}",
+    "evening": "Good evening, {{name}}"
+  },
+  "quote": {
+    "label": "Quote of the day",
+    "categories": {
+      "motivacao": "Motivation",
+      "negocios": "Business",
+      "biblia": "Bible",
+      "off": "Off"
+    },
+    "preferenceTitle": "Quote of the day",
+    "preferenceDescription": "Choose the kind of quote shown on the Daily Panel.",
+    "mine": "My quote of the day",
+    "mineHint": "Applies only to you.",
+    "useDefault": "Installation default ({{category}})",
+    "installationDefault": "Installation default",
+    "installationDefaultHint": "Used by anyone who has not picked a category.",
+    "saved": "Preference saved",
+    "saveError": "Could not save the preference."
+  },
+  "sales": {
+    "title": "Today's sales",
+    "summary_one": "{{count}} sale · {{amount}}",
+    "summary_other": "{{count}} sales · {{amount}}",
+    "vsYesterday": "Yesterday",
+    "vsLastWeek": "Same day last week",
+    "changeAria": "Change of {{value}}"
+  },
+  "noSales": {
+    "title": "No sales today yet",
+    "encourage": "The day is not over. A good conversation can become the first sale.",
+    "encourageWithOpportunities": "The day is not over. How about starting with these opportunities?",
+    "stalled_one": "{{count}} proposal stalled for 3+ days",
+    "stalled_other": "{{count}} proposals stalled for 3+ days",
+    "awaiting_one": "{{count}} lead awaiting reply",
+    "awaiting_other": "{{count}} leads awaiting reply"
+  },
+  "goal": {
+    "title": "Monthly goal",
+    "titleMine": "Your monthly goal",
+    "monthTotal": "Sold this month",
+    "salesCount_one": "{{count}} sale this month",
+    "salesCount_other": "{{count}} sales this month",
+    "setGoal": "Set the monthly goal",
+    "soldOfGoal": "{{sold}} of {{goal}}",
+    "progressAria": "{{percent}}% of the goal reached",
+    "reached": "Monthly goal reached!",
+    "surplus": "{{amount}} above the goal",
+    "remaining": "{{amount}} to go",
+    "pace_one": "≈ {{amount}} per day · {{count}} day left",
+    "pace_other": "≈ {{amount}} per day · {{count}} days left"
+  },
+  "todo": {
+    "title": "Do it now",
+    "allClear": "All caught up! Nothing pending for now.",
+    "items": {
+      "awaiting_reply_one": "lead awaiting reply",
+      "awaiting_reply_other": "leads awaiting reply",
+      "overdue_follow_ups_one": "overdue follow-up",
+      "overdue_follow_ups_other": "overdue follow-ups",
+      "stalled_items_one": "proposal stalled for 3+ days",
+      "stalled_items_other": "proposals stalled for 3+ days",
+      "sales_missing_amount_one": "sale without an amount",
+      "sales_missing_amount_other": "sales without an amount"
+    }
+  },
+  "recordSale": {
+    "button": "Record sale",
+    "title": "Record sale",
+    "description": "The sale is linked to this conversation and contact.",
+    "amount": "Sale amount",
+    "product": "Product (optional)",
+    "noProduct": "No product",
+    "productHint": "Picking a product fills the amount with its default price.",
+    "moreOptions": "More options",
+    "soldAt": "Sale date",
+    "seller": "Seller",
+    "sellerPlaceholder": "Myself",
+    "notes": "Notes",
+    "submit": "Record",
+    "success": "Sale of {{amount}} recorded",
+    "errors": {
+      "amount": "The amount must be greater than zero.",
+      "generic": "Could not record the sale."
+    }
+  },
+  "goals": {
+    "title": "Sales goals",
+    "subtitle": "Set the monthly revenue goal for the company and for each seller.",
+    "monthSelector": "Month",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "general": "Company goal",
+    "generalHint": "Shown on the administrators' Daily Panel.",
+    "generalLabel": "Company",
+    "sellers": "Goals per seller",
+    "sellersHint": "Independent from the company goal; each seller sees their own goal.",
+    "noSellers": "No sellers found.",
+    "save": "Save",
+    "remove": "Remove goal for {{name}}",
+    "saved": "Goal saved",
+    "removed": "Goal removed",
+    "sold_one": "{{amount}} sold · {{count}} sale",
+    "sold_other": "{{amount}} sold · {{count}} sales",
+    "reached": "Goal reached",
+    "errors": {
+      "amount": "The goal must be greater than zero.",
+      "save": "Could not save the goal.",
+      "load": "Could not load the goals."
+    }
+  },
+  "summary": {
+    "title": "Daily summary",
+    "subtitle": "Get the day's numbers on WhatsApp without opening the CRM.",
+    "noInbox": "Connect a WhatsApp inbox to send the summary.",
+    "connectWhatsapp": "Connect WhatsApp",
+    "settingsTitle": "Automatic sending",
+    "timezone": "Time in the {{timezone}} timezone",
+    "enabled": "Send daily summary",
+    "time": "Sending time",
+    "inbox": "WhatsApp inbox that sends",
+    "inboxPlaceholder": "Select the inbox",
+    "phones": "Destination numbers",
+    "phonesHint": "From 1 to {{count}} numbers in international format, e.g. +5562999990000. Use a number different from the connected WhatsApp.",
+    "phoneLabel": "Destination number {{index}}",
+    "removePhone": "Remove number {{index}}",
+    "addPhone": "Add number",
+    "save": "Save",
+    "saved": "Settings saved",
+    "lastRun": {
+      "title": "Last run",
+      "never": "Nothing sent yet.",
+      "status": {
+        "sent": "Sent",
+        "failed": "Failed",
+        "partial": "Partial"
+      }
+    },
+    "test": {
+      "button": "Send test",
+      "hint": "Sends the summary now with the numbers so far, marked as a test.",
+      "saveFirst": "Save your changes before sending a test.",
+      "sent_one": "Test sent to {{count}} number",
+      "sent_other": "Test sent to {{count}} numbers",
+      "failed": "{{phone}}: failed ({{error}})",
+      "error": "Could not send the test."
+    },
+    "errors": {
+      "load": "Could not load the summary settings.",
+      "save": "Could not save the settings.",
+      "phoneRequired": "Enter the number or remove the field.",
+      "phoneInvalid": "{{phone}} is not in international format (e.g. +5562999990000).",
+      "phonesMax": "Enter at most {{count}} numbers.",
+      "inboxRequired": "Choose the WhatsApp inbox that will send the summary."
+    }
+  }
+}
