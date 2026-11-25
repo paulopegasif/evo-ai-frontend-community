@@ -97,7 +97,8 @@
       "settings": "Configurações",
       "campaigns": "Campanhas",
       "journeys": "Jornadas",
-      "leadTracking": "Tracking de Leads"
+      "leadTracking": "Tracking de Leads",
+      "dailyPanel": "Início"
     },
     "contacts": {
       "list": "Contatos",
@@ -124,7 +125,9 @@
       "admin": "Configurações Admin",
       "segments": "Segmentos",
       "crmForms": "Formulários de captura",
-      "chatPages": "Páginas de chat"
+      "chatPages": "Páginas de chat",
+      "salesGoals": "Metas",
+      "dailySummary": "Resumo diário"
     }
   }
 }

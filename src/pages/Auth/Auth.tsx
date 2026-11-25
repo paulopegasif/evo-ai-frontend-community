@@ -232,7 +232,7 @@ export const Auth: React.FC = () => {
         // Redirecionar de volta para o OAuth flow
         window.location.href = returnUrl;
       } else {
-        // Navegar para a rota raiz, que será redirecionada pelo SmartRedirect
+        // Navegar para a rota raiz: o Painel do Dia é a tela inicial
         navigate('/', { replace: true });
       }
     } catch (error) {

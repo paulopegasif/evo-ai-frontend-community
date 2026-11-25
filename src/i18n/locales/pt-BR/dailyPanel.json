@@ -1,0 +1,178 @@
+{
+  "loading": "Carregando o painel",
+  "loadError": "Não foi possível carregar o painel.",
+  "retry": "Tentar novamente",
+  "common": {
+    "cancel": "Cancelar"
+  },
+  "greeting": {
+    "morning": "Bom dia, {{name}}",
+    "afternoon": "Boa tarde, {{name}}",
+    "evening": "Boa noite, {{name}}"
+  },
+  "quote": {
+    "label": "Frase do dia",
+    "categories": {
+      "motivacao": "Motivação",
+      "negocios": "Negócios",
+      "biblia": "Bíblica",
+      "off": "Desligada"
+    },
+    "preferenceTitle": "Frase do dia",
+    "preferenceDescription": "Escolha o tipo de frase exibida no Painel do Dia.",
+    "mine": "Minha frase do dia",
+    "mineHint": "Vale só para você.",
+    "useDefault": "Padrão da instalação ({{category}})",
+    "installationDefault": "Padrão da instalação",
+    "installationDefaultHint": "Usado por quem não escolheu uma categoria.",
+    "saved": "Preferência salva",
+    "saveError": "Não foi possível salvar a preferência."
+  },
+  "sales": {
+    "title": "Vendas de hoje",
+    "summary_one": "{{count}} venda · {{amount}}",
+    "summary_zero": "{{count}} vendas · {{amount}}",
+    "summary_other": "{{count}} vendas · {{amount}}",
+    "vsYesterday": "Ontem",
+    "vsLastWeek": "Mesmo dia da semana passada",
+    "changeAria": "Variação de {{value}}"
+  },
+  "noSales": {
+    "title": "Nenhuma venda hoje ainda",
+    "encourage": "O dia ainda não acabou. Uma boa conversa pode virar a primeira venda.",
+    "encourageWithOpportunities": "O dia ainda não acabou. Que tal começar por estas oportunidades?",
+    "stalled_one": "{{count}} proposta parada há 3+ dias",
+    "stalled_zero": "{{count}} propostas paradas há 3+ dias",
+    "stalled_other": "{{count}} propostas paradas há 3+ dias",
+    "awaiting_one": "{{count}} lead aguardando resposta",
+    "awaiting_zero": "{{count}} leads aguardando resposta",
+    "awaiting_other": "{{count}} leads aguardando resposta"
+  },
+  "goal": {
+    "title": "Meta do mês",
+    "titleMine": "Sua meta do mês",
+    "monthTotal": "Vendido no mês",
+    "salesCount_one": "{{count}} venda no mês",
+    "salesCount_zero": "{{count}} vendas no mês",
+    "salesCount_other": "{{count}} vendas no mês",
+    "setGoal": "Definir meta do mês",
+    "soldOfGoal": "{{sold}} de {{goal}}",
+    "progressAria": "{{percent}}% da meta atingida",
+    "reached": "Meta do mês atingida!",
+    "surplus": "{{amount}} acima da meta",
+    "remaining": "Faltam {{amount}}",
+    "pace_one": "≈ {{amount}} por dia · {{count}} dia restante",
+    "pace_zero": "≈ {{amount}} por dia · {{count}} dias restantes",
+    "pace_other": "≈ {{amount}} por dia · {{count}} dias restantes"
+  },
+  "todo": {
+    "title": "Fazer agora",
+    "allClear": "Tudo em dia! Nenhuma pendência por enquanto.",
+    "items": {
+      "awaiting_reply_one": "lead aguardando resposta",
+      "awaiting_reply_zero": "leads aguardando resposta",
+      "awaiting_reply_other": "leads aguardando resposta",
+      "overdue_follow_ups_one": "follow-up vencido",
+      "overdue_follow_ups_zero": "follow-ups vencidos",
+      "overdue_follow_ups_other": "follow-ups vencidos",
+      "stalled_items_one": "proposta parada há 3+ dias",
+      "stalled_items_zero": "propostas paradas há 3+ dias",
+      "stalled_items_other": "propostas paradas há 3+ dias",
+      "sales_missing_amount_one": "venda sem valor informado",
+      "sales_missing_amount_zero": "vendas sem valor informado",
+      "sales_missing_amount_other": "vendas sem valor informado"
+    }
+  },
+  "recordSale": {
+    "button": "Registrar venda",
+    "title": "Registrar venda",
+    "description": "A venda fica ligada a esta conversa e ao contato.",
+    "amount": "Valor da venda",
+    "product": "Produto (opcional)",
+    "noProduct": "Sem produto",
+    "productHint": "Ao escolher um produto, o valor é preenchido com o preço padrão.",
+    "moreOptions": "Mais opções",
+    "soldAt": "Data da venda",
+    "seller": "Vendedor",
+    "sellerPlaceholder": "Eu mesmo",
+    "notes": "Observação",
+    "submit": "Registrar",
+    "success": "Venda de {{amount}} registrada",
+    "errors": {
+      "amount": "O valor deve ser maior que zero.",
+      "generic": "Não foi possível registrar a venda."
+    }
+  },
+  "goals": {
+    "title": "Metas",
+    "subtitle": "Defina a meta de faturamento do mês para a empresa e para cada vendedor.",
+    "monthSelector": "Mês",
+    "prevMonth": "Mês anterior",
+    "nextMonth": "Próximo mês",
+    "general": "Meta geral",
+    "generalHint": "Aparece no Painel do Dia dos administradores.",
+    "generalLabel": "Empresa",
+    "sellers": "Metas por vendedor",
+    "sellersHint": "Independentes da meta geral; cada vendedor vê a própria meta.",
+    "noSellers": "Nenhum vendedor encontrado.",
+    "save": "Salvar",
+    "remove": "Remover meta de {{name}}",
+    "saved": "Meta salva",
+    "removed": "Meta removida",
+    "sold_one": "{{amount}} vendidos · {{count}} venda",
+    "sold_zero": "{{amount}} vendidos · {{count}} vendas",
+    "sold_other": "{{amount}} vendidos · {{count}} vendas",
+    "reached": "Meta atingida",
+    "errors": {
+      "amount": "A meta deve ser maior que zero.",
+      "save": "Não foi possível salvar a meta.",
+      "load": "Não foi possível carregar as metas."
+    }
+  },
+  "summary": {
+    "title": "Resumo diário",
+    "subtitle": "Receba os números do dia no WhatsApp, sem precisar abrir o CRM.",
+    "noInbox": "Para enviar o resumo é preciso conectar um WhatsApp.",
+    "connectWhatsapp": "Conectar WhatsApp",
+    "settingsTitle": "Envio automático",
+    "timezone": "Horário no fuso {{timezone}}",
+    "enabled": "Enviar resumo diário",
+    "time": "Horário de envio",
+    "inbox": "Caixa de WhatsApp que envia",
+    "inboxPlaceholder": "Selecione a caixa",
+    "phones": "Números de destino",
+    "phonesHint": "De 1 a {{count}} números no formato internacional, por exemplo +5562999990000. Use um número diferente do WhatsApp conectado.",
+    "phoneLabel": "Número de destino {{index}}",
+    "removePhone": "Remover número {{index}}",
+    "addPhone": "Adicionar número",
+    "save": "Salvar",
+    "saved": "Configuração salva",
+    "lastRun": {
+      "title": "Último envio",
+      "never": "Nenhum envio ainda.",
+      "status": {
+        "sent": "Enviado",
+        "failed": "Falhou",
+        "partial": "Parcial"
+      }
+    },
+    "test": {
+      "button": "Enviar teste",
+      "hint": "Envia agora o resumo com os números até este momento, marcado como teste.",
+      "saveFirst": "Salve as alterações antes de enviar um teste.",
+      "sent_one": "Teste enviado para {{count}} número",
+      "sent_zero": "Teste enviado para {{count}} números",
+      "sent_other": "Teste enviado para {{count}} números",
+      "failed": "{{phone}}: falhou ({{error}})",
+      "error": "Não foi possível enviar o teste."
+    },
+    "errors": {
+      "load": "Não foi possível carregar a configuração do resumo.",
+      "save": "Não foi possível salvar a configuração.",
+      "phoneRequired": "Informe o número ou remova o campo.",
+      "phoneInvalid": "{{phone}} não está no formato internacional (ex.: +5562999990000).",
+      "phonesMax": "Informe no máximo {{count}} números.",
+      "inboxRequired": "Escolha a caixa de WhatsApp que vai enviar o resumo."
+    }
+  }
+}

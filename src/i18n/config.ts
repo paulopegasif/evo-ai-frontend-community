@@ -55,6 +55,7 @@ import ptBRCustomerDashboard from './locales/pt-BR/customerDashboard.json';
 import ptBRAdminSettings from './locales/pt-BR/adminSettings.json';
 import ptBRRoles from './locales/pt-BR/roles.json';
 import ptBRTutorials from './locales/pt-BR/tutorials.json';
+import ptBRDailyPanel from './locales/pt-BR/dailyPanel.json';
 import ptAuth from './locales/pt/auth.json';
 import ptChangePassword from './locales/pt/changePassword.json';
 import ptMcpServers from './locales/pt/mcpServers.json';
@@ -108,6 +109,7 @@ import ptCustomerDashboard from './locales/pt/customerDashboard.json';
 import ptAdminSettings from './locales/pt/adminSettings.json';
 import ptRoles from './locales/pt/roles.json';
 import ptTutorials from './locales/pt/tutorials.json';
+import ptDailyPanel from './locales/pt/dailyPanel.json';
 import enAuth from './locales/en/auth.json';
 import enChangePassword from './locales/en/changePassword.json';
 import enMcpServers from './locales/en/mcpServers.json';
@@ -161,6 +163,7 @@ import enCustomerDashboard from './locales/en/customerDashboard.json';
 import enAdminSettings from './locales/en/adminSettings.json';
 import enRoles from './locales/en/roles.json';
 import enTutorials from './locales/en/tutorials.json';
+import enDailyPanel from './locales/en/dailyPanel.json';
 import esAuth from './locales/es/auth.json';
 import esChangePassword from './locales/es/changePassword.json';
 import esMcpServers from './locales/es/mcpServers.json';
@@ -214,6 +217,7 @@ import esCustomerDashboard from './locales/es/customerDashboard.json';
 import esAdminSettings from './locales/es/adminSettings.json';
 import esRoles from './locales/es/roles.json';
 import esTutorials from './locales/es/tutorials.json';
+import esDailyPanel from './locales/es/dailyPanel.json';
 import frAuth from './locales/fr/auth.json';
 import frChangePassword from './locales/fr/changePassword.json';
 import frMcpServers from './locales/fr/mcpServers.json';
@@ -267,6 +271,7 @@ import frCustomerDashboard from './locales/fr/customerDashboard.json';
 import frAdminSettings from './locales/fr/adminSettings.json';
 import frRoles from './locales/fr/roles.json';
 import frTutorials from './locales/fr/tutorials.json';
+import frDailyPanel from './locales/fr/dailyPanel.json';
 import itAuth from './locales/it/auth.json';
 import itChangePassword from './locales/it/changePassword.json';
 import itMcpServers from './locales/it/mcpServers.json';
@@ -326,6 +331,7 @@ import esTours from './locales/es/tours.json';
 import frTours from './locales/fr/tours.json';
 import itTours from './locales/it/tours.json'
 import itTutorials from './locales/it/tutorials.json';
+import itDailyPanel from './locales/it/dailyPanel.json';
 
 // Segments / Journey / Campaigns namespaces
 import ptBRSegments from './locales/pt-BR/segments.json';
@@ -442,6 +448,7 @@ const resources = {
     roles: ptBRRoles,
     tours: ptBRTours,
     tutorials: ptBRTutorials,
+    dailyPanel: ptBRDailyPanel,
     segments: ptBRSegments,
     journey: ptBRJourney,
     campaigns: ptBRCampaigns,
@@ -502,6 +509,7 @@ const resources = {
     roles: ptRoles,
     tours: ptTours,
     tutorials: ptTutorials,
+    dailyPanel: ptDailyPanel,
     segments: ptSegments,
     journey: ptJourney,
     campaigns: ptCampaigns,
@@ -562,6 +570,7 @@ const resources = {
     roles: enRoles,
     tours: enTours,
     tutorials: enTutorials,
+    dailyPanel: enDailyPanel,
     segments: enSegments,
     journey: enJourney,
     campaigns: enCampaigns,
@@ -622,6 +631,7 @@ const resources = {
     roles: esRoles,
     tours: esTours,
     tutorials: esTutorials,
+    dailyPanel: esDailyPanel,
     segments: esSegments,
     journey: esJourney,
     campaigns: esCampaigns,
@@ -682,6 +692,7 @@ const resources = {
     roles: frRoles,
     tours: frTours,
     tutorials: frTutorials,
+    dailyPanel: frDailyPanel,
     segments: frSegments,
     journey: frJourney,
     campaigns: frCampaigns,
@@ -742,6 +753,7 @@ const resources = {
     roles: itRoles,
     tours: itTours,
     tutorials: itTutorials,
+    dailyPanel: itDailyPanel,
     segments: itSegments,
     journey: itJourney,
     campaigns: itCampaigns,
